@@ -1,6 +1,7 @@
 # Annual-Project<br>
 哈尔滨工业大学（HIT）大一学年项目 - 无人机集群室内运动仿真<br>
 项目背景：响应中国低空经济发展目标，实现无人机集群室内运动的仿真验证<br>
+# 以下是前期完成的内容<br>
 目录<br>
 核心模块说明<br>
 1. 动力学模型 (packaged_drone_dynamics_model)<br>
