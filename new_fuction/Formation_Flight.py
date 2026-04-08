@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Packaged_Drone_Dynamics_Model import Drone
 from Controller import Controller
+from HybridAttitudeController import HybridAttitudeController
 from WindField import WindField
 
 
-def run_formation_simulation():
+def run_formation_simulation(use_smc=True):
     dt = 0.01
     max_sim_time = 150.0
 
@@ -13,8 +14,9 @@ def run_formation_simulation():
     leader = Drone(dt=dt)
     leader.set_initial_state([0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
 
-    # 风场：稳态风 + 小湍流
-    wind_field = WindField(steady=(0.5, 0.0, 0.0), turbulence_std=0.02, tau=0.8, seed=42)
+    # 风场：每架无人机独立风场实例（相同稳态风，不同湍流种子）
+    base_steady = (0.5, 0.0, 0.0)
+    leader_wind = WindField(steady=base_steady, turbulence_std=0.02, tau=0.8, seed=42)
 
     # ========== 从机初始化 ==========
     delta_offsets = [
@@ -23,15 +25,29 @@ def run_formation_simulation():
         np.array([-4.0, 0.0, 0.0]),
     ]
     followers = []
-    for offset in delta_offsets:
+    follower_winds = []
+    for idx, offset in enumerate(delta_offsets):
         follower = Drone(dt=dt)
         init_pos = leader.state[0:3] + offset
         follower.set_initial_state(init_pos, [0.0, 0.0, 0.0])
         followers.append(follower)
+        # 每架从机独立风场（相同稳态风，不同湍流种子）
+        follower_winds.append(WindField(steady=base_steady, turbulence_std=0.02, tau=0.8, seed=100 + idx))
 
-    # ========== 控制器初始化 ==========
-    leader_ctrl = Controller(dt=dt)
-    follower_ctrls = [Controller(dt=dt) for _ in followers]
+    # ========== 控制器初始化（支持 PID/SMC 切换） ==========
+    if use_smc:
+        leader_ctrl = HybridAttitudeController(dt=dt)
+        leader_ctrl.use_smc = True
+        follower_ctrls = []
+        for _ in followers:
+            ctrl = HybridAttitudeController(dt=dt)
+            ctrl.use_smc = True
+            follower_ctrls.append(ctrl)
+        print("控制器模式: PID位置环 + SMC姿态环 (HybridAttitudeController)")
+    else:
+        leader_ctrl = Controller(dt=dt)
+        follower_ctrls = [Controller(dt=dt) for _ in followers]
+        print("控制器模式: 纯PID串级控制 (Controller)")
 
     # ========== 航点定义 ==========
     waypoints = [
@@ -65,13 +81,13 @@ def run_formation_simulation():
         else:
             wp = np.array(waypoints[-1])
 
-        # 采样风场
-        wind = wind_field.sample(dt)
+        # 采样主机风场
+        wind_leader = leader_wind.sample(dt)
 
         # -------- 主机控制与更新 --------
         leader_pos, leader_vel, _, _ = leader.get_state()
         u_leader = leader_ctrl.compute_control(leader.state, wp)
-        leader.update_state(u_leader, wind=wind)
+        leader.update_state(u_leader, wind=wind_leader)
         leader_pos_new, leader_vel_new, _, _ = leader.get_state()
 
         # -------- 航点切换判定 --------
@@ -96,13 +112,16 @@ def run_formation_simulation():
             offset = delta_offsets[i]
             tgt_pos = leader_pos_new + offset
 
+            # 每架从机独立风场采样
+            wind_follower = follower_winds[i].sample(dt)
+
             u_f = follower_ctrls[i].compute_control(
                 f.state,
                 tgt_pos,
                 target_vel=leader_vel_new,
                 target_acc=leader_acc
             )
-            f.update_state(u_f, wind=wind)
+            f.update_state(u_f, wind=wind_follower)
 
             # 记录编队误差
             f_pos_new = f.get_state()[0]

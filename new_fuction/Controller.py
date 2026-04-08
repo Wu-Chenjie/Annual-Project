@@ -11,17 +11,17 @@ class Controller:
         self.g = g
         self.dt = dt
 # PID参数（位置，速度，姿态，角速度）
-        self.kp_pos = np.array([1.50, 1.50, 2.00])
-        self.ki_pos = np.array([0.05, 0.05, 0.10])
+        self.kp_pos = np.array([1.6027, 1.7593, 2.2393])
+        self.ki_pos = np.array([0.6124, 0.7109, 0.6840])
 
-        self.kp_vel = np.array([3.50, 3.50, 3.50])
-        self.ki_vel = np.array([0.50, 0.50, 0.50])
-        self.kd_vel = np.array([1.10, 1.10, 1.20])
+        self.kp_vel = np.array([3.3808, 3.5732, 3.6211])
+        self.ki_vel = np.array([0.8229, 0.9532, 0.8860])
+        self.kd_vel = np.array([1.4913, 1.3792, 1.4040])
 
-        self.kp_att = np.array([9.00, 9.00, 4.00])
-        self.kp_rate = np.array([2.50, 2.50, 1.50])
-        self.ki_rate = np.array([0.10, 0.10, 0.05])
-        self.kd_rate = np.array([0.30, 0.30, 0.15])
+        self.kp_att = np.array([8.9545, 9.0160, 4.2124])
+        self.kp_rate = np.array([2.5789, 2.5789, 1.7014])
+        self.ki_rate = np.array([0.7444, 0.7444, 0.7185])
+        self.kd_rate = np.array([0.8544, 0.8544, 0.7710])
 #误差初始化
         self.integral_pos = np.zeros(3)
         self.integral_vel = np.zeros(3)
@@ -37,7 +37,11 @@ class Controller:
         self.integral_vel_limit = 2.0
         self.integral_rate_limit = 1.0
 
-    def compute_control(self, state, target_pos, target_vel=None, target_acc=None, target_yaw=0.0):
+    def compute_position_loop(self, state, target_pos, target_vel=None, target_acc=None, target_yaw=0.0):
+        """
+        位置环计算：位置PID -> 速度PID -> 推力+期望姿态
+        返回: (T_thrust, des_att)
+        """
         if target_vel is None:
             target_vel = np.zeros(3)
         if target_acc is None:
@@ -45,8 +49,6 @@ class Controller:
 
         pos = state[0:3]
         vel = state[3:6]
-        att = state[6:9]
-        rate = state[9:12]
         dt = self.dt
 
         #位置环
@@ -56,13 +58,13 @@ class Controller:
             self.integral_pos,
             -self.integral_pos_limit,
             self.integral_pos_limit
-        )#积分限幅，防止积分过大导致控制器输出过度
+        )
         des_vel = (
             target_vel
             + self.kp_pos * pos_err
             + self.ki_pos * self.integral_pos
         )
-        des_vel = np.clip(des_vel, -self.max_vel, self.max_vel)#速度输出限幅
+        des_vel = np.clip(des_vel, -self.max_vel, self.max_vel)
 
         #速度环
         vel_err = des_vel - vel
@@ -86,8 +88,8 @@ class Controller:
             des_acc = des_acc / acc_norm * self.max_acc
 
         #加速度输出转换为推力和期望姿态
-        thrust_vec = des_acc + np.array([0.0, 0.0, self.g])#a=T/m - g，推力向量=期望加速度+重力补偿
-        thrust_mag = np.linalg.norm(thrust_vec)#目标净推力大小
+        thrust_vec = des_acc + np.array([0.0, 0.0, self.g])
+        thrust_mag = np.linalg.norm(thrust_vec)
         T_thrust = self.m * thrust_mag
         T_thrust = np.clip(
             T_thrust,
@@ -98,15 +100,15 @@ class Controller:
         if thrust_mag < 1e-6:
             thrust_norm = np.array([0.0, 0.0, 1.0])
         else:
-            thrust_norm = thrust_vec / thrust_mag#推力方向单位向量
+            thrust_norm = thrust_vec / thrust_mag
 
         sy = np.sin(target_yaw)
         cy = np.cos(target_yaw)
-#计算期望滚转角，公式：arg=thrust_norm[0] * sy - thrust_norm[1] * cy，des_roll=arcsin(arg)，并进行限幅
+
         roll_arg = thrust_norm[0] * sy - thrust_norm[1] * cy
         roll_arg = np.clip(roll_arg, -1.0, 1.0)
         des_roll = np.arcsin(roll_arg)
-#计算期望俯仰角，公式：arg=(thrust_norm[0] * cy + thrust_norm[1] * sy) / cos_roll，des_pitch=arcsin(arg)，并进行限幅
+
         cos_roll = np.cos(des_roll)
         if abs(cos_roll) > 1e-6:
             pitch_arg = (
@@ -116,18 +118,27 @@ class Controller:
             des_pitch = np.arcsin(pitch_arg)
         else:
             des_pitch = 0.0
-#获得俯仰角和滚转角后
+
         des_roll = np.clip(des_roll, -self.max_tilt, self.max_tilt)
         des_pitch = np.clip(des_pitch, -self.max_tilt, self.max_tilt)
         des_att = np.array([des_roll, des_pitch, target_yaw])
-#姿态环
         self.last_des_att = des_att.copy()
+
+        return T_thrust, des_att
+
+    def compute_attitude_loop(self, state, des_att):
+        """
+        姿态环计算：姿态P -> 角速度PID -> 力矩
+        返回: torques [3]
+        """
+        att = state[6:9]
+        rate = state[9:12]
+        dt = self.dt
 
         att_err = des_att - att
         att_err[2] = (att_err[2] + np.pi) % (2.0 * np.pi) - np.pi
         des_rate = self.kp_att * att_err
 
-#角速度环
         rate_err = des_rate - rate
         self.integral_rate += rate_err * dt
         self.integral_rate = np.clip(
@@ -143,8 +154,12 @@ class Controller:
             + self.ki_rate * self.integral_rate
             + self.kd_rate * rate_deriv
         )
+        return torques
 
-        return [T_thrust, torques[0], torques[1], torques[2]]#返回推力和三个轴的力矩
+    def compute_control(self, state, target_pos, target_vel=None, target_acc=None, target_yaw=0.0):
+        T_thrust, des_att = self.compute_position_loop(state, target_pos, target_vel, target_acc, target_yaw)
+        torques = self.compute_attitude_loop(state, des_att)
+        return np.array([T_thrust, torques[0], torques[1], torques[2]])  # 返回推力和三个轴的力矩
 
     def reset(self):
         self.integral_pos = np.zeros(3)

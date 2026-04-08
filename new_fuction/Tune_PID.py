@@ -16,12 +16,20 @@ class DifferentiableDroneController(nn.Module):
         
         # Learnable PID Parameters (Initialized with safe bounds via abs)
         self.kp_pos = nn.Parameter(torch.tensor([2.5, 2.5, 3.0]))
+        self.ki_pos = nn.Parameter(torch.tensor([0.05, 0.05, 0.10]))
         self.kp_vel = nn.Parameter(torch.tensor([3.0, 3.0, 4.0]))
+        self.ki_vel = nn.Parameter(torch.tensor([0.50, 0.50, 0.50]))
         self.kd_vel = nn.Parameter(torch.tensor([0.1, 0.1, 0.2]))
-        
+
         self.kp_att = nn.Parameter(torch.tensor([8.0, 8.0, 5.0]))
         self.kp_rate = nn.Parameter(torch.tensor([1.5, 1.5, 1.0]))
+        self.ki_rate = nn.Parameter(torch.tensor([0.10, 0.10, 0.05]))
         self.kd_rate = nn.Parameter(torch.tensor([0.1, 0.1, 0.1]))
+
+        # 积分限幅
+        self.integral_pos_limit = 2.0
+        self.integral_vel_limit = 2.0
+        self.integral_rate_limit = 1.0
 
     def drone_forward(self, state, u, wind):
         def dynamics(st):
@@ -87,17 +95,24 @@ class DifferentiableDroneController(nn.Module):
         k4 = dynamics(state + self.dt * k3)
         return state + (self.dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
 
-    def controller_forward(self, state, target_pos, target_yaw, prev_vel_err, prev_rate_err):
+    def controller_forward(self, state, target_pos, target_yaw, prev_vel_err, prev_rate_err,
+                           integral_pos, integral_vel, integral_rate):
         pos, vel, att, rate = state[:, 0:3], state[:, 3:6], state[:, 6:9], state[:, 9:12]
-        
+
         pos_err = target_pos - pos
-        des_vel = pos_err * torch.abs(self.kp_pos)
+        integral_pos = integral_pos + pos_err * self.dt
+        integral_pos = torch.clamp(integral_pos, -self.integral_pos_limit, self.integral_pos_limit)
+        des_vel = pos_err * torch.abs(self.kp_pos) + integral_pos * torch.abs(self.ki_pos)
         des_vel = torch.clamp(des_vel, -10.0, 10.0)
-        
+
         vel_err = des_vel - vel
+        integral_vel = integral_vel + vel_err * self.dt
+        integral_vel = torch.clamp(integral_vel, -self.integral_vel_limit, self.integral_vel_limit)
         vel_deriv = (vel_err - prev_vel_err) / self.dt
-        
-        des_acc = vel_err * torch.abs(self.kp_vel) + vel_deriv * torch.abs(self.kd_vel)
+
+        des_acc = (vel_err * torch.abs(self.kp_vel)
+                   + integral_vel * torch.abs(self.ki_vel)
+                   + vel_deriv * torch.abs(self.kd_vel))
         acc_norm = torch.norm(des_acc, dim=1, keepdim=True)
         des_acc = torch.where(acc_norm > 10.0, des_acc / acc_norm * 10.0, des_acc)
         
@@ -123,12 +138,16 @@ class DifferentiableDroneController(nn.Module):
         des_rate = att_err * torch.abs(self.kp_att)
         
         rate_err = des_rate - rate
+        integral_rate = integral_rate + rate_err * self.dt
+        integral_rate = torch.clamp(integral_rate, -self.integral_rate_limit, self.integral_rate_limit)
         rate_deriv = (rate_err - prev_rate_err) / self.dt
-        des_torque = rate_err * torch.abs(self.kp_rate) + rate_deriv * torch.abs(self.kd_rate)
+        des_torque = (rate_err * torch.abs(self.kp_rate)
+                      + integral_rate * torch.abs(self.ki_rate)
+                      + rate_deriv * torch.abs(self.kd_rate))
         torques = des_torque * self.I.to(des_torque.device)
-        
+
         u = torch.cat([T_thrust, torques], dim=1)
-        return u, vel_err, rate_err
+        return u, vel_err, rate_err, integral_pos, integral_vel, integral_rate
 
 def run_pytorch_optimization():
     print("🤖 启动基于 PyTorch 计算图的 PID 调参 (Adam 梯度下降)...")
@@ -154,11 +173,17 @@ def run_pytorch_optimization():
         state = torch.zeros((1, 12), dtype=torch.float32)
         prev_vel_err = torch.zeros((1, 3), dtype=torch.float32)
         prev_rate_err = torch.zeros((1, 3), dtype=torch.float32)
-        
+        integral_pos = torch.zeros((1, 3), dtype=torch.float32)
+        integral_vel = torch.zeros((1, 3), dtype=torch.float32)
+        integral_rate = torch.zeros((1, 3), dtype=torch.float32)
+
         loss = 0.0
-        
+
         for i in range(steps):
-            u, prev_vel_err, prev_rate_err = model.controller_forward(state, target_pos, target_yaw, prev_vel_err, prev_rate_err)
+            u, prev_vel_err, prev_rate_err, integral_pos, integral_vel, integral_rate = model.controller_forward(
+                state, target_pos, target_yaw, prev_vel_err, prev_rate_err,
+                integral_pos, integral_vel, integral_rate
+            )
             state = model.drone_forward(state, u, wind)
             
             # ITAE Loss
@@ -199,15 +224,14 @@ def plot_final_result(best_params):
     ctrl = Controller(dt=dt)
     
     ctrl.kp_pos = best_params['kp_pos']
+    ctrl.ki_pos = best_params['ki_pos']
     ctrl.kp_vel = best_params['kp_vel']
+    ctrl.ki_vel = best_params['ki_vel']
     ctrl.kd_vel = best_params['kd_vel']
     ctrl.kp_att = best_params['kp_att']
     ctrl.kp_rate = best_params['kp_rate']
+    ctrl.ki_rate = best_params['ki_rate']
     ctrl.kd_rate = best_params['kd_rate']
-    
-    ctrl.ki_pos.fill(0.0)
-    ctrl.ki_vel.fill(0.0)
-    ctrl.ki_rate.fill(0.0)
     
     target_pos = np.array([5.0, 5.0, 5.0])
     target_yaw = 0.0

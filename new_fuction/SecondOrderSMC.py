@@ -27,10 +27,10 @@ class SecondOrderSMC:
     """
 
     def __init__(self, dt,
-                 lam=np.array([8.0, 8.0, 4.0]),
-                 epsilon=np.array([5.0, 5.0, 3.0]),
-                 k=np.array([8.0, 8.0, 4.0]),
-                 ki=np.array([0.5, 0.5, 0.3]),
+                 lam=np.array([7.9055, 7.9560, 4.1789]),
+                 epsilon=np.array([4.9240, 4.9965, 2.8234]),
+                 k=np.array([7.9105, 7.9646, 3.8340]),
+                 ki=np.array([0.9875, 1.0162, 0.9972]),
                  delta=0.05,
                  ki_limit=2.0):
         """
