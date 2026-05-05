@@ -504,6 +504,7 @@ void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
             dump_planner_result(out, kv.second);
         }
         out << ",\"collision\":" << (frame.collision ? "true" : "false")
+            << ",\"clearance_blocked\":" << (frame.clearance_blocked ? "true" : "false")
             << ",\"obstacle_changed\":" << (frame.obstacle_changed ? "true" : "false") << "}";
     }
     out << "],\"summary\":{";

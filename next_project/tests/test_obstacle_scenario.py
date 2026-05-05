@@ -401,6 +401,50 @@ def test_online_window_path_extends_to_task_goal():
     assert sim._segment_is_safe(extended, sim._collision_margin)
 
 
+def test_online_accept_path_rejects_unsafe_clearance_without_fallback():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        use_smc=True,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_kind="astar",
+        planner_mode="online",
+        planner_resolution=0.25,
+        safety_margin=0.3,
+        plan_clearance_extra=0.2,
+        sensor_enabled=False,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    cfg.obstacle_field.add_sphere([2.0, 0.0, 1.0], 0.35)
+    sim = ObstacleScenarioSimulation(cfg)
+
+    class NoopRefiner:
+        def refine(self, path, seeds=None):
+            return np.asarray(path, dtype=float)
+
+    sim.firi_refiner = NoopRefiner()
+    sim._plan_segment_fallback = lambda *args, **kwargs: None
+    unsafe_path = np.array([
+        [0.0, 0.0, 1.0],
+        [4.0, 0.0, 1.0],
+    ], dtype=float)
+
+    accepted = sim._accept_online_path(
+        unsafe_path,
+        leader_pos=np.array([0.0, 0.0, 1.0], dtype=float),
+        task_goal=np.array([4.0, 0.0, 1.0], dtype=float),
+        time_now=1.25,
+    )
+
+    assert accepted is None
+    assert sim.replan_events[-1]["mode"] == "clearance_blocked"
+    assert sim.replan_events[-1]["reason"] == "no_continuous_clearance_path"
+
+
 def test_safe_follower_target_shrinks_blocked_offset():
     """从机目标若被障碍物覆盖，应沿 leader 方向收缩到安全位置。"""
     cfg = get_config("company_cubicles_online")

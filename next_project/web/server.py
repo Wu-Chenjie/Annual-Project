@@ -33,6 +33,7 @@ def _candidate_executables() -> list[Path]:
         PROJECT_ROOT / "cpp" / "build" / "Release" / name,
         PROJECT_ROOT / "cpp" / "build" / "Debug" / name,
         PROJECT_ROOT / "cpp" / "build" / name,
+        PROJECT_ROOT / "cpp" / "build_subst" / name,
     ]
 
 
@@ -44,7 +45,8 @@ def _resolve_executable() -> Path:
     raise HTTPException(
         500,
         "sim_dynamic_replay executable not found. Build it first with "
-        "`cmake --build cpp/build --config Release`.\nTried:\n" + tried,
+        "`cmake --build cpp/build --config Release`, or on Windows run "
+        "`powershell -ExecutionPolicy Bypass -File cpp/build_windows.ps1`.\nTried:\n" + tried,
     )
 
 

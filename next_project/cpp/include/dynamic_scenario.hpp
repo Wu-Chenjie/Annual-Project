@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -61,6 +62,7 @@ struct FrameSnapshot {
     std::array<double, 6> sensor_readings{};
     std::unordered_map<std::string, PlannerResult> planner_results;
     bool collision = false;
+    bool clearance_blocked = false;
     bool obstacle_changed = false;
 };
 
@@ -105,16 +107,24 @@ private:
     bool apply_events(double t);
     PlannerResult run_one_planner(const std::string& kind, const Vec3& leader_pose,
                                   const Vec3& goal, bool obstacle_changed);
+    OccupancyGrid build_planning_grid() const;
     std::vector<std::pair<std::array<int, 3>, bool>> rebuild_grid_and_diff();
+    double planning_margin() const;
+    void reset_incremental_planner(const Vec3& leader_pose, const Vec3& goal);
     void apply_planning_z_bounds();
     std::vector<Vec3> sanitize_waypoints(const std::vector<Vec3>& waypoints) const;
     Vec3 project_to_planning_free(const Vec3& point, const Vec3* prefer = nullptr) const;
+    Vec3 reachable_planning_start(const Vec3& point, const Vec3& goal) const;
+    void ensure_reachable_replan_grid(const Vec3& leader_pose, const Vec3& goal);
     void handle_add_obstacle(const DynamicEvent& event);
     void handle_remove_obstacle(const DynamicEvent& event);
     void handle_move_obstacle(const DynamicEvent& event);
     std::vector<ObstacleDesc> describe_obstacles() const;
     SummaryMetrics summarize(const std::string& planner, const Vec3& final_pose,
                              const Vec3& goal) const;
+    bool capsule_clear(const Vec3& start, const Vec3& end, double radius) const;
+    Vec3 safe_advance_along_path(const Vec3& pose, const std::vector<Vec3>& path,
+                                 double distance, double radius, bool& capsule_blocked) const;
 
     static double path_length(const std::vector<Vec3>& path);
     static Vec3 advance_along_path(const Vec3& pose, const std::vector<Vec3>& path, double distance);
@@ -135,6 +145,8 @@ private:
     std::unordered_map<std::string, int> replans_;
     std::unordered_map<std::string, int> collisions_;
     std::unordered_map<std::string, int> phase_counts_;
+    double clearance_extra_margin_ = 0.0;
+    int clearance_extra_frames_ = 0;
 };
 
 inline DynamicScenarioRunner::DynamicScenarioRunner(const DynamicSimInput& input, int seed)
@@ -152,18 +164,12 @@ inline DynamicScenarioRunner::DynamicScenarioRunner(const DynamicSimInput& input
         obstacles_.regenerate_ids("obs_");
     }
 
-    Vec3 extent = bounds_[1] - bounds_[0];
-    grid_ = OccupancyGrid::from_obstacles(obstacles_, bounds_[0], extent, config_.planner_resolution);
-    if (config_.safety_margin > 0.0) {
-        grid_ = grid_.inflate(config_.safety_margin);
-    }
-    apply_planning_z_bounds();
+    grid_ = build_planning_grid();
     config_.waypoints = sanitize_waypoints(config_.waypoints);
 
     const Vec3 start = config_.waypoints.empty() ? Vec3{} : config_.waypoints.front();
     const Vec3 initial_goal = config_.waypoints.size() > 1 ? config_.waypoints[1] : start;
-    dstar_lite_ = std::make_unique<DStarLite>(grid_, start, initial_goal);
-    dstar_lite_->compute_shortest_path();
+    reset_incremental_planner(start, initial_goal);
     hybrid_astar_ = std::make_unique<HybridAStarPlanner>(
         config_.leader_max_vel, config_.leader_max_acc, 1.0472,
         config_.planner_resolution, 72, 10000, 50);
@@ -227,15 +233,33 @@ inline ReplayOutput DynamicScenarioRunner::run() {
         }
         if (!selected_path.empty()) active_path = std::move(selected_path);
 
+        const Vec3 before_advance = leader_pose;
+        bool capsule_blocked = false;
+        leader_pose = safe_advance_along_path(
+            leader_pose, active_path,
+            std::max(0.05, config_.leader_max_vel) * output.metadata.dt,
+            config_.safety_margin, capsule_blocked);
+        if (capsule_blocked) {
+            frame.clearance_blocked = true;
+            if (norm(leader_pose - before_advance) < 1e-6) {
+                leader_pose = before_advance;
+            }
+            active_path.clear();
+            ensure_reachable_replan_grid(leader_pose, goal);
+        } else if (clearance_extra_frames_ > 0) {
+            --clearance_extra_frames_;
+            if (clearance_extra_frames_ == 0 && clearance_extra_margin_ > 0.0) {
+                clearance_extra_margin_ = 0.0;
+                rebuild_grid_and_diff();
+                reset_incremental_planner(leader_pose, goal);
+            }
+        }
         output.frames.push_back(frame);
-        leader_pose = advance_along_path(leader_pose, active_path,
-                                         std::max(0.05, config_.leader_max_vel) * output.metadata.dt);
         if (!config_.waypoints.empty() && norm(leader_pose - goal) <= task_radius) {
             if (task_goal_idx + 1 < config_.waypoints.size()) {
                 ++task_goal_idx;
                 active_path.clear();
-                dstar_lite_ = std::make_unique<DStarLite>(grid_, leader_pose, config_.waypoints[task_goal_idx]);
-                dstar_lite_->compute_shortest_path();
+                reset_incremental_planner(leader_pose, config_.waypoints[task_goal_idx]);
             } else if (norm(leader_pose - goal) <= std::max(config_.wp_radius_final, config_.planner_resolution)) {
                 break;
             }
@@ -298,32 +322,49 @@ inline PlannerResult DynamicScenarioRunner::run_one_planner(const std::string& k
                  : kind == "hybrid_astar" ? "global_hybrid" : "global";
     result.replan_triggered = true;
     const auto begin = std::chrono::high_resolution_clock::now();
+    const Vec3 plan_start = reachable_planning_start(leader_pose, goal);
     if (kind == "dstar_lite") {
-        dstar_lite_->update_start(leader_pose);
+        dstar_lite_->update_start(plan_start);
         dstar_lite_->compute_shortest_path();
         result.path = dstar_lite_->extract_path();
         result.success = result.path.size() >= 2;
     } else if (kind == "hybrid_astar") {
-        auto ha_result = hybrid_astar_->plan(leader_pose, goal, grid_, seed_);
+        auto ha_result = hybrid_astar_->plan(plan_start, goal, grid_, seed_);
         result.path = std::move(ha_result.path);
         result.success = ha_result.success;
     } else {
-        auto astar = astar_plan(leader_pose, goal, grid_);
+        auto astar = astar_plan(plan_start, goal, grid_);
         result.path = std::move(astar.path);
         result.success = astar.success;
+    }
+    if (result.success && norm(plan_start - leader_pose) > 1e-6
+        && capsule_clear(leader_pose, plan_start, config_.safety_margin)) {
+        result.path.insert(result.path.begin(), leader_pose);
     }
     const auto end = std::chrono::high_resolution_clock::now();
     result.compute_time_ms = std::chrono::duration<double, std::milli>(end - begin).count();
     return result;
 }
 
-inline std::vector<std::pair<std::array<int, 3>, bool>> DynamicScenarioRunner::rebuild_grid_and_diff() {
-    OccupancyGrid old_grid = grid_;
+inline OccupancyGrid DynamicScenarioRunner::build_planning_grid() const {
     Vec3 extent = bounds_[1] - bounds_[0];
-    OccupancyGrid new_grid = OccupancyGrid::from_obstacles(obstacles_, bounds_[0], extent, config_.planner_resolution);
-    if (config_.safety_margin > 0.0) {
-        new_grid = new_grid.inflate(config_.safety_margin);
+    OccupancyGrid new_grid = OccupancyGrid::from_obstacles(
+        obstacles_, bounds_[0], extent, config_.planner_resolution);
+
+    const double margin = planning_margin();
+    if (margin > 0.0) {
+        for (int iz = 0; iz < new_grid.nz; ++iz) {
+            for (int iy = 0; iy < new_grid.ny; ++iy) {
+                for (int ix = 0; ix < new_grid.nx; ++ix) {
+                    Vec3 p = new_grid.index_to_world(ix, iy, iz);
+                    if (obstacles_.signed_distance(p) < margin - 1e-9) {
+                        new_grid.data[(iz * new_grid.ny + iy) * new_grid.nx + ix] = 1;
+                    }
+                }
+            }
+        }
     }
+
     if (config_.planner_has_z_bounds) {
         const double z_min = std::min(config_.planner_z_min, config_.planner_z_max);
         const double z_max = std::max(config_.planner_z_min, config_.planner_z_max);
@@ -337,6 +378,12 @@ inline std::vector<std::pair<std::array<int, 3>, bool>> DynamicScenarioRunner::r
             }
         }
     }
+    return new_grid;
+}
+
+inline std::vector<std::pair<std::array<int, 3>, bool>> DynamicScenarioRunner::rebuild_grid_and_diff() {
+    OccupancyGrid old_grid = grid_;
+    OccupancyGrid new_grid = build_planning_grid();
 
     std::vector<std::pair<std::array<int, 3>, bool>> changed;
     const std::size_t n = std::min(old_grid.data.size(), new_grid.data.size());
@@ -349,6 +396,17 @@ inline std::vector<std::pair<std::array<int, 3>, bool>> DynamicScenarioRunner::r
     }
     grid_ = std::move(new_grid);
     return changed;
+}
+
+inline double DynamicScenarioRunner::planning_margin() const {
+    return std::max(0.0, config_.safety_margin + config_.plan_clearance_extra + clearance_extra_margin_);
+}
+
+inline void DynamicScenarioRunner::reset_incremental_planner(const Vec3& leader_pose,
+                                                             const Vec3& goal) {
+    const Vec3 plan_start = reachable_planning_start(leader_pose, goal);
+    dstar_lite_ = std::make_unique<DStarLite>(grid_, plan_start, goal);
+    dstar_lite_->compute_shortest_path();
 }
 
 inline void DynamicScenarioRunner::apply_planning_z_bounds() {
@@ -387,7 +445,7 @@ inline std::vector<Vec3> DynamicScenarioRunner::sanitize_waypoints(const std::ve
 inline Vec3 DynamicScenarioRunner::project_to_planning_free(const Vec3& point, const Vec3* prefer) const {
     if (grid_.data.empty()) return point;
     auto idx = grid_.world_to_index(point);
-    const double min_clearance = config_.safety_margin;
+    const double min_clearance = planning_margin();
     if (!grid_.is_occupied(idx[0], idx[1], idx[2])
         && obstacles_.signed_distance(point) >= min_clearance - 1e-8) {
         return point;
@@ -438,6 +496,82 @@ inline Vec3 DynamicScenarioRunner::project_to_planning_free(const Vec3& point, c
         if (found) return best;
     }
     return point;
+}
+
+inline Vec3 DynamicScenarioRunner::reachable_planning_start(const Vec3& point, const Vec3& goal) const {
+    if (grid_.data.empty()) return point;
+    auto idx = grid_.world_to_index(point);
+    if (!grid_.is_occupied(idx[0], idx[1], idx[2])) return point;
+
+    Vec3 prefer = goal - point;
+    Vec3 prefer_dir = norm(prefer) > 1e-9 ? prefer / norm(prefer) : Vec3{1.0, 0.0, 0.0};
+    const double min_clearance = config_.safety_margin;
+    const int max_radius_vox = std::max(1, static_cast<int>(std::ceil(8.0 / grid_.resolution)));
+    Vec3 best = point;
+    double best_score = std::numeric_limits<double>::infinity();
+    bool found = false;
+
+    for (int radius = 1; radius <= max_radius_vox; ++radius) {
+        const int ix_min = std::max(0, idx[0] - radius);
+        const int ix_max = std::min(grid_.nx - 1, idx[0] + radius);
+        const int iy_min = std::max(0, idx[1] - radius);
+        const int iy_max = std::min(grid_.ny - 1, idx[1] + radius);
+        const int iz_min = std::max(0, idx[2] - radius);
+        const int iz_max = std::min(grid_.nz - 1, idx[2] + radius);
+        for (int ix = ix_min; ix <= ix_max; ++ix) {
+            for (int iy = iy_min; iy <= iy_max; ++iy) {
+                for (int iz = iz_min; iz <= iz_max; ++iz) {
+                    if (std::max({std::abs(ix - idx[0]), std::abs(iy - idx[1]), std::abs(iz - idx[2])}) != radius) {
+                        continue;
+                    }
+                    if (grid_.is_occupied(ix, iy, iz)) continue;
+                    Vec3 candidate = grid_.index_to_world(ix, iy, iz);
+                    if (obstacles_.signed_distance(candidate) < min_clearance - 1e-8) continue;
+                    if (!capsule_clear(point, candidate, config_.safety_margin)) continue;
+                    Vec3 delta = candidate - point;
+                    const double d = norm(delta);
+                    if (d < 1e-9) continue;
+                    const double toward_goal_penalty = 0.4 * (1.0 - dot(delta / d, prefer_dir));
+                    const double score = d + toward_goal_penalty + 0.05 * std::abs(candidate.z - point.z);
+                    if (score < best_score) {
+                        best_score = score;
+                        best = candidate;
+                        found = true;
+                    }
+                }
+            }
+        }
+        if (found) return best;
+    }
+    return point;
+}
+
+inline void DynamicScenarioRunner::ensure_reachable_replan_grid(const Vec3& leader_pose,
+                                                                const Vec3& goal) {
+    const double requested_extra = std::max(0.15, std::min(0.60, config_.planner_resolution));
+    const std::array<double, 4> candidates{
+        requested_extra,
+        requested_extra * 0.5,
+        std::min(0.10, requested_extra * 0.25),
+        0.0
+    };
+    for (double extra : candidates) {
+        clearance_extra_margin_ = std::max(0.0, extra);
+        rebuild_grid_and_diff();
+        const Vec3 plan_start = reachable_planning_start(leader_pose, goal);
+        auto start_idx = grid_.world_to_index(plan_start);
+        auto goal_idx = grid_.world_to_index(goal);
+        if (!grid_.is_occupied(start_idx[0], start_idx[1], start_idx[2])
+            && !grid_.is_occupied(goal_idx[0], goal_idx[1], goal_idx[2])) {
+            clearance_extra_frames_ = clearance_extra_margin_ > 0.0 ? 6 : 0;
+            reset_incremental_planner(leader_pose, goal);
+            return;
+        }
+    }
+    clearance_extra_margin_ = 0.0;
+    clearance_extra_frames_ = 0;
+    rebuild_grid_and_diff();
+    reset_incremental_planner(leader_pose, goal);
 }
 
 inline void DynamicScenarioRunner::handle_add_obstacle(const DynamicEvent& event) {
@@ -529,10 +663,85 @@ inline double DynamicScenarioRunner::path_length(const std::vector<Vec3>& path) 
     return total;
 }
 
+inline bool DynamicScenarioRunner::capsule_clear(const Vec3& start, const Vec3& end,
+                                                 double radius) const {
+    const double length = norm(end - start);
+    if (length < 1e-9) return !obstacles_.is_collision(start, radius);
+    const double step = std::max(0.02, std::min({
+        std::max(0.02, config_.planner_resolution * 0.25),
+        std::max(0.02, radius * 0.5),
+        0.10
+    }));
+    const int samples = std::max(1, static_cast<int>(std::ceil(length / step)));
+    for (int i = 0; i <= samples; ++i) {
+        const double u = static_cast<double>(i) / static_cast<double>(samples);
+        const Vec3 p = start * (1.0 - u) + end * u;
+        if (obstacles_.is_collision(p, radius)) return false;
+    }
+    return true;
+}
+
+inline Vec3 DynamicScenarioRunner::safe_advance_along_path(
+    const Vec3& pose, const std::vector<Vec3>& path, double distance, double radius,
+    bool& capsule_blocked) const {
+    capsule_blocked = false;
+    const Vec3 desired = advance_along_path(pose, path, distance);
+    if (norm(desired - pose) < 1e-9) return pose;
+    if (capsule_clear(pose, desired, radius)) return desired;
+
+    capsule_blocked = true;
+    double lo = 0.0;
+    double hi = 1.0;
+    for (int iter = 0; iter < 18; ++iter) {
+        const double mid = (lo + hi) * 0.5;
+        const Vec3 candidate = pose * (1.0 - mid) + desired * mid;
+        if (capsule_clear(pose, candidate, radius)) lo = mid;
+        else hi = mid;
+    }
+    const Vec3 safe = pose * (1.0 - lo) + desired * lo;
+    return norm(safe - pose) > 1e-6 ? safe : pose;
+}
+
 inline Vec3 DynamicScenarioRunner::advance_along_path(const Vec3& pose,
                                                       const std::vector<Vec3>& path,
                                                       double distance) {
     if (path.empty() || distance <= 0.0) return pose;
+    {
+    if (path.size() == 1) return path.front();
+
+    std::size_t best_seg = 0;
+    Vec3 current = path.front();
+    double best_projection_dist = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i + 1 < path.size(); ++i) {
+        const Vec3 a = path[i];
+        const Vec3 b = path[i + 1];
+        const Vec3 ab = b - a;
+        const double len2 = dot(ab, ab);
+        double u = 0.0;
+        if (len2 > 1e-12) {
+            u = std::max(0.0, std::min(1.0, dot(pose - a, ab) / len2));
+        }
+        const Vec3 projection = a + ab * u;
+        const double d = norm(pose - projection);
+        if (d < best_projection_dist) {
+            best_projection_dist = d;
+            best_seg = i;
+            current = projection;
+        }
+    }
+
+    double remaining_projected = distance;
+    for (std::size_t i = best_seg + 1; i < path.size(); ++i) {
+        const Vec3 target = path[i];
+        const Vec3 delta = target - current;
+        const double d = norm(delta);
+        if (d < 1e-9) continue;
+        if (d >= remaining_projected) return current + delta / d * remaining_projected;
+        current = target;
+        remaining_projected -= d;
+    }
+    return path.back();
+    }
 
     // 找到路径上离当前位置最近的航点，从该点向前推进，避免反向移动
     std::size_t best = 0;

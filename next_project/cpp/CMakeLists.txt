@@ -4,6 +4,7 @@ project(next_project_cpp LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 if(MSVC)
     add_compile_options(/O2 /W4)
@@ -34,18 +35,20 @@ set(CORE_SOURCES
 
 add_library(sim_core STATIC ${CORE_SOURCES})
 target_include_directories(sim_core PUBLIC include)
+set_target_properties(sim_core PROPERTIES CXX_SCAN_FOR_MODULES OFF)
 
 add_executable(sim_main src/main.cpp)
 target_link_libraries(sim_main PRIVATE sim_core)
+set_target_properties(sim_main PROPERTIES CXX_SCAN_FOR_MODULES OFF)
 
 add_executable(sim_benchmark src/benchmark.cpp)
 target_link_libraries(sim_benchmark PRIVATE sim_core)
+set_target_properties(sim_benchmark PROPERTIES CXX_SCAN_FOR_MODULES OFF)
 
 add_executable(sim_warehouse src/warehouse_main.cpp)
 target_link_libraries(sim_warehouse PRIVATE sim_core)
+set_target_properties(sim_warehouse PROPERTIES CXX_SCAN_FOR_MODULES OFF)
 
 add_executable(sim_dynamic_replay src/dynamic_main.cpp)
 target_link_libraries(sim_dynamic_replay PRIVATE sim_core)
-if(MINGW)
-    target_link_options(sim_dynamic_replay PRIVATE -static -static-libgcc -static-libstdc++)
-endif()
+set_target_properties(sim_dynamic_replay PROPERTIES CXX_SCAN_FOR_MODULES OFF)

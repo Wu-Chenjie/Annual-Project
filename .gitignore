@@ -20,6 +20,7 @@ next_project/artifacts/python/
 
 # C++ build products
 **/build/
+**/build_*/
 *.o
 CMakeFiles/
 CMakeCache.txt

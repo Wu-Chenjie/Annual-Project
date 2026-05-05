@@ -184,13 +184,13 @@
     .event-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       padding-bottom: 12px;
     }
     .event-card {
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
-      padding: 14px;
+      padding: 10px 12px;
       background: #f8fafc;
     }
     .event-card:focus-within {
@@ -202,14 +202,35 @@
       height: auto;
       border: 0;
       padding: 0;
-      margin-bottom: 12px;
+      margin-bottom: 0;
       background: transparent;
       box-shadow: none;
       position: static;
     }
+    .event-card summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      list-style: none;
+    }
+    .event-card summary::-webkit-details-marker {
+      display: none;
+    }
+    .event-card summary::before {
+      content: '›';
+      color: #64748b;
+      font-weight: 700;
+      transform: rotate(0deg);
+    }
+    .event-card[open] summary::before {
+      transform: rotate(90deg);
+    }
     .event-card strong {
       font-size: 14px;
       color: #0f172a;
+      flex: 1;
     }
     .icon-btn {
       width: 32px;
@@ -233,6 +254,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-top: 12px;
     }
     .event-fields .wide {
       grid-column: 1 / -1;
@@ -253,6 +275,18 @@
     .json-preview:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .event-json-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      background: #f8fafc;
+    }
+    .event-json-panel summary {
+      cursor: pointer;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
     }
     .grid2 {
       display: grid;
@@ -330,7 +364,7 @@
     }
     .view-toolbar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       margin-bottom: 16px;
       gap: 16px;
@@ -425,6 +459,7 @@
       align-items: center;
       flex: 1;
       padding: 12px 16px;
+      margin-top: 12px;
       background: #f8fafc;
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
@@ -483,6 +518,7 @@
       grid-template-columns: minmax(260px, 1.2fr) minmax(280px, 1.5fr);
       gap: 12px;
       padding: 12px 16px;
+      margin-top: 10px;
       border: 1px solid var(--line);
       border-radius: var(--radius-sm);
       background: #fff;
@@ -537,6 +573,35 @@
       color: var(--primary);
       background: #eff6ff;
       font-weight: 600;
+    }
+    .timeline-marker.collision {
+      border-color: #ef4444;
+      color: #b91c1c;
+      background: #fef2f2;
+    }
+    .timeline-marker.replan {
+      border-color: #22c55e;
+      color: #166534;
+      background: #f0fdf4;
+    }
+    .timeline-marker.obstacle {
+      border-color: #f59e0b;
+      color: #92400e;
+      background: #fffbeb;
+    }
+    .timeline-marker.clearance {
+      border-color: #f97316;
+      color: #9a3412;
+      background: #fff7ed;
+    }
+    .timeline-marker.dynamic {
+      border-color: #6366f1;
+      color: #3730a3;
+      background: #eef2ff;
+    }
+    .timeline-marker.current {
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16);
+      font-weight: 700;
     }
     .event-card.is-selected {
       border-color: var(--primary);
@@ -851,46 +916,6 @@
     <div class="workspace">
       <section class="surface">
         <div class="view-toolbar is-hidden" id="viewToolbar">
-          <div class="timeline is-hidden" id="timeline">
-            <span id="frameIndex">0 / 0</span>
-            <button type="button" id="firstFrameBtn" title="第一帧">|‹</button>
-            <button type="button" id="prevFrameBtn" title="上一帧">‹</button>
-            <input id="frameSlider" type="range" min="0" max="0" step="1" value="0">
-            <button type="button" id="nextFrameBtn" title="下一帧">›</button>
-            <button type="button" id="lastFrameBtn" title="最后一帧">›|</button>
-            <button type="button" id="playBtn" title="播放">▶</button>
-            <span id="frameTime">t=0.0s</span>
-          </div>
-          <div class="timeline-editor is-hidden" id="timelineEditor">
-            <div class="timeline-editor-row">
-              <label>时间轴事件
-                <select id="timelineEventSelect"></select>
-              </label>
-              <button type="button" id="jumpTimelineEventBtn">跳到事件</button>
-              <button type="button" id="pinEventToFrameBtn">贴到当前帧</button>
-            </div>
-            <div class="timeline-insert-row">
-              <label>动作
-                <select id="timelineActionSelect">
-                  <option value="add">添加</option>
-                  <option value="remove">移除</option>
-                  <option value="move">移动</option>
-                </select>
-              </label>
-              <label>目标
-                <select id="timelineTargetSelect"></select>
-              </label>
-              <label>类型
-                <select id="timelineTypeSelect">
-                  <option value="sphere">sphere</option>
-                  <option value="aabb">aabb</option>
-                  <option value="cylinder">cylinder</option>
-                </select>
-              </label>
-              <button type="button" id="insertTimelineEventBtn">在当前帧插入</button>
-            </div>
-            <div class="timeline-markers" id="timelineMarkers"></div>
-          </div>
           <div class="segmented" aria-label="视图切换">
             <button type="button" id="view2dBtn" class="active">2D地图</button>
             <button type="button" id="view3dBtn">3D视图</button>
@@ -898,6 +923,46 @@
         </div>
         <canvas id="mapCanvas"></canvas>
         <div id="plot3d" class="is-hidden"></div>
+        <div class="timeline is-hidden" id="timeline">
+          <span id="frameIndex">0 / 0</span>
+          <button type="button" id="firstFrameBtn" title="第一帧">|‹</button>
+          <button type="button" id="prevFrameBtn" title="上一帧">‹</button>
+          <input id="frameSlider" type="range" min="0" max="0" step="1" value="0">
+          <button type="button" id="nextFrameBtn" title="下一帧">›</button>
+          <button type="button" id="lastFrameBtn" title="最后一帧">›|</button>
+          <button type="button" id="playBtn" title="播放">▶</button>
+          <span id="frameTime">t=0.0s</span>
+        </div>
+        <div class="timeline-editor is-hidden" id="timelineEditor">
+          <div class="timeline-editor-row">
+            <label>时间轴事件
+              <select id="timelineEventSelect"></select>
+            </label>
+            <button type="button" id="jumpTimelineEventBtn">跳到事件</button>
+            <button type="button" id="pinEventToFrameBtn">贴到当前帧</button>
+          </div>
+          <div class="timeline-insert-row">
+            <label>动作
+              <select id="timelineActionSelect">
+                <option value="add">添加</option>
+                <option value="remove">移除</option>
+                <option value="move">移动</option>
+              </select>
+            </label>
+            <label>目标
+              <select id="timelineTargetSelect"></select>
+            </label>
+            <label>类型
+              <select id="timelineTypeSelect">
+                <option value="sphere">sphere</option>
+                <option value="aabb">aabb</option>
+                <option value="cylinder">cylinder</option>
+              </select>
+            </label>
+            <button type="button" id="insertTimelineEventBtn">在当前帧插入</button>
+          </div>
+          <div class="timeline-markers" id="timelineMarkers"></div>
+        </div>
         <div class="event-readout is-hidden" id="eventReadout"></div>
         <div class="legend" id="mapLegend">
           <span class="legend-group">— 航点 —</span>
@@ -1010,8 +1075,10 @@
         </div>
       </div>
       <div class="event-list" id="eventList"></div>
-      <h2>JSON 预览</h2>
-      <textarea id="eventsJson" class="json-preview" readonly></textarea>
+      <details class="event-json-panel">
+        <summary>JSON 预览</summary>
+        <textarea id="eventsJson" class="json-preview" readonly></textarea>
+      </details>
     </aside>
   </main>
 
@@ -2328,13 +2395,14 @@
           ? ['半径', 'z min', 'z max']
           : ['半径', '-', '-'];
       const selectedClass = ev._ui_id === selectedEventId ? ' is-selected' : '';
+      const openAttr = ev._ui_id === selectedEventId ? ' open' : '';
       return `
-        <article class="event-card${selectedClass}">
-          <header>
-            <strong>#${index + 1} ${isRemove ? '移除障碍' : isMove ? '移动障碍' : '添加障碍'}</strong>
+        <details class="event-card${selectedClass}"${openAttr}>
+          <summary>
+            <strong>${eventLabel(ev, index)}</strong>
             <button class="icon-btn" title="选中事件" data-select-event="${index}">⌖</button>
             <button class="icon-btn" title="删除事件" data-remove="${index}">×</button>
-          </header>
+          </summary>
           <div class="event-fields">
             <label>时间(s)<input type="number" step="0.1" data-index="${index}" data-field="t" value="${ev.t}"></label>
             <label>操作<select data-index="${index}" data-field="action">${actionOptions}</select></label>
@@ -2351,7 +2419,7 @@
               <label>${sizeLabels[2]}<input type="number" step="0.1" data-index="${index}" data-field="c" value="${ev.c}"></label>
             `}
           </div>
-        </article>
+        </details>
       `;
     }
 
@@ -2389,17 +2457,205 @@
 
     function renderTimelineMarkers() {
       if (!$('timelineMarkers')) return;
-      if (!events.length) {
-        $('timelineMarkers').innerHTML = '<span class="muted">暂无动态事件</span>';
+      const simEvents = collectCurrentFrameEvents(lastReplay);
+      const collisionEvents = collectCollisionTimelineEvents(lastReplay);
+      const nearbyEvents = events
+        .map((ev, index) => ({ev, index, dt: Math.abs(Number(ev.t) - (currentFrame(lastReplay)?.t ?? 0))}))
+        .filter(item => item.dt <= 1.0)
+        .sort((a, b) => a.dt - b.dt)
+        .slice(0, 4);
+      if (!nearbyEvents.length && !simEvents.length && !collisionEvents.length) {
+        $('timelineMarkers').innerHTML = '<span class="muted">当前帧附近无事件</span>';
         return;
       }
-      $('timelineMarkers').innerHTML = events.map((ev, index) => {
+      const dynamicHtml = nearbyEvents.map(({ev, index}) => {
         const active = ev._ui_id === selectedEventId ? ' active' : '';
-        return `<button type="button" class="timeline-marker${active}" data-marker-event="${index}">${eventLabel(ev, index)}</button>`;
+        return `<button type="button" class="timeline-marker dynamic${active}" data-marker-event="${index}">${eventLabel(ev, index)}</button>`;
       }).join('');
+      const simHtml = simEvents.map(ev => {
+        const current = ev.frameIndex === currentFrameIndex ? ' current' : '';
+        return `<button type="button" class="timeline-marker ${ev.kind}${current}" data-marker-frame="${ev.frameIndex}" title="${ev.detail}">${ev.label}</button>`;
+      }).join('');
+      const collisionHtml = collisionEvents.map(ev => {
+        const current = currentFrameIndex >= ev.frameIndex && currentFrameIndex <= ev.lastFrame ? ' current' : '';
+        return `<button type="button" class="timeline-marker collision${current}" data-marker-frame="${ev.frameIndex}" title="${ev.detail}">${ev.label}</button>`;
+      }).join('');
+      $('timelineMarkers').innerHTML = collisionHtml + dynamicHtml + simHtml;
       $('timelineMarkers').querySelectorAll('[data-marker-event]').forEach(btn => {
         btn.addEventListener('click', () => selectTimelineEvent(Number(btn.dataset.markerEvent), true));
       });
+      $('timelineMarkers').querySelectorAll('[data-marker-frame]').forEach(btn => {
+        btn.addEventListener('click', () => setFrame(Number(btn.dataset.markerFrame)));
+      });
+    }
+
+    function collectCollisionTimelineEvents(replay) {
+      if (!replay?.frames?.length) return [];
+      const raw = [];
+      replay.frames.forEach((frame, index) => {
+        if (!frame.collision) return;
+        const time = Number(frame.t ?? 0);
+        raw.push({
+          kind: 'collision',
+          key: 'collision',
+          frameIndex: index,
+          time,
+          label: `碰撞 t=${time.toFixed(1)}s`,
+          detail: `第 ${index + 1} 帧检测到碰撞`
+        });
+      });
+      return compactTimelineEvents(raw).map(ev => {
+        if (ev.count <= 1) return ev;
+        return {
+          ...ev,
+          label: `碰撞 t=${ev.time.toFixed(1)}-${ev.endTime.toFixed(1)}s`,
+          detail: `第 ${ev.frameIndex + 1}-${ev.lastFrame + 1} 帧连续碰撞`
+        };
+      });
+    }
+
+    function collectCurrentFrameEvents(replay) {
+      const frame = currentFrame(replay);
+      if (!replay || !frame) return [];
+      const time = Number(frame.t ?? 0);
+      const out = [];
+      if (frame.collision) {
+        out.push({
+          kind: 'collision',
+          frameIndex: currentFrameIndex,
+          label: `碰撞 t=${time.toFixed(1)}s`,
+          detail: `当前帧检测到碰撞`
+        });
+      }
+      if (frame.clearance_blocked) {
+        out.push({
+          kind: 'clearance',
+          frameIndex: currentFrameIndex,
+          label: `连续clearance阻塞 t=${time.toFixed(1)}s`,
+          detail: `胶囊体检查发现下一运动段安全距离不足，已阻止继续前进`
+        });
+      }
+      if (frame.obstacle_changed) {
+        out.push({
+          kind: 'obstacle',
+          frameIndex: currentFrameIndex,
+          label: `障碍物变化 t=${time.toFixed(1)}s`,
+          detail: `当前帧动态障碍物状态变化`
+        });
+      }
+      const replanners = ['dstar_lite', 'astar', 'hybrid_astar'].filter(name => frame[name]?.replan_triggered);
+      if (replanners.length) {
+        out.push({
+          kind: 'replan',
+          frameIndex: currentFrameIndex,
+          label: `重规划：${replanners.map(plannerLabel).join(' / ')}`,
+          detail: `当前帧触发重规划`
+        });
+      }
+      const totals = totalEventCounts(replay);
+      if (totals.collision || totals.clearance || totals.obstacle || totals.replan) {
+        out.push({
+          kind: 'dynamic',
+          frameIndex: currentFrameIndex,
+          label: `全程：碰撞${totals.collision} 阻塞${totals.clearance} 障碍${totals.obstacle} 重规划${totals.replan}`,
+          detail: `全程事件统计`
+        });
+      }
+      return out;
+    }
+
+    function totalEventCounts(replay) {
+      const totals = {collision: 0, clearance: 0, obstacle: 0, replan: 0};
+      (replay?.frames || []).forEach(frame => {
+        if (frame.collision) totals.collision += 1;
+        if (frame.clearance_blocked) totals.clearance += 1;
+        if (frame.obstacle_changed) totals.obstacle += 1;
+        ['dstar_lite', 'astar', 'hybrid_astar'].forEach(name => {
+          if (frame[name]?.replan_triggered) totals.replan += 1;
+        });
+      });
+      return totals;
+    }
+
+    function collectSimulationTimelineEvents(replay) {
+      if (!replay?.frames?.length) return [];
+      const raw = [];
+      replay.frames.forEach((frame, index) => {
+        const time = Number(frame.t ?? 0);
+        if (frame.collision) {
+          raw.push({
+            kind: 'collision',
+            key: 'collision',
+            frameIndex: index,
+            time,
+            label: `碰撞 t=${time.toFixed(1)}s`,
+            detail: `第 ${index + 1} 帧检测到碰撞`
+          });
+        }
+        if (frame.obstacle_changed) {
+          raw.push({
+            kind: 'obstacle',
+            key: 'obstacle',
+            frameIndex: index,
+            time,
+            label: `障碍物变化 t=${time.toFixed(1)}s`,
+            detail: `第 ${index + 1} 帧动态障碍物状态变化`
+          });
+        }
+        const replanners = ['dstar_lite', 'astar', 'hybrid_astar'].filter(name => frame[name]?.replan_triggered);
+        replanners.forEach(name => {
+          raw.push({
+            kind: 'replan',
+            key: `replan:${name}`,
+            frameIndex: index,
+            time,
+            label: `${plannerLabel(name)}重规划 t=${time.toFixed(1)}s`,
+            detail: `第 ${index + 1} 帧 ${plannerLabel(name)} 触发重规划`
+          });
+        });
+      });
+      return compactTimelineEvents(raw);
+    }
+
+    function compactTimelineEvents(rawEvents) {
+      if (!rawEvents.length) return [];
+      const groups = [];
+      rawEvents.forEach(ev => {
+        const last = groups[groups.length - 1];
+        if (last && last.key === ev.key && ev.frameIndex <= last.lastFrame + 1) {
+          last.count += 1;
+          last.lastFrame = ev.frameIndex;
+          last.endTime = ev.time;
+          last.detail = `${last.baseDetail}，连续 ${last.count} 帧`;
+        } else {
+          groups.push({
+            ...ev,
+            count: 1,
+            lastFrame: ev.frameIndex,
+            endTime: ev.time,
+            baseDetail: ev.detail
+          });
+        }
+      });
+      return groups.map(ev => {
+        if (ev.count <= 1) return ev;
+        const timeText = ev.time === ev.endTime
+          ? `t=${ev.time.toFixed(1)}s`
+          : `t=${ev.time.toFixed(1)}-${ev.endTime.toFixed(1)}s`;
+        const name = ev.kind === 'collision'
+          ? '碰撞'
+          : ev.kind === 'obstacle'
+            ? '障碍物变化'
+            : ev.label.replace(/\s*t=.*/, '');
+        return {
+          ...ev,
+          label: `${name} x${ev.count} ${timeText}`
+        };
+      });
+    }
+
+    function plannerLabel(name) {
+      return {dstar_lite: 'D* Lite', astar: 'Grid A*', hybrid_astar: 'Hybrid A*'}[name] || name;
     }
 
     function selectTimelineEvent(index, jump = false) {
@@ -2565,13 +2821,28 @@
       if (!frame) return '未运行';
       const prevT = currentFrameIndex > 0 ? replay.frames[currentFrameIndex - 1].t : -Infinity;
       const eventsAtFrame = replay.dynamic_events.filter(ev => Number(ev.t) > prevT + 1e-9 && Number(ev.t) <= frame.t + 1e-9);
-      const eventText = eventsAtFrame.length
-        ? eventsAtFrame.map(formatEvent).join('；')
-        : frame.obstacle_changed ? '障碍物状态已变化' : '当前帧无障碍物事件';
+      const frameEvents = frameEventLabels(frame);
+      const allEvents = [
+        ...eventsAtFrame.map(formatEvent),
+        ...frameEvents
+      ];
+      const eventText = allEvents.length ? allEvents.join('；') : '当前帧无事件';
       const obstacleCount = (frame.obstacles || replay.static_map.obstacles).length;
       const followerCount = frame.followers?.length || 0;
       const dirtyHint = eventsDirtySinceRun ? ' 时间轴事件已编辑，重新运行仿真后轨迹和障碍物状态会按新事件更新。' : '';
       return `${eventText}。障碍物 ${obstacleCount} 个，Leader (${frame.leader_pose.map(v => v.toFixed(2)).join(', ')}), Followers ${followerCount} 架。${dirtyHint}`;
+    }
+
+    function frameEventLabels(frame) {
+      if (!frame) return [];
+      const labels = [];
+      if (frame.collision) labels.push('发生碰撞');
+      if (frame.clearance_blocked) labels.push('连续clearance不足，已阻止前进');
+      if (frame.obstacle_changed) labels.push('障碍物状态变化');
+      ['dstar_lite', 'astar', 'hybrid_astar'].forEach(name => {
+        if (frame[name]?.replan_triggered) labels.push(`${plannerLabel(name)}重规划`);
+      });
+      return labels;
     }
 
     function formatEvent(ev) {

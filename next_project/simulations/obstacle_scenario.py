@@ -437,6 +437,56 @@ class ObstacleScenarioSimulation(FormationSimulation):
             return np.vstack([path, task_goal])
         return path
 
+    def _accept_online_path(
+        self,
+        path: np.ndarray,
+        leader_pos: np.ndarray,
+        task_goal: np.ndarray,
+        time_now: float,
+    ) -> np.ndarray | None:
+        """在线路径接收门禁：连续 clearance 不合格时重试，而不是继续执行不安全路径。"""
+        path = np.asarray(path, dtype=float)
+        leader_pos = np.asarray(leader_pos, dtype=float)
+        task_goal = np.asarray(task_goal, dtype=float)
+        min_clearance = max(
+            float(self._collision_margin) + 0.03,
+            float(self.config.safety_margin) + float(self.config.plan_clearance_extra),
+        )
+
+        if len(path) == 0:
+            return None
+        if np.linalg.norm(path[0] - leader_pos) > self.grid.resolution * 1.5:
+            path = np.vstack([leader_pos, path])
+        path = self._extend_online_path_to_task(path, task_goal)
+
+        try:
+            refined_path = self.firi_refiner.refine(path, seeds=path)
+            if self._segment_is_safe(refined_path, min_clearance):
+                return np.asarray(refined_path, dtype=float)
+        except Exception:
+            pass
+
+        if self._segment_is_safe(path, min_clearance):
+            return path
+
+        fallback = self._plan_segment_fallback(leader_pos, task_goal, min_clearance)
+        if fallback is not None:
+            fallback = self._extend_online_path_to_task(fallback, task_goal)
+            if self._segment_is_safe(fallback, min_clearance):
+                self.replan_events.append({
+                    "t": float(time_now),
+                    "mode": "clearance_fallback",
+                    "reason": "continuous_clearance_blocked",
+                })
+                return np.asarray(fallback, dtype=float)
+
+        self.replan_events.append({
+            "t": float(time_now),
+            "mode": "clearance_blocked",
+            "reason": "no_continuous_clearance_path",
+        })
+        return None
+
     def _path_segment_clearance(self, path: np.ndarray, min_clearance: float, spacing: float | None = None) -> float:
         """返回路径线段采样得到的最小 SDF 间隙。"""
         path = np.asarray(path, dtype=float)
@@ -934,22 +984,24 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 else:
                     new_path = None
                 if new_path is not None:
-                    new_path = self._extend_online_path_to_task(new_path, target_goal)
-                    refined_path = self.firi_refiner.refine(new_path, seeds=new_path)
-                    if self._segment_is_safe(refined_path, collision_margin):
-                        new_path = refined_path
                     self.replan_events.extend(self.replanner.get_new_events())
-                    local_path = np.asarray(new_path, dtype=float)
-                    local_path_task_idx = current_wp_idx
-                    # 在局部路径中找到当前位置最近点，从其后一点开始跟踪。
-                    min_d = float("inf")
-                    best_i = 0
-                    for i, wp in enumerate(local_path):
-                        d = float(np.linalg.norm(wp - leader_pos))
-                        if d < min_d:
-                            min_d = d
-                            best_i = i
-                    local_path_idx = min(best_i + 1, len(local_path) - 1)
+                    accepted_path = self._accept_online_path(new_path, leader_pos, target_goal, time_now)
+                    if accepted_path is not None:
+                        local_path = np.asarray(accepted_path, dtype=float)
+                        local_path_task_idx = current_wp_idx
+                        # 在局部路径中找到当前位置最近点，从其后一点开始跟踪。
+                        min_d = float("inf")
+                        best_i = 0
+                        for i, wp in enumerate(local_path):
+                            d = float(np.linalg.norm(wp - leader_pos))
+                            if d < min_d:
+                                min_d = d
+                                best_i = i
+                        local_path_idx = min(best_i + 1, len(local_path) - 1)
+                    elif force_replan:
+                        local_path = np.array([leader_pos.copy()], dtype=float)
+                        local_path_idx = 0
+                        local_path_task_idx = current_wp_idx
                 elif force_replan:
                     local_path = np.array([target_goal.copy()], dtype=float)
                     local_path_idx = 0
