@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Runtime artifacts
+outputs/
+**/outputs/
+next_project/artifacts/cache/
+next_project/artifacts/cpp/
+next_project/artifacts/python/
+
+# C++ build products
+**/build/
+*.o
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# IDE / Editor
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.code-workspace
+
+# AI tools (generated)
+.claude/
+.spec-workflow/
+
+# Large binaries — reference papers and archives
+PDF/
+PDF 2/
+论文.Attachments/
+论文.ndb
+*.pptx
+*.pdf
+*.zip
+
+# Temp files
+*.tmp

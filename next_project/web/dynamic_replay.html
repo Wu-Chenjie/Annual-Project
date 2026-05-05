@@ -1,0 +1,3240 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>动态重规划验证</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/assets/plotly.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #e2e8f0;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --green: #10b981;
+      --orange: #f59e0b;
+      --purple: #8b5cf6;
+      --red: #ef4444;
+      --cyan: #06b6d4;
+      --gray: #94a3b8;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    header {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    #runMeta {
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--bg);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+    main {
+      display: grid;
+      grid-template-columns: 340px minmax(520px, 1fr) 360px;
+      gap: 20px;
+      padding: 20px;
+      max-width: 1920px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    aside, section.surface {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    aside:hover, section.surface:hover {
+      box-shadow: var(--shadow);
+    }
+    aside {
+      padding: 20px;
+      overflow: auto;
+      max-height: calc(100vh - 100px);
+      position: sticky;
+      top: 80px;
+    }
+    /* Custom Scrollbar for aside */
+    aside::-webkit-scrollbar {
+      width: 6px;
+    }
+    aside::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    aside::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    aside::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .event-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-rows: minmax(360px, 1fr) auto;
+      gap: 20px;
+      min-width: 0;
+    }
+    .surface {
+      padding: 20px;
+      min-width: 0;
+    }
+    h2 {
+      font-size: 13px;
+      margin: 24px 0 12px;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 14px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+    h2:first-child { margin-top: 0; }
+    
+    /* Clean up the duplicate H2 rendering bug safely */
+    h2 + h2 { display: none; }
+    
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    input, select, textarea, button {
+      font: inherit;
+      transition: var(--transition);
+    }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    textarea {
+      min-height: 156px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .event-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .event-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+    .event-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      background: #f8fafc;
+    }
+    .event-card:focus-within {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    }
+    .event-card header {
+      height: auto;
+      border: 0;
+      padding: 0;
+      margin-bottom: 12px;
+      background: transparent;
+      box-shadow: none;
+      position: static;
+    }
+    .event-card strong {
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      min-height: 32px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      line-height: 1;
+      color: var(--muted);
+      border-color: var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+    .icon-btn:hover {
+      color: var(--red);
+      border-color: var(--red);
+      background: #fef2f2;
+    }
+    .event-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .event-fields .wide {
+      grid-column: 1 / -1;
+    }
+    .event-card input,
+    .event-card select {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    .json-preview {
+      min-height: 110px;
+      margin-top: 8px;
+      font-size: 12px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border-color: #0f172a;
+    }
+    .json-preview:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin: 12px 0 16px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+    }
+    .checks label {
+      margin: 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      cursor: pointer;
+    }
+    .checks input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #334155;
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      cursor: pointer;
+      min-height: 40px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    button:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      flex: 1;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    button.primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+    }
+    button.primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      background: #f1f5f9;
+      color: #94a3b8;
+    }
+    .view-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .segmented {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 2px;
+    }
+    .segmented button {
+      min-height: 32px;
+      border: 0;
+      border-radius: 6px;
+      padding: 6px 16px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .segmented button.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .is-hidden {
+      display: none !important;
+    }
+    #mapCanvas {
+      width: 100%;
+      height: min(60vh, 700px);
+      min-height: 400px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+      display: block;
+      box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.02);
+    }
+    #plot3d {
+      width: 100%;
+      height: min(60vh, 700px);
+      min-height: 400px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+      position: relative;
+      overflow: hidden;
+    }
+    #plot3d canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin: 16px 0 0;
+      color: #475569;
+      font-size: 13px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+    }
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+    }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      margin-right: 6px;
+      border-radius: 3px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
+    .legend-group {
+      width: 100%;
+      margin-top: 4px;
+      margin-bottom: 2px;
+      font-weight: 700;
+      color: #334155;
+      font-size: 12px;
+    }
+    .timeline {
+      display: grid;
+      grid-template-columns: 80px auto auto 1fr auto auto 80px;
+      gap: 12px;
+      align-items: center;
+      flex: 1;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+    #frameIndex, #frameTime {
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+      color: #0f172a;
+      text-align: center;
+    }
+    .timeline input[type="range"] {
+      padding: 0;
+      height: 6px;
+      border-radius: 3px;
+      background: #e2e8f0;
+      border: none;
+      box-shadow: none;
+      cursor: pointer;
+    }
+    .timeline input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .timeline button {
+      width: 32px;
+      min-height: 32px;
+      padding: 0;
+      background: #fff;
+      border-color: #cbd5e1;
+      border-radius: 6px;
+      color: #475569;
+    }
+    .timeline button:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    #playBtn {
+      min-width: 40px;
+      color: var(--primary);
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+    #playBtn:hover:not(:disabled) {
+      background: var(--primary);
+      color: #fff;
+    }
+    .timeline-editor {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(260px, 1.2fr) minmax(280px, 1.5fr);
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+    }
+    .timeline-editor-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) auto auto;
+      gap: 8px;
+      align-items: end;
+    }
+    .timeline-insert-row {
+      display: grid;
+      grid-template-columns: minmax(80px, 0.8fr) minmax(120px, 1.1fr) minmax(90px, 0.8fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+    .timeline-editor label {
+      margin: 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .timeline-editor select {
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    .timeline-editor button {
+      min-height: 34px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .timeline-markers {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 28px;
+      align-items: center;
+    }
+    .timeline-marker {
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+    }
+    .timeline-marker.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #eff6ff;
+      font-weight: 600;
+    }
+    .event-card.is-selected {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+    .event-readout {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      background: #eff6ff;
+      color: #1e3a8a;
+      font-size: 13px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      line-height: 1.4;
+    }
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(360px, 1fr) 360px;
+      gap: 16px;
+      align-items: stretch;
+    }
+    #mapEditor3d {
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+    }
+    .map-editor-stage {
+      position: relative;
+      min-height: 420px;
+    }
+    .map-editor-stage.is-edit-mode {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+    .map-editor-stage.is-edit-mode #mapEditor3d,
+    .map-editor-stage.is-edit-mode #editorDragCanvas {
+      min-height: 420px;
+    }
+    #editorDragCanvas {
+      position: static;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 420px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fbfcff;
+      cursor: grab;
+      box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.02);
+    }
+    .map-editor-stage.is-dragging #editorDragCanvas {
+      cursor: grabbing;
+    }
+    .editor-drag-hint {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      max-width: min(560px, calc(100% - 24px));
+      padding: 7px 10px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.86);
+      color: #475569;
+      font-size: 12px;
+      pointer-events: none;
+      box-shadow: var(--shadow-sm);
+    }
+    @media (max-width: 900px) {
+      .map-editor-stage.is-edit-mode #mapEditor3d,
+      .map-editor-stage.is-edit-mode #editorDragCanvas {
+        min-height: 360px;
+      }
+    }
+    .editor-drag-ghost {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: #f97316;
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.35), 0 6px 12px rgba(15, 23, 42, 0.18);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .editor-drag-ghost::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 24px;
+      top: -5px;
+      min-width: 112px;
+      padding: 3px 7px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #334155;
+      font-size: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .editor-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 8px 0 12px;
+    }
+    .editor-toolbar label {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: #475569;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .editor-json {
+      min-height: 230px;
+      font-size: 12px;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .object-tools {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: end;
+    }
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #f8fafc;
+    }
+    .property-grid .wide {
+      grid-column: 1 / -1;
+    }
+    @media (max-width: 1200px) {
+      .editor-grid { grid-template-columns: 1fr; }
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .metric h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      color: #0f172a;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+    .metric dl {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 12px;
+      margin: 0;
+    }
+    .metric dt { color: #64748b; font-size: 13px; }
+    .metric dd { 
+      margin: 0; 
+      font-variant-numeric: tabular-nums; 
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .chartbox {
+      height: 260px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .status {
+      color: #ef4444;
+      font-size: 13px;
+      min-height: 20px;
+      margin-top: 12px;
+      white-space: pre-wrap;
+      font-weight: 500;
+    }
+    @media (max-width: 1200px) {
+      main { 
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+      aside { 
+        max-height: none; 
+        position: static;
+      }
+      .charts { grid-template-columns: 1fr; }
+      .timeline { grid-template-columns: 64px auto auto 1fr auto auto 70px; }
+      .timeline-editor,
+      .timeline-editor-row,
+      .timeline-insert-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>动态地图在线重规划验证</h1>
+    <span id="runMeta">未运行</span>
+  </header>
+  <main>
+    <aside>
+      <h2>场景</h2>
+      <label for="preset">预设</label>
+      <select id="preset"></select>
+      <label for="mapFile">地图</label>
+      <select id="mapFile"></select>
+
+      <h2>3D模型导入</h2>
+      <label for="modelFile">模型文件</label>
+      <input id="modelFile" type="file" accept=".stl,.obj,.ply">
+      <label for="modelMapName">地图名称</label>
+      <input id="modelMapName" value="custom_model_map" placeholder="custom_model_map">
+      <div class="grid2">
+        <div>
+          <label for="modelVoxel">体素尺寸</label>
+          <input id="modelVoxel" type="number" min="0.05" step="0.05" value="0.5">
+        </div>
+        <div>
+          <label for="modelScale">模型缩放</label>
+          <input id="modelScale" type="number" min="0.001" step="0.1" value="1.0">
+        </div>
+      </div>
+      <div class="actions">
+        <button id="importModelBtn">导入为地图</button>
+      </div>
+      <div class="status" id="modelImportStatus"></div>
+
+      <h2>算法</h2>
+      <h2>算法</h2>
+      <div class="checks">
+        <label><input type="checkbox" id="useDstar" checked>D* Lite</label>
+        <label><input type="checkbox" id="useAstar" checked>Grid A*</label>
+        <label><input type="checkbox" id="useHybridAstar">Hybrid A*</label>
+      </div>
+      <div class="grid2">
+        <div>
+          <label for="repeatCount">重复次数</label>
+          <input id="repeatCount" type="number" min="1" max="5" value="1">
+        </div>
+        <div>
+          <label for="simTime">仿真时长</label>
+          <input id="simTime" type="number" min="1" step="1" value="30">
+        </div>
+      </div>
+
+      <h2>参数</h2>
+      <div class="grid2">
+        <div>
+          <label for="resolution">栅格分辨率</label>
+          <input id="resolution" type="number" min="0.1" step="0.1" value="0.6">
+        </div>
+        <div>
+          <label for="margin">安全裕度</label>
+          <input id="margin" type="number" min="0" step="0.1" value="0.2">
+        </div>
+        <div>
+          <label for="replanInterval">重规划间隔</label>
+          <input id="replanInterval" type="number" min="0.05" step="0.05" value="0.4">
+        </div>
+        <div>
+          <label for="leaderVel">领航速度</label>
+          <input id="leaderVel" type="number" min="0.1" step="0.1" value="2.0">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="runBtn">运行仿真</button>
+        <button id="resetBtn">重置</button>
+      </div>
+      <div class="status" id="status"></div>
+    </aside>
+
+    <div class="workspace">
+      <section class="surface">
+        <div class="view-toolbar is-hidden" id="viewToolbar">
+          <div class="timeline is-hidden" id="timeline">
+            <span id="frameIndex">0 / 0</span>
+            <button type="button" id="firstFrameBtn" title="第一帧">|‹</button>
+            <button type="button" id="prevFrameBtn" title="上一帧">‹</button>
+            <input id="frameSlider" type="range" min="0" max="0" step="1" value="0">
+            <button type="button" id="nextFrameBtn" title="下一帧">›</button>
+            <button type="button" id="lastFrameBtn" title="最后一帧">›|</button>
+            <button type="button" id="playBtn" title="播放">▶</button>
+            <span id="frameTime">t=0.0s</span>
+          </div>
+          <div class="timeline-editor is-hidden" id="timelineEditor">
+            <div class="timeline-editor-row">
+              <label>时间轴事件
+                <select id="timelineEventSelect"></select>
+              </label>
+              <button type="button" id="jumpTimelineEventBtn">跳到事件</button>
+              <button type="button" id="pinEventToFrameBtn">贴到当前帧</button>
+            </div>
+            <div class="timeline-insert-row">
+              <label>动作
+                <select id="timelineActionSelect">
+                  <option value="add">添加</option>
+                  <option value="remove">移除</option>
+                  <option value="move">移动</option>
+                </select>
+              </label>
+              <label>目标
+                <select id="timelineTargetSelect"></select>
+              </label>
+              <label>类型
+                <select id="timelineTypeSelect">
+                  <option value="sphere">sphere</option>
+                  <option value="aabb">aabb</option>
+                  <option value="cylinder">cylinder</option>
+                </select>
+              </label>
+              <button type="button" id="insertTimelineEventBtn">在当前帧插入</button>
+            </div>
+            <div class="timeline-markers" id="timelineMarkers"></div>
+          </div>
+          <div class="segmented" aria-label="视图切换">
+            <button type="button" id="view2dBtn" class="active">2D地图</button>
+            <button type="button" id="view3dBtn">3D视图</button>
+          </div>
+        </div>
+        <canvas id="mapCanvas"></canvas>
+        <div id="plot3d" class="is-hidden"></div>
+        <div class="event-readout is-hidden" id="eventReadout"></div>
+        <div class="legend" id="mapLegend">
+          <span class="legend-group">— 航点 —</span>
+          <span><i class="swatch" style="background:#16a34a"></i>起点 S</span>
+          <span><i class="swatch" style="background:#d92d20"></i>终点 G</span>
+          <span><i class="swatch" style="background:#64748b"></i>航点</span>
+          <span class="legend-group">— 规划器 —</span>
+          <span><i class="swatch" style="background:#168a53"></i>D* Lite</span>
+          <span><i class="swatch" style="background:#d46b08"></i>Grid A*</span>
+          <span><i class="swatch" style="background:#7c3aed"></i>Hybrid A*</span>
+          <span class="legend-group">— 无人机 —</span>
+          <span><i class="swatch" style="background:#1f2937"></i>Leader</span>
+          <span><i class="swatch" style="background:rgba(8,145,178,0.35)"></i>Follower</span>
+          <span class="legend-group">— 障碍物 —</span>
+          <span><i class="swatch" style="background:#94a3b8"></i>AABB</span>
+          <span><i class="swatch" style="background:#60a5fa"></i>Sphere</span>
+          <span><i class="swatch" style="background:#facc15"></i>Cylinder</span>
+        </div>
+      </section>
+      <section class="surface">
+        <div class="metrics" id="metrics"></div>
+        <div class="charts">
+          <div class="chartbox"><canvas id="timeChart"></canvas></div>
+          <div class="chartbox"><canvas id="pathChart"></canvas></div>
+        </div>
+      </section>
+      <section class="surface">
+        <h2>3D地图编辑器</h2>
+        <div class="editor-toolbar">
+          <button type="button" id="loadEditorMapBtn">加载当前地图</button>
+          <button type="button" id="newEditorMapBtn">从0新建</button>
+          <button type="button" id="addEditorAabbBtn">添加AABB</button>
+          <button type="button" id="addEditorSphereBtn">添加Sphere</button>
+          <button type="button" id="addEditorCylinderBtn">添加Cylinder</button>
+          <button type="button" id="addEditorWaypointBtn">添加航点</button>
+          <label><input id="editorDragEnabled" type="checkbox" checked>拖动编辑</label>
+          <button type="button" class="primary" id="saveEditorMapBtn">保存地图</button>
+        </div>
+        <div class="editor-grid">
+          <div class="map-editor-stage" id="mapEditorStage">
+            <div id="mapEditor3d"></div>
+            <canvas id="editorDragCanvas" class="is-hidden"></canvas>
+            <div class="editor-drag-ghost is-hidden" id="editorDragGhost"></div>
+            <div class="editor-drag-hint" id="editorDragHint">3D 视角保持可见；右下角俯视面板用于拖动编辑，按住 Shift 上下拖动调整 Z</div>
+          </div>
+          <div class="editor-panel">
+            <label for="editorMapName">地图名称</label>
+            <input id="editorMapName" value="edited_map">
+            <div class="grid2">
+              <div>
+                <label for="editorBoundX">X上界</label>
+                <input id="editorBoundX" type="number" step="0.5" value="10">
+              </div>
+              <div>
+                <label for="editorBoundY">Y上界</label>
+                <input id="editorBoundY" type="number" step="0.5" value="8">
+              </div>
+              <div>
+                <label for="editorBoundZ">Z上界</label>
+                <input id="editorBoundZ" type="number" step="0.5" value="4">
+              </div>
+              <div>
+                <label for="editorDefaultZ">航点高度</label>
+                <input id="editorDefaultZ" type="number" step="0.1" value="1.8">
+              </div>
+            </div>
+            <label for="editorJson">地图JSON</label>
+            <textarea id="editorJson" class="editor-json"></textarea>
+            <div class="object-tools">
+              <label class="wide">选中对象
+                <select id="editorObjectSelect"></select>
+              </label>
+              <button type="button" id="duplicateEditorObjectBtn">复制</button>
+              <button type="button" id="deleteEditorObjectBtn">删除</button>
+            </div>
+            <div class="property-grid" id="editorPropertyGrid">
+              <label class="wide">对象类型
+                <select id="editorObjectType">
+                  <option value="aabb">AABB</option>
+                  <option value="sphere">Sphere</option>
+                  <option value="cylinder">Cylinder</option>
+                  <option value="waypoint">Waypoint</option>
+                </select>
+              </label>
+              <label>X / min X<input id="editorObjX" type="number" step="0.1"></label>
+              <label>Y / min Y<input id="editorObjY" type="number" step="0.1"></label>
+              <label>Z / min Z<input id="editorObjZ" type="number" step="0.1"></label>
+              <label>A / max X<input id="editorObjA" type="number" step="0.1"></label>
+              <label>B / max Y<input id="editorObjB" type="number" step="0.1"></label>
+              <label>C / max Z<input id="editorObjC" type="number" step="0.1"></label>
+              <button type="button" class="wide" id="applyEditorObjectBtn">应用对象属性</button>
+            </div>
+            <div class="actions">
+              <button type="button" id="applyEditorJsonBtn">应用JSON</button>
+              <button type="button" id="clearEditorMapBtn">清空</button>
+            </div>
+            <div class="status" id="editorStatus"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="event-sidebar">
+      <div>
+        <h2>动态事件</h2>
+        <div class="event-toolbar">
+          <button id="addAddEvent">添加障碍</button>
+          <button id="addRemoveEvent">移除障碍</button>
+          <button id="addMoveEvent">移动障碍</button>
+        </div>
+      </div>
+      <div class="event-list" id="eventList"></div>
+      <h2>JSON 预览</h2>
+      <textarea id="eventsJson" class="json-preview" readonly></textarea>
+    </aside>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let lastReplay = null;
+    let timeChart = null;
+    let pathChart = null;
+    let activeView = '2d';
+    let currentFrameIndex = 0;
+    let selectedEventIndex = 0;
+    let selectedEventId = '';
+    let nextEventUiId = 1;
+    let eventsDirtySinceRun = false;
+    let editorMap = null;
+    let editorSelection = {kind: 'waypoint', index: 0};
+    let editorDragState = null;
+    let editorDragRenderPending = false;
+    let events = [
+      {t: 5.0, action: 'add', type: 'sphere', x: 15, y: 10, z: 3, a: 1.5, b: 0, c: 0, target_id: ''},
+      {t: 10.0, action: 'remove', type: 'sphere', x: 0, y: 0, z: 0, a: 1, b: 0, c: 0, target_id: 'obs_3'},
+      {t: 15.0, action: 'move', type: 'sphere', x: 18, y: 14, z: 3, a: 1.5, b: 0, c: 0, target_id: 'obs_0'}
+    ];
+
+    async function init() {
+      const [presets, maps] = await Promise.all([
+        fetch('/api/presets').then(r => r.json()),
+        fetch('/api/maps').then(r => r.json())
+      ]);
+      $('preset').innerHTML = presets.presets.map(p => `<option value="${p.id}">${p.id} · ${p.name}</option>`).join('');
+      $('preset').value = 'warehouse_online';
+      $('mapFile').innerHTML = maps.maps.map(m => `<option value="${m}">${m}</option>`).join('');
+
+      // 预设 → 默认地图映射
+      const presetToMap = {
+        basic: null, obstacle: 'sample_simple',
+        warehouse: 'sample_warehouse', warehouse_a: 'sample_warehouse',
+        warehouse_online: 'sample_warehouse', warehouse_danger: 'sample_warehouse',
+        fault_tolerance: 'sample_warehouse', fault_tolerance_online: 'sample_warehouse',
+        school_corridor: 'school_corridor', school_corridor_online: 'school_corridor',
+        company_cubicles: 'company_cubicles', company_cubicles_online: 'company_cubicles',
+        meeting_room: 'meeting_room', meeting_room_online: 'meeting_room',
+        laboratory: 'laboratory', laboratory_online: 'laboratory',
+        custom: 'sample_warehouse'
+      };
+
+      // 预设切换时自动匹配地图
+      const updateMapForPreset = () => {
+        const map = presetToMap[$('preset').value];
+        if (map && maps.maps.includes(map)) $('mapFile').value = map;
+      };
+      $('preset').addEventListener('change', updateMapForPreset);
+      updateMapForPreset();  // 初始化默认预设的地图
+
+      $('runBtn').addEventListener('click', runSimulation);
+      $('resetBtn').addEventListener('click', () => location.reload());
+      $('importModelBtn').addEventListener('click', importModelAsMap);
+      $('loadEditorMapBtn').addEventListener('click', loadSelectedMapIntoEditor);
+      $('newEditorMapBtn').addEventListener('click', newEditorMap);
+      $('addEditorAabbBtn').addEventListener('click', () => addEditorObstacle('aabb'));
+      $('addEditorSphereBtn').addEventListener('click', () => addEditorObstacle('sphere'));
+      $('addEditorCylinderBtn').addEventListener('click', () => addEditorObstacle('cylinder'));
+      $('addEditorWaypointBtn').addEventListener('click', addEditorWaypoint);
+      $('applyEditorJsonBtn').addEventListener('click', applyEditorJson);
+      $('clearEditorMapBtn').addEventListener('click', clearEditorMap);
+      $('saveEditorMapBtn').addEventListener('click', saveEditorMap);
+      $('editorObjectSelect').addEventListener('change', event => selectEditorObject(event.currentTarget.value));
+      $('applyEditorObjectBtn').addEventListener('click', applyEditorObject);
+      $('deleteEditorObjectBtn').addEventListener('click', deleteEditorObject);
+      $('duplicateEditorObjectBtn').addEventListener('click', duplicateEditorObject);
+      ['editorBoundX', 'editorBoundY', 'editorBoundZ'].forEach(id => {
+        $(id).addEventListener('change', updateEditorBoundsFromInputs);
+      });
+      ['editorObjectType', 'editorObjX', 'editorObjY', 'editorObjZ', 'editorObjA', 'editorObjB', 'editorObjC'].forEach(id => {
+        $(id).addEventListener('change', applyEditorObject);
+      });
+      $('editorDragEnabled').addEventListener('change', () => {
+        cancelEditorDrag();
+        syncEditorDragMode();
+        $('editorStatus').textContent = $('editorDragEnabled').checked
+          ? '拖动编辑已开启'
+          : '拖动编辑已关闭，可直接旋转 3D 地图';
+      });
+      bindEditorDrag();
+      if (window.ResizeObserver) {
+        new ResizeObserver(() => drawEditorDragCanvas()).observe($('editorDragCanvas'));
+      }
+      $('view2dBtn').addEventListener('click', () => setActiveView('2d'));
+      $('view3dBtn').addEventListener('click', () => setActiveView('3d'));
+      $('prevFrameBtn').addEventListener('click', () => setFrame(currentFrameIndex - 1));
+      $('nextFrameBtn').addEventListener('click', () => setFrame(currentFrameIndex + 1));
+      $('firstFrameBtn').addEventListener('click', () => setFrame(0));
+      $('lastFrameBtn').addEventListener('click', () => setFrame(lastReplay ? lastReplay.frames.length - 1 : 0));
+      $('frameSlider').addEventListener('input', event => setFrame(event.currentTarget.value));
+      $('playBtn').addEventListener('click', togglePlay);
+      $('timelineEventSelect').addEventListener('change', event => selectTimelineEvent(Number(event.currentTarget.value)));
+      $('jumpTimelineEventBtn').addEventListener('click', jumpToSelectedEvent);
+      $('pinEventToFrameBtn').addEventListener('click', pinSelectedEventToFrame);
+      $('insertTimelineEventBtn').addEventListener('click', insertEventAtCurrentFrame);
+      $('addAddEvent').addEventListener('click', () => {
+        const ev = defaultEvent('add');
+        events.push(ev);
+        selectedEventId = ev._ui_id;
+        renderEvents();
+      });
+      $('addRemoveEvent').addEventListener('click', () => {
+        const ev = defaultEvent('remove');
+        events.push(ev);
+        selectedEventId = ev._ui_id;
+        renderEvents();
+      });
+      $('addMoveEvent').addEventListener('click', () => {
+        const ev = defaultEvent('move');
+        events.push(ev);
+        selectedEventId = ev._ui_id;
+        renderEvents();
+      });
+      renderEvents();
+      newEditorMap();
+      resizeCanvas();
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        drawEditorDragCanvas();
+        if (activeView === '3d') resizePlot3D();
+        else drawReplay(lastReplay);
+      });
+    }
+
+    window.setReplayFrame = value => setFrame(value);
+
+    async function refreshMapList(selected = '') {
+      const maps = await fetch('/api/maps').then(r => r.json());
+      $('mapFile').innerHTML = maps.maps.map(m => `<option value="${m}">${m}</option>`).join('');
+      if (selected && maps.maps.includes(selected)) $('mapFile').value = selected;
+      return maps.maps;
+    }
+
+    async function importModelAsMap() {
+      const file = $('modelFile').files[0];
+      if (!file) {
+        $('modelImportStatus').textContent = '请选择 .stl / .obj / .ply 模型文件';
+        return;
+      }
+      $('importModelBtn').disabled = true;
+      $('modelImportStatus').textContent = '正在转换模型...';
+      try {
+        const form = new FormData();
+        form.append('file', file);
+        form.append('map_name', $('modelMapName').value || file.name.replace(/\.[^.]+$/, ''));
+        form.append('voxel_size', $('modelVoxel').value || '0.5');
+        form.append('scale', $('modelScale').value || '1.0');
+        form.append('padding', '1.0');
+        form.append('max_obstacles', '4000');
+        const response = await fetch('/api/maps/import-model', {method: 'POST', body: form});
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.detail || '模型转换失败');
+        await refreshMapList(body.map);
+        $('preset').value = 'custom';
+        $('modelImportStatus').textContent =
+          `已生成地图 ${body.map}：${body.obstacle_count} 个障碍物，${body.vertex_count} 个顶点`;
+      } catch (error) {
+        $('modelImportStatus').textContent = error.message;
+      } finally {
+        $('importModelBtn').disabled = false;
+      }
+    }
+
+    function newEditorMap() {
+      const bx = Number($('editorBoundX')?.value || 10);
+      const by = Number($('editorBoundY')?.value || 8);
+      const bz = Number($('editorBoundZ')?.value || 4);
+      const z = Number($('editorDefaultZ')?.value || 1.8);
+      editorMap = {
+        bounds: [[0, 0, 0], [bx, by, bz]],
+        description: 'Created in Web 3D map editor',
+        obstacles: [],
+        waypoints: [[0.8, 0.8, z], [Math.max(1.2, bx - 0.8), Math.max(1.2, by - 0.8), z]]
+      };
+      syncEditor();
+      $('editorStatus').textContent = '已创建空地图';
+    }
+
+    async function loadSelectedMapIntoEditor() {
+      try {
+        const name = $('mapFile').value;
+        const map = await fetch(`/api/maps/${encodeURIComponent(name)}`).then(r => {
+          if (!r.ok) throw new Error('地图加载失败');
+          return r.json();
+        });
+        editorMap = normalizeEditorMap(map);
+        $('editorMapName').value = `${name}_edited`;
+        syncBoundsInputs();
+        syncEditor();
+        $('editorStatus').textContent = `已加载 ${name}`;
+      } catch (error) {
+        $('editorStatus').textContent = error.message;
+      }
+    }
+
+    function normalizeEditorMap(map) {
+      return {
+        bounds: map.bounds || [[0, 0, 0], [10, 8, 4]],
+        description: map.description || 'Edited in Web 3D map editor',
+        obstacles: Array.isArray(map.obstacles) ? map.obstacles : [],
+        waypoints: Array.isArray(map.waypoints) ? map.waypoints : []
+      };
+    }
+
+    function syncBoundsInputs() {
+      if (!editorMap?.bounds?.[1]) return;
+      $('editorBoundX').value = editorMap.bounds[1][0];
+      $('editorBoundY').value = editorMap.bounds[1][1];
+      $('editorBoundZ').value = editorMap.bounds[1][2];
+    }
+
+    function updateEditorBoundsFromInputs() {
+      if (!editorMap) return;
+      editorMap.bounds = [[0, 0, 0], [
+        Number($('editorBoundX').value || 10),
+        Number($('editorBoundY').value || 8),
+        Number($('editorBoundZ').value || 4)
+      ]];
+      syncEditor();
+      $('editorStatus').textContent = '地图边界已更新';
+    }
+
+    function syncEditor() {
+      ensureEditorSelection();
+      $('editorJson').value = JSON.stringify(editorMap, null, 2);
+      refreshEditorObjectSelect();
+      renderEditorObjectForm();
+      renderMapEditor3D();
+      syncEditorDragMode();
+      drawEditorDragCanvas();
+    }
+
+    function ensureEditorSelection() {
+      if (!editorMap) return;
+      const obsCount = editorMap.obstacles?.length || 0;
+      const wpCount = editorMap.waypoints?.length || 0;
+      if (editorSelection.kind === 'obstacle' && editorSelection.index < obsCount) return;
+      if (editorSelection.kind === 'waypoint' && editorSelection.index < wpCount) return;
+      if (obsCount > 0) editorSelection = {kind: 'obstacle', index: 0};
+      else if (wpCount > 0) editorSelection = {kind: 'waypoint', index: 0};
+      else editorSelection = {kind: 'none', index: -1};
+    }
+
+    function editorSelectionValue() {
+      return `${editorSelection.kind}:${editorSelection.index}`;
+    }
+
+    function refreshEditorObjectSelect() {
+      const select = $('editorObjectSelect');
+      if (!select || !editorMap) return;
+      const options = [];
+      (editorMap.obstacles || []).forEach((obs, index) => {
+        options.push(`<option value="obstacle:${index}">障碍物 #${index + 1} ${obs.type}</option>`);
+      });
+      (editorMap.waypoints || []).forEach((_, index) => {
+        options.push(`<option value="waypoint:${index}">航点 #${index + 1}</option>`);
+      });
+      select.innerHTML = options.join('');
+      if (options.length) select.value = editorSelectionValue();
+    }
+
+    function selectEditorObject(value) {
+      const [kind, index] = String(value || '').split(':');
+      editorSelection = {kind, index: Number(index)};
+      renderEditorObjectForm();
+      drawEditorDragCanvas();
+    }
+
+    function selectedEditorObject() {
+      if (!editorMap) return null;
+      if (editorSelection.kind === 'obstacle') return editorMap.obstacles?.[editorSelection.index] || null;
+      if (editorSelection.kind === 'waypoint') return editorMap.waypoints?.[editorSelection.index] || null;
+      return null;
+    }
+
+    function renderEditorObjectForm() {
+      const obj = selectedEditorObject();
+      const disabled = !obj;
+      ['editorObjectType', 'editorObjX', 'editorObjY', 'editorObjZ', 'editorObjA', 'editorObjB', 'editorObjC', 'applyEditorObjectBtn', 'deleteEditorObjectBtn', 'duplicateEditorObjectBtn']
+        .forEach(id => { if ($(id)) $(id).disabled = disabled; });
+      if (!obj) {
+        ['editorObjX', 'editorObjY', 'editorObjZ', 'editorObjA', 'editorObjB', 'editorObjC'].forEach(id => { if ($(id)) $(id).value = ''; });
+        return;
+      }
+      if (editorSelection.kind === 'waypoint') {
+        $('editorObjectType').value = 'waypoint';
+        $('editorObjX').value = obj[0] ?? 0;
+        $('editorObjY').value = obj[1] ?? 0;
+        $('editorObjZ').value = obj[2] ?? 0;
+        $('editorObjA').value = '';
+        $('editorObjB').value = '';
+        $('editorObjC').value = '';
+        return;
+      }
+      $('editorObjectType').value = obj.type || 'aabb';
+      if (obj.type === 'aabb') {
+        $('editorObjX').value = (obj.min || [0, 0, 0])[0];
+        $('editorObjY').value = (obj.min || [0, 0, 0])[1];
+        $('editorObjZ').value = (obj.min || [0, 0, 0])[2];
+        $('editorObjA').value = (obj.max || [1, 1, 1])[0];
+        $('editorObjB').value = (obj.max || [1, 1, 1])[1];
+        $('editorObjC').value = (obj.max || [1, 1, 1])[2];
+      } else if (obj.type === 'cylinder') {
+        $('editorObjX').value = (obj.center_xy || [0, 0])[0];
+        $('editorObjY').value = (obj.center_xy || [0, 0])[1];
+        $('editorObjZ').value = (obj.z_range || [0, 2])[0];
+        $('editorObjA').value = obj.radius ?? 0.4;
+        $('editorObjB').value = (obj.z_range || [0, 2])[0];
+        $('editorObjC').value = (obj.z_range || [0, 2])[1];
+      } else {
+        $('editorObjX').value = (obj.center || [0, 0, 0])[0];
+        $('editorObjY').value = (obj.center || [0, 0, 0])[1];
+        $('editorObjZ').value = (obj.center || [0, 0, 0])[2];
+        $('editorObjA').value = obj.radius ?? 0.4;
+        $('editorObjB').value = '';
+        $('editorObjC').value = '';
+      }
+    }
+
+    function objectFromEditorFields() {
+      const type = $('editorObjectType').value;
+      const x = Number($('editorObjX').value || 0);
+      const y = Number($('editorObjY').value || 0);
+      const z = Number($('editorObjZ').value || 0);
+      const a = Number($('editorObjA').value || 0);
+      const b = Number($('editorObjB').value || 0);
+      const c = Number($('editorObjC').value || 0);
+      if (type === 'waypoint') return [round2(x), round2(y), round2(z)];
+      if (type === 'aabb') return {type: 'aabb', min: [round2(x), round2(y), round2(z)], max: [round2(a || x + 1), round2(b || y + 1), round2(c || z + 1)]};
+      if (type === 'cylinder') return {type: 'cylinder', center_xy: [round2(x), round2(y)], radius: round2(a || 0.4), z_range: [round2(b || z), round2(c || z + 2)]};
+      return {type: 'sphere', center: [round2(x), round2(y), round2(z)], radius: round2(a || 0.4)};
+    }
+
+    function applyEditorObject() {
+      if (!editorMap || editorSelection.kind === 'none') return;
+      const type = $('editorObjectType').value;
+      const value = objectFromEditorFields();
+      if (editorSelection.kind === 'waypoint') {
+        if (type === 'waypoint') editorMap.waypoints[editorSelection.index] = value;
+        else {
+          editorMap.waypoints.splice(editorSelection.index, 1);
+          editorMap.obstacles.push(value);
+          editorSelection = {kind: 'obstacle', index: editorMap.obstacles.length - 1};
+        }
+      } else if (editorSelection.kind === 'obstacle') {
+        if (type === 'waypoint') {
+          editorMap.obstacles.splice(editorSelection.index, 1);
+          editorMap.waypoints.push(value);
+          editorSelection = {kind: 'waypoint', index: editorMap.waypoints.length - 1};
+        } else {
+          editorMap.obstacles[editorSelection.index] = value;
+        }
+      }
+      syncEditor();
+      $('editorStatus').textContent = '对象属性已应用';
+    }
+
+    function offsetObject(obj, delta = 0.3) {
+      const clone = JSON.parse(JSON.stringify(obj));
+      if (Array.isArray(clone)) return [round2(clone[0] + delta), round2(clone[1] + delta), clone[2]];
+      if (clone.type === 'aabb') {
+        clone.min = clone.min.map((v, i) => round2(v + (i < 2 ? delta : 0)));
+        clone.max = clone.max.map((v, i) => round2(v + (i < 2 ? delta : 0)));
+      } else if (clone.type === 'cylinder') {
+        clone.center_xy = clone.center_xy.map(v => round2(v + delta));
+      } else if (clone.center) {
+        clone.center = clone.center.map((v, i) => round2(v + (i < 2 ? delta : 0)));
+      }
+      return clone;
+    }
+
+    function duplicateEditorObject() {
+      const obj = selectedEditorObject();
+      if (!obj || !editorMap) return;
+      if (editorSelection.kind === 'waypoint') {
+        editorMap.waypoints.push(offsetObject(obj));
+        editorSelection = {kind: 'waypoint', index: editorMap.waypoints.length - 1};
+      } else {
+        editorMap.obstacles.push(offsetObject(obj));
+        editorSelection = {kind: 'obstacle', index: editorMap.obstacles.length - 1};
+      }
+      syncEditor();
+      $('editorStatus').textContent = '已复制对象';
+    }
+
+    function deleteEditorObject() {
+      if (!editorMap || editorSelection.kind === 'none') return;
+      if (editorSelection.kind === 'waypoint') editorMap.waypoints.splice(editorSelection.index, 1);
+      if (editorSelection.kind === 'obstacle') editorMap.obstacles.splice(editorSelection.index, 1);
+      ensureEditorSelection();
+      syncEditor();
+      $('editorStatus').textContent = '已删除对象';
+    }
+
+    function bindEditorDrag() {
+      const target = $('editorDragCanvas');
+      if (!target) return;
+      target.addEventListener('pointerdown', beginEditorDrag);
+      target.addEventListener('pointermove', dragEditorSelection);
+      target.addEventListener('pointerup', endEditorDrag);
+      target.addEventListener('dblclick', addEditorWaypointAtPointer);
+      window.addEventListener('pointercancel', endEditorDrag);
+    }
+
+    function addEditorWaypointAtPointer(event) {
+      if (!$('editorDragEnabled')?.checked || !editorMap) return;
+      const world = editorPointerWorld(event);
+      if (!world) return;
+      const z = Number($('editorDefaultZ').value || editorMap.bounds?.[1]?.[2] * 0.5 || 1.8);
+      editorMap.waypoints.push(clampPoint([world[0], world[1], z]));
+      editorSelection = {kind: 'waypoint', index: editorMap.waypoints.length - 1};
+      syncEditor();
+      $('editorStatus').textContent = '已在 2D 编辑视图中添加航点';
+    }
+
+    function beginEditorDrag(event) {
+      if (!$('editorDragEnabled')?.checked || !editorMap) return;
+      if (event.button !== 0) return;
+      const hit = hitTestEditorCanvas(event);
+      if (hit) {
+        editorSelection = hit;
+        refreshEditorObjectSelect();
+        renderEditorObjectForm();
+        drawEditorDragCanvas();
+      } else {
+        $('editorStatus').textContent = '请在 2D 编辑面板中点击橙色/彩色航点手柄或障碍物后拖动';
+        return;
+      }
+      const obj = selectedEditorObject();
+      const anchor = editorObjectAnchor(obj);
+      const world = editorPointerWorld(event);
+      if (!obj || !anchor || !world) return;
+      event.preventDefault();
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      editorDragState = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        lastX: event.clientX,
+        lastY: event.clientY,
+        startWorld: world,
+        startAnchor: anchor,
+        active: true,
+        lastGhostUpdate: 0,
+        target: event.currentTarget
+      };
+      $('mapEditorStage')?.classList.add('is-dragging');
+      const label = editorSelection.kind === 'waypoint' ? '航点' : '障碍物';
+      $('editorStatus').textContent = event.shiftKey ? `拖动中：调整${label}高度 / Z` : `拖动中：移动${label} X / Y`;
+    }
+
+    function dragEditorSelection(event) {
+      if (!editorDragState || !editorMap) return;
+      if (event.pointerId !== editorDragState.pointerId) return;
+      if (!$('editorDragEnabled')?.checked) {
+        cancelEditorDrag();
+        return;
+      }
+      const pixelDy = event.clientY - editorDragState.lastY;
+      event.preventDefault();
+      event.stopPropagation();
+      editorDragState.lastX = event.clientX;
+      editorDragState.lastY = event.clientY;
+      if (event.shiftKey) {
+        const bounds = editorMap.bounds || [[0, 0, 0], [10, 8, 4]];
+        const rect = $('editorDragCanvas').getBoundingClientRect();
+        const spanZ = Math.max(1e-6, bounds[1][2] - bounds[0][2]);
+        const dz = -pixelDy / Math.max(1, rect.height) * spanZ;
+        if (Math.abs(dz) > 1e-6) moveEditorSelection(0, 0, dz);
+      } else {
+        const world = editorPointerWorld(event);
+        if (!world) return;
+        const dx = world[0] - editorDragState.startWorld[0];
+        const dy = world[1] - editorDragState.startWorld[1];
+        moveEditorSelectionToAnchor([
+          editorDragState.startAnchor[0] + dx,
+          editorDragState.startAnchor[1] + dy,
+          editorDragState.startAnchor[2]
+        ]);
+      }
+      refreshEditorAfterDrag();
+    }
+
+    function endEditorDrag(event) {
+      if (!editorDragState) return;
+      if (event?.pointerId && event.pointerId !== editorDragState.pointerId) return;
+      const wasActive = editorDragState.active;
+      editorDragState.target?.releasePointerCapture?.(editorDragState.pointerId);
+      editorDragState = null;
+      $('mapEditorStage')?.classList.remove('is-dragging');
+      hideEditorDragGhost();
+      if (wasActive) {
+        drawEditorDragCanvas();
+        syncEditor();
+        $('editorStatus').textContent = '拖动编辑已应用';
+      }
+    }
+
+    function cancelEditorDrag() {
+      if (editorDragState?.target && editorDragState.pointerId != null) {
+        try { editorDragState.target.releasePointerCapture?.(editorDragState.pointerId); } catch (_) {}
+      }
+      editorDragState = null;
+      $('mapEditorStage')?.classList.remove('is-dragging');
+      hideEditorDragGhost();
+    }
+
+    function refreshEditorAfterDrag() {
+      updateEditorDragGhost();
+      drawEditorDragCanvas();
+      const now = performance.now();
+      if (now - (editorDragState?.lastGhostUpdate || 0) < 120) return;
+      if (editorDragState) editorDragState.lastGhostUpdate = now;
+      renderEditorObjectForm();
+    }
+
+    function syncEditorDragMode() {
+      const canvas = $('editorDragCanvas');
+      const stage = $('mapEditorStage');
+      if (!canvas) return;
+      const enabled = Boolean($('editorDragEnabled')?.checked);
+      stage?.classList.toggle('is-edit-mode', enabled);
+      canvas.classList.toggle('is-hidden', !enabled);
+      $('editorDragHint').textContent = enabled
+        ? '编辑模式：上方 3D 观察，下方 2D 俯视拖动，两个视图上下平分'
+        : '拖动编辑关闭：可直接旋转 3D 地图';
+      requestAnimationFrame(() => {
+        if (window.Plotly && $('mapEditor3d')) Plotly.Plots.resize($('mapEditor3d'));
+        if (enabled) drawEditorDragCanvas();
+      });
+      if (!enabled) {
+        cancelEditorDrag();
+        hideEditorDragGhost();
+        if (window.Plotly && $('mapEditor3d')) {
+          const relayout = Plotly.relayout($('mapEditor3d'), {dragmode: 'orbit'});
+          relayout?.catch?.(() => {});
+        }
+      }
+    }
+
+    function resizeEditorCanvas() {
+      const canvas = $('editorDragCanvas');
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(rect.width * devicePixelRatio));
+      canvas.height = Math.max(1, Math.floor(rect.height * devicePixelRatio));
+      return canvas;
+    }
+
+    function drawEditorDragCanvas() {
+      const canvas = $('editorDragCanvas');
+      if (!canvas || canvas.classList.contains('is-hidden') || !editorMap) return;
+      resizeEditorCanvas();
+      const ctx = canvas.getContext('2d');
+      const bounds = editorMap.bounds;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fbfcff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawEditorGrid(ctx, canvas, bounds);
+      (editorMap.obstacles || []).forEach((obs, index) => drawEditorObstacle(ctx, canvas, bounds, obs, editorSelection.kind === 'obstacle' && editorSelection.index === index));
+      drawEditorWaypoints(ctx, canvas, bounds);
+      drawEditorCanvasHud(ctx, canvas);
+    }
+
+    function editorCanvasProject(bounds, canvas, point) {
+      return project(bounds, canvas, point);
+    }
+
+    function editorPointerWorld(event) {
+      const canvas = $('editorDragCanvas');
+      if (!canvas || !editorMap) return null;
+      const [x, y] = editorCanvasPointFromEvent(event, canvas);
+      return editorCanvasUnproject(editorMap.bounds, canvas, x, y);
+    }
+
+    function editorCanvasPointFromEvent(event, canvas = $('editorDragCanvas')) {
+      const rect = canvas.getBoundingClientRect();
+      return [
+        (event.clientX - rect.left) * canvas.width / Math.max(1, rect.width),
+        (event.clientY - rect.top) * canvas.height / Math.max(1, rect.height)
+      ];
+    }
+
+    function editorCanvasUnproject(bounds, canvas, x, y) {
+      const min = bounds[0], max = bounds[1];
+      const pad = 28 * devicePixelRatio;
+      const sx = (canvas.width - pad * 2) / Math.max(1e-6, max[0] - min[0]);
+      const sy = (canvas.height - pad * 2) / Math.max(1e-6, max[1] - min[1]);
+      const scale = Math.min(sx, sy);
+      return [
+        min[0] + (x - pad) / scale,
+        min[1] + (canvas.height - pad - y) / scale,
+        0
+      ];
+    }
+
+    function drawEditorGrid(ctx, canvas, bounds) {
+      ctx.save();
+      ctx.strokeStyle = '#d8dee9';
+      ctx.lineWidth = 1 * devicePixelRatio;
+      for (let i = 0; i <= 10; i++) {
+        const x = canvas.width * i / 10;
+        const y = canvas.height * i / 10;
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+      const min = bounds[0], max = bounds[1];
+      const a = editorCanvasProject(bounds, canvas, min);
+      const b = editorCanvasProject(bounds, canvas, max);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.strokeRect(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]));
+      ctx.restore();
+    }
+
+    function drawEditorObstacle(ctx, canvas, bounds, obs, selected) {
+      const desc = mapObstacleToDesc(obs);
+      const p = editorCanvasProject(bounds, canvas, desc.center_or_min);
+      ctx.save();
+      ctx.globalAlpha = selected ? 0.78 : 0.48;
+      ctx.lineWidth = (selected ? 3 : 1.5) * devicePixelRatio;
+      ctx.strokeStyle = selected ? '#f97316' : '#64748b';
+      if (desc.type === 'aabb') {
+        const q = editorCanvasProject(bounds, canvas, desc.size_or_max);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.abs(q[0] - p[0]), Math.abs(q[1] - p[1]));
+        ctx.strokeRect(Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.abs(q[0] - p[0]), Math.abs(q[1] - p[1]));
+      } else {
+        ctx.fillStyle = desc.type === 'cylinder' ? '#facc15' : '#60a5fa';
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], Math.max(5 * devicePixelRatio, desc.size_or_max[0] * p[2]), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+      if (selected) {
+        ctx.fillStyle = '#f97316';
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 4 * devicePixelRatio, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawEditorWaypoints(ctx, canvas, bounds) {
+      const waypoints = editorMap.waypoints || [];
+      if (waypoints.length > 1) drawPath(ctx, canvas, bounds, waypoints, '#334155', true, 2);
+      waypoints.forEach((point, index) => {
+        const selected = editorSelection.kind === 'waypoint' && editorSelection.index === index;
+        const isStart = index === 0;
+        const isEnd = index === waypoints.length - 1;
+        const color = selected ? '#f97316' : isStart ? '#16a34a' : isEnd ? '#d92d20' : '#64748b';
+        drawEditorWaypointHandle(ctx, canvas, bounds, point, index, color, selected, isStart, isEnd);
+      });
+    }
+
+    function drawEditorWaypointHandle(ctx, canvas, bounds, point, index, color, selected, isStart, isEnd) {
+      const p = editorCanvasProject(bounds, canvas, point);
+      const radius = (selected ? 13 : 10) * devicePixelRatio;
+      ctx.save();
+      ctx.shadowColor = selected ? 'rgba(249, 115, 22, 0.35)' : 'rgba(15, 23, 42, 0.18)';
+      ctx.shadowBlur = selected ? 10 * devicePixelRatio : 5 * devicePixelRatio;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = (selected ? 3 : 2) * devicePixelRatio;
+      ctx.beginPath();
+      if (isStart) {
+        ctx.rect(p[0] - radius, p[1] - radius, radius * 2, radius * 2);
+      } else if (isEnd) {
+        ctx.moveTo(p[0], p[1] - radius);
+        ctx.lineTo(p[0] + radius, p[1]);
+        ctx.lineTo(p[0], p[1] + radius);
+        ctx.lineTo(p[0] - radius, p[1]);
+        ctx.closePath();
+      } else {
+        ctx.arc(p[0], p[1], radius, 0, Math.PI * 2);
+      }
+      ctx.fill();
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.max(10, 11 * devicePixelRatio)}px "Segoe UI", Arial`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(isStart ? 'S' : isEnd ? 'G' : String(index + 1), p[0], p[1]);
+      ctx.restore();
+    }
+
+    function drawEditorCanvasHud(ctx, canvas) {
+      const selected = selectedEditorObject();
+      const anchor = editorObjectAnchor(selected);
+      const text = anchor
+        ? `俯视编辑  ${editorSelection.kind === 'obstacle' ? '障碍物' : '航点'} #${editorSelection.index + 1}  (${anchor.map(v => round2(v)).join(', ')})`
+        : '俯视编辑  点击对象后拖动';
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.86)';
+      ctx.fillRect(10 * devicePixelRatio, 10 * devicePixelRatio, Math.min(canvas.width - 20 * devicePixelRatio, 360 * devicePixelRatio), 30 * devicePixelRatio);
+      ctx.fillStyle = '#334155';
+      ctx.font = `${12 * devicePixelRatio}px "Segoe UI", Arial`;
+      ctx.fillText(text, 18 * devicePixelRatio, 30 * devicePixelRatio);
+      ctx.restore();
+    }
+
+    function hitTestEditorCanvas(event) {
+      const canvas = $('editorDragCanvas');
+      if (!canvas || !editorMap) return null;
+      const [x, y] = editorCanvasPointFromEvent(event, canvas);
+      const bounds = editorMap.bounds;
+      let best = null;
+      const waypoints = editorMap.waypoints || [];
+      for (let i = waypoints.length - 1; i >= 0; i--) {
+        const p = editorCanvasProject(bounds, canvas, waypoints[i]);
+        const dist = Math.hypot(x - p[0], y - p[1]);
+        const hitRadius = 24 * devicePixelRatio;
+        if (dist <= hitRadius && (!best || dist < best.score)) best = {kind: 'waypoint', index: i, score: dist};
+      }
+      if (best) return {kind: best.kind, index: best.index};
+      const obstacles = editorMap.obstacles || [];
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const score = editorObstacleHitScore(x, y, obstacles[i], canvas, bounds);
+        if (score != null && (!best || score < best.score)) best = {kind: 'obstacle', index: i, score};
+      }
+      return best ? {kind: best.kind, index: best.index} : null;
+    }
+
+    function pointHitsEditorObstacle(x, y, obs, canvas, bounds) {
+      return editorObstacleHitScore(x, y, obs, canvas, bounds) != null;
+    }
+
+    function editorObstacleHitScore(x, y, obs, canvas, bounds) {
+      const desc = mapObstacleToDesc(obs);
+      const p = editorCanvasProject(bounds, canvas, desc.center_or_min);
+      if (desc.type === 'aabb') {
+        const q = editorCanvasProject(bounds, canvas, desc.size_or_max);
+        const minX = Math.min(p[0], q[0]) - 4 * devicePixelRatio;
+        const maxX = Math.max(p[0], q[0]) + 4 * devicePixelRatio;
+        const minY = Math.min(p[1], q[1]) - 4 * devicePixelRatio;
+        const maxY = Math.max(p[1], q[1]) + 4 * devicePixelRatio;
+        if (!(x >= minX && x <= maxX && y >= minY && y <= maxY)) return null;
+        return Math.hypot(x - (minX + maxX) * 0.5, y - (minY + maxY) * 0.5);
+      }
+      const radius = Math.max(8 * devicePixelRatio, desc.size_or_max[0] * p[2]);
+      const dist = Math.hypot(x - p[0], y - p[1]);
+      return dist <= radius + 4 * devicePixelRatio ? dist : null;
+    }
+
+    function editorObjectAnchor(obj = selectedEditorObject()) {
+      if (!obj) return null;
+      if (Array.isArray(obj)) return obj;
+      if (obj.type === 'aabb') {
+        const min = obj.min || obj.center_or_min || [0, 0, 0];
+        const max = obj.max || obj.size_or_max || [1, 1, 1];
+        return [
+          (Number(min[0]) + Number(max[0])) * 0.5,
+          (Number(min[1]) + Number(max[1])) * 0.5,
+          (Number(min[2]) + Number(max[2])) * 0.5
+        ];
+      }
+      if (obj.type === 'cylinder') {
+        const center = obj.center_xy || obj.center_or_min || [0, 0];
+        const zRange = obj.z_range || [obj.size_or_max?.[1] ?? 0, obj.size_or_max?.[2] ?? 2];
+        return [Number(center[0]), Number(center[1]), (Number(zRange[0]) + Number(zRange[1])) * 0.5];
+      }
+      return obj.center || obj.center_or_min || [0, 0, 0];
+    }
+
+    function updateEditorDragGhost() {
+      const ghost = $('editorDragGhost');
+      const stage = $('mapEditorStage');
+      const plot = $('editorDragCanvas');
+      const point = editorObjectAnchor();
+      if (!ghost || !stage || !plot || !editorMap || !point) return;
+      const [min, max] = editorMap.bounds;
+      const plotRect = plot.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      const xRatio = (Number(point[0]) - min[0]) / Math.max(1e-6, max[0] - min[0]);
+      const yRatio = (Number(point[1]) - min[1]) / Math.max(1e-6, max[1] - min[1]);
+      const x = plotRect.left - stageRect.left + Math.min(Math.max(xRatio, 0), 1) * plotRect.width;
+      const y = plotRect.top - stageRect.top + (1 - Math.min(Math.max(yRatio, 0), 1)) * plotRect.height;
+      ghost.style.left = `${x}px`;
+      ghost.style.top = `${y}px`;
+      ghost.dataset.label = `(${round2(point[0])}, ${round2(point[1])}, ${round2(point[2])})`;
+      ghost.classList.remove('is-hidden');
+    }
+
+    function hideEditorDragGhost() {
+      $('editorDragGhost')?.classList.add('is-hidden');
+    }
+
+    function moveEditorSelectionToAnchor(anchor) {
+      const current = editorObjectAnchor();
+      if (!current) return;
+      moveEditorSelection(
+        Number(anchor[0]) - Number(current[0]),
+        Number(anchor[1]) - Number(current[1]),
+        Number(anchor[2]) - Number(current[2])
+      );
+    }
+
+    function moveEditorSelection(dx, dy, dz) {
+      if (editorSelection.kind === 'waypoint') {
+        const point = editorMap.waypoints?.[editorSelection.index];
+        if (!point) return;
+        editorMap.waypoints[editorSelection.index] = clampPoint([
+          Number(point[0]) + dx,
+          Number(point[1]) + dy,
+          Number(point[2]) + dz
+        ]);
+        return;
+      }
+      const obs = editorMap.obstacles?.[editorSelection.index];
+      if (!obs) return;
+      if (obs.type === 'aabb') {
+        const min = obs.min || obs.center_or_min || [0, 0, 0];
+        const max = obs.max || obs.size_or_max || [1, 1, 1];
+        const moved = clampBox(min.map((v, i) => Number(v) + [dx, dy, dz][i]), max.map((v, i) => Number(v) + [dx, dy, dz][i]));
+        obs.min = moved.min;
+        obs.max = moved.max;
+        delete obs.center_or_min;
+        delete obs.size_or_max;
+      } else if (obs.type === 'cylinder') {
+        const center = obs.center_xy || obs.center_or_min || [0, 0];
+        const zRange = obs.z_range || [obs.size_or_max?.[1] ?? 0, obs.size_or_max?.[2] ?? 2];
+        const radius = Number(obs.radius ?? obs.size_or_max?.[0] ?? 0.4);
+        const movedCenter = clampCircleCenter([Number(center[0]) + dx, Number(center[1]) + dy], radius);
+        const movedZ = clampRange(Number(zRange[0]) + dz, Number(zRange[1]) + dz, 2);
+        obs.center_xy = movedCenter;
+        obs.radius = round2(radius);
+        obs.z_range = movedZ;
+        delete obs.center_or_min;
+        delete obs.size_or_max;
+      } else {
+        const center = obs.center || obs.center_or_min || [0, 0, 0];
+        const radius = Number(obs.radius ?? obs.size_or_max?.[0] ?? 0.4);
+        obs.type = 'sphere';
+        obs.center = clampSphereCenter([
+          Number(center[0]) + dx,
+          Number(center[1]) + dy,
+          Number(center[2]) + dz
+        ], radius);
+        obs.radius = round2(radius);
+        delete obs.center_or_min;
+        delete obs.size_or_max;
+      }
+    }
+
+    function clampValue(value, min, max) {
+      return round2(Math.min(Math.max(Number(value), min), max));
+    }
+
+    function clampWithRadius(value, min, max, radius) {
+      const lo = min + Math.max(0, Number(radius) || 0);
+      const hi = max - Math.max(0, Number(radius) || 0);
+      if (lo > hi) return round2((min + max) * 0.5);
+      return clampValue(value, lo, hi);
+    }
+
+    function clampPoint(point) {
+      const [min, max] = editorMap.bounds;
+      return [
+        clampValue(point[0], min[0], max[0]),
+        clampValue(point[1], min[1], max[1]),
+        clampValue(point[2], min[2], max[2])
+      ];
+    }
+
+    function clampSphereCenter(center, radius) {
+      const [min, max] = editorMap.bounds;
+      const r = Math.max(0, Number(radius) || 0);
+      return [
+        clampWithRadius(center[0], min[0], max[0], r),
+        clampWithRadius(center[1], min[1], max[1], r),
+        clampWithRadius(center[2], min[2], max[2], r)
+      ];
+    }
+
+    function clampCircleCenter(center, radius) {
+      const [min, max] = editorMap.bounds;
+      const r = Math.max(0, Number(radius) || 0);
+      return [
+        clampWithRadius(center[0], min[0], max[0], r),
+        clampWithRadius(center[1], min[1], max[1], r)
+      ];
+    }
+
+    function clampRange(start, end, minHeight = 0.1) {
+      const [min, max] = editorMap.bounds;
+      let lo = Number(start);
+      let hi = Math.max(Number(end), lo + minHeight);
+      if (lo < min[2]) {
+        hi += min[2] - lo;
+        lo = min[2];
+      }
+      if (hi > max[2]) {
+        lo -= hi - max[2];
+        hi = max[2];
+      }
+      lo = Math.max(min[2], lo);
+      if (hi <= lo) hi = Math.min(max[2], lo + minHeight);
+      return [round2(lo), round2(hi)];
+    }
+
+    function clampBox(rawMin, rawMax) {
+      const [boundsMin, boundsMax] = editorMap.bounds;
+      const size = rawMax.map((v, i) => Math.max(0.05, Number(v) - Number(rawMin[i])));
+      const min = rawMin.map((v, i) => Number(v));
+      const max = rawMax.map((v, i) => Number(v));
+      for (let i = 0; i < 3; i++) {
+        if (min[i] < boundsMin[i]) {
+          max[i] += boundsMin[i] - min[i];
+          min[i] = boundsMin[i];
+        }
+        if (max[i] > boundsMax[i]) {
+          min[i] -= max[i] - boundsMax[i];
+          max[i] = boundsMax[i];
+        }
+        if (min[i] < boundsMin[i]) min[i] = boundsMin[i];
+        if (max[i] <= min[i]) max[i] = Math.min(boundsMax[i], min[i] + size[i]);
+      }
+      return {min: min.map(round2), max: max.map(round2)};
+    }
+
+    function applyEditorJson() {
+      try {
+        editorMap = normalizeEditorMap(JSON.parse($('editorJson').value));
+        syncBoundsInputs();
+        syncEditor();
+        $('editorStatus').textContent = 'JSON已应用';
+      } catch (error) {
+        $('editorStatus').textContent = `JSON错误：${error.message}`;
+      }
+    }
+
+    function clearEditorMap() {
+      if (!editorMap) newEditorMap();
+      editorMap.obstacles = [];
+      editorMap.waypoints = [];
+      syncEditor();
+      $('editorStatus').textContent = '已清空障碍物和航点';
+    }
+
+    function addEditorObstacle(type) {
+      if (!editorMap) newEditorMap();
+      const max = editorMap.bounds[1];
+      const cx = max[0] * 0.5;
+      const cy = max[1] * 0.5;
+      if (type === 'aabb') {
+        editorMap.obstacles.push({
+          type: 'aabb',
+          min: [round2(cx - 0.5), round2(cy - 0.5), 0],
+          max: [round2(cx + 0.5), round2(cy + 0.5), round2(Math.min(max[2], 1.5))]
+        });
+      } else if (type === 'cylinder') {
+        editorMap.obstacles.push({
+          type: 'cylinder',
+          center_xy: [round2(cx), round2(cy)],
+          radius: 0.4,
+          z_range: [0, round2(Math.min(max[2], 2.0))]
+        });
+      } else {
+        editorMap.obstacles.push({
+          type: 'sphere',
+          center: [round2(cx), round2(cy), round2(Math.min(max[2] * 0.5, 1.5))],
+          radius: 0.45
+        });
+      }
+      editorSelection = {kind: 'obstacle', index: editorMap.obstacles.length - 1};
+      syncEditor();
+      $('editorStatus').textContent = `已添加 ${type}`;
+    }
+
+    function addEditorWaypoint() {
+      if (!editorMap) newEditorMap();
+      const max = editorMap.bounds[1];
+      const z = Number($('editorDefaultZ').value || Math.min(max[2] * 0.5, 1.8));
+      const n = editorMap.waypoints.length;
+      const t = n <= 1 ? n : 0.5;
+      editorMap.waypoints.push([
+        round2(0.8 + (max[0] - 1.6) * t),
+        round2(0.8 + (max[1] - 1.6) * t),
+        round2(Math.min(max[2], z))
+      ]);
+      editorSelection = {kind: 'waypoint', index: editorMap.waypoints.length - 1};
+      syncEditor();
+      $('editorStatus').textContent = '已添加航点';
+    }
+
+    async function saveEditorMap() {
+      try {
+        applyEditorJson();
+        const response = await fetch('/api/maps/save', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({name: $('editorMapName').value, map: editorMap})
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.detail || '保存失败');
+        await refreshMapList(body.map);
+        $('preset').value = 'custom';
+        $('editorStatus').textContent = `已保存 ${body.map}：${body.obstacle_count} 个障碍物，${body.waypoint_count} 个航点`;
+      } catch (error) {
+        $('editorStatus').textContent = error.message;
+      }
+    }
+
+    function round2(value) {
+      return Math.round(Number(value) * 100) / 100;
+    }
+
+    function mapObstacleToDesc(obs) {
+      if (obs.type === 'aabb') return {type: 'aabb', center_or_min: obs.min || obs.center_or_min, size_or_max: obs.max || obs.size_or_max};
+      if (obs.type === 'cylinder') return {type: 'cylinder', center_or_min: obs.center_xy || obs.center_or_min, size_or_max: [obs.radius ?? obs.size_or_max?.[0] ?? 0.4, ...(obs.z_range || [obs.size_or_max?.[1] ?? 0, obs.size_or_max?.[2] ?? 2])]};
+      return {type: 'sphere', center_or_min: obs.center || obs.center_or_min, size_or_max: [obs.radius ?? obs.size_or_max?.[0] ?? 0.4, 0, 0]};
+    }
+
+    function renderMapEditor3D() {
+      const target = $('mapEditor3d');
+      if (!target || !editorMap || !window.Plotly) return;
+      const bounds = editorMap.bounds;
+      const traces = floorGridTraces(bounds);
+      const selections = traces.map(() => null);
+      const pointSelections = {};
+      const denseObstacleMode = (editorMap.obstacles?.length || 0) > 350;
+      if (denseObstacleMode) {
+        const xs = [], ys = [], zs = [], labels = [], colors = [], obstacleSelections = [];
+        editorMap.obstacles.forEach((obs, index) => {
+          const anchor = editorObjectAnchor(obs);
+          if (!anchor) return;
+          xs.push(anchor[0]);
+          ys.push(anchor[1]);
+          zs.push(anchor[2]);
+          labels.push(`${index + 1}. ${obs.type}`);
+          colors.push(obs.type === 'cylinder' ? '#facc15' : obs.type === 'sphere' ? '#60a5fa' : '#94a3b8');
+          obstacleSelections.push({kind: 'obstacle', index});
+        });
+        const markerCurve = traces.length;
+        traces.push({
+          type: 'scatter3d',
+          mode: 'markers',
+          name: `障碍物点位 (${xs.length})`,
+          x: xs, y: ys, z: zs,
+          text: labels,
+          hovertemplate: '%{text}<br>x=%{x:.2f}, y=%{y:.2f}, z=%{z:.2f}<extra></extra>',
+          marker: {size: 4, color: colors, opacity: 0.78}
+        });
+        selections.push(null);
+        pointSelections[markerCurve] = obstacleSelections;
+        if (editorSelection.kind === 'obstacle') {
+          const selected = editorMap.obstacles[editorSelection.index];
+          if (selected) {
+            obstacleTrace3D(mapObstacleToDesc(selected)).forEach(trace => {
+              trace.name = `选中 ${editorSelection.index + 1}. ${selected.type}`;
+              trace.opacity = 0.68;
+              traces.push(trace);
+              selections.push({kind: 'obstacle', index: editorSelection.index});
+            });
+          }
+        }
+      } else {
+        editorMap.obstacles.forEach((obs, index) => {
+          const obsTraces = obstacleTrace3D(mapObstacleToDesc(obs));
+          obsTraces.forEach(trace => {
+            trace.name = `${index + 1}. ${obs.type}`;
+            trace.opacity = editorSelection.kind === 'obstacle' && editorSelection.index === index ? 0.58 : trace.opacity;
+            traces.push(trace);
+            selections.push({kind: 'obstacle', index});
+          });
+        });
+      }
+      if (editorMap.waypoints?.length > 1) {
+        traces.push(trajectoryTrace(editorMap.waypoints, '航线', '#64748b', 4));
+        selections.push(null);
+      }
+      (editorMap.waypoints || []).forEach((point, index) => {
+        const isStart = index === 0;
+        const isEnd = index === editorMap.waypoints.length - 1;
+        const selected = editorSelection.kind === 'waypoint' && editorSelection.index === index;
+        traces.push(markerTrace(
+          [point],
+          isStart ? '起点' : isEnd ? '终点' : `航点 ${index + 1}`,
+          selected ? '#f97316' : isStart ? '#16a34a' : isEnd ? '#d92d20' : '#64748b',
+          selected ? 12 : 8,
+          isStart ? 'square' : isEnd ? 'diamond' : 'circle'
+        ));
+        selections.push({kind: 'waypoint', index});
+      });
+      let camera = {eye: {x: 1.45, y: -1.65, z: 1.05}};
+      if (target._fullLayout?.scene?.camera) {
+        camera = target._fullLayout.scene.camera;
+      }
+      Plotly.react(target, traces.filter(Boolean), {
+        margin: {l: 0, r: 0, t: 8, b: 0},
+        paper_bgcolor: '#f8fafc',
+        dragmode: 'orbit',
+        uirevision: 'map-editor-camera',
+        scene: {
+          xaxis: {title: 'X / m'},
+          yaxis: {title: 'Y / m'},
+          zaxis: {title: 'Z / m'},
+          aspectmode: 'data',
+          camera
+        },
+        legend: {orientation: 'h', y: 0.02, x: 0.02}
+      }, {responsive: true, displaylogo: false}).then(() => {
+        if (target.removeAllListeners) target.removeAllListeners('plotly_click');
+        target.on?.('plotly_click', event => {
+          const point = event.points?.[0];
+          const selection = selections[point?.curveNumber] || pointSelections[point?.curveNumber]?.[point?.pointNumber];
+          if (selection) {
+            editorSelection = selection;
+            refreshEditorObjectSelect();
+            renderEditorObjectForm();
+            drawEditorDragCanvas();
+            $('editorStatus').textContent = '已选中对象；如需移动，请在右下角 2D 编辑面板中拖动';
+          }
+        });
+      });
+    }
+
+    function buildPayload() {
+      const planners = [];
+      if ($('useDstar').checked) planners.push('dstar_lite');
+      if ($('useAstar').checked) planners.push('astar');
+      if ($('useHybridAstar').checked) planners.push('hybrid_astar');
+      return {
+        preset: $('preset').value,
+        map_file: $('mapFile').value,
+        repeat_count: Number($('repeatCount').value),
+        compare_planners: planners,
+        base_config: {
+          preset: $('preset').value,
+          map_file: $('mapFile').value,
+          max_sim_time: Number($('simTime').value),
+          planner_resolution: Number($('resolution').value),
+          safety_margin: Number($('margin').value),
+          planner_replan_interval: Number($('replanInterval').value),
+          leader_max_vel: Number($('leaderVel').value),
+          planner_mode: 'online',
+          wp_radius_final: 0.4
+        },
+        events: events.map(toEventJson)
+      };
+    }
+
+    function toEventJson(ev) {
+      if (ev.action === 'remove') {
+        return {t: Number(ev.t), action: 'remove', target_id: ev.target_id || 'obs_0'};
+      }
+      if (ev.action === 'move') {
+        return {
+          t: Number(ev.t),
+          action: 'move',
+          target_id: ev.target_id || 'obs_0',
+          obstacle: {
+            id: ev.target_id || 'obs_0',
+            type: ev.type,
+            center_or_min: [Number(ev.x), Number(ev.y), Number(ev.z)],
+            size_or_max: [Number(ev.a), Number(ev.b), Number(ev.c)]
+          }
+        };
+      }
+      return {
+        t: Number(ev.t),
+        action: 'add',
+        obstacle: {
+          type: ev.type,
+          center_or_min: [Number(ev.x), Number(ev.y), Number(ev.z)],
+          size_or_max: [Number(ev.a), Number(ev.b), Number(ev.c)]
+        }
+      };
+    }
+
+    function ensureEventUiIds() {
+      events.forEach(ev => {
+        if (!ev._ui_id) ev._ui_id = `event_${nextEventUiId++}`;
+      });
+      if (!selectedEventId && events.length) selectedEventId = events[0]._ui_id;
+      selectedEventIndex = Math.max(0, events.findIndex(ev => ev._ui_id === selectedEventId));
+      if (!events.length) {
+        selectedEventIndex = -1;
+        selectedEventId = '';
+      } else if (selectedEventIndex < 0) {
+        selectedEventIndex = 0;
+        selectedEventId = events[0]._ui_id;
+      }
+    }
+
+    function currentTimelineTime() {
+      const frame = currentFrame(lastReplay);
+      return Number((frame?.t ?? 0).toFixed(3));
+    }
+
+    function defaultSizeForType(type) {
+      if (type === 'aabb') return [2, 2, 2];
+      if (type === 'cylinder') return [1, 0, 2];
+      return [1, 0, 0];
+    }
+
+    function obstacleId(obs, index) {
+      return obs?.id || `obs_${index}`;
+    }
+
+    function timelineTargetId() {
+      const selected = $('timelineTargetSelect')?.value || '';
+      const frame = currentFrame(lastReplay);
+      const obstacles = frame?.obstacles || lastReplay?.static_map?.obstacles || [];
+      return selected || obstacleId(obstacles[0], 0) || 'obs_0';
+    }
+
+    function obstacleToEventFields(obs) {
+      if (!obs) return null;
+      return {
+        type: obs.type || 'sphere',
+        x: Number(obs.center_or_min?.[0] ?? 0),
+        y: Number(obs.center_or_min?.[1] ?? 0),
+        z: Number(obs.center_or_min?.[2] ?? 0),
+        a: Number(obs.size_or_max?.[0] ?? 1),
+        b: Number(obs.size_or_max?.[1] ?? 0),
+        c: Number(obs.size_or_max?.[2] ?? 0)
+      };
+    }
+
+    function defaultEvent(action = 'add') {
+      const frame = currentFrame(lastReplay);
+      const obstacles = frame?.obstacles || lastReplay?.static_map?.obstacles || [];
+      const target = timelineTargetId();
+      const obstacle = obstacles.find((obs, index) => obstacleId(obs, index) === target) || obstacles[0];
+      const type = $('timelineTypeSelect')?.value || 'sphere';
+      const leader = frame?.leader_pose || [15, 10, 3];
+      const base = obstacleToEventFields(obstacle);
+      const [a, b, c] = defaultSizeForType(type);
+      const ev = {
+        _ui_id: `event_${nextEventUiId++}`,
+        t: currentTimelineTime(),
+        action,
+        type,
+        x: Number((leader[0] + 1).toFixed(2)),
+        y: Number(leader[1].toFixed(2)),
+        z: Number(leader[2].toFixed(2)),
+        a, b, c,
+        target_id: action === 'add' ? '' : target
+      };
+      if ((action === 'move' || action === 'remove') && base) {
+        Object.assign(ev, base);
+        if (action === 'move') ev.x = Number((ev.x + 1).toFixed(2));
+      }
+      return ev;
+    }
+
+    function renderEvents() {
+      ensureEventUiIds();
+      events.sort((a, b) => Number(a.t) - Number(b.t));
+      ensureEventUiIds();
+      syncReplayEventsFromEditor();
+      $('eventList').innerHTML = events.map((ev, index) => eventCardHtml(ev, index)).join('');
+      $('eventList').querySelectorAll('[data-field]').forEach(input => {
+        input.addEventListener('input', updateEventFromInput);
+        input.addEventListener('change', updateEventFromInput);
+      });
+      $('eventList').querySelectorAll('[data-select-event]').forEach(btn => {
+        btn.addEventListener('click', () => selectTimelineEvent(Number(btn.dataset.selectEvent), true));
+      });
+      $('eventList').querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const removed = events.splice(Number(btn.dataset.remove), 1)[0];
+          if (removed?._ui_id === selectedEventId) selectedEventId = events[Math.min(events.length - 1, Number(btn.dataset.remove))]?._ui_id || '';
+          renderEvents();
+        });
+      });
+      $('eventsJson').value = JSON.stringify(events.map(toEventJson), null, 2);
+      refreshTimelineEditor();
+      updateTimeline();
+    }
+
+    function syncReplayEventsFromEditor() {
+      if (!lastReplay) return;
+      lastReplay.dynamic_events = events.map(toEventJson);
+      eventsDirtySinceRun = true;
+    }
+
+    function updateEventFromInput(event) {
+      const el = event.currentTarget;
+      const index = Number(el.dataset.index);
+      const field = el.dataset.field;
+      if (!events[index]) return;
+      selectedEventId = events[index]._ui_id || selectedEventId;
+      events[index][field] = el.type === 'number' ? Number(el.value) : el.value;
+      if (field === 'action' && (el.value === 'remove' || el.value === 'move') && !events[index].target_id) {
+        events[index].target_id = 'obs_0';
+      }
+      if (field === 'action' || field === 'type') renderEvents();
+      else {
+        $('eventsJson').value = JSON.stringify(events.map(toEventJson), null, 2);
+        syncReplayEventsFromEditor();
+        refreshTimelineEditor();
+        updateTimeline();
+      }
+    }
+
+    function eventCardHtml(ev, index) {
+      const isRemove = ev.action === 'remove';
+      const isMove = ev.action === 'move';
+      const typeOptions = ['sphere', 'aabb', 'cylinder']
+        .map(type => `<option value="${type}" ${ev.type === type ? 'selected' : ''}>${type}</option>`).join('');
+      const actionOptions = ['add', 'remove', 'move']
+        .map(action => `<option value="${action}" ${ev.action === action ? 'selected' : ''}>${action === 'add' ? '添加' : action === 'remove' ? '移除' : '移动'}</option>`).join('');
+      const sizeLabels = ev.type === 'aabb'
+        ? ['max X', 'max Y', 'max Z']
+        : ev.type === 'cylinder'
+          ? ['半径', 'z min', 'z max']
+          : ['半径', '-', '-'];
+      const selectedClass = ev._ui_id === selectedEventId ? ' is-selected' : '';
+      return `
+        <article class="event-card${selectedClass}">
+          <header>
+            <strong>#${index + 1} ${isRemove ? '移除障碍' : isMove ? '移动障碍' : '添加障碍'}</strong>
+            <button class="icon-btn" title="选中事件" data-select-event="${index}">⌖</button>
+            <button class="icon-btn" title="删除事件" data-remove="${index}">×</button>
+          </header>
+          <div class="event-fields">
+            <label>时间(s)<input type="number" step="0.1" data-index="${index}" data-field="t" value="${ev.t}"></label>
+            <label>操作<select data-index="${index}" data-field="action">${actionOptions}</select></label>
+            ${isRemove ? `
+              <label class="wide">目标 ID<input data-index="${index}" data-field="target_id" value="${ev.target_id || ''}" placeholder="obs_3"></label>
+            ` : `
+              ${isMove ? `<label class="wide">目标 ID<input data-index="${index}" data-field="target_id" value="${ev.target_id || ''}" placeholder="obs_0"></label>` : ''}
+              <label>类型<select data-index="${index}" data-field="type">${typeOptions}</select></label>
+              <label>X / min X<input type="number" step="0.1" data-index="${index}" data-field="x" value="${ev.x}"></label>
+              <label>Y / min Y<input type="number" step="0.1" data-index="${index}" data-field="y" value="${ev.y}"></label>
+              <label>Z / min Z<input type="number" step="0.1" data-index="${index}" data-field="z" value="${ev.z}"></label>
+              <label>${sizeLabels[0]}<input type="number" step="0.1" data-index="${index}" data-field="a" value="${ev.a}"></label>
+              <label>${sizeLabels[1]}<input type="number" step="0.1" data-index="${index}" data-field="b" value="${ev.b}"></label>
+              <label>${sizeLabels[2]}<input type="number" step="0.1" data-index="${index}" data-field="c" value="${ev.c}"></label>
+            `}
+          </div>
+        </article>
+      `;
+    }
+
+    function eventLabel(ev, index) {
+      const action = ev.action === 'add' ? '添加' : ev.action === 'remove' ? '移除' : '移动';
+      const target = ev.action === 'add' ? (ev.type || 'obstacle') : (ev.target_id || 'obs_0');
+      return `#${index + 1}  t=${Number(ev.t).toFixed(1)}s  ${action} ${target}`;
+    }
+
+    function refreshTimelineEditor() {
+      if (!$('timelineEventSelect')) return;
+      ensureEventUiIds();
+      const selectedIndex = Math.max(0, events.findIndex(ev => ev._ui_id === selectedEventId));
+      $('timelineEventSelect').innerHTML = events.length
+        ? events.map((ev, index) => `<option value="${index}" ${index === selectedIndex ? 'selected' : ''}>${eventLabel(ev, index)}</option>`).join('')
+        : '<option value="-1">暂无事件</option>';
+      $('timelineEventSelect').disabled = events.length === 0;
+      $('jumpTimelineEventBtn').disabled = !lastReplay || events.length === 0;
+      $('pinEventToFrameBtn').disabled = !lastReplay || events.length === 0;
+      refreshTimelineTargets();
+      renderTimelineMarkers();
+    }
+
+    function refreshTimelineTargets() {
+      if (!$('timelineTargetSelect')) return;
+      const previous = $('timelineTargetSelect').value;
+      const frame = currentFrame(lastReplay);
+      const obstacles = frame?.obstacles || lastReplay?.static_map?.obstacles || [];
+      const options = obstacles.map((obs, index) => {
+        const id = obstacleId(obs, index);
+        return `<option value="${id}" ${id === previous ? 'selected' : ''}>${id} (${obs.type || 'obstacle'})</option>`;
+      }).join('');
+      $('timelineTargetSelect').innerHTML = options || '<option value="obs_0">obs_0</option>';
+    }
+
+    function renderTimelineMarkers() {
+      if (!$('timelineMarkers')) return;
+      if (!events.length) {
+        $('timelineMarkers').innerHTML = '<span class="muted">暂无动态事件</span>';
+        return;
+      }
+      $('timelineMarkers').innerHTML = events.map((ev, index) => {
+        const active = ev._ui_id === selectedEventId ? ' active' : '';
+        return `<button type="button" class="timeline-marker${active}" data-marker-event="${index}">${eventLabel(ev, index)}</button>`;
+      }).join('');
+      $('timelineMarkers').querySelectorAll('[data-marker-event]').forEach(btn => {
+        btn.addEventListener('click', () => selectTimelineEvent(Number(btn.dataset.markerEvent), true));
+      });
+    }
+
+    function selectTimelineEvent(index, jump = false) {
+      if (!events.length || !events[index]) return;
+      selectedEventIndex = index;
+      selectedEventId = events[index]._ui_id;
+      $('timelineEventSelect').value = String(index);
+      renderEvents();
+      if (jump) jumpToSelectedEvent();
+    }
+
+    function jumpToSelectedEvent() {
+      if (!lastReplay || !events.length) return;
+      const ev = events[Math.max(0, selectedEventIndex)] || events[0];
+      const targetTime = Number(ev.t);
+      let nearest = 0;
+      let best = Infinity;
+      lastReplay.frames.forEach((frame, index) => {
+        const diff = Math.abs(Number(frame.t) - targetTime);
+        if (diff < best) {
+          best = diff;
+          nearest = index;
+        }
+      });
+      setFrame(nearest);
+    }
+
+    function pinSelectedEventToFrame() {
+      if (!lastReplay || !events.length) return;
+      const ev = events[Math.max(0, selectedEventIndex)] || events[0];
+      ev.t = currentTimelineTime();
+      selectedEventId = ev._ui_id;
+      renderEvents();
+      updateTimeline();
+    }
+
+    function insertEventAtCurrentFrame() {
+      const action = $('timelineActionSelect').value || 'add';
+      const ev = defaultEvent(action);
+      if (action !== 'add') ev.target_id = timelineTargetId();
+      events.push(ev);
+      selectedEventId = ev._ui_id;
+      renderEvents();
+      updateTimeline();
+    }
+
+    async function runSimulation() {
+      $('runBtn').disabled = true;
+      $('status').textContent = '运行中...';
+      try {
+        const payload = buildPayload();
+        const response = await fetch('/api/simulate', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.detail || '仿真失败');
+        lastReplay = body.results[0];
+        currentFrameIndex = 0;
+        eventsDirtySinceRun = false;
+        $('runMeta').textContent = `${lastReplay.metadata.step_count} 帧 · seed ${lastReplay.metadata.seed}`;
+        $('status').textContent = `完成：${body.results.length} 次运行`;
+        $('viewToolbar').classList.remove('is-hidden');
+        $('timeline').classList.remove('is-hidden');
+        $('timelineEditor').classList.remove('is-hidden');
+        $('eventReadout').classList.remove('is-hidden');
+        setupTimeline(lastReplay);
+        setFrame(0);
+        renderMetrics(lastReplay);
+        renderCharts(lastReplay);
+      } catch (error) {
+        $('status').textContent = error.message;
+      } finally {
+        $('runBtn').disabled = false;
+      }
+    }
+
+    function setActiveView(view) {
+      activeView = view;
+      renderActiveView();
+    }
+
+    let playTimer = null;
+
+    function togglePlay() {
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+        $('playBtn').textContent = '▶';
+        return;
+      }
+      if (!lastReplay) return;
+      $('playBtn').textContent = '⏸';
+      playTimer = setInterval(() => {
+        if (currentFrameIndex >= lastReplay.frames.length - 1) {
+          clearInterval(playTimer);
+          playTimer = null;
+          $('playBtn').textContent = '▶';
+          return;
+        }
+        setFrame(currentFrameIndex + 1);
+      }, 80);
+    }
+
+    function setFrame(value) {
+      if (!lastReplay) return;
+      const max = Math.max(0, lastReplay.frames.length - 1);
+      currentFrameIndex = Math.min(Math.max(0, Math.round(Number(value))), max);
+      $('frameSlider').value = String(currentFrameIndex);
+      updateTimeline();
+      if (activeView === '3d') renderPlot3D(lastReplay);
+      else {
+        resizeCanvas();
+        drawReplay(lastReplay);
+      }
+    }
+
+    function renderActiveView() {
+      const show3d = activeView === '3d';
+      $('view2dBtn').classList.toggle('active', !show3d);
+      $('view3dBtn').classList.toggle('active', show3d);
+      $('mapCanvas').classList.toggle('is-hidden', show3d);
+      $('plot3d').classList.toggle('is-hidden', !show3d);
+      $('mapLegend').classList.toggle('is-hidden', show3d);
+      if (show3d) renderPlot3D(lastReplay);
+      else {
+        resizeCanvas();
+        drawReplay(lastReplay);
+      }
+      updateTimeline();
+    }
+
+    function setupTimeline(replay) {
+      const max = Math.max(0, replay.frames.length - 1);
+      $('frameSlider').max = String(max);
+      $('frameSlider').value = String(currentFrameIndex);
+      updateTimeline();
+      refreshTimelineEditor();
+    }
+
+    function currentFrame(replay) {
+      if (!replay || !replay.frames.length) return null;
+      const index = Math.min(Math.max(0, currentFrameIndex), replay.frames.length - 1);
+      return replay.frames[index];
+    }
+
+    function updateTimeline() {
+      if (!lastReplay) return;
+      const index = Math.min(Math.max(0, currentFrameIndex), lastReplay.frames.length - 1);
+      const frame = lastReplay.frames[index];
+      $('frameSlider').value = String(index);
+      $('frameIndex').textContent = `${index + 1} / ${lastReplay.frames.length}`;
+      $('frameTime').textContent = `t=${(frame?.t ?? 0).toFixed(1)}s`;
+      $('prevFrameBtn').disabled = index <= 0;
+      $('nextFrameBtn').disabled = index >= lastReplay.frames.length - 1;
+      $('eventReadout').textContent = frameReadout(lastReplay, frame);
+      refreshTimelineTargets();
+      renderTimelineMarkers();
+    }
+
+    function frameReadout(replay, frame) {
+      if (!frame) return '未运行';
+      const prevT = currentFrameIndex > 0 ? replay.frames[currentFrameIndex - 1].t : -Infinity;
+      const eventsAtFrame = replay.dynamic_events.filter(ev => Number(ev.t) > prevT + 1e-9 && Number(ev.t) <= frame.t + 1e-9);
+      const eventText = eventsAtFrame.length
+        ? eventsAtFrame.map(formatEvent).join('；')
+        : frame.obstacle_changed ? '障碍物状态已变化' : '当前帧无障碍物事件';
+      const obstacleCount = (frame.obstacles || replay.static_map.obstacles).length;
+      const followerCount = frame.followers?.length || 0;
+      const dirtyHint = eventsDirtySinceRun ? ' 时间轴事件已编辑，重新运行仿真后轨迹和障碍物状态会按新事件更新。' : '';
+      return `${eventText}。障碍物 ${obstacleCount} 个，Leader (${frame.leader_pose.map(v => v.toFixed(2)).join(', ')}), Followers ${followerCount} 架。${dirtyHint}`;
+    }
+
+    function formatEvent(ev) {
+      if (ev.action === 'remove') return `移除 ${ev.target_id}`;
+      if (ev.action === 'move') return `移动 ${ev.target_id}`;
+      return `添加 ${ev.obstacle?.type || 'obstacle'}`;
+    }
+
+    function resizeCanvas() {
+      const canvas = $('mapCanvas');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(640, Math.floor(rect.width * devicePixelRatio));
+      canvas.height = Math.max(360, Math.floor(rect.height * devicePixelRatio));
+    }
+
+    function project(bounds, canvas, point) {
+      const min = bounds[0], max = bounds[1];
+      const pad = 28 * devicePixelRatio;
+      const sx = (canvas.width - pad * 2) / Math.max(1e-6, max[0] - min[0]);
+      const sy = (canvas.height - pad * 2) / Math.max(1e-6, max[1] - min[1]);
+      const s = Math.min(sx, sy);
+      return [
+        pad + (point[0] - min[0]) * s,
+        canvas.height - pad - (point[1] - min[1]) * s,
+        s
+      ];
+    }
+
+    // 路径插值，使轨迹更连续
+    function densifyPath(path, minStep = 0.15) {
+      if (!path || path.length < 2) return path || [];
+      const out = [path[0]];
+      for (let i = 1; i < path.length; i++) {
+        const a = path[i - 1], b = path[i];
+        const dist = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+        const steps = Math.max(1, Math.ceil(dist / minStep));
+        for (let s = 1; s <= steps; s++) {
+          const t = s / steps;
+          out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]);
+        }
+      }
+      return out;
+    }
+
+    function drawReplay(replay) {
+      const canvas = $('mapCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#fbfcff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (!replay) return;
+
+      const bounds = replay.static_map.bounds;
+      ctx.lineWidth = 1 * devicePixelRatio;
+      ctx.strokeStyle = '#d8dee9';
+      for (let i = 0; i <= 10; i++) {
+        const x = canvas.width * i / 10;
+        const y = canvas.height * i / 10;
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      const frame = currentFrame(replay);
+      if (!frame) return;
+      for (const obs of frame.obstacles || replay.static_map.obstacles) drawObstacle(ctx, canvas, bounds, obs);
+      const playedFrames = replay.frames.slice(0, currentFrameIndex + 1);
+      const leaderTrail = densifyPath(playedFrames.map(f => f.leader_pose));
+      drawPath(ctx, canvas, bounds, leaderTrail, '#1f2937', false, 3.4);
+      drawTrailDots(ctx, canvas, bounds, playedFrames.map(f => f.leader_pose), '#1f2937');
+      drawFollowerTrails(ctx, canvas, bounds, playedFrames);
+      if (frame.dstar_lite?.path) drawPath(ctx, canvas, bounds, densifyPath(frame.dstar_lite.path), '#168a53', false);
+      if (frame.astar?.path) drawPath(ctx, canvas, bounds, densifyPath(frame.astar.path), '#d46b08', true);
+      if (frame.hybrid_astar?.path) drawPath(ctx, canvas, bounds, densifyPath(frame.hybrid_astar.path), '#7c3aed', true, 2.4, [3, 5, 1, 5]);
+      drawWaypoints(ctx, canvas, bounds, replay.waypoints || []);
+      (frame.followers || []).forEach(point => drawPoint(ctx, canvas, bounds, point, '#0891b2', 4));
+      drawPoint(ctx, canvas, bounds, frame.leader_pose, '#d92d20', 5);
+      drawFrameHud(ctx, frame);
+    }
+
+    function drawObstacle(ctx, canvas, bounds, obs) {
+      const p = project(bounds, canvas, obs.center_or_min);
+      ctx.save();
+      ctx.globalAlpha = 0.45;
+      if (obs.type === 'aabb') {
+        const q = project(bounds, canvas, obs.size_or_max);
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillRect(Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.abs(q[0] - p[0]), Math.abs(q[1] - p[1]));
+      } else {
+        ctx.fillStyle = obs.type === 'cylinder' ? '#facc15' : '#60a5fa';
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], Math.max(3, obs.size_or_max[0] * p[2]), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawPath(ctx, canvas, bounds, path, color, dashed, width = 2.4, dashPattern = null) {
+      if (path.length < 2) return;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width * devicePixelRatio;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      if (dashed && dashPattern) ctx.setLineDash(dashPattern.map(v => v * devicePixelRatio));
+      else if (dashed) ctx.setLineDash([8 * devicePixelRatio, 6 * devicePixelRatio]);
+      ctx.beginPath();
+      path.forEach((pt, i) => {
+        const p = project(bounds, canvas, pt);
+        if (i === 0) ctx.moveTo(p[0], p[1]);
+        else ctx.lineTo(p[0], p[1]);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawTrailDots(ctx, canvas, bounds, path, color) {
+      if (!path || path.length < 2) return;
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.5;
+      path.forEach((point, index) => {
+        if (index % 2 !== 0 && index !== path.length - 1) return;
+        const p = project(bounds, canvas, point);
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 2.2 * devicePixelRatio, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawFollowerTrails(ctx, canvas, bounds, frames) {
+      const count = frames[frames.length - 1]?.followers?.length || 0;
+      for (let i = 0; i < count; i++) {
+        const trail = densifyPath(frames.map(frame => frame.followers?.[i]).filter(Boolean));
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        drawPath(ctx, canvas, bounds, trail, '#0891b2', false, 1.2);
+        ctx.restore();
+      }
+    }
+
+    function drawPoint(ctx, canvas, bounds, point, color, radius) {
+      const p = project(bounds, canvas, point);
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], radius * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawWaypoints(ctx, canvas, bounds, waypoints) {
+      if (!waypoints || waypoints.length < 2) return;
+      // 绘制航点连接线（灰色虚线）
+      ctx.save();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.2 * devicePixelRatio;
+      ctx.setLineDash([5 * devicePixelRatio, 4 * devicePixelRatio]);
+      ctx.beginPath();
+      waypoints.forEach((pt, i) => {
+        const p = project(bounds, canvas, pt);
+        if (i === 0) ctx.moveTo(p[0], p[1]);
+        else ctx.lineTo(p[0], p[1]);
+      });
+      ctx.stroke();
+      ctx.restore();
+
+      // 绘制每个航点（起点绿色方块，终点红色菱形，中间为编号圆）
+      waypoints.forEach((pt, i) => {
+        const p = project(bounds, canvas, pt);
+        const r = 6 * devicePixelRatio;
+        ctx.save();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5 * devicePixelRatio;
+
+        if (i === 0) {
+          // 起点：绿色方块
+          ctx.fillStyle = '#16a34a';
+          ctx.beginPath();
+          ctx.rect(p[0] - r, p[1] - r, r * 2, r * 2);
+          ctx.fill();
+          ctx.stroke();
+          // 标签
+          ctx.fillStyle = '#16a34a';
+          ctx.font = `bold ${11 * devicePixelRatio}px "Segoe UI", Arial`;
+          ctx.fillText('S', p[0] + r + 4 * devicePixelRatio, p[1] + 4 * devicePixelRatio);
+        } else if (i === waypoints.length - 1) {
+          // 终点：红色菱形
+          ctx.fillStyle = '#d92d20';
+          ctx.beginPath();
+          ctx.moveTo(p[0], p[1] - r);
+          ctx.lineTo(p[0] + r, p[1]);
+          ctx.lineTo(p[0], p[1] + r);
+          ctx.lineTo(p[0] - r, p[1]);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#d92d20';
+          ctx.font = `bold ${11 * devicePixelRatio}px "Segoe UI", Arial`;
+          ctx.fillText('G', p[0] + r + 4 * devicePixelRatio, p[1] + 4 * devicePixelRatio);
+        } else {
+          // 中间航点：编号灰圆
+          ctx.fillStyle = '#64748b';
+          ctx.beginPath();
+          ctx.arc(p[0], p[1], r * 0.75, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `${9 * devicePixelRatio}px "Segoe UI", Arial`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(i + 1), p[0], p[1]);
+          ctx.textAlign = 'start';
+          ctx.textBaseline = 'alphabetic';
+        }
+        ctx.restore();
+      });
+    }
+
+    function drawFrameHud(ctx, frame) {
+      const text = `frame ${currentFrameIndex + 1}/${lastReplay.frames.length}  t=${frame.t.toFixed(1)}s  leader=(${frame.leader_pose.map(v => v.toFixed(2)).join(', ')})`;
+      ctx.save();
+      ctx.font = `${13 * devicePixelRatio}px "Segoe UI", Arial`;
+      const pad = 8 * devicePixelRatio;
+      const width = ctx.measureText(text).width + pad * 2;
+      const height = 30 * devicePixelRatio;
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      ctx.fillRect(12 * devicePixelRatio, 12 * devicePixelRatio, width, height);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.strokeRect(12 * devicePixelRatio, 12 * devicePixelRatio, width, height);
+      ctx.fillStyle = '#18202f';
+      ctx.fillText(text, 12 * devicePixelRatio + pad, 32 * devicePixelRatio);
+      ctx.restore();
+    }
+
+    function renderPlot3D(replay) {
+      const target = $('plot3d');
+      if (!replay) { target.innerHTML = ''; return; }
+      if (!window.Plotly) { target.textContent = 'Plotly 未加载'; return; }
+      try {
+        const bounds = replay.static_map.bounds;
+        const frame = currentFrame(replay) || {};
+        const playedFrames = replay.frames.slice(0, currentFrameIndex + 1);
+        const waypoints = replay.waypoints || [];
+        const traces = [
+          ...floorGridTraces(bounds),
+          ...(frame.obstacles || replay.static_map.obstacles).flatMap(obstacleTrace3D),
+          trajectoryTrace(playedFrames.map(f => f.leader_pose), 'Leader轨迹', '#1f2937', 6),
+          ...followerTrajectoryTraces(playedFrames),
+          pathTrace(frame.dstar_lite?.path, 'D* Lite', '#168a53', 7, 'solid'),
+          pathTrace(frame.astar?.path, 'Grid A*', '#d46b08', 5, 'dash'),
+          pathTrace(frame.hybrid_astar?.path, 'Hybrid A*', '#7c3aed', 4, 'dashdot'),
+          waypoints.length > 0 ? trajectoryTrace(waypoints, '航线', '#64748b', 2) : null,
+          waypoints.length > 0 ? markerTrace([waypoints[0]], '起点 S', '#16a34a', 10, 'square') : null,
+          waypoints.length > 1 ? markerTrace([waypoints[waypoints.length - 1]], '终点 G', '#d92d20', 10, 'diamond') : null,
+          waypoints.length > 2 ? markerTrace(waypoints.slice(1, -1), '航点', '#64748b', 6, 'circle') : null,
+          markerTrace([frame.leader_pose].filter(Boolean), 'Leader当前', '#d92d20', 8),
+          markerTrace(frame.followers || [], 'Followers当前', '#0891b2', 6)
+        ].filter(Boolean);
+        
+        let camera = {eye: {x: 1.45, y: -1.65, z: 1.05}};
+        if (target._fullLayout && target._fullLayout.scene && target._fullLayout.scene.camera) {
+          camera = target._fullLayout.scene.camera;
+        }
+
+        const layout = {
+          autosize: true, margin: {l: 0, r: 0, t: 6, b: 0},
+          paper_bgcolor: '#fbfcff', plot_bgcolor: '#fbfcff',
+          legend: {orientation: 'h', y: 0.02, x: 0.02, bgcolor: 'rgba(255,255,255,0.72)'},
+          scene: {
+            xaxis: {title: 'X / m', backgroundcolor: '#fbfcff', gridcolor: '#d8dee9', zerolinecolor: '#cbd5e1'},
+            yaxis: {title: 'Y / m', backgroundcolor: '#fbfcff', gridcolor: '#d8dee9', zerolinecolor: '#cbd5e1'},
+            zaxis: {title: 'Z / m', backgroundcolor: '#fbfcff', gridcolor: '#d8dee9', zerolinecolor: '#cbd5e1'},
+            aspectmode: 'data', camera: camera
+          }
+        };
+        Plotly.react(target, traces, layout, {responsive: true, displaylogo: false});
+      } catch (error) {
+        target.textContent = '3D 渲染失败: ' + (error.message || error);
+      }
+    }
+
+    function resizePlot3D() {
+      if (window.Plotly && $('plot3d')) Plotly.Plots.resize($('plot3d'));
+    }
+
+    function project3D(bounds, canvas, point) {
+      const min = bounds[0], max = bounds[1];
+      const dx = Math.max(1e-6, max[0] - min[0]);
+      const dy = Math.max(1e-6, max[1] - min[1]);
+      const dz = Math.max(1e-6, max[2] - min[2]);
+      const scale = Math.min(canvas.width / (dx + dy), canvas.height / (0.42 * (dx + dy) + dz)) * 0.72;
+      const x = point[0] - (min[0] + max[0]) * 0.5;
+      const y = point[1] - (min[1] + max[1]) * 0.5;
+      const z = point[2] - min[2];
+      return [
+        canvas.width * 0.5 + (x - y) * scale,
+        canvas.height * 0.72 + (x + y) * scale * 0.42 - z * scale * 0.9
+      ];
+    }
+
+    function drawGrid3D(ctx, canvas, bounds) {
+      const [min, max] = bounds;
+      ctx.strokeStyle = '#d8dee9';
+      ctx.lineWidth = 1 * devicePixelRatio;
+      for (let i = 0; i <= 10; i++) {
+        const x = min[0] + (max[0] - min[0]) * i / 10;
+        const y = min[1] + (max[1] - min[1]) * i / 10;
+        drawPolyline3D(ctx, canvas, bounds, [[x, min[1], min[2]], [x, max[1], min[2]]], '#e2e8f0', 1);
+        drawPolyline3D(ctx, canvas, bounds, [[min[0], y, min[2]], [max[0], y, min[2]]], '#e2e8f0', 1);
+      }
+    }
+
+    function drawPolyline3D(ctx, canvas, bounds, path, color, width, dashed = false, dashPattern = null) {
+      if (!path || path.length < 2) return;
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width * devicePixelRatio;
+      if (dashed && dashPattern) ctx.setLineDash(dashPattern.map(v => v * devicePixelRatio));
+      else if (dashed) ctx.setLineDash([7 * devicePixelRatio, 5 * devicePixelRatio]);
+      ctx.beginPath();
+      path.forEach((pt, index) => {
+        const p = project3D(bounds, canvas, pt);
+        if (index === 0) ctx.moveTo(p[0], p[1]);
+        else ctx.lineTo(p[0], p[1]);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawFollowerTrails3D(ctx, canvas, bounds, frames) {
+      const count = frames[frames.length - 1]?.followers?.length || 0;
+      for (let i = 0; i < count; i++) {
+        const trail = frames.map(frame => frame.followers?.[i]).filter(Boolean);
+        drawPolyline3D(ctx, canvas, bounds, trail, '#0891b2', 1.6);
+      }
+    }
+
+    function drawObstacle3D(ctx, canvas, bounds, obs) {
+      if (obs.type === 'aabb') {
+        const min = obs.center_or_min;
+        const max = obs.size_or_max;
+        drawBox3D(ctx, canvas, bounds, min, max, '#94a3b8');
+        return;
+      }
+      const center = obs.center_or_min;
+      const radius = obs.size_or_max[0];
+      const base = project3D(bounds, canvas, center);
+      const top = obs.type === 'cylinder'
+        ? project3D(bounds, canvas, [center[0], center[1], obs.size_or_max[2]])
+        : base;
+      ctx.save();
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = obs.type === 'cylinder' ? '#facc15' : '#60a5fa';
+      ctx.beginPath();
+      ctx.ellipse(top[0], top[1], Math.max(5, radius * 9), Math.max(3, radius * 4), -0.35, 0, Math.PI * 2);
+      ctx.fill();
+      if (obs.type === 'cylinder') {
+        ctx.strokeStyle = '#b45309';
+        ctx.beginPath();
+        ctx.moveTo(base[0], base[1]);
+        ctx.lineTo(top[0], top[1]);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawBox3D(ctx, canvas, bounds, min, max, color) {
+      const corners = [
+        [min[0], min[1], min[2]], [max[0], min[1], min[2]], [max[0], max[1], min[2]], [min[0], max[1], min[2]],
+        [min[0], min[1], max[2]], [max[0], min[1], max[2]], [max[0], max[1], max[2]], [min[0], max[1], max[2]]
+      ].map(p => project3D(bounds, canvas, p));
+      const faces = [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]];
+      ctx.save();
+      ctx.globalAlpha = 0.38;
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#64748b';
+      faces.forEach(face => {
+        ctx.beginPath();
+        face.forEach((idx, n) => n ? ctx.lineTo(corners[idx][0], corners[idx][1]) : ctx.moveTo(corners[idx][0], corners[idx][1]));
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function drawMarker3D(ctx, canvas, bounds, point, color, radius) {
+      const p = project3D(bounds, canvas, point);
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], radius * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawWaypoints3D(ctx, canvas, bounds, waypoints) {
+      if (!waypoints || waypoints.length < 2) return;
+      // 虚线连接
+      ctx.save();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1.2 * devicePixelRatio;
+      ctx.setLineDash([5 * devicePixelRatio, 4 * devicePixelRatio]);
+      ctx.beginPath();
+      waypoints.forEach((pt, i) => {
+        const p = project3D(bounds, canvas, pt);
+        if (i === 0) ctx.moveTo(p[0], p[1]);
+        else ctx.lineTo(p[0], p[1]);
+      });
+      ctx.stroke();
+      ctx.restore();
+
+      waypoints.forEach((pt, i) => {
+        const p = project3D(bounds, canvas, pt);
+        const r = 6 * devicePixelRatio;
+        ctx.save();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5 * devicePixelRatio;
+        if (i === 0) {
+          ctx.fillStyle = '#16a34a';
+          ctx.beginPath();
+          ctx.rect(p[0] - r, p[1] - r, r * 2, r * 2);
+          ctx.fill(); ctx.stroke();
+        } else if (i === waypoints.length - 1) {
+          ctx.fillStyle = '#d92d20';
+          ctx.beginPath();
+          ctx.moveTo(p[0], p[1] - r);
+          ctx.lineTo(p[0] + r, p[1]);
+          ctx.lineTo(p[0], p[1] + r);
+          ctx.lineTo(p[0] - r, p[1]);
+          ctx.closePath();
+          ctx.fill(); ctx.stroke();
+        }
+        ctx.restore();
+      });
+    }
+
+    function drawLegend3D(ctx, canvas, note) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.82)';
+      ctx.fillRect(12 * devicePixelRatio, 12 * devicePixelRatio, 350 * devicePixelRatio, note ? 54 * devicePixelRatio : 30 * devicePixelRatio);
+      ctx.fillStyle = '#475467';
+      ctx.font = `${12 * devicePixelRatio}px "Segoe UI", Arial`;
+      ctx.fillText('3D view: Leader / Followers / D* Lite / Grid A* / Obstacles', 22 * devicePixelRatio, 32 * devicePixelRatio);
+      if (note) ctx.fillText(note, 22 * devicePixelRatio, 54 * devicePixelRatio);
+      ctx.restore();
+    }
+
+    function pathTrace(path, name, color, width, dash) {
+      if (!path || path.length < 2) return null;
+      const trace = {
+        type: 'scatter3d',
+        mode: dash === 'dash' ? 'lines+markers' : 'lines',
+        name,
+        x: path.map(p => p[0]),
+        y: path.map(p => p[1]),
+        z: path.map(p => p[2]),
+        line: {color, width}
+      };
+      if (dash === 'dash') trace.marker = {color, size: 2, line: {color, width: 0}};
+      return trace;
+    }
+
+    function trajectoryTrace(path, name, color, width) {
+      if (!path || path.length < 2) return null;
+      return {
+        type: 'scatter3d',
+        mode: 'lines',
+        name,
+        x: path.map(p => p[0]),
+        y: path.map(p => p[1]),
+        z: path.map(p => p[2]),
+        line: {color, width}
+      };
+    }
+
+    function followerTrajectoryTraces(frames) {
+      const count = frames[frames.length - 1]?.followers?.length || 0;
+      const traces = [];
+      for (let i = 0; i < count; i++) {
+        const path = frames.map(frame => frame.followers?.[i]).filter(Boolean);
+        const trace = trajectoryTrace(path, `Follower ${i + 1}轨迹`, '#0891b2', 3);
+        if (trace) {
+          trace.opacity = 0.72;
+          traces.push(trace);
+        }
+      }
+      return traces;
+    }
+
+    function markerTrace(points, name, color, size, symbol = 'circle') {
+      if (!points || points.length === 0) return null;
+      return {
+        type: 'scatter3d',
+        mode: 'markers',
+        name,
+        x: points.map(p => p[0]),
+        y: points.map(p => p[1]),
+        z: points.map(p => p[2]),
+        marker: {color, size, symbol, line: {color: '#ffffff', width: 1}}
+      };
+    }
+
+    function floorGridTraces(bounds) {
+      const [min, max] = bounds;
+      const z = min[2];
+      const traces = [];
+      const steps = 8;
+      for (let i = 0; i <= steps; i++) {
+        const x = min[0] + (max[0] - min[0]) * i / steps;
+        const y = min[1] + (max[1] - min[1]) * i / steps;
+        traces.push({type: 'scatter3d', mode: 'lines', showlegend: false, hoverinfo: 'skip',
+          x: [x, x], y: [min[1], max[1]], z: [z, z], line: {color: '#e2e8f0', width: 1}});
+        traces.push({type: 'scatter3d', mode: 'lines', showlegend: false, hoverinfo: 'skip',
+          x: [min[0], max[0]], y: [y, y], z: [z, z], line: {color: '#e2e8f0', width: 1}});
+      }
+      return traces;
+    }
+
+    function obstacleTrace3D(obs) {
+      if (obs.type === 'aabb') return [boxMesh(obs)];
+      if (obs.type === 'sphere') return [sphereMesh(obs)];
+      if (obs.type === 'cylinder') return [cylinderMesh(obs)];
+      return [];
+    }
+
+    function boxMesh(obs) {
+      const min = obs.center_or_min;
+      const max = obs.size_or_max;
+      const x = [min[0], max[0], max[0], min[0], min[0], max[0], max[0], min[0]];
+      const y = [min[1], min[1], max[1], max[1], min[1], min[1], max[1], max[1]];
+      const z = [min[2], min[2], min[2], min[2], max[2], max[2], max[2], max[2]];
+      return {
+        type: 'mesh3d',
+        name: obs.id || 'AABB',
+        x, y, z,
+        i: [0, 0, 4, 4, 0, 0, 1, 1, 2, 2, 3, 3],
+        j: [1, 2, 6, 7, 4, 5, 5, 6, 6, 7, 7, 4],
+        k: [2, 3, 7, 5, 5, 1, 6, 2, 7, 3, 4, 0],
+        color: '#94a3b8',
+        opacity: 0.28,
+        flatshading: true
+      };
+    }
+
+    function sphereMesh(obs) {
+      const center = obs.center_or_min;
+      const radius = obs.size_or_max[0];
+      const latSteps = 12;
+      const lonSteps = 18;
+      const x = [], y = [], z = [], i = [], j = [], k = [];
+      for (let lat = 0; lat <= latSteps; lat++) {
+        const theta = Math.PI * lat / latSteps;
+        for (let lon = 0; lon <= lonSteps; lon++) {
+          const phi = Math.PI * 2 * lon / lonSteps;
+          x.push(center[0] + radius * Math.sin(theta) * Math.cos(phi));
+          y.push(center[1] + radius * Math.sin(theta) * Math.sin(phi));
+          z.push(center[2] + radius * Math.cos(theta));
+        }
+      }
+      for (let lat = 0; lat < latSteps; lat++) {
+        for (let lon = 0; lon < lonSteps; lon++) {
+          const a = lat * (lonSteps + 1) + lon;
+          const b = a + lonSteps + 1;
+          i.push(a, a + 1);
+          j.push(b, b);
+          k.push(a + 1, b + 1);
+        }
+      }
+      return {type: 'mesh3d', name: obs.id || 'Sphere', x, y, z, i, j, k, color: '#60a5fa', opacity: 0.32, flatshading: true};
+    }
+
+    function cylinderMesh(obs) {
+      const center = obs.center_or_min;
+      const [radius, zMin, zMax] = obs.size_or_max;
+      const segments = 28;
+      const x = [center[0], center[0]], y = [center[1], center[1]], z = [zMin, zMax];
+      const i = [], j = [], k = [];
+      for (let s = 0; s < segments; s++) {
+        const angle = Math.PI * 2 * s / segments;
+        x.push(center[0] + radius * Math.cos(angle), center[0] + radius * Math.cos(angle));
+        y.push(center[1] + radius * Math.sin(angle), center[1] + radius * Math.sin(angle));
+        z.push(zMin, zMax);
+      }
+      for (let s = 0; s < segments; s++) {
+        const next = (s + 1) % segments;
+        const a0 = 2 + s * 2, a1 = a0 + 1;
+        const b0 = 2 + next * 2, b1 = b0 + 1;
+        i.push(a0, a1, 0, 1);
+        j.push(b0, b1, b0, a1);
+        k.push(a1, b0, a0, b1);
+      }
+      return {type: 'mesh3d', name: obs.id || 'Cylinder', x, y, z, i, j, k, color: '#facc15', opacity: 0.34, flatshading: true};
+    }
+
+    function renderMetrics(replay) {
+      const container = $('metrics');
+      container.innerHTML = Object.entries(replay.summary).map(([name, s]) => `
+        <div class="metric">
+          <h3>${name}</h3>
+          <dl>
+            <dt>重规划次数</dt><dd>${s.total_replans}</dd>
+            <dt>平均耗时</dt><dd>${s.avg_compute_ms.toFixed(3)} ms</dd>
+            <dt>P95 耗时</dt><dd>${s.p95_compute_ms.toFixed(3)} ms</dd>
+            <dt>碰撞次数</dt><dd>${s.collisions}</dd>
+            <dt>路径长度</dt><dd>${s.path_length_m.toFixed(2)} m</dd>
+            <dt>终点距离</dt><dd>${s.final_dist_to_goal.toFixed(2)} m</dd>
+          </dl>
+        </div>
+      `).join('');
+    }
+
+    function renderCharts(replay) {
+      const labels = replay.frames.map(f => f.t.toFixed(1));
+      const plannerColors = {dstar_lite: '#168a53', astar: '#d46b08', hybrid_astar: '#7c3aed'};
+      const plannerNames = {dstar_lite: 'D* Lite', astar: 'Grid A*', hybrid_astar: 'Hybrid A*'};
+      const planners = ['dstar_lite', 'astar', 'hybrid_astar'].filter(p => replay.frames.some(f => f[p]));
+      const timeDatasets = planners.map(p => ({
+        label: plannerNames[p] || p,
+        data: replay.frames.map(f => f[p]?.compute_time_ms ?? null),
+        borderColor: plannerColors[p],
+        pointRadius: 0,
+        tension: 0.2
+      }));
+      const pathDatasets = planners.map(p => ({
+        label: plannerNames[p] || p,
+        data: replay.frames.map(f => pathLen(f[p]?.path || [])),
+        borderColor: plannerColors[p],
+        pointRadius: 0,
+        tension: 0.2
+      }));
+      timeChart?.destroy();
+      pathChart?.destroy();
+      timeChart = new Chart($('timeChart'), {type: 'line', data: {labels, datasets: timeDatasets}, options: chartOptions('ms')});
+      pathChart = new Chart($('pathChart'), {type: 'line', data: {labels, datasets: pathDatasets}, options: chartOptions('m')});
+    }
+
+    function pathLen(path) {
+      let total = 0;
+      for (let i = 1; i < path.length; i++) {
+        const a = path[i - 1], b = path[i];
+        total += Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+      }
+      return total;
+    }
+
+    function chartOptions(unit) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {x: {display: false}, y: {title: {display: true, text: unit}}},
+        plugins: {legend: {position: 'bottom'}}
+      };
+    }
+
+    init().catch(err => $('status').textContent = err.message);
+  </script>
+</body>
+</html>

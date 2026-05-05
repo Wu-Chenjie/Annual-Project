@@ -1,0 +1,58 @@
+{
+  "bounds": [[-5, -5, 0], [25, 25, 8]],
+  "description": "办公室场景：走廊 + 立柱 + 低梁",
+  "obstacles": [
+    {
+      "type": "aabb",
+      "min": [2, 0, 0],
+      "max": [4, 8, 4]
+    },
+    {
+      "type": "aabb",
+      "min": [2, 12, 0],
+      "max": [4, 22, 4]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [10, 5],
+      "radius": 0.45,
+      "z_range": [0, 7]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [10, 15],
+      "radius": 0.45,
+      "z_range": [0, 7]
+    },
+    {
+      "type": "aabb",
+      "min": [14, 0, 0],
+      "max": [16, 8, 3.5]
+    },
+    {
+      "type": "aabb",
+      "min": [14, 12, 0],
+      "max": [16, 22, 3.5]
+    },
+    {
+      "type": "aabb",
+      "min": [8, 9, 2.5],
+      "max": [20, 13, 2.8]
+    },
+    {
+      "type": "aabb",
+      "min": [0, 0, 0],
+      "max": [25, 0.3, 8]
+    },
+    {
+      "type": "aabb",
+      "min": [0, 21.7, 0],
+      "max": [25, 22, 8]
+    },
+    {
+      "type": "aabb",
+      "min": [24.7, 0, 0],
+      "max": [25, 22, 8]
+    }
+  ]
+}

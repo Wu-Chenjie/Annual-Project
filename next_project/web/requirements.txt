@@ -1,0 +1,4 @@
+fastapi
+uvicorn
+plotly
+python-multipart

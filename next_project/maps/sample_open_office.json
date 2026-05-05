@@ -1,0 +1,51 @@
+{
+  "bounds": [[-2, -2, 0], [22, 22, 6]],
+  "description": "开放办公室场景：散落立柱，适合编队绕障测试",
+  "obstacles": [
+    {
+      "type": "cylinder",
+      "center_xy": [5, 5],
+      "radius": 0.4,
+      "z_range": [0, 5]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [5, 14],
+      "radius": 0.4,
+      "z_range": [0, 5]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [10, 9],
+      "radius": 0.5,
+      "z_range": [0, 5]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [14, 5],
+      "radius": 0.4,
+      "z_range": [0, 5]
+    },
+    {
+      "type": "cylinder",
+      "center_xy": [14, 14],
+      "radius": 0.4,
+      "z_range": [0, 5]
+    },
+    {
+      "type": "aabb",
+      "min": [0, 0, 0],
+      "max": [22, 0.3, 6]
+    },
+    {
+      "type": "aabb",
+      "min": [0, 19.7, 0],
+      "max": [22, 20, 6]
+    },
+    {
+      "type": "aabb",
+      "min": [21.7, 0, 0],
+      "max": [22, 20, 6]
+    }
+  ]
+}
