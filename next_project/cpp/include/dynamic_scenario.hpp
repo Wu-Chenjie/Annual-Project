@@ -127,6 +127,7 @@ private:
     double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
     // Path-level acceptance gate: true only when all sampled path segments satisfy min_clearance.
     bool path_is_clearance_safe(const std::vector<Vec3>& path, double min_clearance) const;
+    double clearance_tolerance(double scale) const;
     bool capsule_clear(const Vec3& start, const Vec3& end, double radius) const;
     Vec3 safe_advance_along_path(const Vec3& pose, const std::vector<Vec3>& path,
                                  double distance, double radius, bool& capsule_blocked) const;
@@ -218,7 +219,8 @@ inline ReplayOutput DynamicScenarioRunner::run() {
             frame.follower_poses.push_back(leader_pose + Vec3{0.0, lateral, 0.0});
         }
 
-        frame.collision = obstacles_.is_collision(leader_pose, config_.safety_margin);
+        const double collision_tol = clearance_tolerance(config_.safety_margin);
+        frame.collision = obstacles_.signed_distance(leader_pose) < config_.safety_margin - collision_tol;
         std::vector<Vec3> selected_path;
         for (const auto& planner : input_.compare_planners) {
             auto result = run_one_planner(planner, leader_pose, goal, obstacle_changed || t == 0.0);
@@ -704,13 +706,23 @@ inline double DynamicScenarioRunner::path_segment_clearance(
 
 inline bool DynamicScenarioRunner::path_is_clearance_safe(
     const std::vector<Vec3>& path, double min_clearance) const {
-    return path_segment_clearance(path, min_clearance) >= min_clearance - 1e-6;
+    return path_segment_clearance(path, min_clearance) >= min_clearance - clearance_tolerance(min_clearance);
+}
+
+inline double DynamicScenarioRunner::clearance_tolerance(double scale) const {
+    const double local_scale = std::max({
+        std::abs(scale),
+        std::abs(config_.safety_margin),
+        std::abs(config_.planner_resolution)
+    });
+    return std::max(1e-4, local_scale * 0.01);
 }
 
 inline bool DynamicScenarioRunner::capsule_clear(const Vec3& start, const Vec3& end,
                                                  double radius) const {
+    const double clearance_tol = clearance_tolerance(radius);
     const double length = norm(end - start);
-    if (length < 1e-9) return !obstacles_.is_collision(start, radius);
+    if (length < 1e-9) return obstacles_.signed_distance(start) >= radius - clearance_tol;
     const double step = std::max(0.02, std::min({
         std::max(0.02, config_.planner_resolution * 0.25),
         std::max(0.02, radius * 0.5),
@@ -720,7 +732,7 @@ inline bool DynamicScenarioRunner::capsule_clear(const Vec3& start, const Vec3& 
     for (int i = 0; i <= samples; ++i) {
         const double u = static_cast<double>(i) / static_cast<double>(samples);
         const Vec3 p = start * (1.0 - u) + end * u;
-        if (obstacles_.is_collision(p, radius)) return false;
+        if (obstacles_.signed_distance(p) < radius - clearance_tol) return false;
     }
     return true;
 }
@@ -729,28 +741,71 @@ inline Vec3 DynamicScenarioRunner::safe_advance_along_path(
     const Vec3& pose, const std::vector<Vec3>& path, double distance, double radius,
     bool& capsule_blocked) const {
     capsule_blocked = false;
-    const Vec3 desired = advance_along_path(pose, path, distance);
-    if (norm(desired - pose) < 1e-9) return pose;
-    if (capsule_clear(pose, desired, radius)) return desired;
-
-    capsule_blocked = true;
-    double lo = 0.0;
-    double hi = 1.0;
-    for (int iter = 0; iter < 18; ++iter) {
-        const double mid = (lo + hi) * 0.5;
-        const Vec3 candidate = pose * (1.0 - mid) + desired * mid;
-        if (capsule_clear(pose, candidate, radius)) lo = mid;
-        else hi = mid;
+    if (path.empty() || distance <= 0.0) return pose;
+    if (path.size() == 1) {
+        if (capsule_clear(pose, path.front(), radius)) return path.front();
+        capsule_blocked = true;
+        return pose;
     }
-    const Vec3 safe = pose * (1.0 - lo) + desired * lo;
-    return norm(safe - pose) > 1e-6 ? safe : pose;
+
+    std::size_t best_seg = 0;
+    Vec3 current = path.front();
+    double best_projection_dist = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i + 1 < path.size(); ++i) {
+        const Vec3 a = path[i];
+        const Vec3 b = path[i + 1];
+        const Vec3 ab = b - a;
+        const double len2 = dot(ab, ab);
+        double u = 0.0;
+        if (len2 > 1e-12) {
+            u = std::max(0.0, std::min(1.0, dot(pose - a, ab) / len2));
+        }
+        const Vec3 projection = a + ab * u;
+        const double d = norm(pose - projection);
+        if (d < best_projection_dist) {
+            best_projection_dist = d;
+            best_seg = i;
+            current = projection;
+        }
+    }
+
+    if (norm(current - pose) > 1e-6) {
+        if (!capsule_clear(pose, current, radius)) {
+            capsule_blocked = true;
+            return pose;
+        }
+    }
+
+    double remaining = distance;
+    for (std::size_t i = best_seg + 1; i < path.size() && remaining > 1e-9; ++i) {
+        const Vec3 target = path[i];
+        const Vec3 delta = target - current;
+        const double d = norm(delta);
+        if (d < 1e-9) continue;
+        const Vec3 next = d <= remaining ? target : current + delta / d * remaining;
+        if (!capsule_clear(current, next, radius)) {
+            capsule_blocked = true;
+            double lo = 0.0;
+            double hi = 1.0;
+            for (int iter = 0; iter < 18; ++iter) {
+                const double mid = (lo + hi) * 0.5;
+                const Vec3 candidate = current * (1.0 - mid) + next * mid;
+                if (capsule_clear(current, candidate, radius)) lo = mid;
+                else hi = mid;
+            }
+            const Vec3 safe = current * (1.0 - lo) + next * lo;
+            return norm(safe - pose) > 1e-6 ? safe : pose;
+        }
+        current = next;
+        remaining -= std::min(d, remaining);
+    }
+    return current;
 }
 
 inline Vec3 DynamicScenarioRunner::advance_along_path(const Vec3& pose,
                                                       const std::vector<Vec3>& path,
                                                       double distance) {
     if (path.empty() || distance <= 0.0) return pose;
-    {
     if (path.size() == 1) return path.front();
 
     std::size_t best_seg = 0;
@@ -774,39 +829,17 @@ inline Vec3 DynamicScenarioRunner::advance_along_path(const Vec3& pose,
         }
     }
 
-    double remaining_projected = distance;
-    for (std::size_t i = best_seg + 1; i < path.size(); ++i) {
+    double remaining = distance;
+    for (std::size_t i = best_seg + 1; i < path.size() && remaining > 1e-9; ++i) {
         const Vec3 target = path[i];
         const Vec3 delta = target - current;
         const double d = norm(delta);
         if (d < 1e-9) continue;
-        if (d >= remaining_projected) return current + delta / d * remaining_projected;
-        current = target;
-        remaining_projected -= d;
-    }
-    return path.back();
-    }
-
-    // 找到路径上离当前位置最近的航点，从该点向前推进，避免反向移动
-    std::size_t best = 0;
-    double best_dist = norm(pose - path[0]);
-    for (std::size_t i = 1; i < path.size(); ++i) {
-        double d = norm(pose - path[i]);
-        if (d < best_dist) { best_dist = d; best = i; }
-    }
-
-    // 从最近航点出发，向后续航点推进 distance
-    Vec3 current = path[best];
-    double remaining = distance;
-    for (std::size_t i = best + 1; i < path.size(); ++i) {
-        const Vec3 delta = path[i] - current;
-        const double d = norm(delta);
-        if (d < 1e-9) continue;
         if (d >= remaining) return current + delta / d * remaining;
-        current = path[i];
+        current = target;
         remaining -= d;
     }
-    return path.back();
+    return current;
 }
 
 inline double DynamicScenarioRunner::percentile95(std::vector<double> values) {

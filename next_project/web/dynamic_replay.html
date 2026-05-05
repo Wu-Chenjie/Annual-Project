@@ -1097,11 +1097,30 @@
     let editorSelection = {kind: 'waypoint', index: 0};
     let editorDragState = null;
     let editorDragRenderPending = false;
-    let events = [
-      {t: 5.0, action: 'add', type: 'sphere', x: 15, y: 10, z: 3, a: 1.5, b: 0, c: 0, target_id: ''},
-      {t: 10.0, action: 'remove', type: 'sphere', x: 0, y: 0, z: 0, a: 1, b: 0, c: 0, target_id: 'obs_3'},
-      {t: 15.0, action: 'move', type: 'sphere', x: 18, y: 14, z: 3, a: 1.5, b: 0, c: 0, target_id: 'obs_0'}
-    ];
+    let events = [];
+    let globalTimelineCache = {replay: null, events: []};
+
+    function scenarioDefaultEvents(preset, map) {
+      const isWarehouse = map === 'sample_warehouse' || String(preset || '').startsWith('warehouse');
+      if (!isWarehouse) return [];
+      return [
+        {t: 5.0, action: 'add', type: 'sphere', x: 15, y: 10, z: 3, a: 1.5, b: 0, c: 0, target_id: ''},
+        {t: 10.0, action: 'remove', type: 'sphere', x: 0, y: 0, z: 0, a: 1, b: 0, c: 0, target_id: 'obs_3'},
+        {t: 15.0, action: 'move', type: 'sphere', x: 18, y: 14, z: 3, a: 1.5, b: 0, c: 0, target_id: 'obs_0'}
+      ];
+    }
+
+    function resetScenarioEvents(preset, map) {
+      events = scenarioDefaultEvents(preset, map);
+      selectedEventIndex = events.length ? 0 : -1;
+      selectedEventId = '';
+      eventsDirtySinceRun = false;
+      if ($('eventList')) renderEvents();
+    }
+
+    function resetGlobalTimelineCache() {
+      globalTimelineCache = {replay: null, events: []};
+    }
 
     async function init() {
       const [presets, maps] = await Promise.all([
@@ -1125,12 +1144,66 @@
         custom: 'sample_warehouse'
       };
 
+      const mapToPreset = {
+        sample_simple: 'obstacle',
+        sample_warehouse: 'warehouse_online',
+        sample_warehouse_edited: 'custom',
+        school_corridor: 'school_corridor_online',
+        company_cubicles: 'company_cubicles_online',
+        meeting_room: 'meeting_room_online',
+        laboratory: 'laboratory_online'
+      };
+
+      const presetDefaults = {
+        basic: {simTime: 30, resolution: 0.5, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        obstacle: {simTime: 40, resolution: 0.3, margin: 0.3, replanInterval: 0.4, leaderVel: 0.4},
+        warehouse: {simTime: 65, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        warehouse_a: {simTime: 65, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        warehouse_online: {simTime: 30, resolution: 0.4, margin: 0.3, replanInterval: 2.0, leaderVel: 2.0},
+        warehouse_danger: {simTime: 30, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        fault_tolerance: {simTime: 30, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        fault_tolerance_online: {simTime: 35, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0},
+        school_corridor: {simTime: 40, resolution: 0.3, margin: 0.25, replanInterval: 0.4, leaderVel: 1.5},
+        school_corridor_online: {simTime: 40, resolution: 0.3, margin: 0.25, replanInterval: 0.3, leaderVel: 1.5},
+        company_cubicles: {simTime: 50, resolution: 0.3, margin: 0.3, replanInterval: 0.4, leaderVel: 1.8},
+        company_cubicles_online: {simTime: 60, resolution: 0.3, margin: 0.3, replanInterval: 2.0, leaderVel: 1.8},
+        meeting_room: {simTime: 50, resolution: 0.2, margin: 0.2, replanInterval: 2.0, leaderVel: 0.8},
+        meeting_room_online: {simTime: 45, resolution: 0.2, margin: 0.2, replanInterval: 2.0, leaderVel: 0.8},
+        laboratory: {simTime: 55, resolution: 0.3, margin: 0.3, replanInterval: 2.0, leaderVel: 1.5},
+        laboratory_online: {simTime: 45, resolution: 0.3, margin: 0.3, replanInterval: 2.0, leaderVel: 1.5},
+        custom: {simTime: 65, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0}
+      };
+
+      const applyPresetDefaults = (preset) => {
+        const defaults = presetDefaults[preset];
+        if (!defaults) return;
+        $('simTime').value = defaults.simTime;
+        $('resolution').value = defaults.resolution;
+        $('margin').value = defaults.margin;
+        $('replanInterval').value = defaults.replanInterval;
+        $('leaderVel').value = defaults.leaderVel;
+      };
+
       // 预设切换时自动匹配地图
       const updateMapForPreset = () => {
-        const map = presetToMap[$('preset').value];
+        const preset = $('preset').value;
+        const map = presetToMap[preset];
         if (map && maps.maps.includes(map)) $('mapFile').value = map;
+        applyPresetDefaults(preset);
+        resetScenarioEvents(preset, $('mapFile').value);
+      };
+      const updatePresetForMap = () => {
+        const map = $('mapFile').value;
+        if (presetToMap[$('preset').value] === map) return;
+        const preset = mapToPreset[map] || 'custom';
+        if ([...$('preset').options].some(option => option.value === preset)) {
+          $('preset').value = preset;
+        }
+        applyPresetDefaults($('preset').value);
+        resetScenarioEvents($('preset').value, map);
       };
       $('preset').addEventListener('change', updateMapForPreset);
+      $('mapFile').addEventListener('change', updatePresetForMap);
       updateMapForPreset();  // 初始化默认预设的地图
 
       $('runBtn').addEventListener('click', runSimulation);
@@ -2219,9 +2292,7 @@
           planner_resolution: Number($('resolution').value),
           safety_margin: Number($('margin').value),
           planner_replan_interval: Number($('replanInterval').value),
-          leader_max_vel: Number($('leaderVel').value),
-          planner_mode: 'online',
-          wp_radius_final: 0.4
+          leader_max_vel: Number($('leaderVel').value)
         },
         events: events.map(toEventJson)
       };
@@ -2343,7 +2414,16 @@
         input.addEventListener('change', updateEventFromInput);
       });
       $('eventList').querySelectorAll('[data-select-event]').forEach(btn => {
-        btn.addEventListener('click', () => selectTimelineEvent(Number(btn.dataset.selectEvent), true));
+        btn.addEventListener('click', event => {
+          event.stopPropagation();
+          selectTimelineEvent(Number(btn.dataset.selectEvent), true);
+        });
+      });
+      $('eventList').querySelectorAll('[data-event-summary]').forEach(summary => {
+        summary.addEventListener('click', event => {
+          if (event.target.closest('button')) return;
+          selectTimelineEvent(Number(summary.dataset.eventSummary), true);
+        });
       });
       $('eventList').querySelectorAll('[data-remove]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -2398,7 +2478,7 @@
       const openAttr = ev._ui_id === selectedEventId ? ' open' : '';
       return `
         <details class="event-card${selectedClass}"${openAttr}>
-          <summary>
+          <summary data-event-summary="${index}">
             <strong>${eventLabel(ev, index)}</strong>
             <button class="icon-btn" title="选中事件" data-select-event="${index}">⌖</button>
             <button class="icon-btn" title="删除事件" data-remove="${index}">×</button>
@@ -2457,30 +2537,26 @@
 
     function renderTimelineMarkers() {
       if (!$('timelineMarkers')) return;
-      const simEvents = collectCurrentFrameEvents(lastReplay);
-      const collisionEvents = collectCollisionTimelineEvents(lastReplay);
-      const nearbyEvents = events
-        .map((ev, index) => ({ev, index, dt: Math.abs(Number(ev.t) - (currentFrame(lastReplay)?.t ?? 0))}))
-        .filter(item => item.dt <= 1.0)
-        .sort((a, b) => a.dt - b.dt)
-        .slice(0, 4);
-      if (!nearbyEvents.length && !simEvents.length && !collisionEvents.length) {
+      const frameEvents = collectCurrentFrameEvents(lastReplay);
+      const globalEvents = getGlobalTimelineEvents(lastReplay);
+      const frameDynamicEvents = collectCurrentFrameDynamicEvents(lastReplay);
+      if (!frameDynamicEvents.length && !frameEvents.length && !globalEvents.length) {
         $('timelineMarkers').innerHTML = '<span class="muted">当前帧附近无事件</span>';
         return;
       }
-      const dynamicHtml = nearbyEvents.map(({ev, index}) => {
+      const dynamicHtml = frameDynamicEvents.map(({ev, index}) => {
         const active = ev._ui_id === selectedEventId ? ' active' : '';
         return `<button type="button" class="timeline-marker dynamic${active}" data-marker-event="${index}">${eventLabel(ev, index)}</button>`;
       }).join('');
-      const simHtml = simEvents.map(ev => {
+      const simHtml = frameEvents.map(ev => {
         const current = ev.frameIndex === currentFrameIndex ? ' current' : '';
         return `<button type="button" class="timeline-marker ${ev.kind}${current}" data-marker-frame="${ev.frameIndex}" title="${ev.detail}">${ev.label}</button>`;
       }).join('');
-      const collisionHtml = collisionEvents.map(ev => {
+      const timelineHtml = globalEvents.map(ev => {
         const current = currentFrameIndex >= ev.frameIndex && currentFrameIndex <= ev.lastFrame ? ' current' : '';
-        return `<button type="button" class="timeline-marker collision${current}" data-marker-frame="${ev.frameIndex}" title="${ev.detail}">${ev.label}</button>`;
+        return `<button type="button" class="timeline-marker ${ev.kind}${current}" data-marker-frame="${ev.frameIndex}" title="${ev.detail}">${ev.label}</button>`;
       }).join('');
-      $('timelineMarkers').innerHTML = collisionHtml + dynamicHtml + simHtml;
+      $('timelineMarkers').innerHTML = timelineHtml + dynamicHtml + simHtml;
       $('timelineMarkers').querySelectorAll('[data-marker-event]').forEach(btn => {
         btn.addEventListener('click', () => selectTimelineEvent(Number(btn.dataset.markerEvent), true));
       });
@@ -2512,6 +2588,16 @@
           detail: `第 ${ev.frameIndex + 1}-${ev.lastFrame + 1} 帧连续碰撞`
         };
       });
+    }
+
+    function collectCurrentFrameDynamicEvents(replay) {
+      const frame = currentFrame(replay);
+      if (!replay || !frame) return [];
+      const prevT = currentFrameIndex > 0 ? Number(replay.frames[currentFrameIndex - 1].t ?? -Infinity) : -Infinity;
+      const t = Number(frame.t ?? 0);
+      return events
+        .map((ev, index) => ({ev, index, time: Number(ev.t)}))
+        .filter(item => item.time > prevT + 1e-9 && item.time <= t + 1e-9);
     }
 
     function collectCurrentFrameEvents(replay) {
@@ -2552,8 +2638,8 @@
           detail: `当前帧触发重规划`
         });
       }
-      const totals = totalEventCounts(replay);
-      if (totals.collision || totals.clearance || totals.obstacle || totals.replan) {
+      const totals = {collision: 0, clearance: 0, obstacle: 0, replan: 0};
+      if (false && (totals.collision || totals.clearance || totals.obstacle || totals.replan)) {
         out.push({
           kind: 'dynamic',
           frameIndex: currentFrameIndex,
@@ -2564,20 +2650,14 @@
       return out;
     }
 
-    function totalEventCounts(replay) {
-      const totals = {collision: 0, clearance: 0, obstacle: 0, replan: 0};
-      (replay?.frames || []).forEach(frame => {
-        if (frame.collision) totals.collision += 1;
-        if (frame.clearance_blocked) totals.clearance += 1;
-        if (frame.obstacle_changed) totals.obstacle += 1;
-        ['dstar_lite', 'astar', 'hybrid_astar'].forEach(name => {
-          if (frame[name]?.replan_triggered) totals.replan += 1;
-        });
-      });
-      return totals;
+    function getGlobalTimelineEvents(replay) {
+      if (globalTimelineCache.replay === replay) return globalTimelineCache.events;
+      const events = collectGlobalTimelineEvents(replay);
+      globalTimelineCache = {replay, events};
+      return events;
     }
 
-    function collectSimulationTimelineEvents(replay) {
+    function collectGlobalTimelineEvents(replay) {
       if (!replay?.frames?.length) return [];
       const raw = [];
       replay.frames.forEach((frame, index) => {
@@ -2592,7 +2672,7 @@
             detail: `第 ${index + 1} 帧检测到碰撞`
           });
         }
-        if (frame.obstacle_changed) {
+        if (false && frame.obstacle_changed) {
           raw.push({
             kind: 'obstacle',
             key: 'obstacle',
@@ -2602,7 +2682,17 @@
             detail: `第 ${index + 1} 帧动态障碍物状态变化`
           });
         }
-        const replanners = ['dstar_lite', 'astar', 'hybrid_astar'].filter(name => frame[name]?.replan_triggered);
+        if (frame.clearance_blocked) {
+          raw.push({
+            kind: 'clearance',
+            key: 'clearance',
+            frameIndex: index,
+            time,
+            label: `clearance blocked t=${time.toFixed(1)}s`,
+            detail: `Frame ${index + 1} was blocked by the clearance guard`
+          });
+        }
+        const replanners = [];
         replanners.forEach(name => {
           raw.push({
             kind: 'replan',
@@ -2614,7 +2704,8 @@
           });
         });
       });
-      return compactTimelineEvents(raw);
+      raw.sort((a, b) => a.key.localeCompare(b.key) || a.frameIndex - b.frameIndex);
+      return compactTimelineEvents(raw).sort((a, b) => a.frameIndex - b.frameIndex);
     }
 
     function compactTimelineEvents(rawEvents) {
@@ -2715,6 +2806,7 @@
         const body = await response.json();
         if (!response.ok) throw new Error(body.detail || '仿真失败');
         lastReplay = body.results[0];
+        resetGlobalTimelineCache();
         currentFrameIndex = 0;
         eventsDirtySinceRun = false;
         $('runMeta').textContent = `${lastReplay.metadata.step_count} 帧 · seed ${lastReplay.metadata.seed}`;
