@@ -84,6 +84,11 @@ public:
     Vec3 project_to_planning_free(const Vec3& point, const Vec3* prefer = nullptr,
                                   double max_radius_m = -1.0) const;
     std::vector<Vec3> enforce_path_clearance(const std::vector<Vec3>& path, double min_clearance);
+    // Returns the minimum SDF clearance sampled along every segment of a candidate path.
+    // Stops early once the sampled clearance falls below min_clearance.
+    double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
+    // Path-level acceptance gate: true only when all sampled path segments satisfy min_clearance.
+    bool path_is_clearance_safe(const std::vector<Vec3>& path, double min_clearance) const;
     Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal);
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,
                                                      const Vec3& task_goal) const;

@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,6 +20,48 @@ def test_cpp_online_replanner_preserves_task_waypoint_layer():
     assert "task_wp_idx" in source
     assert "active_path" in source
     assert "waypoints_ = new_path" not in source
+
+
+def test_cpp_online_replanner_has_path_acceptance_clearance_gate():
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
+    scenario_header = read("cpp/include/obstacle_scenario.hpp")
+    dynamic_header = read("cpp/include/dynamic_scenario.hpp")
+
+    assert "path_segment_clearance" in scenario_header
+    assert "path_is_clearance_safe" in scenario_header
+    candidate_block = re.search(
+        r"auto\s+candidate_path\s*=.*?stitch_local_path_to_task_goal.*?"
+        r"if\s*\(\s*candidate_safe\s*\)\s*\{(?P<body>.*?)\n\s*\}",
+        scenario_source,
+        flags=re.DOTALL,
+    )
+    assert candidate_block is not None
+    assert re.search(
+        r"const\s+double\s+clearance\s*=\s*compute_clearance\s*\(\s*\)",
+        scenario_source,
+    )
+    assert re.search(
+        r"candidate_safe\s*=\s*path_is_clearance_safe\s*\(\s*candidate_path\s*,\s*clearance\s*\)",
+        scenario_source,
+    )
+    assert re.search(
+        r"candidate_path\s*=\s*enforce_path_clearance\s*\(\s*candidate_path\s*,\s*clearance\s*\).*?"
+        r"candidate_safe\s*=\s*path_is_clearance_safe\s*\(\s*candidate_path\s*,\s*clearance\s*\)",
+        scenario_source,
+        flags=re.DOTALL,
+    )
+    assert "active_path = std::move(candidate_path)" in candidate_block.group("body")
+    assert "path_segment_clearance" in dynamic_header
+    assert "path_is_clearance_safe" in dynamic_header
+    dynamic_accept_block = re.search(
+        r"if\s*\(\s*path_is_clearance_safe\s*\(\s*selected_path\s*,\s*accept_clearance\s*\)\s*\)\s*\{"
+        r"(?P<body>.*?)\n\s*\}",
+        dynamic_header,
+        flags=re.DOTALL,
+    )
+    assert dynamic_accept_block is not None
+    assert "active_path = std::move(selected_path)" in dynamic_accept_block.group("body")
+    assert "ensure_reachable_replan_grid(leader_pose, goal)" in dynamic_header
 
 
 def test_cpp_replanner_has_risk_adaptive_interval_and_sensor_ttl():

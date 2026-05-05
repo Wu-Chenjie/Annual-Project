@@ -326,6 +326,35 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
     return out;
 }
 
+double ObstacleScenarioSimulation::path_segment_clearance(
+    const std::vector<Vec3>& path, double min_clearance) const {
+    if (path.empty()) return -std::numeric_limits<double>::infinity();
+    if (path.size() == 1) return obstacles_.signed_distance(path.front());
+
+    const double sample_step = std::max(
+        0.02,
+        std::min(std::max(config_.planner_resolution * 0.5, 0.02), 0.10));
+    double worst = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i + 1 < path.size(); ++i) {
+        const Vec3 a = path[i];
+        const Vec3 b = path[i + 1];
+        const double dist = norm(b - a);
+        const int samples = std::max(1, static_cast<int>(std::ceil(dist / sample_step)));
+        for (int j = 0; j <= samples; ++j) {
+            const double u = static_cast<double>(j) / static_cast<double>(samples);
+            const Vec3 p = a * (1.0 - u) + b * u;
+            worst = std::min(worst, obstacles_.signed_distance(p));
+            if (worst < min_clearance) return worst;
+        }
+    }
+    return worst;
+}
+
+bool ObstacleScenarioSimulation::path_is_clearance_safe(
+    const std::vector<Vec3>& path, double min_clearance) const {
+    return path_segment_clearance(path, min_clearance) >= min_clearance - 1e-6;
+}
+
 Vec3 ObstacleScenarioSimulation::obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal) {
     return apf_.compute_avoidance_acceleration(pos, goal, obstacles_);
 }
@@ -436,18 +465,27 @@ SimulationResult ObstacleScenarioSimulation::run() {
             Vec3 task_goal = tasks[task_wp_idx];
             auto new_path = replanner_->step(t, ls_before_replan.position, sp, task_goal);
             if (!new_path.empty()) {
-                active_path = stitch_local_path_to_task_goal(new_path, task_goal);
-                if (config_.firi_enabled && active_path.size() >= 2) {
-                    FIRIRefiner refiner(obstacles_, compute_clearance(), config_.firi_sample_step,
+                auto candidate_path = stitch_local_path_to_task_goal(new_path, task_goal);
+                const double clearance = compute_clearance();
+                if (config_.firi_enabled && candidate_path.size() >= 2) {
+                    FIRIRefiner refiner(obstacles_, clearance, config_.firi_sample_step,
                                         config_.firi_max_projection_iter);
-                    active_path = refiner.refine(active_path, active_path);
-                    active_path = enforce_path_clearance(active_path, compute_clearance());
+                    candidate_path = refiner.refine(candidate_path, candidate_path);
+                    candidate_path = enforce_path_clearance(candidate_path, clearance);
                 }
-                waypoints_ = active_path;
-                replanned_waypoints_.insert(replanned_waypoints_.end(), active_path.begin(), active_path.end());
-                local_wp_idx = 0;
-                if (!active_path.empty() && norm(active_path[0] - ls_before_replan.position) < config_.wp_radius) {
-                    local_wp_idx = std::min(1, static_cast<int>(active_path.size()));
+                bool candidate_safe = path_is_clearance_safe(candidate_path, clearance);
+                if (!candidate_safe) {
+                    candidate_path = enforce_path_clearance(candidate_path, clearance);
+                    candidate_safe = path_is_clearance_safe(candidate_path, clearance);
+                }
+                if (candidate_safe) {
+                    active_path = std::move(candidate_path);
+                    waypoints_ = active_path;
+                    replanned_waypoints_.insert(replanned_waypoints_.end(), active_path.begin(), active_path.end());
+                    local_wp_idx = 0;
+                    if (!active_path.empty() && norm(active_path[0] - ls_before_replan.position) < config_.wp_radius) {
+                        local_wp_idx = std::min(1, static_cast<int>(active_path.size()));
+                    }
                 }
             }
         }

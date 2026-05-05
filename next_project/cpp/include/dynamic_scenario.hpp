@@ -122,6 +122,11 @@ private:
     std::vector<ObstacleDesc> describe_obstacles() const;
     SummaryMetrics summarize(const std::string& planner, const Vec3& final_pose,
                              const Vec3& goal) const;
+    // Returns the minimum SDF clearance sampled along every segment of a candidate path.
+    // Stops early once the sampled clearance falls below min_clearance.
+    double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
+    // Path-level acceptance gate: true only when all sampled path segments satisfy min_clearance.
+    bool path_is_clearance_safe(const std::vector<Vec3>& path, double min_clearance) const;
     bool capsule_clear(const Vec3& start, const Vec3& end, double radius) const;
     Vec3 safe_advance_along_path(const Vec3& pose, const std::vector<Vec3>& path,
                                  double distance, double radius, bool& capsule_blocked) const;
@@ -231,7 +236,17 @@ inline ReplayOutput DynamicScenarioRunner::run() {
             if (frame.collision) ++collisions_[planner];
             if (!result.phase.empty()) ++phase_counts_[result.phase];
         }
-        if (!selected_path.empty()) active_path = std::move(selected_path);
+        if (!selected_path.empty()) {
+            const double accept_clearance = std::max(
+                config_.safety_margin + config_.plan_clearance_extra,
+                config_.safety_margin);
+            if (path_is_clearance_safe(selected_path, accept_clearance)) {
+                active_path = std::move(selected_path);
+            } else {
+                frame.clearance_blocked = true;
+                ensure_reachable_replan_grid(leader_pose, goal);
+            }
+        }
 
         const Vec3 before_advance = leader_pose;
         bool capsule_blocked = false;
@@ -661,6 +676,35 @@ inline double DynamicScenarioRunner::path_length(const std::vector<Vec3>& path) 
     double total = 0.0;
     for (std::size_t i = 1; i < path.size(); ++i) total += norm(path[i] - path[i - 1]);
     return total;
+}
+
+inline double DynamicScenarioRunner::path_segment_clearance(
+    const std::vector<Vec3>& path, double min_clearance) const {
+    if (path.empty()) return -std::numeric_limits<double>::infinity();
+    if (path.size() == 1) return obstacles_.signed_distance(path.front());
+
+    const double sample_step = std::max(
+        0.02,
+        std::min(std::max(config_.planner_resolution * 0.5, 0.02), 0.10));
+    double worst = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i + 1 < path.size(); ++i) {
+        const Vec3 a = path[i];
+        const Vec3 b = path[i + 1];
+        const double dist = norm(b - a);
+        const int samples = std::max(1, static_cast<int>(std::ceil(dist / sample_step)));
+        for (int j = 0; j <= samples; ++j) {
+            const double u = static_cast<double>(j) / static_cast<double>(samples);
+            const Vec3 p = a * (1.0 - u) + b * u;
+            worst = std::min(worst, obstacles_.signed_distance(p));
+            if (worst < min_clearance) return worst;
+        }
+    }
+    return worst;
+}
+
+inline bool DynamicScenarioRunner::path_is_clearance_safe(
+    const std::vector<Vec3>& path, double min_clearance) const {
+    return path_segment_clearance(path, min_clearance) >= min_clearance - 1e-6;
 }
 
 inline bool DynamicScenarioRunner::capsule_clear(const Vec3& start, const Vec3& end,
