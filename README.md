@@ -1,72 +1,179 @@
-# Annual-Project<br>
-哈尔滨工业大学（HIT）大一学年项目 - 无人机集群室内运动仿真<br>
-项目背景：响应中国低空经济发展目标，实现无人机集群室内运动的仿真验证<br>
-# 以下是前期完成的内容<br>
-目录<br>
-核心模块说明<br>
-1. 动力学模型 (packaged_drone_dynamics_model)<br>
-2. 控制器 (controller)<br>
-3. 编队控制 (formation_flight)<br>
-4. PID 最佳参数获取 (pid_tuner)<br>
-5. 图像绘制<br>
-PID 控制原理与优化<br>
-关键技术亮点<br>
-核心模块说明<br>
-1. 动力学模型 (packaged_drone_dynamics_model)<br>
-该模块通过类描述单个无人机的动力学特性，核心设计如下：<br>
-成员变量：无人机位置、速度、模拟时间步长（表征无人机当前状态）<br>
-核心方法：<br>
-类初始化：初始化无人机初始状态<br>
-状态更新：基于欧拉法模拟无人机运动（先计算速度，再更新位置）<br>
-状态获取：返回 numpy 数组格式的当前状态（便于后续数值计算）<br>
-2. 控制器 (controller)<br>
-为每架无人机配置独立的控制器类，核心用于加速度计算：<br>
-成员变量：PID 参数（k_p/k_i/k_d 及最大积分量）<br>
-核心方法：<br>
-PID 控制器初始化：因仿真为理想状态（无空气阻力、无稳态误差），积分项 k_i 设为 0<br>
-加速度计算：引入前馈控制（将主机加速度作为从机目标加速度的一部分），减小从机响应延迟，降低跟随误差<br>
-3. 编队控制 (formation_flight)<br>
-编队控制分为「初始化」和「控制」两个核心环节：<br>
-初始化环节<br>
-设置仿真时间步长（决定计算精度）和总模拟时间；<br>
-初始化主机无人机，配置从机与主机的位置偏差，结合主机位置初始化从机；<br><br>
-为主机设置航点（示例为圆形轨迹），并定义航点到达的判断逻辑。<br>
-控制环节<br>
-主机：无需前馈调节（加速度参数默认 None）；当判定到达当前航点时，航点索引自增，更新主机控制器和速度状态；<br>
-从机：以主机的相关参数为控制目标；计算控制量时传入主机当前加速度作为前馈项，优化跟随效果。<br>
-4. PID 最佳参数获取 (pid_tuner)<br>
-通过仿真评估 PID 参数，以「位置误差最小化」为目标，采用 Twiddle 算法逐维调整参数，最终返回最优参数。<br>
-Twiddle 算法核心逻辑<br>
-对每个参数 i 执行以下操作：<br>
-尝试增加参数：p[i] += dp[i]<br>
-若误差优化（err < best_err）：接受改动，步长扩大 dp[i] *= 1.1；<br>
-若增加无优化：尝试减小参数：p[i] -= 2*dp[i]<br>
-若误差优化：接受改动，步长扩大 dp[i] *= 1.1；<br>
-若增减均无优化：恢复参数原值（p[i] += dp[i]），步长缩小 dp[i] *= 0.9。<br>
-算法终止条件<br>
-所有 dp 之和小于容差 tol（默认 0.2），返回最终参数 p 和最优误差 best_err。<br>
-稳定性保障<br>
-对发散 / 非法参数返回 +inf，排除不稳定参数区域；<br>
-惩罚机制：通过返回 +inf 或累积「远离目标的平方误差」，惩罚不稳定 / 高超调情况；可扩展加入控制量（加速度 / 控制能量）惩罚项，平衡控制器性能。<br>
-5. 图像绘制<br>
-基于 plotly 库实现可交互的三维立体可视化：<br>
-位置可视化：建立 history 列表存储各时刻无人机位置数据，绘制运动轨迹；<br>
-误差可视化：为从机建立独立列表存储位置误差，绘制各时刻的位置误差曲线。<br>
-PID 控制原理与优化<br>
-基础原理<br>
-PID 是经典闭环控制算法，通过「目标偏差」计算控制量输出，包含三核心部分：<br>
-表格<br>
-控制项	核心作用	代码实现方式<br>
-比例（P）	决定响应速度	直接取误差值<br>
-积分（I）	消除稳态误差	误差积分（x*dt）<br>
-微分（D）	抑制超调	误差微分（速度值）<br>
-注：仿真为理想状态，未对微分量做滤波处理，PID 计算结果直接作为控制量输出。<br>
-前馈控制优化<br>
-PID 属于反馈控制，存在天然滞后性；项目中引入前馈控制：<br>
-将主机加速度作为从机目标加速度的一部分参与计算；<br>
-提升算法响应速度，显著降低从机跟随误差。<br>
-使用的一些方法<br>
-采用欧拉法实现无人机动力学仿真，平衡计算精度与运行效率；<br>
-PID + 前馈控制结合，解决纯反馈控制的滞后问题，优化编队跟随效果；<br>
-Twiddle 算法自动调优 PID 参数，保障控制器稳定性与控制精度；<br>
-Plotly 实现三维可交互可视化，直观展示运动轨迹与误差变化。<br>
+# 室内无人机集群技术验证平台
+
+哈尔滨工业大学（HIT）大一学年项目 — 低空经济导向下的四旋翼无人机集群编队仿真系统。
+
+面向室内复杂场景，实现高保真动力学建模、混合控制（PID+SMC）、多算法路径规划与避障、编队拓扑协同、在线重规划与故障容错，提供 **Python 仿真主线**与 **C++ 重构加速** 两套等价实现。
+
+## 架构总览
+
+```mermaid
+graph TD
+    A["Annual-Project"] --> B["next_project"]
+    A --> C["old_code"]
+    B --> CORE["core"]
+    B --> SIM["simulations"]
+    B --> CPP["cpp"]
+    B --> MAPS["maps"]
+    B --> TESTS["tests"]
+    B --> DOCS["docs"]
+    CORE --> PLAN["planning/"]
+    PLAN --> P1["A* / Hybrid A*"]
+    PLAN --> P2["Dijkstra / D* Lite"]
+    PLAN --> P3["RRT* / Informed RRT*"]
+    PLAN --> P4["ESDF / FIRI"]
+    PLAN --> P5["GNN 可见图 / 双模式"]
+    PLAN --> P6["在线重规划器"]
+```
+
+## 目录结构
+
+```text
+├── next_project/                # 主仿真项目
+│   ├── main.py                  # CLI 入口（16 个预设场景）
+│   ├── config.py                # 仿真预设定义
+│   ├── core/                    # 仿真内核
+│   │   ├── drone.py             # 四旋翼动力学（+故障注入）
+│   │   ├── controller.py        # PID + Backstepping 混合控制
+│   │   ├── smc.py               # 滑模控制器
+│   │   ├── topology.py          # 编队拓扑（Laplacian λ₂ + 故障重构）
+│   │   ├── fault_detector.py    # 三规则在线故障检测
+│   │   ├── artificial_potential_field.py  # 改进人工势场（Rodrigues 旋转力场）
+│   │   ├── obstacles.py         # 障碍物模型
+│   │   ├── sensors.py           # 传感器仿真
+│   │   ├── wind_field.py        # 风场扰动
+│   │   ├── rotor.py / allocator.py  # 旋翼与推力分配
+│   │   ├── map_loader.py        # JSON 地图加载
+│   │   └── planning/            # 路径规划算法集
+│   │       ├── astar.py         # A* 搜索
+│   │       ├── hybrid_astar.py  # Hybrid A*（3D 运动学约束）
+│   │       ├── dijkstra.py      # Dijkstra 最短路径
+│   │       ├── dstar_lite.py    # D* Lite 增量重规划
+│   │       ├── rrt_star.py      # RRT* 渐近最优
+│   │       ├── informed_rrt_star.py  # Informed RRT* 椭圆采样
+│   │       ├── esdf.py          # 欧几里得符号距离场
+│   │       ├── firi.py          # 快速迭代区域膨胀
+│   │       ├── visibility_graph.py   # 障碍物顶点可见图
+│   │       ├── gnn_planner.py   # GNN 可见图变体规划器
+│   │       ├── dual_mode.py     # Safe/Danger 双模式调度
+│   │       └── replanner.py     # 风险自适应在线重规划
+│   ├── simulations/             # 仿真编排
+│   │   ├── formation_simulation.py  # 编队飞行仿真
+│   │   ├── obstacle_scenario.py     # 障碍场景仿真
+│   │   ├── benchmark.py             # 批量评测
+│   │   └── visualization.py         # 3D 可视化
+│   ├── tests/                   # pytest 测试套件
+│   ├── maps/                    # 9 个室内 JSON 地图
+│   ├── docs/                    # 技术文档与答辩准备
+│   ├── cpp/                     # C++20 等价重构（-O3）
+│   │   ├── include/             # 29 个头文件
+│   │   └── src/                 # 20 个源文件
+│   └── web/                     # Web 3D 动态回放
+├── old_code/                    # 早期 PID 调参历史代码
+├── CLAUDE.md                    # AI 上下文索引
+├── future.md                    # 路径规划与避障规划书
+└── plan.md                      # 实施计划
+```
+
+## 关键技术
+
+| 领域 | 技术方案 |
+| ---- | -------- |
+| **动力学** | 四旋翼刚体模型 + 旋翼推力分配 + 欧拉积分 |
+| **控制** | PID + 前馈 + Backstepping + SMC 滑模混合控制 |
+| **路径规划** | A\* / Hybrid A\* / D\* Lite / RRT\* / Informed RRT\* / ESDF / FIRI |
+| **避障** | 改进 APF（Rodrigues 旋转力场 + n_decay 自适应） + GNN 可见图 + 双模式调度 |
+| **编队** | 虚拟领航者 + 固定偏差 + 拓扑图（Laplacian λ₂） + 自适应收缩 |
+| **容错** | 三规则在线故障检测 + 拓扑自动重构 |
+| **重规划** | 风险自适应间隔（0.1~1.0s） + 滑动窗口动态重规划 |
+
+## 快速开始
+
+### Python 主线
+
+```bash
+cd next_project
+pip install -r requirements.txt    # numpy + matplotlib + scipy + cvxpy + osqp
+python main.py                     # 默认 basic 预设
+python main.py --preset warehouse_danger --no-plot
+python main.py --preset school_corridor_online --max-sim-time 60
+```
+
+### 批量评测
+
+```bash
+python simulations/benchmark.py
+```
+
+### 测试
+
+```bash
+python -m pytest
+```
+
+### C++ 重构
+
+```bash
+cmake -S cpp -B cpp/build
+cmake --build cpp/build --config Release
+./cpp/build/sim_main.exe          # 编队飞行
+./cpp/build/sim_warehouse.exe     # 仓库避障
+./cpp/build/sim_benchmark.exe     # 批量评测
+```
+
+### Web 3D 回放
+
+```bash
+cd web && python server.py
+```
+
+## 预设场景（16 个）
+
+| 预设 | 场景描述 | 核心算法 |
+| ---- | -------- | -------- |
+| `basic` | 基础编队验证（方形航线） | PID+SMC |
+| `obstacle` | 简单障碍物避障（三柱） | APF |
+| `warehouse` | 工业仓库复杂场景 | A\* + D\* Lite + Backstepping+SMC |
+| `warehouse_a` | 仓库 A\* 版 | GNN Danger + ESDF 软代价 |
+| `warehouse_online` | 仓库在线简化版 | A\* + 传感器 + D\* Lite + WindowReplanner |
+| `warehouse_danger` | 仓库在线 + GNN 双模式 | 改进 APF 保守档 |
+| `fault_tolerance` | 容错测试 | 故障注入 + 拓扑重构 |
+| `school_corridor` | 学校走廊（窄通道+L型转角） | 编队收缩 + GNN Danger |
+| `school_corridor_online` | 学校走廊在线版 | GNN 可见图 + 自适应间隔 |
+| `company_cubicles` | 公司格子间（3×3 隔间矩阵） | Hybrid A\* 越顶飞行 |
+| `company_cubicles_online` | 格子间在线版 | A\* + D\* Lite + WindowReplanner |
+| `meeting_room` | 会议室（椭圆桌+座椅环绕） | A\* + D\* Lite |
+| `meeting_room_online` | 会议室在线版 | cm 级动态响应 |
+| `laboratory` | 实验室（实验台+通风橱） | A\* + D\* Lite |
+| `laboratory_online` | 实验室在线版 | Hybrid A\* + WindowReplanner |
+| `custom` | 自定义场景 | 配置驱动 |
+
+## 室内地图
+
+`maps/` 目录包含 9 个 JSON 格式室内场景：`sample_simple`、`sample_corridor`、`sample_office`、`sample_open_office`、`sample_warehouse`、`school_corridor`、`company_cubicles`、`meeting_room`、`laboratory`
+
+## 文档索引
+
+| 文档 | 说明 |
+| ---- | ---- |
+| [技术文档](next_project/docs/技术文档.md) | 算法原理与公式推导 |
+| [避碰与控制技术文档](next_project/docs/避碰与控制技术文档.md) | 避碰系统详解 |
+| [GNN 分层双模式架构设计](next_project/docs/GNN分层双模式架构设计.md) | GNN 规划器架构 |
+| [使用说明](next_project/docs/使用说明.md) | 详细使用教程 |
+| [答辩准备索引](next_project/docs/答辩准备索引.md) | 答辩要点汇总 |
+| [项目零基础讲解](next_project/docs/项目零基础讲解.md) | 入门引导 |
+| [future.md](future.md) | 路径规划与避障规划书 |
+| [plan.md](plan.md) | 实施计划 |
+
+## 编码规范
+
+- Python：`from __future__ import annotations` + 类型注解 + `dataclass`
+- 配置驱动：调参统一在 `config.py` 预设场景层面，避免硬编码
+- C++：C++20，`-O3`，固定大小数组减少动态分配
+- 输出统一到 `outputs/`，PNG/HTML 格式
+
+## 变更日志
+
+- **2026-05-01**：新增 8 个场景 + 4 个地图，16 个预设全覆盖，文档审查修正
+- **2026-04-30**：GNN 双模式 + APF 增强 + 容错拓扑重构综合落地
+- **2026-04-29**：路径规划子包、障碍物/传感器模块、C++ 端大幅扩展
+- **2026-04-25**：初始化 AI 上下文索引
