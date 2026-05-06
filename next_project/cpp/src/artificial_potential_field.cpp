@@ -4,14 +4,18 @@ namespace sim {
 
 ImprovedArtificialPotentialField::ImprovedArtificialPotentialField(
     double k_rep_, double r_rep_, int n_decay_,
-    double k_inter_, double s_inter_, double mu_escape_, double max_acc_)
-    : k_rep(k_rep_), r_rep(r_rep_), n_decay(n_decay_),
-      k_inter(k_inter_), s_inter(s_inter_), mu_escape(mu_escape_), max_acc(max_acc_) {}
+    double k_inter_, double s_inter_, double mu_escape_, double max_acc_,
+    double k_comm_, double comm_range_, bool adaptive_n_decay_)
+    : k_rep(k_rep_), r_rep(r_rep_), k_inter(k_inter_), s_inter(s_inter_),
+      mu_escape(mu_escape_), max_acc(max_acc_), k_comm(k_comm_),
+      comm_range(std::max(comm_range_, 1e-6)), n_decay(n_decay_),
+      adaptive_n_decay(adaptive_n_decay_) {}
 
 void ImprovedArtificialPotentialField::reset() {
     in_escape_ = false;
     escape_counter_ = 0;
     escape_direction_ = Vec3{};
+    density_cache_.clear();
 }
 
 Vec3 ImprovedArtificialPotentialField::compute_avoidance_acceleration(
@@ -52,7 +56,17 @@ Vec3 ImprovedArtificialPotentialField::compute_avoidance_acceleration(
         escape_counter_ = 0;
     }
 
-    return total_rep + f_escape;
+    Vec3 f_comm{};
+    if (!other_positions.empty() && k_comm > 0.0) {
+        f_comm = communication_constraint_force(position, other_positions);
+    }
+
+    Vec3 result = total_rep + f_escape + f_comm;
+    double result_norm = norm(result);
+    if (result_norm > max_acc) {
+        result = result / result_norm * max_acc;
+    }
+    return result;
 }
 
 Vec3 ImprovedArtificialPotentialField::obstacle_repulsion(
@@ -78,15 +92,16 @@ Vec3 ImprovedArtificialPotentialField::obstacle_repulsion(
     double rho = std::max(sd, 0.05);
     double goal_dist = norm(goal - pos);
     double goal_factor = std::min(goal_dist / r_rep, 1.0);
-    double decay = std::pow(goal_factor, n_decay);
+    double decay_n = adaptive_n_decay ? adaptive_decay_exponent(pos, obs) : static_cast<double>(n_decay);
+    double decay = std::pow(goal_factor, decay_n);
 
     double term = std::max(1.0 / rho - 1.0 / r_rep, 0.0);
     double f_r1 = k_rep * term * (1.0 / (rho * rho)) * decay;
 
     double f_r2 = 0.0;
-    if (n_decay >= 1 && goal_dist < r_rep) {
-        f_r2 = 0.5 * n_decay * k_rep * (term * term)
-               * std::pow(goal_factor, std::max(n_decay - 1, 0));
+    if (decay_n >= 1.0 && goal_dist < r_rep) {
+        f_r2 = 0.5 * decay_n * k_rep * (term * term)
+               * std::pow(goal_factor, std::max(decay_n - 1.0, 0.0));
     }
 
     double f_mag = std::min(f_r1 + f_r2, max_acc);
@@ -110,6 +125,71 @@ Vec3 ImprovedArtificialPotentialField::inter_drone_repulsion(
         total = total / total_norm * (max_acc * 0.5);
     }
     return total;
+}
+
+Vec3 ImprovedArtificialPotentialField::communication_constraint_force(
+    const Vec3& pos, const std::vector<Vec3>& others) const {
+
+    Vec3 total{};
+    for (const auto& other : others) {
+        Vec3 diff = other - pos;
+        double dist = norm(diff);
+        if (dist < 1e-6) continue;
+        double gate = 0.5 * (1.0 + std::tanh((dist / comm_range - 0.8) / 0.05));
+        double ratio = std::min(1.0, dist / comm_range);
+        total += normalized(diff, Vec3{0.0, 0.0, 0.0}) * (k_comm * gate * ratio);
+    }
+    double limit = k_comm * static_cast<double>(others.size());
+    double total_norm = norm(total);
+    if (total_norm > limit && limit > 0.0) {
+        total = total / total_norm * limit;
+    }
+    return total;
+}
+
+double ImprovedArtificialPotentialField::adaptive_decay_exponent(
+    const Vec3& pos, const ObstacleField& obs) const {
+
+    constexpr int agent_id = 0;
+    auto it = density_cache_.find(agent_id);
+    if (it != density_cache_.end()) {
+        const DensityCacheEntry& cache = it->second;
+        if (norm(pos - cache.last_pos) < r_rep / 4.0 && cache.step < 10) {
+            density_cache_[agent_id] = DensityCacheEntry{cache.last_pos, cache.last_density, cache.step + 1};
+            return 1.0 + 3.0 * std::min(cache.last_density, 1.0);
+        }
+    }
+
+    double local_density = estimate_local_obstacle_density(pos, obs);
+    density_cache_[agent_id] = DensityCacheEntry{pos, local_density, 0};
+    return 1.0 + 3.0 * std::min(local_density, 1.0);
+}
+
+double ImprovedArtificialPotentialField::estimate_local_obstacle_density(
+    const Vec3& pos, const ObstacleField& obs) const {
+
+    double r = r_rep;
+    constexpr int samples_per_axis = 3;
+    int total = 0;
+    int blocked = 0;
+    double step = samples_per_axis > 1 ? (2.0 * r / static_cast<double>(samples_per_axis - 1)) : 1.0;
+
+    for (int i = 0; i < samples_per_axis; ++i) {
+        for (int j = 0; j < samples_per_axis; ++j) {
+            for (int k = 0; k < samples_per_axis; ++k) {
+                Vec3 offset{
+                    -r + static_cast<double>(i) * step,
+                    -r + static_cast<double>(j) * step,
+                    -r + static_cast<double>(k) * step,
+                };
+                ++total;
+                if (obs.signed_distance(pos + offset) < r) {
+                    ++blocked;
+                }
+            }
+        }
+    }
+    return total > 0 ? static_cast<double>(blocked) / static_cast<double>(total) : 0.0;
 }
 
 void ImprovedArtificialPotentialField::enter_escape(const Vec3& total_rep) {

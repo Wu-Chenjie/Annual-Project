@@ -159,3 +159,191 @@ def test_cpp_fault_tolerance_is_wired_into_drone_topology_and_scenario():
     assert "config_fault_tolerance" in config
     assert "config_fault_tolerance_online" in config
     assert "std::vector<std::string> fault_log" in result_header
+
+
+def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2():
+    topology_header = read("cpp/include/topology.hpp")
+    topology_source = read("cpp/src/topology.cpp")
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "envelope_per_axis" in topology_header
+    assert "auto_shrink" in topology_header
+    assert "constexpr double kSigmaSquared = 4.0;" in topology_source
+    assert "std::exp(-d2 / kSigmaSquared)" in topology_source
+    assert "std::sort(eigenvals.begin(), eigenvals.end())" in topology_source
+    assert "eigenvals[1]" in topology_source
+    assert "formation_.topology_.envelope_per_axis()" in scenario_source
+    assert "channel_width_from_sensor" in scenario_source
+    assert "rebuild_planning_grid" in scenario_source
+
+
+def test_cpp_sensor_and_dynamic_replay_use_analytic_ranges():
+    sensor_header = read("cpp/include/sensor.hpp")
+    dynamic_header = read("cpp/include/dynamic_scenario.hpp")
+
+    assert "ray_aabb" in sensor_header
+    assert "ray_sphere" in sensor_header
+    assert "ray_cylinder" in sensor_header
+    assert "field.obstacles()" in sensor_header
+    assert "field.is_collision(p)" not in sensor_header
+    assert "frame.sensor_readings = sensor_.sense(leader_pose, obstacles_);" in dynamic_header
+    assert "config_.sensor_max_range, config_.sensor_max_range" not in dynamic_header
+
+
+def test_cpp_dynamic_replay_exports_scope_and_trace_fields():
+    dynamic_header = read("cpp/include/dynamic_scenario.hpp")
+    dynamic_main = read("cpp/src/dynamic_main.cpp")
+
+    assert 'std::string execution_scope = "leader_centric"' in dynamic_header
+    assert 'std::string follower_pose_mode = "illustrative_lateral_offsets"' in dynamic_header
+    assert 'std::string summary_mode = "shared_leader_frame_eval"' in dynamic_header
+    assert "std::vector<Vec3> task_waypoints;" in dynamic_header
+    assert "std::vector<Vec3> replanned_waypoints;" in dynamic_header
+    assert "std::vector<Vec3> executed_path;" in dynamic_header
+    assert "struct ReplayReplanEvent" in dynamic_header
+    assert "struct ReplayCollisionEvent" in dynamic_header
+    assert "struct ReplayFaultEvent" in dynamic_header
+    assert "std::vector<ReplayReplanEvent> replan_events;" in dynamic_header
+    assert "std::vector<std::array<double, 6>> sensor_logs;" in dynamic_header
+    assert "std::vector<ReplayCollisionEvent> collision_log;" in dynamic_header
+    assert "std::vector<ReplayFaultEvent> fault_log;" in dynamic_header
+    assert 'std::string apf_profile_scope = "cpp_subset_runtime"' in dynamic_header
+    assert "std::vector<std::string> apf_runtime_fields;" in dynamic_header
+    assert "std::vector<std::string> apf_python_only_fields;" in dynamic_header
+    assert "std::vector<std::string> apf_cpp_pending_fields;" in dynamic_header
+    assert '\\"execution_scope\\":' in dynamic_main
+    assert '\\"apf_profile_scope\\":' in dynamic_main
+    assert '\\"apf_runtime_fields\\":' in dynamic_main
+    assert '\\"apf_python_only_fields\\":' in dynamic_main
+    assert '\\"apf_cpp_pending_fields\\":' in dynamic_main
+    assert '\\"task_waypoints\\":[' in dynamic_main
+    assert '\\"replanned_waypoints\\":[' in dynamic_main
+    assert '\\"executed_path\\":[' in dynamic_main
+    assert '\\"replan_events\\":[' in dynamic_main
+    assert '\\"sensor_logs\\":[' in dynamic_main
+    assert '\\"collision_log\\":[' in dynamic_main
+    assert '\\"fault_log\\":[' in dynamic_main
+    assert "dump_replan_event" in dynamic_main
+    assert "dump_collision_event" in dynamic_main
+    assert "dump_fault_event" in dynamic_main
+
+
+def test_cpp_apf_profile_config_surface_and_subset_runtime_are_explicit():
+    obstacle_header = read("cpp/include/obstacle_scenario.hpp")
+    obstacle_source = read("cpp/src/obstacle_scenario.cpp")
+    dynamic_main = read("cpp/src/dynamic_main.cpp")
+    dynamic_header = read("cpp/include/dynamic_scenario.hpp")
+    apf_header = read("cpp/include/artificial_potential_field.hpp")
+    apf_source = read("cpp/src/artificial_potential_field.cpp")
+    formation_apf_header = read("cpp/include/formation_apf.hpp")
+    formation_apf_source = read("cpp/src/formation_apf.cpp")
+    formation_probe = read("cpp/src/apf_formation_probe.cpp")
+    cmake = read("cpp/CMakeLists.txt")
+
+    assert 'std::string apf_paper1_profile = "off"' in obstacle_header
+    assert "double apf_comm_range = 10.0;" in obstacle_header
+    assert "double apf_centroid_alpha = 0.4;" in obstacle_header
+    assert "double apf_centroid_beta = 0.6;" in obstacle_header
+    assert "bool apf_dev_override = false;" in obstacle_header
+    assert "bool apf_adaptive_n_decay = false;" in obstacle_header
+    assert "bool apf_formation_centroid = false;" in obstacle_header
+    assert "bool apf_comm_constraint = false;" in obstacle_header
+    assert "bool apf_rotational_escape = false;" in obstacle_header
+    assert "ImprovedArtificialPotentialField build_apf() const;" in obstacle_header
+    assert "std::unique_ptr<FormationAPF> build_formation_apf() const;" in obstacle_header
+    assert "double k_comm = 0.0, double comm_range = 10.0," in apf_header
+    assert "bool adaptive_n_decay = false" in apf_header
+    assert "double k_rep, r_rep, k_inter, s_inter, mu_escape, max_acc, k_comm, comm_range;" in apf_header
+    assert "bool adaptive_n_decay;" in apf_header
+    assert "Vec3 communication_constraint_force" in apf_header
+    assert "double adaptive_decay_exponent" in apf_header
+    assert "double estimate_local_obstacle_density" in apf_header
+    assert "mutable std::unordered_map<int, DensityCacheEntry> density_cache_" in apf_header
+    assert "class FormationAPF" in formation_apf_header
+    assert "compute_formation_avoidance(" in formation_apf_header
+    assert "centroid_repulsion(" in formation_apf_header
+    assert "relative_formation_forces(" in formation_apf_header
+    assert "apf_(build_apf())" in obstacle_source
+    assert "formation_apf_(build_formation_apf())" in obstacle_source
+    assert 'if (config_.apf_paper1_profile == "conservative")' in obstacle_source
+    assert 'else if (config_.apf_paper1_profile == "aggressive")' in obstacle_source
+    assert "k_comm = 0.15;" in obstacle_source
+    assert "k_comm = 0.30;" in obstacle_source
+    assert "adaptive_n_decay = true;" in obstacle_source
+    assert "adaptive_n_decay = config_.apf_adaptive_n_decay;" in obstacle_source
+    assert "k_comm = config_.apf_comm_constraint ? 0.3 : 0.0;" in obstacle_source
+    assert "config_.apf_dev_override && config_.apf_rotational_escape" in obstacle_source
+    assert "double k_comm_, double comm_range_, bool adaptive_n_decay_)" in apf_source
+    assert "max_acc(max_acc_), k_comm(k_comm_)," in apf_source
+    assert "comm_range(std::max(comm_range_, 1e-6))" in apf_source
+    assert "adaptive_n_decay(adaptive_n_decay_)" in apf_source
+    assert "f_comm = communication_constraint_force(position, other_positions);" in apf_source
+    assert "std::tanh((dist / comm_range - 0.8) / 0.05)" in apf_source
+    assert "double limit = k_comm * static_cast<double>(others.size());" in apf_source
+    assert "density_cache_.clear();" in apf_source
+    assert "double decay_n = adaptive_n_decay ? adaptive_decay_exponent(pos, obs) : static_cast<double>(n_decay);" in apf_source
+    assert "double ImprovedArtificialPotentialField::adaptive_decay_exponent(" in apf_source
+    assert "double ImprovedArtificialPotentialField::estimate_local_obstacle_density(" in apf_source
+    assert "if (norm(pos - cache.last_pos) < r_rep / 4.0 && cache.step < 10)" in apf_source
+    assert "return 1.0 + 3.0 * std::min(local_density, 1.0);" in apf_source
+    assert "std::pair<Vec3, std::vector<Vec3>> FormationAPF::compute_formation_avoidance(" in formation_apf_source
+    assert "Vec3 FormationAPF::centroid_repulsion(" in formation_apf_source
+    assert "std::vector<Vec3> FormationAPF::relative_formation_forces(" in formation_apf_source
+    assert "src/formation_apf.cpp" in cmake
+    assert "sim_apf_formation_probe" in cmake
+    assert 'bool enable_centroid = argc >= 2 && std::string(argv[1]) == "on";' in formation_probe
+    assert "cfg.apf_formation_centroid = enable_centroid;" in formation_probe
+    assert 'std::cout << "centroid=" << (enable_centroid ? "on" : "off")' in formation_probe
+    assert 'cfg.apf_paper1_profile = string_or(source.at("apf_paper1_profile"), cfg.apf_paper1_profile);' in dynamic_main
+    assert 'cfg.apf_comm_range = number_or(source.at("apf_comm_range"), cfg.apf_comm_range);' in dynamic_main
+    assert 'cfg.apf_centroid_alpha = number_or(source.at("apf_centroid_alpha"), cfg.apf_centroid_alpha);' in dynamic_main
+    assert 'cfg.apf_centroid_beta = number_or(source.at("apf_centroid_beta"), cfg.apf_centroid_beta);' in dynamic_main
+    assert 'cfg.apf_dev_override = bool_or(source.at("apf_dev_override"), cfg.apf_dev_override);' in dynamic_main
+    assert 'cfg.apf_adaptive_n_decay = bool_or(source.at("apf_adaptive_n_decay"), cfg.apf_adaptive_n_decay);' in dynamic_main
+    assert 'cfg.apf_formation_centroid = bool_or(source.at("apf_formation_centroid"), cfg.apf_formation_centroid);' in dynamic_main
+    assert 'cfg.apf_comm_constraint = bool_or(source.at("apf_comm_constraint"), cfg.apf_comm_constraint);' in dynamic_main
+    assert 'cfg.apf_rotational_escape = bool_or(source.at("apf_rotational_escape"), cfg.apf_rotational_escape);' in dynamic_main
+    assert '"apf_paper1_profile"' in dynamic_header
+    assert '"apf_rotational_escape"' in dynamic_header
+    assert '"apf_comm_range"' in dynamic_header
+    assert '"apf_comm_constraint"' in dynamic_header
+    assert '"apf_adaptive_n_decay"' in dynamic_header
+    assert '"apf_formation_centroid"' in dynamic_header
+    assert '"apf_centroid_alpha"' in dynamic_header
+    assert '"apf_centroid_beta"' in dynamic_header
+    assert '"k_comm"' in dynamic_header
+    assert '"comm_range"' in dynamic_header
+    assert '"adaptive_n_decay"' in dynamic_header
+    assert '"formation_apf_runtime"' in dynamic_header
+    assert "leader_other_positions = follower_positions_now;" in obstacle_source
+    assert "other_positions.push_back(ls.position);" in obstacle_source
+    assert "Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target, leader_other_positions);" in obstacle_source
+    assert "Vec3 rep_acc_f = obstacle_repulsion_acc(follower_pos, target_pos, other_positions);" in obstacle_source
+    assert "if (formation_apf_ && !follower_positions_now.empty())" in obstacle_source
+    assert "formation_apf_->compute_formation_avoidance(" in obstacle_source
+    assert "rep_acc += formation_leader_acc;" in obstacle_source
+    assert "rep_acc_f += formation_follower_accs" in obstacle_source
+
+
+def test_web_dynamic_replay_labels_leader_centric_scope_and_proxy_followers():
+    web = read("web/dynamic_replay.html")
+
+    assert "leader_centric" in web
+    assert "Follower示意" in web
+    assert "Follower示意当前" in web
+    assert "Follower proxies" in web
+    assert "共享 Leader 轨迹逐帧评估" in web
+    assert "证据摘要：" in web
+    assert "replan_events" in web
+    assert "sensor_logs" in web
+
+
+def test_python_obstacle_scenario_wires_formation_apf_switch():
+    scenario = read("simulations/obstacle_scenario.py")
+
+    assert "FormationAPF" in scenario
+    assert "self.formation_apf = self._build_formation_apf()" in scenario
+    assert "def _build_formation_apf" in scenario
+    assert "compute_formation_avoidance(" in scenario
+    assert "formation_leader_acc" in scenario
+    assert "formation_follower_accs" in scenario

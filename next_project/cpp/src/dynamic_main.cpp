@@ -232,6 +232,15 @@ std::vector<sim::Vec3> waypoints_or(const JsonValue& value, std::vector<sim::Vec
     return out.empty() ? fallback : out;
 }
 
+void dump_string_array(std::ostream& out, const std::vector<std::string>& values) {
+    out << "[";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ",";
+        out << "\"" << escape_json(values[i]) << "\"";
+    }
+    out << "]";
+}
+
 void apply_z_bounds(sim::ObstacleConfig& cfg, const JsonValue& value) {
     if (value.type != JsonValue::Type::Array || value.array.size() < 2) return;
     cfg.planner_z_min = number_or(value.array[0], cfg.planner_z_min);
@@ -305,6 +314,15 @@ void apply_config_overrides(sim::ObstacleConfig& cfg, const JsonValue& root) {
     cfg.planner_horizon = number_or(source.at("planner_horizon"), cfg.planner_horizon);
     cfg.sensor_max_range = number_or(source.at("sensor_max_range"), cfg.sensor_max_range);
     cfg.sensor_enabled = bool_or(source.at("sensor_enabled"), cfg.sensor_enabled);
+    cfg.apf_paper1_profile = string_or(source.at("apf_paper1_profile"), cfg.apf_paper1_profile);
+    cfg.apf_comm_range = number_or(source.at("apf_comm_range"), cfg.apf_comm_range);
+    cfg.apf_centroid_alpha = number_or(source.at("apf_centroid_alpha"), cfg.apf_centroid_alpha);
+    cfg.apf_centroid_beta = number_or(source.at("apf_centroid_beta"), cfg.apf_centroid_beta);
+    cfg.apf_dev_override = bool_or(source.at("apf_dev_override"), cfg.apf_dev_override);
+    cfg.apf_adaptive_n_decay = bool_or(source.at("apf_adaptive_n_decay"), cfg.apf_adaptive_n_decay);
+    cfg.apf_formation_centroid = bool_or(source.at("apf_formation_centroid"), cfg.apf_formation_centroid);
+    cfg.apf_comm_constraint = bool_or(source.at("apf_comm_constraint"), cfg.apf_comm_constraint);
+    cfg.apf_rotational_escape = bool_or(source.at("apf_rotational_escape"), cfg.apf_rotational_escape);
     cfg.danger_mode_enabled = bool_or(source.at("danger_mode_enabled"), cfg.danger_mode_enabled);
     cfg.waypoints = waypoints_or(source.at("waypoints"), cfg.waypoints);
 }
@@ -446,11 +464,49 @@ void dump_summary(std::ostream& out, const sim::SummaryMetrics& summary) {
     out << "}}";
 }
 
+void dump_replan_event(std::ostream& out, const sim::ReplayReplanEvent& event) {
+    out << "{\"t\":" << event.t << ",\"planner\":";
+    dump_string(out, event.planner);
+    out << ",\"phase\":";
+    dump_string(out, event.phase);
+    out << ",\"success\":" << (event.success ? "true" : "false") << "}";
+}
+
+void dump_collision_event(std::ostream& out, const sim::ReplayCollisionEvent& event) {
+    out << "{\"t\":" << event.t << ",\"actor\":";
+    dump_string(out, event.actor);
+    out << ",\"pos\":";
+    dump_vec3(out, event.pos);
+    out << "}";
+}
+
+void dump_fault_event(std::ostream& out, const sim::ReplayFaultEvent& event) {
+    out << "{\"t\":" << event.t << ",\"type\":";
+    dump_string(out, event.type);
+    out << ",\"detail\":";
+    dump_string(out, event.detail);
+    out << "}";
+}
+
 void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
     out << "{\"metadata\":{\"map_file\":";
     dump_string(out, replay.metadata.map_file);
     out << ",\"scenario\":";
     dump_string(out, replay.metadata.scenario);
+    out << ",\"execution_scope\":";
+    dump_string(out, replay.metadata.execution_scope);
+    out << ",\"follower_pose_mode\":";
+    dump_string(out, replay.metadata.follower_pose_mode);
+    out << ",\"summary_mode\":";
+    dump_string(out, replay.metadata.summary_mode);
+    out << ",\"apf_profile_scope\":";
+    dump_string(out, replay.metadata.apf_profile_scope);
+    out << ",\"apf_runtime_fields\":";
+    dump_string_array(out, replay.metadata.apf_runtime_fields);
+    out << ",\"apf_python_only_fields\":";
+    dump_string_array(out, replay.metadata.apf_python_only_fields);
+    out << ",\"apf_cpp_pending_fields\":";
+    dump_string_array(out, replay.metadata.apf_cpp_pending_fields);
     out << ",\"step_count\":" << replay.metadata.step_count
         << ",\"dt\":" << replay.metadata.dt
         << ",\"total_time\":" << replay.metadata.total_time
@@ -474,6 +530,46 @@ void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
     for (std::size_t i = 0; i < replay.waypoints.size(); ++i) {
         if (i) out << ",";
         dump_vec3(out, replay.waypoints[i]);
+    }
+    out << "],\"task_waypoints\":[";
+    for (std::size_t i = 0; i < replay.task_waypoints.size(); ++i) {
+        if (i) out << ",";
+        dump_vec3(out, replay.task_waypoints[i]);
+    }
+    out << "],\"replanned_waypoints\":[";
+    for (std::size_t i = 0; i < replay.replanned_waypoints.size(); ++i) {
+        if (i) out << ",";
+        dump_vec3(out, replay.replanned_waypoints[i]);
+    }
+    out << "],\"executed_path\":[";
+    for (std::size_t i = 0; i < replay.executed_path.size(); ++i) {
+        if (i) out << ",";
+        dump_vec3(out, replay.executed_path[i]);
+    }
+    out << "],\"replan_events\":[";
+    for (std::size_t i = 0; i < replay.replan_events.size(); ++i) {
+        if (i) out << ",";
+        dump_replan_event(out, replay.replan_events[i]);
+    }
+    out << "],\"sensor_logs\":[";
+    for (std::size_t i = 0; i < replay.sensor_logs.size(); ++i) {
+        if (i) out << ",";
+        out << "[";
+        for (std::size_t j = 0; j < replay.sensor_logs[i].size(); ++j) {
+            if (j) out << ",";
+            out << replay.sensor_logs[i][j];
+        }
+        out << "]";
+    }
+    out << "],\"collision_log\":[";
+    for (std::size_t i = 0; i < replay.collision_log.size(); ++i) {
+        if (i) out << ",";
+        dump_collision_event(out, replay.collision_log[i]);
+    }
+    out << "],\"fault_log\":[";
+    for (std::size_t i = 0; i < replay.fault_log.size(); ++i) {
+        if (i) out << ",";
+        dump_fault_event(out, replay.fault_log[i]);
     }
     out << "],\"frames\":[";
     for (std::size_t i = 0; i < replay.frames.size(); ++i) {

@@ -21,7 +21,7 @@ from core.planning import (
     AStar, TurnConstrainedAStar, HybridAStar, Dijkstra, RRTStar,
     InformedRRTStar, DStarLite, WindowReplanner, RiskAdaptiveReplanInterval,
     Planner, CostAwareGrid,
-    VisibilityGraph, GNNPlanner, DualModeScheduler,
+    VisibilityGraph, GNNPlanner, DualModeScheduler, FormationAPF,
 )
 from core.planning.firi import FIRIRefiner
 
@@ -83,6 +83,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         # 鍒濆鍖栨敼杩涗汉宸ュ娍鍦烘硶閬跨锛堝弬鑰冭鏂?4.2.2 鑺傦級
         # 鑶ㄨ儉瑙勫垝 + 缂╁洖妫€娴嬶細瑙勫垝鑶ㄨ儉淇濇寔 1.5m锛屾娴嬮槇鍊煎彲鐙珛缂╂斁
         self.apf = self._build_apf()
+        self.formation_apf = self._build_formation_apf()
         self.fault_detector = self._build_fault_detector()
         self.fault_log: list[dict] = []
         self._faulted_followers: set[int] = set()
@@ -135,6 +136,17 @@ class ObstacleScenarioSimulation(FormationSimulation):
             pos_dev_threshold=cfg.fault_detector_pos_dev,
             saturate_steps=cfg.fault_detector_saturate_steps,
             dt=self.dt,
+        )
+
+    def _build_formation_apf(self) -> FormationAPF | None:
+        cfg = self.config
+        if not getattr(cfg, "apf_formation_centroid", False):
+            return None
+        return FormationAPF(
+            k_rep=self.apf.k_rep,
+            r_rep=self.apf.r_rep,
+            alpha=cfg.apf_centroid_alpha,
+            beta=cfg.apf_centroid_beta,
         )
 
     def _setup_obstacles(self) -> None:
@@ -196,6 +208,50 @@ class ObstacleScenarioSimulation(FormationSimulation):
             z = float(self.grid.origin[2] + iz * self.grid.resolution)
             if z < z_min - 1e-9 or z > z_max + 1e-9:
                 data[:, :, iz] = 1
+
+    def _channel_width_from_sensor(self, sensor_reading: np.ndarray | None) -> tuple[float, float, float] | None:
+        """将六向测距读数折算为局部三轴通道宽度。"""
+        if sensor_reading is None or len(sensor_reading) < 6:
+            return None
+        reading = np.asarray(sensor_reading, dtype=float)
+        return (
+            float(reading[2] + reading[3]),
+            float(reading[0] + reading[1]),
+            float(reading[4] + reading[5]),
+        )
+
+    def _rebuild_planning_grid(self) -> None:
+        """按当前队形重新生成规划网格，避免队形切换后继续沿用旧膨胀层。"""
+        if self._map_bounds is None or len(self._map_bounds) == 0:
+            return
+        base_grid = self.obstacles.to_voxel_grid(self._map_bounds, self.config.planner_resolution)
+        plan_grid = base_grid.inflate(self._inflate_r())
+        if getattr(self.config, "planner_sdf_aware", False):
+            clearance = max(float(self.config.safety_margin), float(getattr(self, "_collision_margin", 0.0)))
+            plan_grid = SDFAwareGrid(
+                plan_grid,
+                self.obstacles,
+                clearance=clearance,
+            )
+        if getattr(self.config, "planner_esdf_aware", True):
+            plan_grid = CostAwareGrid(
+                plan_grid,
+                weight=2.0,
+                scale=1.5,
+                cap_distance=4.0,
+            )
+        self.grid = plan_grid
+        self._apply_planning_z_bounds()
+        if hasattr(self, "replanner") and self.replanner is not None:
+            self.replanner.grid = self.grid
+            self.replanner._static_occupied = (np.asarray(self.grid.data) >= 1).copy()
+            self.replanner._sensor_occupied = np.zeros_like(self.grid.data, dtype=bool)
+            self.replanner._sensor_ttl = np.zeros_like(self.grid.data, dtype=np.int16)
+            self.replanner._sensor_clear_hits = np.zeros_like(self.grid.data, dtype=np.int16)
+            self.replanner._changed_cells_since_last = []
+            self.replanner._current_path = None
+            self.replanner._global_ref_path = None
+            self.replanner.incremental_planner = None
 
     def _setup_planning(self) -> None:
         """鍒濆鍖栬鍒掑櫒涓庡湪绾跨粍浠讹紙鍚鏂?-3 鍒嗗眰鏋舵瀯锛夈€"""
@@ -399,8 +455,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
         envelope_radius 宸插寘鍚?arm_length锛屾澶勪笉鍐嶉噸澶嶅彔鍔犮€?        """
         if not getattr(self.config, "planner_use_formation_envelope", False):
             return self.config.safety_margin
-        formation = self.config.initial_formation
-        return self.topology.envelope_radius(formation) + self.config.safety_margin
+        lateral, _, vertical = self.topology.envelope_per_axis()
+        return max(lateral, vertical) + self.config.safety_margin
 
     def _planned_segment_for_task(self, start: np.ndarray, goal: np.ndarray) -> np.ndarray | None:
         """从离线安全参考路径中截取当前位置到当前任务航点的局部参考。"""
@@ -941,6 +997,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         self.sensor_logs.append(last_sensor_reading.copy())
                     sensor_reading = last_sensor_reading
 
+                if getattr(cfg, "planner_use_formation_envelope", False):
+                    channel_width = self._channel_width_from_sensor(sensor_reading)
+                    if channel_width is not None:
+                        previous = self.topology.current_formation
+                        if self.topology.auto_shrink(channel_width):
+                            if self.topology.current_formation != previous:
+                                self._rebuild_planning_grid()
+
                 leader_pos = leader.get_state()[0]
                 task_goal = self._planning_waypoints[min(current_wp_idx, len(self._planning_waypoints) - 1)]
                 # 在线重规划只服务于“到下一个任务航点”的局部执行，不再覆盖整个任务航点序列。
@@ -1038,6 +1102,18 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     leader_target_vel = np.zeros(3, dtype=float)
             else:
                 leader_target_vel = np.zeros(3, dtype=float)
+            follower_positions_now = [follower.get_state()[0] for follower in followers]
+            offsets = topology.get_current_offsets(time_now)
+            formation_leader_acc = np.zeros(3, dtype=float)
+            formation_follower_accs = [np.zeros(3, dtype=float) for _ in followers]
+            if self.formation_apf is not None and follower_positions_now:
+                formation_leader_acc, formation_follower_accs = self.formation_apf.compute_formation_avoidance(
+                    leader_pos=leader_pos,
+                    follower_positions=follower_positions_now,
+                    goal=target_wp,
+                    obstacles=obstacles,
+                    desired_offsets=offsets,
+                )
             # 鏀硅繘 APF锛氶殰纰嶇墿鏂ュ姏锛堝惈鐩爣璺濈琛板噺 + 灞€閮ㄦ瀬灏忓€奸€冮€革級
             leader_sdf = float(obstacles.signed_distance(leader_pos))
             if leader_sdf < self.apf.r_rep:
@@ -1045,6 +1121,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     leader_pos, target_wp, obstacles)
             else:
                 leader_repulsion_acc = np.zeros(3, dtype=float)
+            leader_repulsion_acc = leader_repulsion_acc + formation_leader_acc
             leader_u = leader_ctrl.compute_control(
                 leader.state,
                 target_wp,
@@ -1104,7 +1181,6 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
             leader_acc = (leader_vel_new - leader_vel) / dt
             leader_acc_filt = alpha * leader_acc + (1.0 - alpha) * leader_acc_filt
-            offsets = topology.get_current_offsets(time_now)
 
             for i, follower in enumerate(followers):
                 wind_follower = winds[i].sample(dt)
@@ -1127,6 +1203,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         other_positions=other_positions)
                 else:
                     repulsion_acc = np.zeros(3, dtype=float)
+                if i < len(formation_follower_accs):
+                    repulsion_acc = repulsion_acc + formation_follower_accs[i]
 
                 follower_u = follower_ctrls[i].compute_control(
                     follower.state,

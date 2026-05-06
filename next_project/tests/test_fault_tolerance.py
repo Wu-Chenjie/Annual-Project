@@ -79,6 +79,18 @@ def test_topology_graph_lambda2():
     assert lambda2 > 0, f"连通图的 λ₂ 应 > 0，实际 {lambda2:.4f}"
 
 
+def test_topology_graph_lambda2_matches_laplacian_eigenvalue():
+    """λ₂ 应等于 Laplacian 第二小特征值，而不是最小度数近似。"""
+    offsets = [
+        np.array([-2.0, 0.0, 0.0], dtype=float),
+        np.array([-4.0, 0.0, 0.0], dtype=float),
+        np.array([-6.0, 0.0, 0.0], dtype=float),
+    ]
+    tg = TopologyGraph(offsets)
+    expected = float(np.linalg.eigvalsh(tg.laplacian)[1])
+    assert abs(tg.algebraic_connectivity - expected) < 1e-9
+
+
 def test_best_reconfig_topology():
     """故障后拓扑重构：选择 λ₂ 最大的可行拓扑。"""
     best = TopologyGraph.best_reconfig_topology(
@@ -122,6 +134,7 @@ if __name__ == "__main__":
         ("故障注入掩码", test_drone_fault_mask),
         ("无误检", test_fault_detector_no_false_positive),
         ("拓扑 λ2", test_topology_graph_lambda2),
+        ("拓扑 λ2 与 Laplacian 特征值一致", test_topology_graph_lambda2_matches_laplacian_eigenvalue),
         ("拓扑重构选择", test_best_reconfig_topology),
         ("双模式调度器", test_dual_mode_scheduler),
     ]

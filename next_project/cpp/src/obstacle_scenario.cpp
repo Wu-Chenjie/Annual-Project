@@ -14,7 +14,8 @@ namespace sim {
 ObstacleScenarioSimulation::ObstacleScenarioSimulation(const ObstacleConfig& config)
     : config_(config),
       formation_(config),
-      apf_(0.8, 2.5, 2, 0.2, 2.0, 0.5, 8.0),
+      apf_(build_apf()),
+      formation_apf_(build_formation_apf()),
       num_followers_(config.num_followers) {
 
     double arm_length = 0.2;
@@ -53,6 +54,51 @@ ObstacleScenarioSimulation::ObstacleScenarioSimulation(const ObstacleConfig& con
     if (config.planner_mode == "online" && !grid_.data.empty()) {
         setup_online();
     }
+}
+
+ImprovedArtificialPotentialField ObstacleScenarioSimulation::build_apf() const {
+    double k_rep = 0.8;
+    double r_rep = 2.5;
+    int n_decay = 2;
+    double k_inter = 0.2;
+    double s_inter = 2.0;
+    double mu_escape = 0.5;
+    double max_acc = 8.0;
+    double k_comm = 0.0;
+    double comm_range = config_.apf_comm_range;
+    bool adaptive_n_decay = false;
+
+    if (config_.apf_paper1_profile == "conservative") {
+        mu_escape = 0.35;
+        k_comm = 0.15;
+        adaptive_n_decay = true;
+    } else if (config_.apf_paper1_profile == "aggressive") {
+        mu_escape = 0.60;
+        k_inter = 0.25;
+        k_comm = 0.30;
+        adaptive_n_decay = true;
+    }
+
+    if (config_.apf_dev_override) {
+        k_comm = config_.apf_comm_constraint ? 0.3 : 0.0;
+        adaptive_n_decay = config_.apf_adaptive_n_decay;
+    }
+
+    if (config_.apf_dev_override && config_.apf_rotational_escape) {
+        mu_escape = 0.5;
+    }
+
+    return ImprovedArtificialPotentialField(
+        k_rep, r_rep, n_decay, k_inter, s_inter, mu_escape, max_acc,
+        k_comm, comm_range, adaptive_n_decay);
+}
+
+std::unique_ptr<FormationAPF> ObstacleScenarioSimulation::build_formation_apf() const {
+    if (!config_.apf_formation_centroid) return nullptr;
+    return std::make_unique<FormationAPF>(
+        apf_.k_rep, apf_.r_rep,
+        config_.apf_centroid_alpha,
+        config_.apf_centroid_beta);
 }
 
 void ObstacleScenarioSimulation::set_obstacles(ObstacleField field, const std::array<Vec3, 2>& bounds) {
@@ -104,12 +150,62 @@ void ObstacleScenarioSimulation::setup_obstacles() {
 
 double ObstacleScenarioSimulation::inflate_r() const {
     if (!config_.planner_use_formation_envelope) return config_.safety_margin;
-    FormationTopology topo(config_.num_followers, config_.formation_spacing, 0.2);
-    return topo.envelope_radius(config_.initial_formation) + config_.safety_margin;
+    auto [lateral, longitudinal, vertical] = formation_.topology_.envelope_per_axis();
+    (void) longitudinal;
+    return std::max(lateral, vertical) + config_.safety_margin;
 }
 
 double ObstacleScenarioSimulation::compute_clearance() const {
     return std::max(config_.safety_margin, collision_margin_) + config_.plan_clearance_extra;
+}
+
+std::tuple<double, double, double> ObstacleScenarioSimulation::channel_width_from_sensor(
+    const std::array<double, 6>* sensor_reading) const {
+    if (sensor_reading == nullptr) {
+        return {0.0, 0.0, 0.0};
+    }
+    return {
+        (*sensor_reading)[2] + (*sensor_reading)[3],
+        (*sensor_reading)[0] + (*sensor_reading)[1],
+        (*sensor_reading)[4] + (*sensor_reading)[5],
+    };
+}
+
+void ObstacleScenarioSimulation::rebuild_planning_grid() {
+    Vec3 extent{
+        map_bounds_[1].x - map_bounds_[0].x,
+        map_bounds_[1].y - map_bounds_[0].y,
+        map_bounds_[1].z - map_bounds_[0].z,
+    };
+    grid_ = OccupancyGrid::from_obstacles(obstacles_, map_bounds_[0], extent, config_.planner_resolution);
+    grid_ = grid_.inflate(inflate_r());
+    if (config_.planner_sdf_aware) {
+        sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
+    } else {
+        sdf_grid_.reset();
+    }
+    apply_planning_z_bounds();
+    if (replanner_) {
+        const OccupancyGrid& pg = sdf_grid_
+            ? static_cast<const OccupancyGrid&>(*sdf_grid_)
+            : static_cast<const OccupancyGrid&>(grid_);
+        replanner_ = std::make_unique<WindowReplanner>(pg, config_.planner_replan_interval,
+                                                       config_.planner_horizon, 0.5, 3);
+        replanner_->set_obstacle_field(&obstacles_);
+        if (config_.replan_adaptive_interval) {
+            replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
+        }
+        if (config_.danger_mode_enabled) {
+            replanner_->set_dual_mode(std::make_unique<DualModeScheduler>(
+                config_.danger_sensor_threshold,
+                config_.danger_sensor_safe_threshold,
+                config_.danger_sdf_threshold,
+                config_.danger_hysteresis_margin));
+            replanner_->set_danger_planner(std::make_unique<GNNPlanner>());
+        }
+        auto gp = std::make_unique<HybridAStarPlanner>(2.0, 1.0, 1.0472, 0.5, 72, 4000, 50);
+        replanner_->set_global_planner(std::move(gp));
+    }
 }
 
 void ObstacleScenarioSimulation::apply_planning_z_bounds() {
@@ -355,8 +451,9 @@ bool ObstacleScenarioSimulation::path_is_clearance_safe(
     return path_segment_clearance(path, min_clearance) >= min_clearance - 1e-6;
 }
 
-Vec3 ObstacleScenarioSimulation::obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal) {
-    return apf_.compute_avoidance_acceleration(pos, goal, obstacles_);
+Vec3 ObstacleScenarioSimulation::obstacle_repulsion_acc(
+    const Vec3& pos, const Vec3& goal, const std::vector<Vec3>& other_positions) {
+    return apf_.compute_avoidance_acceleration(pos, goal, obstacles_, other_positions);
 }
 
 void ObstacleScenarioSimulation::setup_online() {
@@ -460,6 +557,12 @@ SimulationResult ObstacleScenarioSimulation::run() {
             if (sensor_) {
                 sdata = sensor_->sense(ls_before_replan.position, obstacles_);
                 sp = &sdata;
+                if (config_.planner_use_formation_envelope) {
+                    const std::string before = topology.current_formation();
+                    if (topology.auto_shrink(channel_width_from_sensor(sp)) && topology.current_formation() != before) {
+                        rebuild_planning_grid();
+                    }
+                }
             }
 
             Vec3 task_goal = tasks[task_wp_idx];
@@ -527,7 +630,25 @@ SimulationResult ObstacleScenarioSimulation::run() {
         }
 
         auto ls0 = leader.get_state();
-        Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target);
+        std::vector<Vec3> follower_positions_now;
+        follower_positions_now.reserve(followers.size());
+        for (const auto& follower : followers) {
+            follower_positions_now.push_back(follower.get_state().position);
+        }
+        auto offsets = topology.get_current_offsets(t);
+        Vec3 formation_leader_acc{};
+        std::vector<Vec3> formation_follower_accs(followers.size(), Vec3{});
+        if (formation_apf_ && !follower_positions_now.empty()) {
+            auto formation_forces = formation_apf_->compute_formation_avoidance(
+                ls0.position, follower_positions_now, target, obstacles_, offsets);
+            formation_leader_acc = formation_forces.first;
+            formation_follower_accs = std::move(formation_forces.second);
+        }
+        std::vector<Vec3> leader_other_positions;
+        leader_other_positions.reserve(followers.size());
+        leader_other_positions = follower_positions_now;
+        Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target, leader_other_positions);
+        rep_acc += formation_leader_acc;
 
         auto u = leader_ctrl->compute_control(leader.state(), target, Vec3{}, rep_acc);
         leader.update_state(u, leader_wind.sample(dt));
@@ -576,11 +697,20 @@ SimulationResult ObstacleScenarioSimulation::run() {
             }
         }
 
-        auto offsets = topology.get_current_offsets(t);
         for (int i = 0; i < follower_count; ++i) {
             Vec3 target_pos = ls.position + offsets[i];
             Vec3 follower_pos = followers[i].get_state().position;
-            Vec3 rep_acc_f = obstacle_repulsion_acc(follower_pos, target_pos);
+            std::vector<Vec3> other_positions;
+            other_positions.reserve(followers.size());
+            other_positions.push_back(ls.position);
+            for (int j = 0; j < follower_count; ++j) {
+                if (j == i) continue;
+                other_positions.push_back(followers[j].get_state().position);
+            }
+            Vec3 rep_acc_f = obstacle_repulsion_acc(follower_pos, target_pos, other_positions);
+            if (static_cast<std::size_t>(i) < formation_follower_accs.size()) {
+                rep_acc_f += formation_follower_accs[static_cast<std::size_t>(i)];
+            }
             auto u_f = follower_ctrls[i]->compute_control(
                 followers[i].state(), target_pos, ls.velocity,
                 leader_acc_filt + rep_acc_f);

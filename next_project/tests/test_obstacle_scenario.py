@@ -14,6 +14,8 @@
 
 from __future__ import annotations
 
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -99,14 +101,38 @@ def test_sensor_range():
     assert reading[1] > 9.0
 
 
+def test_sensor_range_matches_surface_contact_for_sphere_and_cylinder():
+    """解析求交应返回到障碍物表面的距离，而不是步进近似值。"""
+    field = ObstacleField()
+    field.add_sphere([4.0, 0.0, 2.0], 1.0)
+    field.add_cylinder([0.0, 4.0], 0.5, 1.0, 3.0)
+    sensor = RangeSensor6(max_range=10.0, noise_std=0.0, seed=0)
+    reading = sensor.sense(np.array([0.0, 0.0, 2.0], dtype=float), field)
+    assert abs(reading[0] - 3.0) < 1e-6
+    assert abs(reading[2] - 3.5) < 1e-6
+
+
 def test_envelope_radius():
-    """编队包络半径计算。"""
+    """编队包络标量接口应与分轴包络保持一致。"""
     topo = FormationTopology(num_followers=3, spacing=1.0)
     r_v = topo.envelope_radius("v_shape")
     r_d = topo.envelope_radius("diamond")
-    r_l = topo.envelope_radius("line")
-    assert r_d < r_v  # diamond 比 v_shape 紧凑
-    assert r_d > 1.0  # 至少有一个 spacing 的距离
+    lateral_v, _, _ = topo.envelope_per_axis("v_shape")
+    lateral_d, _, _ = topo.envelope_per_axis("diamond")
+    assert lateral_d < lateral_v
+    assert r_v == max(topo.envelope_per_axis("v_shape"))
+    assert r_d == max(topo.envelope_per_axis("diamond"))
+    assert r_d > 1.0
+
+
+def test_envelope_per_axis_preserves_line_lateral_clearance():
+    """线形队形应保持较小横向包络，不能被纵向长度放大。"""
+    topo = FormationTopology(num_followers=3, spacing=6.0, arm_length=0.2)
+    lateral, longitudinal, vertical = topo.envelope_per_axis("line")
+    assert abs(lateral - 0.2) < 1e-9
+    assert abs(vertical - 0.2) < 1e-9
+    assert abs(longitudinal - 18.2) < 1e-9
+    assert topo.envelope_radius("line") == longitudinal
 
 
 def test_astar_basic():
@@ -443,6 +469,154 @@ def test_online_accept_path_rejects_unsafe_clearance_without_fallback():
     assert accepted is None
     assert sim.replan_events[-1]["mode"] == "clearance_blocked"
     assert sim.replan_events[-1]["reason"] == "no_continuous_clearance_path"
+
+
+def test_inflate_radius_uses_runtime_formation_envelope():
+    """规划膨胀半径应跟随运行时队形，而不是固定 initial_formation。"""
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=6.0,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        planner_use_formation_envelope=True,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    baseline = sim._inflate_r()
+    sim.topology.switch_formation("line", transition_time=1.0)
+    narrowed = sim._inflate_r()
+    assert narrowed < baseline
+    assert abs(narrowed - (sim.topology.envelope_per_axis()[0] + cfg.safety_margin)) < 1e-9
+
+
+def test_online_auto_shrink_rebuilds_grid_and_switches_to_line():
+    """窄通道测距应触发自动收缩，并刷新规划网格膨胀层。"""
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=6.0,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_use_formation_envelope=True,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        sensor_enabled=False,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    before = sim.grid.data.copy()
+    changed = sim.topology.auto_shrink((0.3, 40.0, 5.0))
+    assert changed
+    sim._rebuild_planning_grid()
+    after = sim.grid.data
+    assert sim.topology.current_formation == "line" or sim.topology._target_formation == "line"
+    assert int(np.count_nonzero(after >= 1)) <= int(np.count_nonzero(before >= 1))
+
+
+def test_formation_apf_switch_is_no_longer_dead_config():
+    """apf_formation_centroid 打开后应真正构建编队势场组件。"""
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=2,
+        formation_spacing=0.5,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        obstacle_field=ObstacleField(),
+        planner_kind="astar",
+        planner_mode="offline",
+        safety_margin=0.3,
+        apf_formation_centroid=True,
+        apf_centroid_alpha=0.25,
+        apf_centroid_beta=0.75,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    cfg.obstacle_field.add_sphere([1.0, 0.0, 1.0], 0.2)
+    sim = ObstacleScenarioSimulation(cfg)
+    assert sim.formation_apf is not None
+    assert abs(sim.formation_apf.alpha - 0.25) < 1e-9
+    assert abs(sim.formation_apf.beta - 0.75) < 1e-9
+
+    leader_pos = np.array([0.0, 0.0, 1.0], dtype=float)
+    follower_positions = [np.array([-0.5, -0.5, 1.0], dtype=float), np.array([-0.5, 0.5, 1.0], dtype=float)]
+    desired_offsets = sim.topology.get_offsets("diamond")
+    leader_force, follower_forces = sim.formation_apf.compute_formation_avoidance(
+        leader_pos=leader_pos,
+        follower_positions=follower_positions,
+        goal=np.array([4.0, 0.0, 1.0], dtype=float),
+        obstacles=cfg.obstacle_field,
+        desired_offsets=desired_offsets,
+    )
+    assert leader_force.shape == (3,)
+    assert len(follower_forces) == 2
+    assert any(float(np.linalg.norm(force)) > 0.0 for force in follower_forces)
+
+
+def test_cpp_formation_apf_switch_changes_probe_behavior():
+    """C++ 路径中 apf_formation_centroid 打开后应改变探针场景结果。"""
+    root = Path(__file__).resolve().parent.parent
+    build_dir = root / "cpp" / "build"
+    exe = build_dir / "sim_apf_formation_probe.exe"
+    if os.name != "nt":
+        exe = build_dir / "sim_apf_formation_probe"
+
+    subprocess.run(
+        ["cmake", "--build", str(build_dir), "--target", "sim_apf_formation_probe"],
+        cwd=root / "cpp",
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    off = subprocess.run(
+        [str(exe), "off"],
+        cwd=root / "cpp",
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    on = subprocess.run(
+        [str(exe), "on"],
+        cwd=root / "cpp",
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    def parse(line: str) -> dict[str, float | str]:
+        parts: dict[str, float | str] = {}
+        for token in line.split():
+            key, value = token.split("=", 1)
+            if key == "centroid":
+                parts[key] = value
+            else:
+                parts[key] = float(value)
+        return parts
+
+    off_metrics = parse(off)
+    on_metrics = parse(on)
+    assert off_metrics["centroid"] == "off"
+    assert on_metrics["centroid"] == "on"
+    delta = (
+        abs(float(off_metrics["path_len"]) - float(on_metrics["path_len"]))
+        + abs(float(off_metrics["final_y"]) - float(on_metrics["final_y"]))
+        + abs(float(off_metrics["follower0_final_err"]) - float(on_metrics["follower0_final_err"]))
+    )
+    assert delta > 1e-6, (off, on)
 
 
 def test_safe_follower_target_shrinks_blocked_offset():

@@ -10,6 +10,18 @@ namespace sim {
 namespace {
 
 constexpr double kPi = 3.14159265358979323846;
+constexpr double kSigmaSquared = 4.0;
+
+double offdiag_norm_sq(const std::vector<std::vector<double>>& m) {
+    double acc = 0.0;
+    for (std::size_t i = 0; i < m.size(); ++i) {
+        for (std::size_t j = 0; j < m[i].size(); ++j) {
+            if (i == j) continue;
+            acc += m[i][j] * m[i][j];
+        }
+    }
+    return acc;
+}
 
 }  // namespace
 
@@ -165,13 +177,59 @@ std::vector<Vec3> FormationTopology::get_current_offsets(double elapsed_time) {
 }
 
 double FormationTopology::envelope_radius(const std::string& formation) const {
-    const auto offsets = get_offsets(formation);
-    double max_dist = 0.0;
-    for (const auto& off : offsets) {
-        const double d = norm(off);
-        if (d > max_dist) max_dist = d;
+    auto [lateral, longitudinal, vertical] = envelope_per_axis(formation);
+    return std::max({lateral, longitudinal, vertical});
+}
+
+std::tuple<double, double, double> FormationTopology::envelope_per_axis(const std::string& formation) const {
+    const auto name = formation.empty()
+        ? (switching_ ? target_formation_ : current_formation_)
+        : formation;
+    const auto offsets = get_offsets(name);
+    if (offsets.empty()) {
+        return {arm_length_, arm_length_, arm_length_};
     }
-    return max_dist + arm_length_;
+    double max_abs_x = 0.0;
+    double max_abs_y = 0.0;
+    double max_abs_z = 0.0;
+    for (const auto& off : offsets) {
+        max_abs_x = std::max(max_abs_x, std::abs(off.x));
+        max_abs_y = std::max(max_abs_y, std::abs(off.y));
+        max_abs_z = std::max(max_abs_z, std::abs(off.z));
+    }
+    return {
+        max_abs_y + arm_length_,
+        max_abs_x + arm_length_,
+        max_abs_z + arm_length_,
+    };
+}
+
+bool FormationTopology::auto_shrink(const std::tuple<double, double, double>& channel_width,
+                                    const std::tuple<double, double, double>* envelope) {
+    const auto env = envelope ? *envelope : envelope_per_axis(current_formation_);
+    const bool too_narrow =
+        std::get<0>(channel_width) < 2.0 * std::get<0>(env)
+        || std::get<1>(channel_width) < 2.0 * std::get<1>(env)
+        || std::get<2>(channel_width) < 2.0 * std::get<2>(env);
+    const bool roomy =
+        std::get<0>(channel_width) > 3.0 * std::get<0>(env)
+        && std::get<1>(channel_width) > 3.0 * std::get<1>(env)
+        && std::get<2>(channel_width) > 3.0 * std::get<2>(env);
+    if (too_narrow && current_formation_ != "line") {
+        switch_formation("line", 1.5, 0.0);
+        current_offsets_ = target_offsets_;
+        current_formation_ = target_formation_;
+        switching_ = false;
+        return true;
+    }
+    if (roomy && current_formation_ == "line") {
+        switch_formation("diamond", 2.0, 0.0);
+        current_offsets_ = target_offsets_;
+        current_formation_ = target_formation_;
+        switching_ = false;
+        return true;
+    }
+    return false;
 }
 
 std::string FormationTopology::fault_reconfigure(const std::vector<int>& failed_indices,
@@ -193,18 +251,72 @@ double TopologyGraph::algebraic_connectivity() const {
     std::vector<Vec3> positions{Vec3{}};
     positions.insert(positions.end(), offsets_.begin(), offsets_.end());
     const int n = static_cast<int>(positions.size());
+    std::vector<std::vector<double>> laplacian(static_cast<std::size_t>(n), std::vector<double>(static_cast<std::size_t>(n), 0.0));
 
-    double min_degree = std::numeric_limits<double>::infinity();
     for (int i = 0; i < n; ++i) {
-        double degree = 0.0;
-        for (int j = 0; j < n; ++j) {
-            if (i == j) continue;
-            double d = norm(positions[i] - positions[j]);
-            degree += std::exp(-(d * d) / 4.0);
+        for (int j = i + 1; j < n; ++j) {
+            const Vec3 delta = positions[i] - positions[j];
+            const double d2 = dot(delta, delta);
+            const double w = std::exp(-d2 / kSigmaSquared);
+            laplacian[static_cast<std::size_t>(i)][static_cast<std::size_t>(i)] += w;
+            laplacian[static_cast<std::size_t>(j)][static_cast<std::size_t>(j)] += w;
+            laplacian[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)] -= w;
+            laplacian[static_cast<std::size_t>(j)][static_cast<std::size_t>(i)] -= w;
         }
-        min_degree = std::min(min_degree, degree);
     }
-    return std::isfinite(min_degree) ? min_degree : 0.0;
+
+    const int max_iter = 64;
+    for (int iter = 0; iter < max_iter && offdiag_norm_sq(laplacian) > 1e-18; ++iter) {
+        int p = 0;
+        int q = 1;
+        double max_val = 0.0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                const double v = std::abs(laplacian[static_cast<std::size_t>(i)][static_cast<std::size_t>(j)]);
+                if (v > max_val) {
+                    max_val = v;
+                    p = i;
+                    q = j;
+                }
+            }
+        }
+        if (max_val < 1e-12) {
+            break;
+        }
+
+        const double app = laplacian[static_cast<std::size_t>(p)][static_cast<std::size_t>(p)];
+        const double aqq = laplacian[static_cast<std::size_t>(q)][static_cast<std::size_t>(q)];
+        const double apq = laplacian[static_cast<std::size_t>(p)][static_cast<std::size_t>(q)];
+        const double tau = (aqq - app) / (2.0 * apq);
+        const double t = ((tau >= 0.0) ? 1.0 : -1.0) / (std::abs(tau) + std::sqrt(1.0 + tau * tau));
+        const double c = 1.0 / std::sqrt(1.0 + t * t);
+        const double s = t * c;
+
+        for (int k = 0; k < n; ++k) {
+            if (k == p || k == q) continue;
+            const double aik = laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(p)];
+            const double akq = laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(q)];
+            laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(p)] = c * aik - s * akq;
+            laplacian[static_cast<std::size_t>(p)][static_cast<std::size_t>(k)] = laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(p)];
+            laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(q)] = s * aik + c * akq;
+            laplacian[static_cast<std::size_t>(q)][static_cast<std::size_t>(k)] = laplacian[static_cast<std::size_t>(k)][static_cast<std::size_t>(q)];
+        }
+
+        const double new_app = c * c * app - 2.0 * s * c * apq + s * s * aqq;
+        const double new_aqq = s * s * app + 2.0 * s * c * apq + c * c * aqq;
+        laplacian[static_cast<std::size_t>(p)][static_cast<std::size_t>(p)] = new_app;
+        laplacian[static_cast<std::size_t>(q)][static_cast<std::size_t>(q)] = new_aqq;
+        laplacian[static_cast<std::size_t>(p)][static_cast<std::size_t>(q)] = 0.0;
+        laplacian[static_cast<std::size_t>(q)][static_cast<std::size_t>(p)] = 0.0;
+    }
+
+    std::vector<double> eigenvals;
+    eigenvals.reserve(static_cast<std::size_t>(n));
+    for (int i = 0; i < n; ++i) {
+        eigenvals.push_back(laplacian[static_cast<std::size_t>(i)][static_cast<std::size_t>(i)]);
+    }
+    std::sort(eigenvals.begin(), eigenvals.end());
+    return eigenvals.size() >= 2 ? eigenvals[1] : 0.0;
 }
 
 std::string TopologyGraph::best_reconfig_topology(const std::vector<int>& failed_indices,

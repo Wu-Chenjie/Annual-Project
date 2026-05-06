@@ -975,7 +975,7 @@
           <span><i class="swatch" style="background:#7c3aed"></i>Hybrid A*</span>
           <span class="legend-group">— 无人机 —</span>
           <span><i class="swatch" style="background:#1f2937"></i>Leader</span>
-          <span><i class="swatch" style="background:rgba(8,145,178,0.35)"></i>Follower</span>
+          <span><i class="swatch" style="background:rgba(8,145,178,0.35)"></i>Follower示意</span>
           <span class="legend-group">— 障碍物 —</span>
           <span><i class="swatch" style="background:#94a3b8"></i>AABB</span>
           <span><i class="swatch" style="background:#60a5fa"></i>Sphere</span>
@@ -983,6 +983,7 @@
         </div>
       </section>
       <section class="surface">
+        <div class="event-readout" id="replayEvidence"></div>
         <div class="metrics" id="metrics"></div>
         <div class="charts">
           <div class="chartbox"><canvas id="timeChart"></canvas></div>
@@ -2809,7 +2810,7 @@
         resetGlobalTimelineCache();
         currentFrameIndex = 0;
         eventsDirtySinceRun = false;
-        $('runMeta').textContent = `${lastReplay.metadata.step_count} 帧 · seed ${lastReplay.metadata.seed}`;
+        $('runMeta').textContent = `${lastReplay.metadata.step_count} 帧 · seed ${lastReplay.metadata.seed} · ${lastReplay.metadata.execution_scope || 'leader_centric'}`;
         $('status').textContent = `完成：${body.results.length} 次运行`;
         $('viewToolbar').classList.remove('is-hidden');
         $('timeline').classList.remove('is-hidden');
@@ -2922,7 +2923,10 @@
       const obstacleCount = (frame.obstacles || replay.static_map.obstacles).length;
       const followerCount = frame.followers?.length || 0;
       const dirtyHint = eventsDirtySinceRun ? ' 时间轴事件已编辑，重新运行仿真后轨迹和障碍物状态会按新事件更新。' : '';
-      return `${eventText}。障碍物 ${obstacleCount} 个，Leader (${frame.leader_pose.map(v => v.toFixed(2)).join(', ')}), Followers ${followerCount} 架。${dirtyHint}`;
+      const followerNote = replay.metadata?.follower_pose_mode === 'illustrative_lateral_offsets'
+        ? '示意从机'
+        : '从机';
+      return `${eventText}。障碍物 ${obstacleCount} 个，Leader (${frame.leader_pose.map(v => v.toFixed(2)).join(', ')}), ${followerNote} ${followerCount} 架。${dirtyHint}`;
     }
 
     function frameEventLabels(frame) {
@@ -3195,7 +3199,7 @@
           waypoints.length > 1 ? markerTrace([waypoints[waypoints.length - 1]], '终点 G', '#d92d20', 10, 'diamond') : null,
           waypoints.length > 2 ? markerTrace(waypoints.slice(1, -1), '航点', '#64748b', 6, 'circle') : null,
           markerTrace([frame.leader_pose].filter(Boolean), 'Leader当前', '#d92d20', 8),
-          markerTrace(frame.followers || [], 'Followers当前', '#0891b2', 6)
+          markerTrace(frame.followers || [], 'Follower示意当前', '#0891b2', 6)
         ].filter(Boolean);
         
         let camera = {eye: {x: 1.45, y: -1.65, z: 1.05}};
@@ -3385,7 +3389,7 @@
       ctx.fillRect(12 * devicePixelRatio, 12 * devicePixelRatio, 350 * devicePixelRatio, note ? 54 * devicePixelRatio : 30 * devicePixelRatio);
       ctx.fillStyle = '#475467';
       ctx.font = `${12 * devicePixelRatio}px "Segoe UI", Arial`;
-      ctx.fillText('3D view: Leader / Followers / D* Lite / Grid A* / Obstacles', 22 * devicePixelRatio, 32 * devicePixelRatio);
+      ctx.fillText('3D view: Leader / Follower proxies / D* Lite / Grid A* / Obstacles', 22 * devicePixelRatio, 32 * devicePixelRatio);
       if (note) ctx.fillText(note, 22 * devicePixelRatio, 54 * devicePixelRatio);
       ctx.restore();
     }
@@ -3423,7 +3427,7 @@
       const traces = [];
       for (let i = 0; i < count; i++) {
         const path = frames.map(frame => frame.followers?.[i]).filter(Boolean);
-        const trace = trajectoryTrace(path, `Follower ${i + 1}轨迹`, '#0891b2', 3);
+        const trace = trajectoryTrace(path, `Follower示意 ${i + 1}轨迹`, '#0891b2', 3);
         if (trace) {
           trace.opacity = 0.72;
           traces.push(trace);
@@ -3539,11 +3543,28 @@
 
     function renderMetrics(replay) {
       const container = $('metrics');
+      const evidence = $('replayEvidence');
+      if (evidence) {
+        const replanCount = replay.replan_events?.length || 0;
+        const sensorFrames = replay.sensor_logs?.length || 0;
+        const collisionCount = replay.collision_log?.length || 0;
+        const faultCount = replay.fault_log?.length || 0;
+        const apfScope = replay.metadata?.apf_profile_scope || 'cpp_subset_runtime';
+        const apfRuntime = (replay.metadata?.apf_runtime_fields || []).join(', ') || '-';
+        const apfPythonOnly = (replay.metadata?.apf_python_only_fields || []).join(', ') || '-';
+        const apfPending = (replay.metadata?.apf_cpp_pending_fields || []).join(', ') || '-';
+        evidence.textContent =
+          `证据摘要：task_waypoints ${replay.task_waypoints?.length || 0}，replanned_waypoints ${replay.replanned_waypoints?.length || 0}，executed_path ${replay.executed_path?.length || 0}，replan_events ${replanCount}，sensor_logs ${sensorFrames}，collision_log ${collisionCount}，fault_log ${faultCount}。当前回放仍是 leader-centric 口径。APF 口径：${apfScope}；C++ 当前生效字段：${apfRuntime}；Python 主线字段：${apfPythonOnly}；待同步到 C++：${apfPending}。`;
+      }
+      const summaryLabel = replay.metadata?.summary_mode === 'shared_leader_frame_eval'
+        ? '共享 Leader 轨迹逐帧评估'
+        : 'Planner 统计';
       container.innerHTML = Object.entries(replay.summary).map(([name, s]) => `
         <div class="metric">
           <h3>${name}</h3>
           <dl>
-            <dt>重规划次数</dt><dd>${s.total_replans}</dd>
+            <dt>统计口径</dt><dd>${summaryLabel}</dd>
+            <dt>逐帧评估次数</dt><dd>${s.total_replans}</dd>
             <dt>平均耗时</dt><dd>${s.avg_compute_ms.toFixed(3)} ms</dd>
             <dt>P95 耗时</dt><dd>${s.p95_compute_ms.toFixed(3)} ms</dd>
             <dt>碰撞次数</dt><dd>${s.collisions}</dd>

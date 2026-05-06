@@ -19,8 +19,12 @@ public:
     void switch_formation(const std::string& target_formation, double transition_time, double current_time);
 
     [[nodiscard]] bool is_switching() const { return switching_; }
+    [[nodiscard]] std::tuple<double, double, double> envelope_per_axis(
+        const std::string& formation = "") const;
     [[nodiscard]] double envelope_radius(const std::string& formation) const;
     [[nodiscard]] const std::string& current_formation() const { return current_formation_; }
+    bool auto_shrink(const std::tuple<double, double, double>& channel_width,
+                     const std::tuple<double, double, double>* envelope = nullptr);
     std::string fault_reconfigure(const std::vector<int>& failed_indices,
                                   double transition_time,
                                   double current_time);

@@ -21,6 +21,7 @@
 #include "map_loader.hpp"
 #include "obstacle_scenario.hpp"
 #include "occupancy_grid.hpp"
+#include "sensor.hpp"
 
 namespace sim {
 
@@ -77,10 +78,36 @@ struct SummaryMetrics {
     std::unordered_map<std::string, double> phase_distribution;
 };
 
+struct ReplayReplanEvent {
+    double t = 0.0;
+    std::string planner;
+    std::string phase;
+    bool success = false;
+};
+
+struct ReplayCollisionEvent {
+    double t = 0.0;
+    std::string actor;
+    Vec3 pos;
+};
+
+struct ReplayFaultEvent {
+    double t = 0.0;
+    std::string type;
+    std::string detail;
+};
+
 struct ReplayOutput {
     struct Metadata {
         std::string map_file;
         std::string scenario = "dynamic_obstacle";
+        std::string execution_scope = "leader_centric";
+        std::string follower_pose_mode = "illustrative_lateral_offsets";
+        std::string summary_mode = "shared_leader_frame_eval";
+        std::string apf_profile_scope = "cpp_subset_runtime";
+        std::vector<std::string> apf_runtime_fields;
+        std::vector<std::string> apf_python_only_fields;
+        std::vector<std::string> apf_cpp_pending_fields;
         int step_count = 0;
         double dt = 0.0;
         double total_time = 0.0;
@@ -92,6 +119,13 @@ struct ReplayOutput {
     std::array<Vec3, 2> bounds{};
     std::vector<DynamicEvent> dynamic_events;
     std::vector<Vec3> waypoints;
+    std::vector<Vec3> task_waypoints;
+    std::vector<Vec3> replanned_waypoints;
+    std::vector<Vec3> executed_path;
+    std::vector<ReplayReplanEvent> replan_events;
+    std::vector<std::array<double, 6>> sensor_logs;
+    std::vector<ReplayCollisionEvent> collision_log;
+    std::vector<ReplayFaultEvent> fault_log;
     std::vector<FrameSnapshot> frames;
     std::unordered_map<std::string, SummaryMetrics> summaries;
 };
@@ -153,10 +187,12 @@ private:
     std::unordered_map<std::string, int> phase_counts_;
     double clearance_extra_margin_ = 0.0;
     int clearance_extra_frames_ = 0;
+    RangeSensor6 sensor_;
 };
 
 inline DynamicScenarioRunner::DynamicScenarioRunner(const DynamicSimInput& input, int seed)
-    : input_(input), seed_(seed), config_(input.base_config), events_(input.events) {
+    : input_(input), seed_(seed), config_(input.base_config), events_(input.events),
+      sensor_(input.base_config.sensor_max_range, input.base_config.sensor_noise_std, static_cast<unsigned int>(seed)) {
     config_.leader_wind_seed = static_cast<unsigned int>(seed_);
     config_.follower_wind_seed_start = static_cast<unsigned int>(seed_ + 100);
     if (!input_.map_file.empty()) config_.map_file = input_.map_file;
@@ -191,14 +227,40 @@ inline ReplayOutput DynamicScenarioRunner::run() {
     output.metadata.dt = std::max(config_.dt, std::max(0.05, config_.planner_replan_interval));
     output.metadata.total_time = config_.max_sim_time;
     output.metadata.seed = seed_;
+    output.metadata.apf_runtime_fields = {
+        "apf_paper1_profile",
+        "apf_comm_range",
+        "apf_comm_constraint",
+        "apf_adaptive_n_decay",
+        "apf_formation_centroid",
+        "apf_centroid_alpha",
+        "apf_centroid_beta",
+        "apf_rotational_escape",
+        "mu_escape",
+        "k_inter",
+        "k_comm",
+        "comm_range",
+        "adaptive_n_decay",
+        "formation_apf_runtime",
+    };
+    output.metadata.apf_python_only_fields = {
+    };
+    output.metadata.apf_cpp_pending_fields = {
+    };
     output.bounds = bounds_;
     output.static_obstacles = describe_obstacles();
     output.dynamic_events = events_;
     output.waypoints = config_.waypoints;
+    output.task_waypoints = config_.waypoints;
 
     const Vec3 start = config_.waypoints.empty() ? Vec3{} : config_.waypoints.front();
     Vec3 leader_pose = start;
     std::vector<Vec3> active_path;
+    std::vector<Vec3> replanned_waypoints;
+    std::vector<Vec3> executed_path;
+    std::vector<ReplayReplanEvent> replan_events;
+    std::vector<std::array<double, 6>> sensor_logs;
+    std::vector<ReplayCollisionEvent> collision_log;
     std::size_t task_goal_idx = config_.waypoints.size() > 1 ? 1U : 0U;
     const double task_radius = std::max(config_.wp_radius, config_.planner_resolution);
 
@@ -210,9 +272,8 @@ inline ReplayOutput DynamicScenarioRunner::run() {
         frame.obstacle_changed = obstacle_changed;
         frame.leader_pose = leader_pose;
         frame.obstacles = describe_obstacles();
-        frame.sensor_readings = {config_.sensor_max_range, config_.sensor_max_range,
-                                 config_.sensor_max_range, config_.sensor_max_range,
-                                 config_.sensor_max_range, config_.sensor_max_range};
+        frame.sensor_readings = sensor_.sense(leader_pose, obstacles_);
+        sensor_logs.push_back(frame.sensor_readings);
         for (int i = 0; i < config_.num_followers; ++i) {
             const double lateral = (static_cast<double>(i) - (config_.num_followers - 1) * 0.5)
                                  * config_.formation_spacing;
@@ -221,6 +282,9 @@ inline ReplayOutput DynamicScenarioRunner::run() {
 
         const double collision_tol = clearance_tolerance(config_.safety_margin);
         frame.collision = obstacles_.signed_distance(leader_pose) < config_.safety_margin - collision_tol;
+        if (frame.collision) {
+            collision_log.push_back({t, "leader", leader_pose});
+        }
         std::vector<Vec3> selected_path;
         for (const auto& planner : input_.compare_planners) {
             auto result = run_one_planner(planner, leader_pose, goal, obstacle_changed || t == 0.0);
@@ -235,6 +299,9 @@ inline ReplayOutput DynamicScenarioRunner::run() {
             compute_times_[planner].push_back(result.compute_time_ms);
             if (result.success) path_lengths_[planner].push_back(path_length(result.path));
             if (result.replan_triggered) ++replans_[planner];
+            if (result.replan_triggered) {
+                replan_events.push_back({t, planner, result.phase, result.success});
+            }
             if (frame.collision) ++collisions_[planner];
             if (!result.phase.empty()) ++phase_counts_[result.phase];
         }
@@ -244,6 +311,7 @@ inline ReplayOutput DynamicScenarioRunner::run() {
                 config_.safety_margin);
             if (path_is_clearance_safe(selected_path, accept_clearance)) {
                 active_path = std::move(selected_path);
+                replanned_waypoints.insert(replanned_waypoints.end(), active_path.begin(), active_path.end());
             } else {
                 frame.clearance_blocked = true;
                 ensure_reachable_replan_grid(leader_pose, goal);
@@ -271,6 +339,7 @@ inline ReplayOutput DynamicScenarioRunner::run() {
                 reset_incremental_planner(leader_pose, goal);
             }
         }
+        executed_path.push_back(leader_pose);
         output.frames.push_back(frame);
         if (!config_.waypoints.empty() && norm(leader_pose - goal) <= task_radius) {
             if (task_goal_idx + 1 < config_.waypoints.size()) {
@@ -293,6 +362,12 @@ inline ReplayOutput DynamicScenarioRunner::run() {
     if (!output.frames.empty()) {
         output.frames.back().leader_pose = leader_pose;
     }
+    output.replanned_waypoints = std::move(replanned_waypoints);
+    output.executed_path = std::move(executed_path);
+    output.replan_events = std::move(replan_events);
+    output.sensor_logs = std::move(sensor_logs);
+    output.collision_log = std::move(collision_log);
+    output.fault_log = {};
     for (const auto& planner : input_.compare_planners) {
         output.summaries[planner] = summarize(planner, leader_pose, final_goal);
     }

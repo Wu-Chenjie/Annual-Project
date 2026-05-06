@@ -145,9 +145,18 @@ class FormationTopology:
         ----
         遍历队形偏移量，取最大范数并加上臂长。
         """
-        offsets = self.get_offsets(formation_type or self.current_formation)
-        max_dist = max(float(np.linalg.norm(off)) for off in offsets) if offsets else 0.0
-        return max_dist + self.arm_length
+        lateral, longitudinal, vertical = self.envelope_per_axis(formation_type)
+        return max(lateral, longitudinal, vertical)
+
+    def envelope_per_axis(self, formation_type: str | None = None) -> tuple[float, float, float]:
+        """返回当前/指定队形的三轴包络半径（均已含臂长）。"""
+        active_formation = formation_type or (self._target_formation if self._switching else self.current_formation)
+        offsets = self.get_offsets(active_formation)
+        if not offsets:
+            return (self.arm_length, self.arm_length, self.arm_length)
+        arr = np.asarray(offsets, dtype=float)
+        extents = np.max(np.abs(arr), axis=0) + self.arm_length
+        return float(extents[1]), float(extents[0]), float(extents[2])
 
     @property
     def is_switching(self) -> bool:
@@ -175,18 +184,31 @@ class FormationTopology:
     # 论文2: 队形自动收缩
     # ------------------------------------------------------------------
 
-    def auto_shrink(self, channel_width: float, envelope: float | None = None) -> bool:
+    def auto_shrink(
+        self,
+        channel_width: float | tuple[float, float, float],
+        envelope: tuple[float, float, float] | None = None,
+    ) -> bool:
         """基于通道宽度自动触发队形缩放。
 
-        若 channel_width < 2*envelope → 缩为 line 队形。
+        若任一轴向通道宽度 < 2*对应包络 → 缩为 line 队形。
         返回 True 表示已触发切换。
         """
         if envelope is None:
-            envelope = self.envelope_radius(self.current_formation)
-        if channel_width < 2.0 * envelope and self.current_formation != "line":
+            envelope = self.envelope_per_axis(self.current_formation)
+        if np.isscalar(channel_width):
+            width = (float(channel_width), float(channel_width), float(channel_width))
+        else:
+            width = tuple(float(v) for v in channel_width)
+            if len(width) != 3:
+                raise ValueError("channel_width must be scalar or length-3 tuple")
+
+        too_narrow = any(w < 2.0 * e for w, e in zip(width, envelope))
+        roomy = all(w > 3.0 * e for w, e in zip(width, envelope))
+        if too_narrow and self.current_formation != "line":
             self.switch_formation("line", transition_time=1.5)
             return True
-        elif channel_width > 3.0 * envelope and self.current_formation == "line":
+        elif roomy and self.current_formation == "line":
             self.switch_formation("diamond", transition_time=2.0)
             return True
         return False

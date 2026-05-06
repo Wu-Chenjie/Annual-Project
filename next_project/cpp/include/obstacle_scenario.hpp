@@ -8,6 +8,7 @@
 #include "astar_planner.hpp"
 #include "fault_detector.hpp"
 #include "firi.hpp"
+#include "formation_apf.hpp"
 #include "formation_simulation.hpp"
 #include "hybrid_astar_planner.hpp"
 #include "map_loader.hpp"
@@ -37,6 +38,15 @@ struct ObstacleConfig : SimulationConfig {
     bool sensor_enabled = false;
     double sensor_max_range = 8.0;
     double sensor_noise_std = 0.02;
+    std::string apf_paper1_profile = "off";  // "off" | "conservative" | "aggressive"
+    double apf_comm_range = 10.0;
+    double apf_centroid_alpha = 0.4;
+    double apf_centroid_beta = 0.6;
+    bool apf_dev_override = false;
+    bool apf_adaptive_n_decay = false;
+    bool apf_formation_centroid = false;
+    bool apf_comm_constraint = false;
+    bool apf_rotational_escape = false;
     bool replan_adaptive_interval = false;
     double replan_interval_min = 0.1;
     double replan_interval_max = 1.0;
@@ -80,16 +90,21 @@ public:
     double inflate_r() const;
     double compute_clearance() const;
     void apply_planning_z_bounds();
+    void rebuild_planning_grid();
+    std::tuple<double, double, double> channel_width_from_sensor(const std::array<double, 6>* sensor_reading) const;
     std::vector<Vec3> sanitize_waypoints(const std::vector<Vec3>& waypoints) const;
     Vec3 project_to_planning_free(const Vec3& point, const Vec3* prefer = nullptr,
                                   double max_radius_m = -1.0) const;
+    ImprovedArtificialPotentialField build_apf() const;
+    std::unique_ptr<FormationAPF> build_formation_apf() const;
     std::vector<Vec3> enforce_path_clearance(const std::vector<Vec3>& path, double min_clearance);
     // Returns the minimum SDF clearance sampled along every segment of a candidate path.
     // Stops early once the sampled clearance falls below min_clearance.
     double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
     // Path-level acceptance gate: true only when all sampled path segments satisfy min_clearance.
     bool path_is_clearance_safe(const std::vector<Vec3>& path, double min_clearance) const;
-    Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal);
+    Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal,
+                                const std::vector<Vec3>& other_positions = {});
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,
                                                      const Vec3& task_goal) const;
 
@@ -102,6 +117,7 @@ public:
     std::unique_ptr<WindowReplanner> replanner_;
     std::unique_ptr<RangeSensor6> sensor_;
     ImprovedArtificialPotentialField apf_;
+    std::unique_ptr<FormationAPF> formation_apf_;
     double collision_margin_;
     int num_followers_;
 
