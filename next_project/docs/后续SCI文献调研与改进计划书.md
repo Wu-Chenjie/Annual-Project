@@ -812,3 +812,250 @@ python -m pytest "tests\test_risk_report.py" -q
 - Data-Driven System Identification of Quadrotors Subject to Motor Delays: https://arxiv.org/abs/2404.07837
 - Low-altitude UAV perception review: https://www.sciencedirect.com/science/article/abs/pii/S0921889024000125
 - CICC 低空安全体系标准公告: https://www.c2.org.cn/h-nd-2205.html
+
+
+代码计划书
+
+一、总体目标
+
+基于 后续SCI文献调研与改进计划书.md，后续代码不再优先新增零散规划算法，而是把当前系统从“能仿真、能避障”升级为“可复现实验、可论文对比、可安全报告”的研究平台。
+
+核心代码目标：
+
+建立统一 benchmark 基线。
+引入连续时间轨迹优化。
+建立无人机动力学参数 profile。
+扩展轨迹跟踪控制器接口。
+增强多机安全约束。
+建立 safety profile 与风险报告。
+增强动态回放与实验报告。
+二、当前代码基础
+
+远程仓库已有基础：
+
+next_project/core/planning/：已有 A*、Hybrid A*、D* Lite、RRT*、Informed RRT*、ESDF、FIRI 相关能力。
+next_project/simulations/obstacle_scenario.py：已有障碍物、在线重规划、APF、GNN/Danger 调度、容错检测等集成逻辑。
+next_project/simulations/formation_simulation.py：已有 SimulationConfig，但配置项已经较多，后续应做分组和 profile 化。
+next_project/simulations/benchmark.py：已有基础评测，但还不够支撑 SCI 级别的多场景、多指标、消融实验。
+三、阶段 P0：SCI 指标基线与实验框架
+
+新增：
+
+next_project/experiments/
+├── scenario_registry.py
+├── metrics_extractor.py
+├── run_sci_baseline.py
+├── run_ablation.py
+└── report_writer.py
+主要实现：
+
+scenario_registry.py：统一注册 warehouse_online、school_corridor_online、company_cubicles_online、meeting_room_online、laboratory_online。
+metrics_extractor.py：从仿真结果中提取成功率、碰撞数、最小 clearance、重规划次数、路径长度、速度、加速度、jerk、tracking RMS、replan latency。
+run_sci_baseline.py：一键跑所有标准场景，输出 CSV/JSON。
+run_ablation.py：支持关闭 ESDF、FIRI、APF、GNN、formation envelope 等模块，做消融实验。
+report_writer.py：把实验结果导出为 Markdown 报告。
+输出：
+
+outputs/sci_baseline/summary.csv
+outputs/sci_baseline/summary.json
+outputs/reports/*.md
+四、阶段 P1：连续轨迹优化模块
+
+新增：
+
+next_project/core/planning/trajectory_optimizer.py
+next_project/core/planning/trajectory_types.py
+tests/test_trajectory_optimizer.py
+核心接口：
+
+@dataclass
+class TrajectorySample:
+    t: float
+    pos: np.ndarray
+    vel: np.ndarray
+    acc: np.ndarray
+    yaw: float = 0.0
+
+class TrajectoryOptimizer:
+    def optimize(self, path, corridor=None, max_vel=2.0, max_acc=2.0):
+        ...
+第一版建议采用 minimum jerk / minimum snap 多项式或 B-spline，不立刻引入重优化依赖。输入为当前 A*/FIRI 输出路径，输出为带时间参数的连续轨迹。
+
+接入点：
+
+ObstacleScenarioSimulation._plan_offline()
+WindowReplanner 输出路径后
+Controller.compute_control(... target_vel, target_acc ...)
+验收指标：
+
+零碰撞不退化。
+jerk 代价下降。
+leader tracking RMS 不高于当前基线。
+轨迹采样点全部通过 SDF clearance 检查。
+五、阶段 P2：DroneParams 参数 profile
+
+新增：
+
+next_project/core/drone_params.py
+tests/test_drone_params.py
+核心设计：
+
+@dataclass
+class DroneParams:
+    name: str
+    mass: float
+    inertia: np.ndarray
+    arm_length: float
+    rotor_kf: float
+    rotor_km: float
+    motor_tau: float
+    omega_max: float
+    drag_linear: np.ndarray
+    drag_quadratic: np.ndarray
+    rotor_drag: np.ndarray
+提供 profile：
+
+default_1kg
+indoor_micro
+light_uav
+修改：
+
+core/drone.py 接收 DroneParams
+core/rotor.py 从 profile 读取推力/力矩参数
+core/allocator.py 与 profile 保持一致
+SimulationConfig 增加 drone_profile: str = "default_1kg"
+验收：
+
+默认 profile 行为尽量保持不变。
+hover_omega < omega_max
+max_total_thrust > mass * g * margin
+惯量矩阵正定。
+rotor 与 allocator 参数一致。
+六、阶段 P3：轨迹跟踪控制器扩展
+
+修改：
+
+next_project/core/controller.py
+统一控制器接口：
+
+compute_control(
+    state,
+    target_pos,
+    target_vel=None,
+    target_acc=None,
+    target_yaw=0.0,
+    target_yaw_rate=0.0,
+)
+新增可选控制器：
+
+GeometricSE3Controller
+建议先作为实验 profile，不替换默认 PID/SMC/Backstepping。
+
+配置：
+
+controller_kind: str = "pid_smc"
+# "pid_smc" | "backstepping_smc" | "se3_geometric"
+验收：
+
+无障碍和简单障碍场景不发散。
+高曲率连续轨迹 tracking RMS 降低。
+推力饱和次数不显著增加。
+七、阶段 P4：多机安全走廊与冲突消解
+
+新增或扩展：
+
+next_project/core/formation_safety.py
+tests/test_formation_safety.py
+实现内容：
+
+formation_radius
+min_inter_drone_distance
+downwash_zone
+follower 目标点安全修正
+窄通道自动触发 compact/line 队形
+核心逻辑：
+
+if corridor_width < 2 * formation_radius:
+    switch_to_compact_formation()
+指标：
+
+min_inter_drone_distance
+inter_drone_violation_count
+follower_collision_count
+downwash_violation_count
+八、阶段 P5：Safety Profile 与风险报告
+
+新增：
+
+next_project/core/safety_profiles.py
+next_project/core/risk_report.py
+tests/test_safety_profiles.py
+tests/test_risk_report.py
+profile：
+
+indoor_demo
+indoor_research
+low_altitude_regulatory
+输出示例：
+
+{
+  "safety_profile": "indoor_research",
+  "collision_count": 0,
+  "clearance_violation_count": 0,
+  "inter_drone_violation_count": 0,
+  "risk_level": "low"
+}
+注意：低空标准参数不能直接套进室内小地图，应通过 profile 区分尺度。
+
+九、阶段 P6：报告与回放增强
+
+扩展：
+
+next_project/simulations/visualization.py
+next_project/visualization/
+next_project/outputs/reports/
+新增图表：
+
+clearance-time 曲线
+speed / acceleration / jerk 曲线
+replan latency 分布
+inter-drone distance 曲线
+collision / blocked / risk event timeline
+最终输出：
+
+outputs/reports/{scenario}_{timestamp}.md
+outputs/reports/{scenario}_{timestamp}.json
+outputs/figures/*.png
+十、优先级建议
+
+短期优先：
+
+P0 实验基线与指标提取。
+P1 连续轨迹优化原型。
+P2 DroneParams profile。
+P5 safety profile 与风险报告。
+中期推进：
+
+P3 SE(3) 控制器对照。
+P4 多机安全走廊。
+P6 自动报告和回放增强。
+暂缓：
+
+不立即把默认控制器换成 MPC/MPCC。
+不立即引入强化学习作为主规划器。
+不一次性合并所有论文方法。
+不把低空标准安全间隔直接套入室内地图。
+十一、建议验收命令
+
+python -m pytest "tests\test_obstacle_scenario.py" -q
+python -m pytest "tests\test_replanner_semantics.py" "tests\test_replanner_subgoal.py" -q
+python -m pytest "tests\test_esdf_correct.py" -q
+python -m pytest "tests\test_gnn_planner.py" -q
+python -m pytest "tests\test_fault_tolerance_online.py" -q
+新增后补充：
+
+python -m pytest "tests\test_trajectory_optimizer.py" -q
+python -m pytest "tests\test_drone_params.py" -q
+python -m pytest "tests\test_safety_profiles.py" -q
+python -m pytest "tests\test_risk_report.py" -q
+这份代码计划的重点是：先把“评估系统”立起来，再做连续轨迹和参数 profile。这样每个后续改动都能判断是真的变好，还是只是动画看起来更顺。
