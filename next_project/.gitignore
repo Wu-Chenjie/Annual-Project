@@ -14,6 +14,16 @@ env/
 outputs/
 artifacts/*
 !artifacts/README.md
+!artifacts/reconstruction/
+artifacts/reconstruction/*
+!artifacts/reconstruction/.gitkeep
+
+# Photogrammetry and local reconstruction outputs
+InterfaceCOLMAP-*.log
+ReconstructMesh-*.log
+DensifyPointCloud-*.log
+RefineMesh-*.log
+TextureMesh-*.log
 
 # C++ build products
 cpp/build/

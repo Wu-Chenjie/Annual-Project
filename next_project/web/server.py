@@ -13,6 +13,9 @@ import shutil
 import struct
 import subprocess
 import tempfile
+import threading
+import time
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +28,11 @@ app = FastAPI(title="Dynamic Replay Server")
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MAPS_DIR = PROJECT_ROOT / "maps"
 WEB_DIR = PROJECT_ROOT / "web"
+RECONSTRUCTION_DIR = PROJECT_ROOT / "artifacts" / "reconstruction"
+COLMAP_BIN = Path(r"D:\tools\photogrammetry\colmap-4.0.4\bin\colmap.exe")
+OPENMVS_DIR = Path(r"D:\tools\photogrammetry\openmvs-2.4.0\vc17\x64\Release")
+RECON_JOBS: dict[str, dict[str, Any]] = {}
+RECON_LOCK = threading.Lock()
 
 
 def _candidate_executables() -> list[Path]:
@@ -81,12 +89,202 @@ def _safe_map_path(name: str) -> Path:
     return path
 
 
-def _safe_new_map_name(name: str) -> str:
-    stem = Path(name or "imported_model").stem
+def _safe_name(name: str, default: str, label: str) -> str:
+    stem = Path(name or default).stem
     stem = re.sub(r"[^A-Za-z0-9_-]+", "_", stem).strip("_")
     if not stem:
-        raise HTTPException(400, "Map name must contain letters, numbers, _ or -")
+        raise HTTPException(400, f"{label} must contain letters, numbers, _ or -")
     return stem[:64]
+
+
+def _safe_new_map_name(name: str) -> str:
+    return _safe_name(name, "imported_model", "Map name")
+
+
+def _safe_scene_name(name: str) -> str:
+    return _safe_name(name, "photo_scene", "Scene name")
+
+
+def _safe_upload_filename(filename: str, index: int) -> str:
+    raw = Path(filename or f"image_{index:03d}.jpg").name
+    suffix = Path(raw).suffix.lower()
+    if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff"}:
+        raise HTTPException(400, f"Unsupported image format: {suffix or '(none)'}")
+    stem = re.sub(r"[^A-Za-z0-9_-]+", "_", Path(raw).stem).strip("_") or f"image_{index:03d}"
+    return f"{index:03d}_{stem[:48]}{suffix}"
+
+
+def _require_reconstruction_image_count(count: int) -> None:
+    if count < 2:
+        raise HTTPException(400, "Reconstruction needs at least 2 photos; 10+ overlapping indoor photos is more realistic.")
+
+
+def _reconstruction_commands(scene: str) -> dict[str, list[str]]:
+    root = str((RECONSTRUCTION_DIR / scene).resolve())
+    colmap = str(COLMAP_BIN)
+    interface_colmap = str((OPENMVS_DIR / "InterfaceCOLMAP.exe").resolve())
+    densify = str((OPENMVS_DIR / "DensifyPointCloud.exe").resolve())
+    reconstruct = str((OPENMVS_DIR / "ReconstructMesh.exe").resolve())
+    refine = str((OPENMVS_DIR / "RefineMesh.exe").resolve())
+    texture = str((OPENMVS_DIR / "TextureMesh.exe").resolve())
+    return {
+        "colmap_openmvs": [
+            f'New-Item -ItemType Directory -Force -Path "{root}\\colmap", "{root}\\openmvs" | Out-Null',
+            f'& "{colmap}" automatic_reconstructor --workspace_path "{root}\\colmap" --image_path "{root}\\images"',
+            f'& "{interface_colmap}" -i "{root}\\colmap\\dense\\0" -o "{root}\\openmvs\\scene.mvs" --image-folder "{root}\\colmap\\dense\\0\\images"',
+            f'& "{densify}" "{root}\\openmvs\\scene.mvs" -w "{root}\\openmvs"',
+            f'& "{reconstruct}" "{root}\\openmvs\\scene_dense.mvs" -w "{root}\\openmvs"',
+            f'& "{refine}" "{root}\\openmvs\\scene_dense_mesh.mvs" -w "{root}\\openmvs"',
+            f'& "{texture}" "{root}\\openmvs\\scene_dense_mesh_refine.mvs" -w "{root}\\openmvs"',
+        ],
+    }
+
+
+def _job_snapshot(job: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "job_id": job["job_id"],
+        "scene": job["scene"],
+        "status": job["status"],
+        "step": job.get("step"),
+        "message": job.get("message", ""),
+        "image_dir": job.get("image_dir"),
+        "map_name": job.get("map_name"),
+        "map_path": job.get("map_path"),
+        "model_path": job.get("model_path"),
+        "error": job.get("error"),
+        "updated_at": job.get("updated_at"),
+    }
+
+
+def _set_job_state(job_id: str, **updates: Any) -> None:
+    with RECON_LOCK:
+        job = RECON_JOBS.get(job_id)
+        if not job:
+            return
+        job.update(updates)
+        job["updated_at"] = time.time()
+
+
+def _run_checked(command: list[str], cwd: Path, job_id: str, step: str) -> subprocess.CompletedProcess[str]:
+    _set_job_state(job_id, status="running", step=step, message=" ".join(command))
+    result = subprocess.run(
+        command,
+        cwd=str(cwd),
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"{step} failed with exit code {result.returncode}\n"
+            f"stdout:\n{result.stdout[-4000:]}\n"
+            f"stderr:\n{result.stderr[-4000:]}"
+        )
+    return result
+
+
+def _pick_model_file(openmvs_dir: Path) -> Path:
+    candidates = [
+        openmvs_dir / "scene_dense_mesh_refine_texture.ply",
+        openmvs_dir / "scene_dense_mesh_refine.ply",
+        openmvs_dir / "scene_dense_mesh_texture.ply",
+        openmvs_dir / "scene_dense_mesh.ply",
+        openmvs_dir / "scene_dense_mesh_refine.obj",
+        openmvs_dir / "scene_dense_mesh.obj",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(f"No reconstructed mesh found in {openmvs_dir}")
+
+
+def _run_reconstruction_job(job_id: str) -> None:
+    with RECON_LOCK:
+        job = dict(RECON_JOBS[job_id])
+    scene = job["scene"]
+    scene_root = RECONSTRUCTION_DIR / scene
+    colmap_root = scene_root / "colmap"
+    openmvs_root = scene_root / "openmvs"
+    map_name = scene
+    try:
+        image_files = [p for p in (scene_root / "images").iterdir() if p.is_file()]
+        if len(image_files) < 2:
+            raise RuntimeError("Reconstruction needs at least 2 photos. Current scene has fewer than 2 uploaded images.")
+        colmap_root.mkdir(parents=True, exist_ok=True)
+        openmvs_root.mkdir(parents=True, exist_ok=True)
+
+        _run_checked(
+            [
+                str(COLMAP_BIN),
+                "automatic_reconstructor",
+                "--workspace_path",
+                str(colmap_root),
+                "--image_path",
+                str(scene_root / "images"),
+            ],
+            PROJECT_ROOT,
+            job_id,
+            "colmap_automatic_reconstructor",
+        )
+        sparse_root = colmap_root / "dense" / "0" / "sparse"
+        if not (sparse_root / "cameras.bin").exists() and not (sparse_root / "cameras.txt").exists():
+            raise RuntimeError(
+                "COLMAP did not produce dense/0/sparse cameras output. "
+                "This usually means too few photos, not enough overlap, or failed feature matching."
+            )
+        _run_checked(
+            [
+                str(OPENMVS_DIR / "InterfaceCOLMAP.exe"),
+                "-i",
+                str(colmap_root / "dense" / "0"),
+                "-o",
+                str(openmvs_root / "scene.mvs"),
+                "--image-folder",
+                str(colmap_root / "dense" / "0" / "images"),
+            ],
+            PROJECT_ROOT,
+            job_id,
+            "openmvs_interface_colmap",
+        )
+        _run_checked(
+            [str(OPENMVS_DIR / "DensifyPointCloud.exe"), str(openmvs_root / "scene.mvs"), "-w", str(openmvs_root)],
+            PROJECT_ROOT,
+            job_id,
+            "openmvs_densify_point_cloud",
+        )
+        _run_checked(
+            [str(OPENMVS_DIR / "ReconstructMesh.exe"), str(openmvs_root / "scene_dense.mvs"), "-w", str(openmvs_root)],
+            PROJECT_ROOT,
+            job_id,
+            "openmvs_reconstruct_mesh",
+        )
+
+        model_path = _pick_model_file(openmvs_root)
+        _set_job_state(job_id, status="running", step="import_model_map", model_path=str(model_path), message="Importing mesh into maps")
+        vertices, triangles = _parse_model(model_path.name, model_path.read_bytes())
+        map_json = _model_to_map(
+            vertices,
+            triangles,
+            voxel_size=0.5,
+            scale=1.0,
+            padding=1.0,
+            max_obstacles=4000,
+            source_name=model_path.name,
+        )
+        map_path = _safe_map_path(map_name)
+        map_path.write_text(json.dumps(map_json, indent=2, ensure_ascii=False), encoding="utf-8")
+        _set_job_state(
+            job_id,
+            status="completed",
+            step="completed",
+            message=f"Generated map {map_name}",
+            map_name=map_name,
+            map_path=str(map_path),
+            model_path=str(model_path),
+        )
+    except Exception as exc:
+        _set_job_state(job_id, status="failed", step="failed", error=str(exc), message="Reconstruction failed")
 
 
 def _vec_cell(point: tuple[float, float, float], voxel: float) -> tuple[int, int, int]:
@@ -469,6 +667,80 @@ async def import_model_map(
         "obstacle_count": len(map_json["obstacles"]),
         "bounds": map_json["bounds"],
     }
+
+
+@app.post("/api/reconstruction/photo-set")
+async def upload_reconstruction_photo_set(
+    files: list[UploadFile] = File(...),
+    scene_name: str = Form("photo_scene"),
+) -> dict[str, Any]:
+    scene = _safe_scene_name(scene_name)
+    if not files:
+        raise HTTPException(400, "Upload at least one image")
+    if len(files) > 250:
+        raise HTTPException(413, "Too many images; upload at most 250 at once")
+    _require_reconstruction_image_count(len(files))
+
+    image_dir = RECONSTRUCTION_DIR / scene / "images"
+    image_dir.mkdir(parents=True, exist_ok=True)
+
+    saved: list[str] = []
+    total_bytes = 0
+    for index, upload in enumerate(files, start=1):
+        filename = _safe_upload_filename(upload.filename or "", index)
+        data = await upload.read()
+        if not data:
+            raise HTTPException(400, f"Empty image file: {upload.filename or filename}")
+        total_bytes += len(data)
+        if total_bytes > 2_000_000_000:
+            raise HTTPException(413, "Uploaded image set is too large")
+        path = image_dir / filename
+        path.write_bytes(data)
+        saved.append(filename)
+
+    commands = _reconstruction_commands(scene)
+    return {
+        "ok": True,
+        "scene": scene,
+        "image_count": len(saved),
+        "image_dir": str(image_dir),
+        "saved_files": saved,
+        "commands": commands,
+        "next_step": "Run one reconstruction command chain, export .ply/.obj/.stl, then import it with /api/maps/import-model.",
+    }
+
+
+@app.post("/api/reconstruction/run")
+async def run_reconstruction(
+    files: list[UploadFile] = File(...),
+    scene_name: str = Form("photo_scene"),
+) -> dict[str, Any]:
+    upload_result = await upload_reconstruction_photo_set(files=files, scene_name=scene_name)
+    job_id = uuid.uuid4().hex[:12]
+    job = {
+        "job_id": job_id,
+        "scene": upload_result["scene"],
+        "status": "queued",
+        "step": "queued",
+        "message": "Queued reconstruction job",
+        "image_dir": upload_result["image_dir"],
+        "map_name": upload_result["scene"],
+        "updated_at": time.time(),
+    }
+    with RECON_LOCK:
+        RECON_JOBS[job_id] = job
+    thread = threading.Thread(target=_run_reconstruction_job, args=(job_id,), daemon=True)
+    thread.start()
+    return {"ok": True, "job": _job_snapshot(job)}
+
+
+@app.get("/api/reconstruction/jobs/{job_id}")
+async def get_reconstruction_job(job_id: str) -> dict[str, Any]:
+    with RECON_LOCK:
+        job = RECON_JOBS.get(job_id)
+    if not job:
+        raise HTTPException(404, f"Reconstruction job not found: {job_id}")
+    return {"ok": True, "job": _job_snapshot(job)}
 
 
 @app.post("/api/simulate")

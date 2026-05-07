@@ -48,3 +48,10 @@ PDF 2/
 
 # Temp files
 *.tmp
+
+# Photogrammetry and local reconstruction logs
+InterfaceCOLMAP-*.log
+ReconstructMesh-*.log
+DensifyPointCloud-*.log
+RefineMesh-*.log
+TextureMesh-*.log

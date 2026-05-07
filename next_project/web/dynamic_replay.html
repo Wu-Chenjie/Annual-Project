@@ -816,6 +816,20 @@
       white-space: pre-wrap;
       font-weight: 500;
     }
+    .status.success {
+      color: #047857;
+    }
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 6px 0 10px;
+    }
+    .command-box {
+      min-height: 96px;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
     @media (max-width: 1200px) {
       main { 
         grid-template-columns: 1fr;
@@ -847,6 +861,18 @@
       <select id="preset"></select>
       <label for="mapFile">地图</label>
       <select id="mapFile"></select>
+
+      <h2>照片建模</h2>
+      <label for="photoSceneName">场景名称</label>
+      <input id="photoSceneName" value="photo_scene" placeholder="meeting_room_photo">
+      <label for="photoFiles">室内照片</label>
+      <input id="photoFiles" type="file" accept="image/*" multiple>
+      <div class="hint">至少上传 2 张照片，实际建议 10 张以上且相邻视角有明显重叠；上传后会自动在本机后台执行 COLMAP + OpenMVS，并在完成后生成项目地图。</div>
+      <div class="actions">
+        <button id="uploadPhotosBtn" type="button">一键重建为地图</button>
+      </div>
+      <div class="status" id="photoUploadStatus"></div>
+      <textarea id="photoCommandBox" class="command-box" readonly placeholder="显示后台重建进度与结果"></textarea>
 
       <h2>3D模型导入</h2>
       <label for="modelFile">模型文件</label>
@@ -1089,6 +1115,7 @@
     let timeChart = null;
     let pathChart = null;
     let activeView = '2d';
+    let reconstructionPollTimer = null;
     let currentFrameIndex = 0;
     let selectedEventIndex = 0;
     let selectedEventId = '';
@@ -1209,6 +1236,7 @@
 
       $('runBtn').addEventListener('click', runSimulation);
       $('resetBtn').addEventListener('click', () => location.reload());
+      $('uploadPhotosBtn').addEventListener('click', uploadPhotoSet);
       $('importModelBtn').addEventListener('click', importModelAsMap);
       $('loadEditorMapBtn').addEventListener('click', loadSelectedMapIntoEditor);
       $('newEditorMapBtn').addEventListener('click', newEditorMap);
@@ -1288,6 +1316,89 @@
       $('mapFile').innerHTML = maps.maps.map(m => `<option value="${m}">${m}</option>`).join('');
       if (selected && maps.maps.includes(selected)) $('mapFile').value = selected;
       return maps.maps;
+    }
+
+    function stopReconstructionPolling() {
+      if (reconstructionPollTimer) {
+        clearTimeout(reconstructionPollTimer);
+        reconstructionPollTimer = null;
+      }
+    }
+
+    async function pollReconstructionJob(jobId) {
+      try {
+        const response = await fetch(`/api/reconstruction/jobs/${encodeURIComponent(jobId)}`);
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.detail || '重建任务查询失败');
+        const job = body.job;
+        const label = `${job.status}${job.step ? ' / ' + job.step : ''}`;
+        $('photoCommandBox').value = [
+          `job: ${job.job_id}`,
+          `scene: ${job.scene}`,
+          `status: ${label}`,
+          job.message || '',
+          job.error || '',
+          job.model_path || '',
+          job.map_path || ''
+        ].filter(Boolean).join('\n');
+        if (job.status === 'completed') {
+          $('photoUploadStatus').classList.add('success');
+          $('photoUploadStatus').textContent = `重建完成，已生成地图 ${job.map_name}`;
+          await refreshMapList(job.map_name);
+          $('preset').value = 'custom';
+          stopReconstructionPolling();
+          $('uploadPhotosBtn').disabled = false;
+          return;
+        }
+        if (job.status === 'failed') {
+          $('photoUploadStatus').textContent = job.error || '重建失败';
+          stopReconstructionPolling();
+          $('uploadPhotosBtn').disabled = false;
+          return;
+        }
+        reconstructionPollTimer = setTimeout(() => pollReconstructionJob(jobId), 3000);
+      } catch (error) {
+        $('photoUploadStatus').textContent = error.message;
+        stopReconstructionPolling();
+        $('uploadPhotosBtn').disabled = false;
+      }
+    }
+
+    async function uploadPhotoSet() {
+      const files = Array.from($('photoFiles').files || []);
+      $('photoUploadStatus').classList.remove('success');
+      if (!files.length) {
+        $('photoUploadStatus').textContent = '请选择室内照片，可一次多选';
+        return;
+      }
+      $('uploadPhotosBtn').disabled = true;
+      $('photoUploadStatus').textContent = `正在上传 ${files.length} 张照片并启动重建...`;
+      $('photoCommandBox').value = '';
+      stopReconstructionPolling();
+      try {
+        const form = new FormData();
+        for (const file of files) form.append('files', file);
+        form.append('scene_name', $('photoSceneName').value || 'photo_scene');
+        const response = await fetch('/api/reconstruction/run', {method: 'POST', body: form});
+        const body = await response.json();
+        if (!response.ok) throw new Error(body.detail || '照片上传失败');
+        const job = body.job;
+        $('photoUploadStatus').textContent = `已启动重建任务 ${job.job_id}`;
+        $('photoCommandBox').value = [
+          `job: ${job.job_id}`,
+          `scene: ${job.scene}`,
+          `status: ${job.status} / ${job.step}`,
+          job.message || '',
+          job.image_dir || ''
+        ].filter(Boolean).join('\n');
+        reconstructionPollTimer = setTimeout(() => pollReconstructionJob(job.job_id), 1500);
+      } catch (error) {
+        $('photoUploadStatus').textContent = error.message;
+      } finally {
+        if (!$('photoUploadStatus').textContent.includes('已启动重建任务')) {
+          $('uploadPhotosBtn').disabled = false;
+        }
+      }
     }
 
     async function importModelAsMap() {
