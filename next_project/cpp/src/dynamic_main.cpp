@@ -309,6 +309,18 @@ void apply_config_overrides(sim::ObstacleConfig& cfg, const JsonValue& root) {
     cfg.planner_esdf_aware = bool_or(source.at("planner_esdf_aware"), cfg.planner_esdf_aware);
     cfg.planner_use_formation_envelope = bool_or(
         source.at("planner_use_formation_envelope"), cfg.planner_use_formation_envelope);
+    cfg.formation_safety_enabled = bool_or(
+        source.at("formation_safety_enabled"), cfg.formation_safety_enabled);
+    cfg.formation_min_inter_drone_distance = number_or(
+        source.at("formation_min_inter_drone_distance"), cfg.formation_min_inter_drone_distance);
+    cfg.formation_downwash_radius = number_or(
+        source.at("formation_downwash_radius"), cfg.formation_downwash_radius);
+    cfg.formation_downwash_height = number_or(
+        source.at("formation_downwash_height"), cfg.formation_downwash_height);
+    cfg.formation_recovery_hold_steps = static_cast<int>(number_or(
+        source.at("formation_recovery_hold_steps"), static_cast<double>(cfg.formation_recovery_hold_steps)));
+    cfg.formation_recovery_clearance_margin = number_or(
+        source.at("formation_recovery_clearance_margin"), cfg.formation_recovery_clearance_margin);
     apply_z_bounds(cfg, source.at("planner_z_bounds"));
     cfg.planner_replan_interval = number_or(source.at("planner_replan_interval"), cfg.planner_replan_interval);
     cfg.planner_horizon = number_or(source.at("planner_horizon"), cfg.planner_horizon);

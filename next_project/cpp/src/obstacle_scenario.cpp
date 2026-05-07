@@ -22,6 +22,8 @@ ObstacleScenarioSimulation::ObstacleScenarioSimulation(const ObstacleConfig& con
     collision_margin_ = arm_length + config.safety_margin * config.detect_margin_scale;
     task_waypoints_ = config.waypoints;
     waypoints_ = task_waypoints_;
+    formation_recovery_counts_.assign(static_cast<std::size_t>(std::max(0, config.num_followers)), 0);
+    downwash_zone_ = downwash_zone(config.formation_downwash_radius, config.formation_downwash_height);
 
     if (config.enable_obstacles && !config.map_file.empty()) {
         setup_obstacles();
@@ -108,13 +110,14 @@ void ObstacleScenarioSimulation::set_obstacles(ObstacleField field, const std::a
 
     Vec3 extent{bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y, bounds[1].z - bounds[0].z};
     grid_ = OccupancyGrid::from_obstacles(obstacles_, bounds[0], extent, config_.planner_resolution);
-    double ir = inflate_r();
-    grid_ = grid_.inflate(ir);
+    grid_ = grid_.inflate(inflate_margin_xyz());
+    apply_planning_z_bounds();
 
     if (config_.planner_sdf_aware) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
+    } else {
+        sdf_grid_.reset();
     }
-    apply_planning_z_bounds();
 
     waypoints_ = sanitize_waypoints(config_.waypoints);
     config_.waypoints = waypoints_;
@@ -138,14 +141,14 @@ void ObstacleScenarioSimulation::setup_obstacles() {
 
     Vec3 extent{bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y, bounds[1].z - bounds[0].z};
     grid_ = OccupancyGrid::from_obstacles(obstacles_, bounds[0], extent, config_.planner_resolution);
-
-    double ir = inflate_r();
-    grid_ = grid_.inflate(ir);
+    grid_ = grid_.inflate(inflate_margin_xyz());
+    apply_planning_z_bounds();
 
     if (config_.planner_sdf_aware) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
+    } else {
+        sdf_grid_.reset();
     }
-    apply_planning_z_bounds();
 }
 
 double ObstacleScenarioSimulation::inflate_r() const {
@@ -155,8 +158,144 @@ double ObstacleScenarioSimulation::inflate_r() const {
     return std::max(lateral, vertical) + config_.safety_margin;
 }
 
+std::array<double, 3> ObstacleScenarioSimulation::inflate_margin_xyz() const {
+    if (!config_.planner_use_formation_envelope) {
+        return {config_.safety_margin, config_.safety_margin, config_.safety_margin};
+    }
+    auto [lateral, longitudinal, vertical] = formation_.topology_.envelope_per_axis();
+    const double margin = config_.safety_margin;
+    return {
+        lateral + margin,
+        longitudinal + margin,
+        vertical + margin,
+    };
+}
+
 double ObstacleScenarioSimulation::compute_clearance() const {
     return std::max(config_.safety_margin, collision_margin_) + config_.plan_clearance_extra;
+}
+
+Vec3 ObstacleScenarioSimulation::safe_follower_target(
+    const Vec3& leader_pos, const Vec3& raw_target, const Vec3* current_pos) const {
+    const double min_clearance = std::max(collision_margin_ + 0.05, config_.safety_margin);
+    std::vector<Vec3> candidates;
+    candidates.reserve(16);
+    for (int i = 10; i >= 0; --i) {
+        const double scale = static_cast<double>(i) / 10.0;
+        candidates.push_back(leader_pos + (raw_target - leader_pos) * scale);
+    }
+
+    try {
+        Vec3 prefer = leader_pos - raw_target;
+        Vec3 projected = project_to_planning_free(
+            raw_target, &prefer, std::max(2.0, norm(raw_target - leader_pos) + 1.0));
+        candidates.insert(candidates.begin() + std::min<std::size_t>(1, candidates.size()), projected);
+    } catch (...) {
+    }
+
+    std::set<std::tuple<int, int, int>> seen;
+    for (const auto& candidate : candidates) {
+        auto key = std::make_tuple(
+            static_cast<int>(std::lround(candidate.x * 10000.0)),
+            static_cast<int>(std::lround(candidate.y * 10000.0)),
+            static_cast<int>(std::lround(candidate.z * 10000.0)));
+        if (!seen.insert(key).second) continue;
+        if (obstacles_.signed_distance(candidate) < min_clearance - 1e-8) continue;
+        if (current_pos) {
+            std::vector<Vec3> segment{*current_pos, candidate};
+            if (!path_is_clearance_safe(segment, min_clearance)) continue;
+        }
+        return candidate;
+    }
+
+    if (current_pos && obstacles_.signed_distance(*current_pos) >= 0.0) {
+        return *current_pos;
+    }
+    return leader_pos;
+}
+
+Vec3 ObstacleScenarioSimulation::deconflict_follower_target(
+    const Vec3& leader_pos,
+    const Vec3& candidate_target,
+    const Vec3& nominal_target,
+    const std::vector<Vec3>& reserved_positions,
+    int follower_idx,
+    const Vec3* current_pos) const {
+    if (!config_.formation_safety_enabled) return candidate_target;
+
+    const double min_clearance = std::max(collision_margin_ + 0.05, config_.safety_margin);
+    const double min_inter_distance = config_.formation_min_inter_drone_distance;
+    const double vertical_step = std::max(config_.formation_downwash_height * 0.5, 0.25);
+    const double lateral_step = std::max(config_.formation_min_inter_drone_distance * 0.75, 0.20);
+
+    bool segment_safe = true;
+    if (current_pos) {
+        std::vector<Vec3> segment{*current_pos, nominal_target};
+        segment_safe = path_is_clearance_safe(segment, min_clearance);
+    }
+    const bool nominal_ready = nominal_target_ready_for_recovery(
+        nominal_target,
+        reserved_positions,
+        current_pos,
+        obstacles_.signed_distance(nominal_target),
+        segment_safe,
+        min_clearance,
+        min_inter_distance,
+        &downwash_zone_,
+        config_.formation_recovery_clearance_margin);
+    if (follower_idx >= 0 && follower_idx < static_cast<int>(formation_recovery_counts_.size())) {
+        auto& counter = formation_recovery_counts_[static_cast<std::size_t>(follower_idx)];
+        if (nominal_ready) {
+            counter += 1;
+            if (counter >= config_.formation_recovery_hold_steps) {
+                return nominal_target;
+            }
+        } else {
+            counter = 0;
+        }
+    }
+
+    Vec3 base_dir = candidate_target - leader_pos;
+    base_dir.z = 0.0;
+    const double base_norm = norm(base_dir);
+    Vec3 tangent = (base_norm > 1e-9)
+        ? Vec3{-base_dir.y / base_norm, base_dir.x / base_norm, 0.0}
+        : Vec3{0.0, 1.0, 0.0};
+
+    std::vector<Vec3> deltas{
+        Vec3{},
+        tangent * lateral_step,
+        tangent * (-lateral_step),
+        Vec3{0.0, 0.0, vertical_step},
+        Vec3{0.0, 0.0, -vertical_step},
+        tangent * lateral_step + Vec3{0.0, 0.0, vertical_step},
+        tangent * (-lateral_step) + Vec3{0.0, 0.0, vertical_step},
+        tangent * lateral_step + Vec3{0.0, 0.0, -vertical_step},
+        tangent * (-lateral_step) + Vec3{0.0, 0.0, -vertical_step},
+    };
+
+    for (const auto& delta : deltas) {
+        const Vec3 probe = candidate_target + delta;
+        if (obstacles_.signed_distance(probe) < min_clearance - 1e-8) continue;
+        if (current_pos) {
+            std::vector<Vec3> segment{*current_pos, probe};
+            if (!path_is_clearance_safe(segment, min_clearance)) continue;
+        }
+        bool conflict = false;
+        for (const auto& reserved : reserved_positions) {
+            if (norm(probe - reserved) < min_inter_distance - 1e-8) {
+                conflict = true;
+                break;
+            }
+            if (is_in_downwash_zone(probe, reserved, downwash_zone_)
+                || is_in_downwash_zone(reserved, probe, downwash_zone_)) {
+                conflict = true;
+                break;
+            }
+        }
+        if (!conflict) return probe;
+    }
+    return candidate_target;
 }
 
 std::tuple<double, double, double> ObstacleScenarioSimulation::channel_width_from_sensor(
@@ -178,13 +317,13 @@ void ObstacleScenarioSimulation::rebuild_planning_grid() {
         map_bounds_[1].z - map_bounds_[0].z,
     };
     grid_ = OccupancyGrid::from_obstacles(obstacles_, map_bounds_[0], extent, config_.planner_resolution);
-    grid_ = grid_.inflate(inflate_r());
+    grid_ = grid_.inflate(inflate_margin_xyz());
+    apply_planning_z_bounds();
     if (config_.planner_sdf_aware) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
     } else {
         sdf_grid_.reset();
     }
-    apply_planning_z_bounds();
     if (replanner_) {
         const OccupancyGrid& pg = sdf_grid_
             ? static_cast<const OccupancyGrid&>(*sdf_grid_)
@@ -512,6 +651,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
     replanned_waypoints_.clear();
     executed_path_.clear();
     fault_log_.clear();
+    std::fill(formation_recovery_counts_.begin(), formation_recovery_counts_.end(), 0);
 
     auto& leader = formation_.leader_;
     auto& leader_ctrl = formation_.leader_ctrl_;
@@ -697,9 +837,21 @@ SimulationResult ObstacleScenarioSimulation::run() {
             }
         }
 
+        std::vector<Vec3> reserved_targets;
+        reserved_targets.reserve(static_cast<std::size_t>(follower_count) + 1);
+        reserved_targets.push_back(ls.position);
         for (int i = 0; i < follower_count; ++i) {
-            Vec3 target_pos = ls.position + offsets[i];
             Vec3 follower_pos = followers[i].get_state().position;
+            Vec3 nominal_target = ls.position + offsets[i];
+            Vec3 target_pos = safe_follower_target(ls.position, nominal_target, &follower_pos);
+            target_pos = deconflict_follower_target(
+                ls.position,
+                target_pos,
+                nominal_target,
+                reserved_targets,
+                i,
+                &follower_pos);
+            reserved_targets.push_back(target_pos);
             std::vector<Vec3> other_positions;
             other_positions.reserve(followers.size());
             other_positions.push_back(ls.position);
@@ -752,11 +904,37 @@ SimulationResult ObstacleScenarioSimulation::run() {
     result.replanned_waypoints = replanned_waypoints_;
     result.executed_path = executed_path_;
     result.fault_log = fault_log_;
+    int valid = step_idx;
+
+    if (follower_count > 0 && valid > 0) {
+        double min_pair_distance = std::numeric_limits<double>::infinity();
+        int downwash_hits = 0;
+        for (int step = 0; step < valid; ++step) {
+            std::vector<Vec3> poses;
+            poses.reserve(static_cast<std::size_t>(follower_count) + 1);
+            poses.push_back(result.leader[step]);
+            for (int i = 0; i < follower_count; ++i) {
+                poses.push_back(result.followers[i][step]);
+            }
+            min_pair_distance = std::min(min_pair_distance, min_inter_drone_distance(poses));
+            if (config_.formation_safety_enabled) {
+                for (std::size_t upper_i = 0; upper_i < poses.size(); ++upper_i) {
+                    for (std::size_t lower_i = 0; lower_i < poses.size(); ++lower_i) {
+                        if (upper_i == lower_i) continue;
+                        if (is_in_downwash_zone(poses[upper_i], poses[lower_i], downwash_zone_)) {
+                            downwash_hits += 1;
+                        }
+                    }
+                }
+            }
+        }
+        result.safety_metrics.min_inter_drone_distance = std::isfinite(min_pair_distance) ? min_pair_distance : 0.0;
+        result.safety_metrics.downwash_hits = downwash_hits;
+    }
 
     result.metrics.mean.resize(follower_count);
     result.metrics.max.resize(follower_count);
     result.metrics.final.resize(follower_count);
-    int valid = step_idx;
     for (int i = 0; i < follower_count; ++i) {
         double sum = 0.0, mx = 0.0;
         for (int j = 0; j < valid; ++j) {

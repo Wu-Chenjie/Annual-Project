@@ -29,6 +29,7 @@ set(CORE_SOURCES
     src/gnn_planner.cpp
     src/artificial_potential_field.cpp
     src/formation_apf.cpp
+    src/formation_safety.cpp
     src/obstacle_scenario.cpp
     src/formation_simulation.cpp
     src/visualization.cpp
@@ -57,3 +58,7 @@ set_target_properties(sim_dynamic_replay PROPERTIES CXX_SCAN_FOR_MODULES OFF)
 add_executable(sim_apf_formation_probe src/apf_formation_probe.cpp)
 target_link_libraries(sim_apf_formation_probe PRIVATE sim_core)
 set_target_properties(sim_apf_formation_probe PROPERTIES CXX_SCAN_FOR_MODULES OFF)
+
+add_executable(sim_formation_safety_probe src/formation_safety_probe.cpp)
+target_link_libraries(sim_formation_safety_probe PRIVATE sim_core)
+set_target_properties(sim_formation_safety_probe PROPERTIES CXX_SCAN_FOR_MODULES OFF)

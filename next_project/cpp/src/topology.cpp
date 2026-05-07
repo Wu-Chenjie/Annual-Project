@@ -147,7 +147,7 @@ void FormationTopology::switch_formation(const std::string& target_formation, do
     target_offsets_ = compute_offsets(target_formation);
     target_formation_ = target_formation;
     transition_time_ = transition_time;
-    switch_start_time_ = 0.0;  // 对齐 Python：瞬时切换
+    switch_start_time_ = current_time;
     switching_ = true;
 }
 

@@ -44,6 +44,7 @@ struct OccupancyGrid {
     }
 
     OccupancyGrid inflate(double radius) const;
+    OccupancyGrid inflate(const std::array<double, 3>& radius_xyz) const;
     static OccupancyGrid from_obstacles(const ObstacleField& field,
                                          const Vec3& origin, const Vec3& extent, double resolution);
 

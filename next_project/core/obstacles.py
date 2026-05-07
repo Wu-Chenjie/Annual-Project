@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Iterable
 
 import numpy as np
 
@@ -258,20 +259,60 @@ class OccupancyGrid:
     def is_free(self, idx: tuple[int, int, int]) -> bool:
         return not self.is_occupied(idx)
 
-    def inflate(self, radius: float) -> OccupancyGrid:
-        """膨胀占据区域：将所有体素周围 radius 内的体素标记为 2（numpy 切片加速）。"""
-        r_voxels = max(1, int(np.ceil(radius / self.resolution)))
+    def _normalize_inflate_radius(
+        self, radius: float | Iterable[float]
+    ) -> tuple[tuple[int, int, int], tuple[float, float, float], bool]:
+        """将膨胀半径统一为体素半径与世界坐标半径。"""
+        if np.isscalar(radius):
+            scalar = max(0.0, float(radius))
+            r_voxels = max(1, int(np.ceil(scalar / self.resolution)))
+            return (r_voxels, r_voxels, r_voxels), (scalar, scalar, scalar), False
+
+        values = tuple(float(v) for v in radius)
+        if len(values) != 3:
+            raise ValueError("inflate radius must be a scalar or length-3 iterable")
+        clamped = tuple(max(0.0, v) for v in values)
+        voxels = tuple(int(np.ceil(v / self.resolution)) for v in clamped)
+        return voxels, clamped, True
+
+    def inflate(self, radius: float | Iterable[float]) -> OccupancyGrid:
+        """膨胀占据区域。
+
+        标量半径保留旧版立方体膨胀语义；三轴半径 `(rx, ry, rz)` 使用椭球结构元，
+        以避免编队纵向长度错误挤占横向通道。
+        """
+        r_voxels, radii, anisotropic = self._normalize_inflate_radius(radius)
         new_data = self.data.copy()
         occupied_idxs = np.argwhere(self.data >= 1)
         for oi in occupied_idxs:
-            i0_min = max(0, oi[0] - r_voxels)
-            i0_max = min(self.shape[0], oi[0] + r_voxels + 1)
-            i1_min = max(0, oi[1] - r_voxels)
-            i1_max = min(self.shape[1], oi[1] + r_voxels + 1)
-            i2_min = max(0, oi[2] - r_voxels)
-            i2_max = min(self.shape[2], oi[2] + r_voxels + 1)
+            i0_min = max(0, oi[0] - r_voxels[0])
+            i0_max = min(self.shape[0], oi[0] + r_voxels[0] + 1)
+            i1_min = max(0, oi[1] - r_voxels[1])
+            i1_max = min(self.shape[1], oi[1] + r_voxels[1] + 1)
+            i2_min = max(0, oi[2] - r_voxels[2])
+            i2_max = min(self.shape[2], oi[2] + r_voxels[2] + 1)
             block = new_data[i0_min:i0_max, i1_min:i1_max, i2_min:i2_max]
-            block[block == 0] = 2
+            if not anisotropic:
+                block[block == 0] = 2
+                continue
+
+            xs = (np.arange(i0_min, i0_max, dtype=float) - float(oi[0])) * self.resolution
+            ys = (np.arange(i1_min, i1_max, dtype=float) - float(oi[1])) * self.resolution
+            zs = (np.arange(i2_min, i2_max, dtype=float) - float(oi[2])) * self.resolution
+            dx2 = (
+                np.square(xs / radii[0])[:, None, None]
+                if radii[0] > 0.0 else np.where(xs == 0.0, 0.0, np.inf)[:, None, None]
+            )
+            dy2 = (
+                np.square(ys / radii[1])[None, :, None]
+                if radii[1] > 0.0 else np.where(ys == 0.0, 0.0, np.inf)[None, :, None]
+            )
+            dz2 = (
+                np.square(zs / radii[2])[None, None, :]
+                if radii[2] > 0.0 else np.where(zs == 0.0, 0.0, np.inf)[None, None, :]
+            )
+            mask = (dx2 + dy2 + dz2) <= 1.0 + 1e-9
+            block[(block == 0) & mask] = 2
         result = OccupancyGrid(origin=self.origin.copy(), resolution=self.resolution, shape=self.shape)
         result.data = new_data
         return result
@@ -334,6 +375,6 @@ class SDFAwareGrid:
     def is_free(self, idx) -> bool:
         return not self.is_occupied(idx)
 
-    def inflate(self, radius: float) -> SDFAwareGrid:
+    def inflate(self, radius: float | Iterable[float]) -> SDFAwareGrid:
         """对底层栅格做膨胀，clearance 不变（SDF 精判仍生效）。"""
         return SDFAwareGrid(self._base.inflate(radius), self._obs, self._clearance)

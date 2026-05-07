@@ -165,6 +165,14 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     topology_header = read("cpp/include/topology.hpp")
     topology_source = read("cpp/src/topology.cpp")
     scenario_source = read("cpp/src/obstacle_scenario.cpp")
+    scenario_header = read("cpp/include/obstacle_scenario.hpp")
+    safety_header = read("cpp/include/formation_safety.hpp")
+    safety_source = read("cpp/src/formation_safety.cpp")
+    safety_probe = read("cpp/src/formation_safety_probe.cpp")
+    result_header = read("cpp/include/formation_simulation.hpp")
+    grid_header = read("cpp/include/occupancy_grid.hpp")
+    grid_source = read("cpp/src/occupancy_grid.cpp")
+    warehouse_main = read("cpp/src/warehouse_main.cpp")
 
     assert "envelope_per_axis" in topology_header
     assert "auto_shrink" in topology_header
@@ -172,9 +180,61 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     assert "std::exp(-d2 / kSigmaSquared)" in topology_source
     assert "std::sort(eigenvals.begin(), eigenvals.end())" in topology_source
     assert "eigenvals[1]" in topology_source
+    assert "std::array<double, 3> inflate_margin_xyz() const;" in scenario_header
     assert "formation_.topology_.envelope_per_axis()" in scenario_source
+    assert "grid_ = grid_.inflate(inflate_margin_xyz())" in scenario_source
     assert "channel_width_from_sensor" in scenario_source
     assert "rebuild_planning_grid" in scenario_source
+    assert "bool formation_safety_enabled = false;" in scenario_header
+    assert "double formation_min_inter_drone_distance = 0.35;" in scenario_header
+    assert "double formation_downwash_radius = 0.45;" in scenario_header
+    assert "double formation_downwash_height = 0.80;" in scenario_header
+    assert "int formation_recovery_hold_steps = 4;" in scenario_header
+    assert "double formation_recovery_clearance_margin = 0.10;" in scenario_header
+    assert "DownwashZone downwash_zone_;" in scenario_header
+    assert "struct FormationSafetyConfig" in safety_header
+    assert "struct DownwashZone" in safety_header
+    assert "nominal_target_ready_for_recovery" in safety_header
+    assert "min_inter_drone_distance" in safety_header
+    assert "struct FormationSafetyMetrics" in result_header
+    assert "FormationSafetyMetrics safety_metrics;" in result_header
+    assert "DownwashZone downwash_zone(" in safety_source
+    assert "bool nominal_target_ready_for_recovery(" in safety_source
+    assert "sim::is_in_downwash_zone(" in safety_probe
+    assert "sim::min_inter_drone_distance(" in safety_probe
+    assert "sim::nominal_target_ready_for_recovery(" in safety_probe
+    assert "Vec3 safe_follower_target(" in scenario_header
+    assert "Vec3 deconflict_follower_target(" in scenario_header
+    assert "const Vec3& nominal_target" in scenario_header
+    assert "int follower_idx" in scenario_header
+    assert "Vec3 nominal_target = ls.position + offsets[i];" in scenario_source
+    assert "safe_follower_target(ls.position, nominal_target, &follower_pos)" in scenario_source
+    assert "deconflict_follower_target(" in scenario_source
+    assert "nominal_target_ready_for_recovery(" in scenario_source
+    assert "downwash_zone_ = downwash_zone(" in scenario_source
+    assert "formation_recovery_counts_" in scenario_header
+    assert "formation_recovery_counts_.assign" in scenario_source
+    assert "std::fill(formation_recovery_counts_.begin(), formation_recovery_counts_.end(), 0);" in scenario_source
+    assert "counter >= config_.formation_recovery_hold_steps" in scenario_source
+    assert "formation_safety_enabled" in scenario_source
+    assert "result.safety_metrics.min_inter_drone_distance" in scenario_source
+    assert "result.safety_metrics.downwash_hits" in scenario_source
+    assert 'std::cout << "Safety: min_inter="' in warehouse_main
+    assert "result.safety_metrics.downwash_hits" in warehouse_main
+    assert '\\"task_waypoints\\":' in warehouse_main
+    assert '\\"executed_path\\":' in warehouse_main
+    assert '\\"fault_log\\":' in warehouse_main
+    assert '\\"safety_metrics\\":{' in warehouse_main
+    assert 'warehouse_result.json' in warehouse_main
+    assert "scenario.safe_follower_target(" in safety_probe
+    assert "scenario.deconflict_follower_target(" in safety_probe
+    assert "scenario.formation_recovery_counts_[0]" in safety_probe
+    assert "recovered_dx=" in safety_probe
+    assert "run_min_inter=" in safety_probe
+    assert "run_downwash_hits=" in safety_probe
+    assert "OccupancyGrid inflate(const std::array<double, 3>& radius_xyz) const;" in grid_header
+    assert "OccupancyGrid::inflate(const std::array<double, 3>& radius_xyz) const" in grid_source
+    assert "if (nx2 + ny2 + nz2 > 1.0 + 1e-9) continue;" in grid_source
 
 
 def test_cpp_sensor_and_dynamic_replay_use_analytic_ranges():
@@ -290,6 +350,8 @@ def test_cpp_apf_profile_config_surface_and_subset_runtime_are_explicit():
     assert "Vec3 FormationAPF::centroid_repulsion(" in formation_apf_source
     assert "std::vector<Vec3> FormationAPF::relative_formation_forces(" in formation_apf_source
     assert "src/formation_apf.cpp" in cmake
+    assert "src/formation_safety.cpp" in cmake
+    assert "sim_formation_safety_probe" in cmake
     assert "sim_apf_formation_probe" in cmake
     assert 'bool enable_centroid = argc >= 2 && std::string(argv[1]) == "on";' in formation_probe
     assert "cfg.apf_formation_centroid = enable_centroid;" in formation_probe
@@ -303,6 +365,12 @@ def test_cpp_apf_profile_config_surface_and_subset_runtime_are_explicit():
     assert 'cfg.apf_formation_centroid = bool_or(source.at("apf_formation_centroid"), cfg.apf_formation_centroid);' in dynamic_main
     assert 'cfg.apf_comm_constraint = bool_or(source.at("apf_comm_constraint"), cfg.apf_comm_constraint);' in dynamic_main
     assert 'cfg.apf_rotational_escape = bool_or(source.at("apf_rotational_escape"), cfg.apf_rotational_escape);' in dynamic_main
+    assert 'cfg.formation_safety_enabled = bool_or(' in dynamic_main
+    assert 'cfg.formation_min_inter_drone_distance = number_or(' in dynamic_main
+    assert 'cfg.formation_downwash_radius = number_or(' in dynamic_main
+    assert 'cfg.formation_downwash_height = number_or(' in dynamic_main
+    assert 'cfg.formation_recovery_hold_steps = static_cast<int>(number_or(' in dynamic_main
+    assert 'cfg.formation_recovery_clearance_margin = number_or(' in dynamic_main
     assert '"apf_paper1_profile"' in dynamic_header
     assert '"apf_rotational_escape"' in dynamic_header
     assert '"apf_comm_range"' in dynamic_header

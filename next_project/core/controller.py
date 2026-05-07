@@ -79,7 +79,16 @@ class Controller:
         self.integral_vel_limit = 2.0
         self.integral_rate_limit = 1.0
 
-    def compute_position_loop(self, state, target_pos, target_vel=None, target_acc=None, target_yaw: float = 0.0):
+    def compute_position_loop(
+        self,
+        state,
+        target_pos,
+        target_vel=None,
+        target_acc=None,
+        target_yaw: float = 0.0,
+        target_yaw_rate: float = 0.0,
+    ):
+        del target_yaw_rate
         if target_vel is None:
             target_vel = np.zeros(3, dtype=float)
         if target_acc is None:
@@ -185,8 +194,23 @@ class Controller:
         torques = self.I @ (self.kp_rate * rate_err + self.ki_rate * self.integral_rate + self.kd_rate * rate_deriv)
         return torques
 
-    def compute_control(self, state, target_pos, target_vel=None, target_acc=None, target_yaw: float = 0.0):
-        T_thrust, des_att = self.compute_position_loop(state, target_pos, target_vel, target_acc, target_yaw)
+    def compute_control(
+        self,
+        state,
+        target_pos,
+        target_vel=None,
+        target_acc=None,
+        target_yaw: float = 0.0,
+        target_yaw_rate: float = 0.0,
+    ):
+        T_thrust, des_att = self.compute_position_loop(
+            state,
+            target_pos,
+            target_vel,
+            target_acc,
+            target_yaw,
+            target_yaw_rate,
+        )
         torques = self.compute_attitude_loop(state, des_att)
         return np.array([T_thrust, torques[0], torques[1], torques[2]], dtype=float)
 
@@ -208,8 +232,23 @@ class HybridAttitudeController(Controller):
         self.use_smc = True
         self._prev_des_rate: np.ndarray | None = None
 
-    def compute_control(self, state, target_pos, target_vel=None, target_acc=None, target_yaw: float = 0.0):
-        T, des_att = self.compute_position_loop(state, target_pos, target_vel, target_acc, target_yaw)
+    def compute_control(
+        self,
+        state,
+        target_pos,
+        target_vel=None,
+        target_acc=None,
+        target_yaw: float = 0.0,
+        target_yaw_rate: float = 0.0,
+    ):
+        T, des_att = self.compute_position_loop(
+            state,
+            target_pos,
+            target_vel,
+            target_acc,
+            target_yaw,
+            target_yaw_rate,
+        )
         if not self.use_smc:
             torques = self.compute_attitude_loop(state, des_att)
             return np.array([T, torques[0], torques[1], torques[2]], dtype=float)
@@ -301,8 +340,16 @@ class BacksteppingController(HybridAttitudeController):
         # 积分误差
         self.integral_z0 = np.zeros(3, dtype=float)
 
-    def compute_position_loop(self, state, target_pos, target_vel=None, target_acc=None,
-                              target_yaw: float = 0.0):
+    def compute_position_loop(
+        self,
+        state,
+        target_pos,
+        target_vel=None,
+        target_acc=None,
+        target_yaw: float = 0.0,
+        target_yaw_rate: float = 0.0,
+    ):
+        del target_yaw_rate
         """反步法位置环：计算 T 与期望姿态角。
 
         返回: (T_thrust, des_att=[roll_des, pitch_des, yaw_des])
@@ -356,3 +403,41 @@ class BacksteppingController(HybridAttitudeController):
     def reset(self) -> None:
         super().reset()
         self.integral_z0[:] = 0.0
+
+
+class GeometricSE3Controller(Controller):
+    """Experimental SE(3)-style controller that preserves the existing 4D actuator contract."""
+
+    def __init__(self, m: float = 1.0, g: float = 9.81, inertia=None, dt: float = 0.01):
+        super().__init__(m=m, g=g, inertia=inertia, dt=dt)
+        self.kR = np.array([6.0, 6.0, 3.0], dtype=float)
+        self.kOmega = np.array([1.8, 1.8, 1.2], dtype=float)
+
+    def compute_control(
+        self,
+        state,
+        target_pos,
+        target_vel=None,
+        target_acc=None,
+        target_yaw: float = 0.0,
+        target_yaw_rate: float = 0.0,
+    ) -> np.ndarray:
+        T, des_att = self.compute_position_loop(
+            state,
+            target_pos,
+            target_vel,
+            target_acc,
+            target_yaw,
+            target_yaw_rate,
+        )
+        att = np.asarray(state[6:9], dtype=float)
+        omega = np.asarray(state[9:12], dtype=float)
+        e_R = att - des_att
+        e_R[2] = (e_R[2] + np.pi) % (2.0 * np.pi) - np.pi
+        omega_d = np.array([0.0, 0.0, float(target_yaw_rate)], dtype=float)
+        e_omega = omega - omega_d
+        ang_acc_cmd = -(self.kR * e_R) - (self.kOmega * e_omega)
+        torques = self.I @ ang_acc_cmd + np.cross(omega, self.I @ omega)
+        assert torques.shape == (3,)
+        assert np.all(np.isfinite(torques))
+        return np.array([T, torques[0], torques[1], torques[2]], dtype=float)

@@ -15,8 +15,11 @@
 from __future__ import annotations
 
 import os
+import json
 import subprocess
 import sys
+import time
+from contextlib import contextmanager
 from pathlib import Path
 
 import numpy as np
@@ -26,6 +29,44 @@ _here = Path(__file__).resolve().parent
 _project = _here.parent
 if str(_project) not in sys.path:
     sys.path.insert(0, str(_project))
+
+
+@contextmanager
+def _file_lock(path: Path, timeout_s: float = 120.0):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    deadline = time.time() + timeout_s
+    handle = None
+    while handle is None:
+        try:
+            fd = os.open(str(path), os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            handle = os.fdopen(fd, "w")
+        except FileExistsError:
+            if time.time() >= deadline:
+                raise TimeoutError(f"timed out waiting for lock: {path}")
+            time.sleep(0.1)
+    try:
+        yield
+    finally:
+        handle.close()
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def _build_cpp_target(target: str) -> Path:
+    root = _project
+    build_dir = root / "cpp" / "build"
+    exe_name = f"{target}.exe" if os.name == "nt" else target
+    with _file_lock(build_dir / ".pytest_cmake_build.lock"):
+        subprocess.run(
+            ["cmake", "--build", str(build_dir), "--target", target],
+            cwd=root / "cpp",
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    return build_dir / exe_name
 
 from core.obstacles import AABB, Sphere, Cylinder, ObstacleField, OccupancyGrid
 from core.sensors import RangeSensor6
@@ -87,6 +128,21 @@ def test_occupancy_grid():
     assert idx == (4, 9, 2) or idx == (5, 9, 2)  # 取整方向
     world = grid.index_to_world((4, 9, 2))
     assert abs(world[0] - 2.0) < 0.5
+
+
+def test_occupancy_grid_anisotropic_inflate_preserves_narrow_axis():
+    """三轴膨胀应只沿配置轴扩张，避免把窄轴错误膨胀成各向同性。"""
+    grid = OccupancyGrid(
+        origin=np.array([0.0, 0.0, 0.0]),
+        resolution=1.0,
+        shape=(9, 9, 9),
+    )
+    grid.data[4, 4, 4] = 1
+    inflated = grid.inflate((2.0, 0.0, 0.0))
+    assert inflated.data[6, 4, 4] == 2
+    assert inflated.data[2, 4, 4] == 2
+    assert inflated.data[4, 5, 4] == 0
+    assert inflated.data[4, 4, 5] == 0
 
 
 def test_sensor_range():
@@ -496,6 +552,143 @@ def test_inflate_radius_uses_runtime_formation_envelope():
     assert abs(narrowed - (sim.topology.envelope_per_axis()[0] + cfg.safety_margin)) < 1e-9
 
 
+def test_formation_envelope_inflate_uses_anisotropic_margin():
+    """启用编队包络时，规划栅格应使用三轴膨胀半径而不是单一标量。"""
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=6.0,
+        initial_formation="line",
+        enable_obstacles=True,
+        planner_use_formation_envelope=True,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    margin = sim._inflate_margin_xyz()
+    assert isinstance(margin, tuple)
+    lateral, longitudinal, vertical = sim.topology.envelope_per_axis()
+    assert margin == (
+        lateral + cfg.safety_margin,
+        longitudinal + cfg.safety_margin,
+        vertical + cfg.safety_margin,
+    )
+    assert margin[1] > margin[0]
+    assert margin[2] == margin[0]
+
+
+def test_formation_safety_metrics_are_reported_when_enabled():
+    """启用 formation_safety 后应输出最小机间距与下洗统计。"""
+    cfg = SimulationConfig(
+        max_sim_time=0.2,
+        num_followers=2,
+        formation_spacing=0.5,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        obstacle_field=ObstacleField(),
+        planner_kind="astar",
+        planner_mode="offline",
+        safety_margin=0.2,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.3,
+        formation_downwash_radius=0.5,
+        formation_downwash_height=1.0,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([0.6, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    result = sim.run()
+    assert "safety_metrics" in result
+    assert "min_inter_drone_distance" in result["safety_metrics"]
+    assert "downwash_hits" in result["safety_metrics"]
+    assert result["safety_metrics"]["min_inter_drone_distance"] > 0.0
+
+
+def test_formation_safety_deconflicts_follower_targets():
+    """formation_safety 打开后应对 follower 目标做机间去冲突。"""
+    cfg = SimulationConfig(
+        max_sim_time=0.1,
+        num_followers=2,
+        formation_spacing=0.05,
+        initial_formation="line",
+        enable_obstacles=True,
+        obstacle_field=ObstacleField(),
+        planner_kind="astar",
+        planner_mode="offline",
+        safety_margin=0.2,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.25,
+        formation_downwash_height=0.6,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([0.3, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    leader_pos = np.array([0.0, 0.0, 1.0], dtype=float)
+    nominal0 = leader_pos + sim.topology.get_offsets("line")[0]
+    follower0 = sim._deconflict_follower_target(
+        leader_pos,
+        sim._safe_follower_target(leader_pos, nominal0),
+        nominal0,
+        [leader_pos],
+        0,
+    )
+    nominal1 = leader_pos + sim.topology.get_offsets("line")[1]
+    follower1 = sim._deconflict_follower_target(
+        leader_pos,
+        sim._safe_follower_target(leader_pos, nominal1),
+        nominal1,
+        [leader_pos, follower0],
+        1,
+    )
+    assert np.linalg.norm(follower1 - follower0) >= cfg.formation_min_inter_drone_distance - 1e-6
+
+
+def test_formation_safety_recovery_returns_to_nominal_target():
+    """恢复条件连续满足后，应允许 follower 回到名义编队目标。"""
+    cfg = SimulationConfig(
+        max_sim_time=0.1,
+        num_followers=1,
+        formation_spacing=0.2,
+        initial_formation="line",
+        enable_obstacles=True,
+        obstacle_field=ObstacleField(),
+        planner_kind="astar",
+        planner_mode="offline",
+        safety_margin=0.2,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.25,
+        formation_downwash_height=0.6,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([0.3, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    nominal = np.array([0.45, 0.0, 1.0], dtype=float)
+    current = np.array([0.45, 0.2, 1.0], dtype=float)
+    sim._formation_recovery_counts = [sim.formation_safety.recovery_hold_steps - 1]
+    recovered = sim._deconflict_follower_target(
+        np.array([0.0, 0.0, 1.0], dtype=float),
+        current,
+        nominal,
+        [np.array([0.0, 0.0, 1.0], dtype=float)],
+        0,
+        current_pos=current,
+    )
+    np.testing.assert_allclose(recovered, nominal)
+
+
 def test_online_auto_shrink_rebuilds_grid_and_switches_to_line():
     """窄通道测距应触发自动收缩，并刷新规划网格膨胀层。"""
     cfg = SimulationConfig(
@@ -617,6 +810,73 @@ def test_cpp_formation_apf_switch_changes_probe_behavior():
         + abs(float(off_metrics["follower0_final_err"]) - float(on_metrics["follower0_final_err"]))
     )
     assert delta > 1e-6, (off, on)
+
+
+def test_cpp_formation_safety_probe_reports_runtime_behavior():
+    """C++ formation_safety 独立组件应通过 probe 暴露可运行行为。"""
+    root = Path(__file__).resolve().parent.parent
+    exe = _build_cpp_target("sim_formation_safety_probe")
+
+    stdout = subprocess.run(
+        [str(exe)],
+        cwd=root / "cpp",
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    metrics: dict[str, float] = {}
+    for token in stdout.split():
+        key, value = token.split("=", 1)
+        metrics[key] = float(value)
+
+    assert metrics["downwash_hit"] == 1.0, stdout
+    assert metrics["downwash_clear"] == 0.0, stdout
+    assert abs(metrics["min_dist"] - 0.2) < 1e-9, stdout
+    assert metrics["recovery_ready"] == 1.0, stdout
+    assert metrics["recovery_blocked"] == 0.0, stdout
+    assert metrics["safe_target_shift"] > 1e-6, stdout
+    assert abs(metrics["deconflicted_y"]) > 1e-6, stdout
+    assert metrics["recovered_dx"] < 1e-9, stdout
+    assert metrics["run_min_inter"] > 0.0, stdout
+    assert metrics["run_downwash_hits"] >= 0.0, stdout
+
+
+def test_cpp_warehouse_writes_obstacle_result_json():
+    """普通 C++ 障碍场景应导出可复核的结果 JSON。"""
+    root = Path(__file__).resolve().parent.parent
+    exe = _build_cpp_target("sim_warehouse")
+
+    output_path = root / "cpp" / "outputs" / "warehouse_result.json"
+    if output_path.exists():
+        output_path.unlink()
+
+    stdout = subprocess.run(
+        [str(exe)],
+        cwd=root / "cpp",
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    ).stdout
+
+    assert "Safety: min_inter=" in stdout
+    assert output_path.exists(), stdout
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert "task_waypoints" in payload
+    assert "replanned_waypoints" in payload
+    assert "executed_path" in payload
+    assert "fault_log" in payload
+    assert "safety_metrics" in payload
+    assert "timing" in payload
+    assert isinstance(payload["task_waypoints"], list)
+    assert isinstance(payload["executed_path"], list)
+    assert isinstance(payload["fault_log"], list)
+    assert isinstance(payload["safety_metrics"], dict)
+    assert payload["safety_metrics"]["min_inter_drone_distance"] > 0.0
+    assert payload["safety_metrics"]["downwash_hits"] >= 0
 
 
 def test_safe_follower_target_shrinks_blocked_offset():
@@ -777,15 +1037,38 @@ if __name__ == "__main__":
         ("Cylinder SDF", test_cylinder_sdf),
         ("ObstacleField", test_obstacle_field),
         ("OccupancyGrid", test_occupancy_grid),
+        ("OccupancyGrid Anisotropic Inflate", test_occupancy_grid_anisotropic_inflate_preserves_narrow_axis),
         ("Sensor Range", test_sensor_range),
+        ("Sensor Range Surface Contact", test_sensor_range_matches_surface_contact_for_sphere_and_cylinder),
         ("Envelope Radius", test_envelope_radius),
+        ("Envelope Per Axis", test_envelope_per_axis_preserves_line_lateral_clearance),
         ("A* Basic", test_astar_basic),
         ("A* Avoidance", test_astar_avoidance),
         ("Dijkstra vs A*", test_dijkstra_vs_astar),
         ("RRT* Feasible", test_rrt_star_feasible),
         ("Map Loader", test_map_loader),
         ("Path Smooth", test_smooth_path),
+        ("FIRI Clearance", test_firi_refine_preserves_clearance),
+        ("FIRI Halfspace Projection", test_firi_corridor_projection_satisfies_halfspaces),
+        ("FIRI Analytic Plane", test_firi_analytic_plane_and_mvie_fallback),
         ("Integration: A* Zero Collision", test_obstacle_simulation_zero_collision),
+        ("Terminal Hold", test_terminal_hold_reduces_end_jitter),
+        ("Online Task Waypoints", test_online_mode_preserves_task_waypoint_semantics),
+        ("Named Offline Presets", test_named_offline_presets_are_offline),
+        ("Online Setup Task Waypoints", test_online_setup_keeps_task_waypoints_as_execution_waypoints),
+        ("Meeting Room Offline Clearance", test_meeting_room_offline_reference_is_collision_free),
+        ("Company Blocked Waypoints", test_company_online_reports_geometrically_blocked_waypoints),
+        ("Online Path Extension", test_online_window_path_extends_to_task_goal),
+        ("Online Unsafe Path Rejection", test_online_accept_path_rejects_unsafe_clearance_without_fallback),
+        ("Inflate Radius Runtime Formation", test_inflate_radius_uses_runtime_formation_envelope),
+        ("Formation Envelope Inflate Margin", test_formation_envelope_inflate_uses_anisotropic_margin),
+        ("Formation Safety Metrics", test_formation_safety_metrics_are_reported_when_enabled),
+        ("Formation Safety Deconflict", test_formation_safety_deconflicts_follower_targets),
+        ("C++ Formation Safety Probe", test_cpp_formation_safety_probe_reports_runtime_behavior),
+        ("C++ Warehouse Result JSON", test_cpp_warehouse_writes_obstacle_result_json),
+        ("Online Auto Shrink", test_online_auto_shrink_rebuilds_grid_and_switches_to_line),
+        ("Formation APF Switch", test_formation_apf_switch_is_no_longer_dead_config),
+        ("Safe Follower Target", test_safe_follower_target_shrinks_blocked_offset),
         ("Integration: Dijkstra", test_obstacle_simulation_dijkstra),
         ("Integration: RRT*", test_rrt_star_obstacle),
         ("Hybrid A* Basic", test_hybrid_astar_basic),

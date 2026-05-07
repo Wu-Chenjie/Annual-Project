@@ -1,6 +1,10 @@
 #include <array>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <string>
 
 #include "config.hpp"
 #include "obstacle_scenario.hpp"
@@ -48,6 +52,73 @@ ObstacleField make_warehouse() {
 
 }  // namespace sim
 
+namespace {
+
+void dump_vec3(std::ostream& out, const sim::Vec3& value) {
+    out << "[" << value.x << "," << value.y << "," << value.z << "]";
+}
+
+void dump_vec3_array(std::ostream& out, const std::vector<sim::Vec3>& values) {
+    out << "[";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ",";
+        dump_vec3(out, values[i]);
+    }
+    out << "]";
+}
+
+void dump_string(std::ostream& out, const std::string& value) {
+    out << "\"";
+    for (char c : value) {
+        if (c == '"' || c == '\\') out << "\\";
+        out << c;
+    }
+    out << "\"";
+}
+
+void dump_string_array(std::ostream& out, const std::vector<std::string>& values) {
+    out << "[";
+    for (std::size_t i = 0; i < values.size(); ++i) {
+        if (i) out << ",";
+        dump_string(out, values[i]);
+    }
+    out << "]";
+}
+
+void write_obstacle_result_json(
+    const std::filesystem::path& output_path,
+    const sim::SimulationResult& result,
+    double planning_s,
+    double sim_s
+) {
+    std::filesystem::create_directories(output_path.parent_path());
+    std::ofstream out(output_path, std::ios::binary);
+    if (!out) {
+        throw std::runtime_error("cannot write obstacle result json");
+    }
+    out << std::fixed << std::setprecision(8);
+    out << "{";
+    out << "\"timing\":{\"planning_s\":" << planning_s
+        << ",\"simulation_s\":" << sim_s
+        << ",\"total_s\":" << (planning_s + sim_s) << "},";
+    out << "\"completed_waypoint_count\":" << result.completed_waypoint_count << ",";
+    out << "\"task_waypoints\":";
+    dump_vec3_array(out, result.task_waypoints);
+    out << ",\"replanned_waypoints\":";
+    dump_vec3_array(out, result.replanned_waypoints);
+    out << ",\"executed_path\":";
+    dump_vec3_array(out, result.executed_path);
+    out << ",\"fault_log\":";
+    dump_string_array(out, result.fault_log);
+    out << ",\"safety_metrics\":{"
+        << "\"min_inter_drone_distance\":" << result.safety_metrics.min_inter_drone_distance
+        << ",\"downwash_hits\":" << result.safety_metrics.downwash_hits
+        << "}";
+    out << "}\n";
+}
+
+}  // namespace
+
 int main() {
     using sim::ObstacleConfig;
     using sim::ObstacleScenarioSimulation;
@@ -75,5 +146,11 @@ int main() {
         std::cout << "F" << (i+1) << ": mean=" << result.metrics.mean[i]
                   << " max=" << result.metrics.max[i]
                   << " final=" << result.metrics.final[i] << "\n";
+    std::cout << "Safety: min_inter=" << result.safety_metrics.min_inter_drone_distance
+              << " downwash_hits=" << result.safety_metrics.downwash_hits << "\n";
+
+    const std::filesystem::path output_path = std::filesystem::path("outputs") / "warehouse_result.json";
+    write_obstacle_result_json(output_path, result, tp, ts);
+    std::cout << "结果文件: " << output_path.string() << "\n";
     return 0;
 }

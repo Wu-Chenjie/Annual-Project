@@ -27,6 +27,48 @@ OccupancyGrid OccupancyGrid::inflate(double radius) const {
     return out;
 }
 
+OccupancyGrid OccupancyGrid::inflate(const std::array<double, 3>& radius_xyz) const {
+    const std::array<double, 3> radii{
+        std::max(0.0, radius_xyz[0]),
+        std::max(0.0, radius_xyz[1]),
+        std::max(0.0, radius_xyz[2]),
+    };
+    const std::array<int, 3> r_vox{
+        static_cast<int>(std::ceil(radii[0] / resolution)),
+        static_cast<int>(std::ceil(radii[1] / resolution)),
+        static_cast<int>(std::ceil(radii[2] / resolution)),
+    };
+
+    OccupancyGrid out = *this;
+    for (int iz = 0; iz < nz; ++iz) {
+        for (int iy = 0; iy < ny; ++iy) {
+            for (int ix = 0; ix < nx; ++ix) {
+                if (!is_occupied(ix, iy, iz)) continue;
+                for (int dz = -r_vox[2]; dz <= r_vox[2]; ++dz) {
+                    for (int dy = -r_vox[1]; dy <= r_vox[1]; ++dy) {
+                        for (int dx = -r_vox[0]; dx <= r_vox[0]; ++dx) {
+                            int jx = ix + dx, jy = iy + dy, jz = iz + dz;
+                            if (jx < 0 || jx >= nx || jy < 0 || jy >= ny || jz < 0 || jz >= nz) continue;
+
+                            const double wx = static_cast<double>(dx) * resolution;
+                            const double wy = static_cast<double>(dy) * resolution;
+                            const double wz = static_cast<double>(dz) * resolution;
+                            const double nx2 = (radii[0] > 0.0) ? (wx * wx) / (radii[0] * radii[0]) : (dx == 0 ? 0.0 : std::numeric_limits<double>::infinity());
+                            const double ny2 = (radii[1] > 0.0) ? (wy * wy) / (radii[1] * radii[1]) : (dy == 0 ? 0.0 : std::numeric_limits<double>::infinity());
+                            const double nz2 = (radii[2] > 0.0) ? (wz * wz) / (radii[2] * radii[2]) : (dz == 0 ? 0.0 : std::numeric_limits<double>::infinity());
+                            if (nx2 + ny2 + nz2 > 1.0 + 1e-9) continue;
+
+                            auto& v = out.data[(jz * ny + jy) * nx + jx];
+                            if (v == 0) v = 2;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return out;
+}
+
 OccupancyGrid OccupancyGrid::from_obstacles(const ObstacleField& field,
                                               const Vec3& origin, const Vec3& extent, double resolution) {
     OccupancyGrid grid;

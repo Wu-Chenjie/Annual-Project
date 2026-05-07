@@ -8,6 +8,7 @@
 #include "astar_planner.hpp"
 #include "fault_detector.hpp"
 #include "firi.hpp"
+#include "formation_safety.hpp"
 #include "formation_apf.hpp"
 #include "formation_simulation.hpp"
 #include "hybrid_astar_planner.hpp"
@@ -31,6 +32,12 @@ struct ObstacleConfig : SimulationConfig {
     double planner_replan_interval = 0.4;
     double planner_horizon = 6.0;
     bool planner_use_formation_envelope = false;
+    bool formation_safety_enabled = false;
+    double formation_min_inter_drone_distance = 0.35;
+    double formation_downwash_radius = 0.45;
+    double formation_downwash_height = 0.80;
+    int formation_recovery_hold_steps = 4;
+    double formation_recovery_clearance_margin = 0.10;
     bool planner_has_z_bounds = false;
     double planner_z_min = 0.0;
     double planner_z_max = 0.0;
@@ -88,6 +95,7 @@ public:
     void setup_online();
     std::vector<Vec3> plan_offline();
     double inflate_r() const;
+    std::array<double, 3> inflate_margin_xyz() const;
     double compute_clearance() const;
     void apply_planning_z_bounds();
     void rebuild_planning_grid();
@@ -95,6 +103,13 @@ public:
     std::vector<Vec3> sanitize_waypoints(const std::vector<Vec3>& waypoints) const;
     Vec3 project_to_planning_free(const Vec3& point, const Vec3* prefer = nullptr,
                                   double max_radius_m = -1.0) const;
+    Vec3 safe_follower_target(const Vec3& leader_pos, const Vec3& raw_target,
+                              const Vec3* current_pos = nullptr) const;
+    Vec3 deconflict_follower_target(const Vec3& leader_pos, const Vec3& candidate_target,
+                                    const Vec3& nominal_target,
+                                    const std::vector<Vec3>& reserved_positions,
+                                    int follower_idx,
+                                    const Vec3* current_pos = nullptr) const;
     ImprovedArtificialPotentialField build_apf() const;
     std::unique_ptr<FormationAPF> build_formation_apf() const;
     std::vector<Vec3> enforce_path_clearance(const std::vector<Vec3>& path, double min_clearance);
@@ -128,6 +143,8 @@ public:
     std::vector<Vec3> replanned_waypoints_;
     std::vector<Vec3> executed_path_;
     std::vector<std::string> fault_log_;
+    mutable std::vector<int> formation_recovery_counts_;
+    DownwashZone downwash_zone_;
 };
 
 }  // namespace sim

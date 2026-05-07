@@ -62,6 +62,11 @@ struct SimulationMetrics {
     std::vector<double> final;
 };
 
+struct FormationSafetyMetrics {
+    double min_inter_drone_distance = 0.0;
+    int downwash_hits = 0;
+};
+
 struct SimulationResult {
     std::vector<double> time;
     std::vector<Vec3> leader;
@@ -76,6 +81,7 @@ struct SimulationResult {
     std::vector<Vec3> replanned_waypoints;
     std::vector<Vec3> executed_path;
     std::vector<std::string> fault_log;
+    FormationSafetyMetrics safety_metrics;
 };
 
 class FormationSimulation {

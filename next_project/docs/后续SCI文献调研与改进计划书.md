@@ -70,7 +70,7 @@
 | Lee, Leok & McClamroch, Geometric tracking control on SE(3), CDC 2010 | CDC/arXiv 2010 | 直接在 SE(3) 上设计控制律，避免 Euler 角奇异 | 可新增 `GeometricSE3Controller` 做对照 | **待落地** | 新增 `core/controller.py` 可选 profile |
 | Faessler, Franchi & Scaramuzza, Differential Flatness of Quadrotor Dynamics Subject to Rotor Drag, RA-L 2018 | IEEE RA-L, DOI: 10.1109/LRA.2017.2776353 | 带线性 rotor drag 的四旋翼仍可微分平坦 | 当前 `Drone` 有简化阻力项 `k_drag`，可升级为机体/转子阻力 profile | **部分落地** | `core/drone.py` 扩展 rotor drag profile |
 | Tal & Karaman, Accurate Tracking of Aggressive Quadrotor Trajectories using INDI and Differential Flatness, TCST 2021 | IEEE TCST | 增量非线性动态逆 + 微分平坦 | 可作为高阶跟踪器对照，不建议短期替代 | **暂缓** | 保留为研究接口 |
-| Data-Driven System Identification of Quadrotors Subject to Motor Delays, 2024 | arXiv:2404.07837 | 从飞行数据估计惯量、推力曲线、力矩系数和电机延迟 | 可作为 `DroneParams` 标定流程的研究接口 | **待落地** | 新增标定脚本入口 |
+| Data-Driven System Identification of Quadrotors Subject to Motor Delays, 2024 | arXiv:2404.07837 | 从飞行数据估计惯量、推力曲线、力矩系数和电机延迟 | 可作为 `DroneParams` 标定流程的研究接口 | **部分落地** | 已新增 `core/drone_params.py` profile registry；标定脚本仍待补 |
 | A two-step method for system identification of low-cost quadrotor, Aerospace Science and Technology | Elsevier Aerospace Sci. Tech. | EKF/RTS 飞行路径重建 + 时域最大似然辨识 | 对低成本传感器与仿真参数校验有参考价值 | **待评估** | 参数校验参考 |
 | Evaluation of drag coefficient for a quadrotor model, Int. J. Micro Air Vehicles | SAGE, DOI: 10.1177/17568293221148378 | 从风洞/飞行数据估计阻力系数 | 可支撑 `k_drag` 从固定常数变成可标定参数 | **待落地** | `core/drone_params.py` 标定接口 |
 
@@ -78,9 +78,9 @@
 
 | 文献/标准 | 来源 | 关键思想 | 对本项目的可用价值 | 落地状态 | 对应文件/规划 |
 |---|---|---|---|---|---|
-| T/CICC 27002-2025 低空运行安全风险评估与分级指南 | 用户提供 PDF | CONOPS、ORA、危险识别、剩余风险 | 可转成仿真实验风险模板和安全评估框架 | **待落地** | 新增 `core/risk_report.py` |
+| T/CICC 27002-2025 低空运行安全风险评估与分级指南 | 用户提供 PDF | CONOPS、ORA、危险识别、剩余风险 | 可转成仿真实验风险模板和安全评估框架 | **部分落地** | 已新增 `core/risk_report.py` 原型 |
 | T/CICC 27006-2025 低空飞行通信导航监视安全通用要求 | 用户提供 PDF | CNS、身份认证、导航源冗余、监视融合 | 可用于增加通信延迟、定位误差、监视周期等扰动 | **待落地** | `SafetyProfile` 扰动参数 |
-| T/CICC 27007-2025 低空飞行安全间隔管控规范 | 用户提供 PDF | 安全间隔保护区、定位精度、监视周期、水平/垂直间隔 | 可做外场/低空尺度 `regulatory_profile` | **待落地** | 新增 `core/safety_profiles.py` |
+| T/CICC 27007-2025 低空飞行安全间隔管控规范 | 用户提供 PDF | 安全间隔保护区、定位精度、监视周期、水平/垂直间隔 | 可做外场/低空尺度 `regulatory_profile` | **部分落地** | 已新增 `core/safety_profiles.py` 原型 |
 | Butt et al., Review of perception sensors for low-altitude UAV obstacle avoidance, RAS 2024 | Elsevier RAS, DOI: 10.1016/j.robot.2024.104629 | 低空非合作障碍物避障分类 | 可指导传感器模型从六向距离升级为多源感知 | **待评估** | `core/sensors.py` 扩展参考 |
 
 ---
@@ -189,6 +189,7 @@ class SafetyProfile:
 **设计约束**：
 - `TrajectoryResult` 可直接进入回放、benchmark 和风险报告，减少"代码跑了但不知道哪里变好"的问题。
 - `DroneParams.__post_init__` 参照 `优化反效果归因分析.md` R5，将参数耦合的物理约束固化到数据结构层。
+- 当前已落地：`core/planning/trajectory_optimizer.py` 已提供 `TrajectorySample` / `TrajectoryResult` / `TrajectoryOptimizer` 原型，`ObstacleScenarioSimulation._plan_offline()` 已支持 `trajectory_optimizer_enabled` 开关并输出 `planned_trajectory`。
 
 ### 5.2 连续轨迹优化（对应 Mellinger & Kumar, Zhang et al.）
 
@@ -272,6 +273,7 @@ controller_kind: Literal["pid_smc", "backstepping_smc", "se3_geometric"] = "pid_
 - **R3**：SE(3) 输出必须经量纲断言后注入力矩通道，禁止直接改写 `target_pos`。
 - **R4**：SE(3) 默认关闭，仅在配置中显式启用，避免简单场景被高阶控制器干扰。
 - **R6**：高曲率轨迹的跟踪安全需配套轨迹级防护，不能仅靠控制器闭环。
+- 当前已落地：`compute_control(..., target_yaw_rate=...)` 已在主控制器实现中统一，`SimulationConfig.controller_kind` 与 `FormationSimulation` 已支持 `"pid_smc"` / `"backstepping_smc"` / `"se3_geometric"`，并新增实验性 `GeometricSE3Controller` 入口。
 
 ### 5.4 DroneParams 参数 profile（对应 Faessler et al., 系统辨识文献）
 
@@ -306,6 +308,7 @@ rotor_km and allocator_km consistent
 **反效果预防**：
 - **R5**：参数耦合关系在 `DroneParams.__post_init__` 中固化，避免 `mass` 改了但 `hover_omega` 未联动。
 - **R4**：默认 profile 保持 `default_1kg`，切换需显式配置，避免回归测试被破坏。
+- 当前已落地：`core/drone_params.py` 已提供 `default_1kg` / `indoor_micro` / `light_uav_regulatory`，`Drone` 与 `FormationSimulation` 已接入 `drone_profile`，`tests/test_drone_params.py` 已锁定默认基线与 BEM 切换。
 
 ### 5.5 多机安全走廊与冲突消解（对应 Hoenig et al., Park et al.）
 
@@ -334,7 +337,7 @@ if corridor_width < 2 * formation_radius_lateral:
 
 **当前代码状态与修复建议**：
 
-`core/topology.py` 中已有 `auto_shrink(channel_width, envelope)` 方法（第178行），但该方法**未被 `simulations/obstacle_scenario.py` 主流程调用**，当前队形切换仍依赖 `config.py` 中的定时 `formation_schedule`。
+`core/topology.py` 中已有 `auto_shrink(channel_width, envelope)` 方法（第178行），当前 Python 主线已经在 `simulations/obstacle_scenario.py` 在线重规划循环中接入；同时 `core/formation_safety.py` 已落地首版独立模块，用于 follower 目标修正、最小机间距、下洗区判定、轻量目标级去冲突和首版滞回恢复。C++ 主线除在 `cpp/src/obstacle_scenario.cpp` 同步轻量目标级去冲突与首版恢复外，还已将下洗区、机间距与恢复判定抽到 `cpp/include/formation_safety.hpp` / `cpp/src/formation_safety.cpp`，但更完整的全链路冲突消解仍未独立抽象。
 
 更关键的是，`FormationTopology.envelope_radius()` 当前实现为：
 
@@ -351,6 +354,13 @@ return max_dist + self.arm_length
 3. `simulations/obstacle_scenario.py::_inflate_r()` 改为使用 `envelope_per_axis()` 的横向+垂直分量。
 4. `core/topology.py` 的 `auto_shrink()` 改为接收 `channel_width: tuple[float, float, float]`（三轴通道宽度），分别与三轴包络比较。
 5. 在 `simulations/obstacle_scenario.py` 的在线重规划循环中接入 `auto_shrink()`，在窄通道前主动触发队形收缩。
+6. 将 `core/obstacles.py::OccupancyGrid.inflate()` 扩展为支持 `(rx, ry, rz)` 三轴膨胀，避免纵向包络误伤横向窄通道。
+
+**当前落地进度（2026-05-06）**：
+
+- 已完成：`envelope_per_axis()`、`envelope_radius()` 兼容转发、在线 `auto_shrink()` 接入、运行时队形驱动的规划网格重建、Python/C++ 两侧三轴栅格膨胀、Python/C++ 轻量独立安全层、目标级去冲突与首版滞回恢复、C++ `formation_safety` 组件拆分、C++ 恢复计数器累计语义修正，以及独立 runtime probe；C++ 结果层已补齐 `min_inter_drone_distance` / `downwash_hits` 子集，并接入普通障碍场景 CLI 输出与 `warehouse_result.json` 导出，且已有 runtime 测试覆盖；Python `risk_report` 也已可直接读取该结果子集并生成 Markdown/JSON 风险报告。
+- 当前边界：上述 safety metrics 只对普通 C++ 障碍场景主流程成立，不应直接外推为 dynamic replay 的完整编队安全统计。
+- 未完成：更重的全链路冲突消解，以及更贴近完整场景的 C++ 运行时行为级验证。
 
 **下洗保护区**：
 
@@ -474,9 +484,9 @@ vertical_interval = 2 * vertical_position_error + vertical_hold_spacing
 
 | 改进项 | 直接效果 | 间接效果 | 主要风险 | 反效果预防 |
 |---|---|---|---|---|
-| S1 连续轨迹优化 | 减少速度/加速度/jerk 突变 | 降低跟踪误差和在线路径切换抖动 | 优化器耗时、走廊过窄 | R1 局部问题局部修；R6 轨迹级门禁 |
-| S2 参数 profile | 动力学参数可解释 | 便于实机/论文/标准对照 | profile 切换后需重新调参 | R5 耦合参数固化；R4 默认基线不变 |
-| S3 SE(3)/前馈控制 | 高曲率轨迹跟踪更稳 | 提升控制理论完整性 | 替换默认控制器有风险 | R4 默认关闭；R3 量纲断言 |
+| S1 连续轨迹优化 | 减少速度/加速度/jerk 突变 | 降低跟踪误差和在线路径切换抖动 | 优化器耗时、走廊过窄 | 已部分落地：R1 局部问题局部修；R6 轨迹级门禁 |
+| S2 参数 profile | 动力学参数可解释 | 便于实机/论文/标准对照 | profile 切换后需重新调参 | 已部分落地：R5 耦合参数固化；R4 默认基线不变 |
+| S3 SE(3)/前馈控制 | 高曲率轨迹跟踪更稳 | 提升控制理论完整性 | 替换默认控制器有风险 | 已部分落地：R4 默认关闭；R3 量纲断言 |
 | S4 多机安全走廊 | followers 和机间间隔更安全 | 更像真实集群飞行 | 在线计算复杂 | R7 分轴包络；R6 follower 独立检查 |
 | S5 safety profile | 标准要求变成可运行配置 | 可生成风险报告 | 低空标准与室内尺度不一致 | 显式区分 indoor/low_altitude profile |
 
@@ -491,7 +501,7 @@ vertical_interval = 2 * vertical_position_error + vertical_hold_spacing
 | 轨迹优化器（minimum snap） | P0 | **暂缓** | C++ 当前无对应后端，收益待 Python 验证后评估 |
 | SE(3) 控制器 | P1 | **暂缓** | 纯实验 profile，C++ 已有 PID/SMC 稳定基线 |
 | SafetyProfile / risk_report | P0 | **第二批同步** | C++ 动态回放已有 `clearance_blocked` 字段，风险报告 JSON 可自然扩展 |
-| 队形包络分轴 | P1 | **即时同步** | C++ `formation_simulation.cpp` 当前使用各向同性包络，存在 R7 风险 |
+| 队形包络分轴 | P1 | **已完成首批同步，继续补验证** | C++ 已同步 `envelope_per_axis()`、三轴膨胀与 `formation_safety` 轻量组件，但仍需补运行时行为测试 |
 
 ---
 
@@ -512,6 +522,9 @@ python -m pytest "tests\test_trajectory_optimizer.py" -q
 python -m pytest "tests\test_drone_params.py" -q
 python -m pytest "tests\test_safety_profiles.py" -q
 python -m pytest "tests\test_risk_report.py" -q
+python -m pytest "tests\test_formation_safety.py" "tests\test_obstacle_scenario.py" -q -k "formation_safety or deconflict or recovery"
+python -m pytest "tests\test_cpp_sync_static.py" -q
+python -m pytest "tests\test_obstacle_scenario.py" -q -k "cpp_formation_safety_probe_reports_runtime_behavior"
 ```
 
 ---

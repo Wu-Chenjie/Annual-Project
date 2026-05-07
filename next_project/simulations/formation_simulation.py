@@ -34,7 +34,8 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from core.drone import Drone
-from core.controller import Controller, HybridAttitudeController, BacksteppingController
+from core.drone_params import get_drone_params
+from core.controller import Controller, HybridAttitudeController, BacksteppingController, GeometricSE3Controller
 from core.wind_field import WindField
 from core.topology import FormationTopology
 
@@ -165,6 +166,27 @@ class SimulationConfig:
     sensor_safe_threshold: float = 4.0
     sdf_danger_threshold: float = 0.5
 
+    # ---- S5: Safety Profile / Risk Report ----
+    safety_profile: str = "indoor_demo"
+
+    # ---- S4: Formation safety ----
+    formation_safety_enabled: bool = False
+    formation_min_inter_drone_distance: float = 0.35
+    formation_downwash_radius: float = 0.45
+    formation_downwash_height: float = 0.80
+
+    # ---- S2: DroneParams profile ----
+    drone_profile: str = "default_1kg"
+
+    # ---- S1: Trajectory optimizer ----
+    trajectory_optimizer_enabled: bool = False
+    trajectory_optimizer_method: str = "moving_average"
+    trajectory_optimizer_nominal_speed: float = 1.0
+    trajectory_optimizer_sample_dt: float = 0.2
+
+    # ---- S3: Controller profile ----
+    controller_kind: str = "pid_smc"
+
 class FormationSimulation:
     """领航-跟随编队仿真器。
 
@@ -193,8 +215,9 @@ class FormationSimulation:
         self.dt = self.config.dt
         self.max_sim_time = self.config.max_sim_time
         self.use_smc = self.config.use_smc
+        self.drone_params = get_drone_params(self.config.drone_profile)
 
-        self.leader = Drone(dt=self.dt)
+        self.leader = Drone(dt=self.dt, params=self.drone_params)
         self.leader.set_initial_state([0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
         self.followers = []
         self.winds = []
@@ -207,13 +230,7 @@ class FormationSimulation:
             self.topology.set_custom_offsets(self.config.custom_initial_offsets)
         self.waypoints = self.config.waypoints
 
-        if self.config.use_backstepping:
-            self.leader_ctrl = BacksteppingController(m=1.0, dt=self.dt)
-        elif self.use_smc:
-            self.leader_ctrl = HybridAttitudeController(dt=self.dt)
-            self.leader_ctrl.use_smc = True
-        else:
-            self.leader_ctrl = Controller(dt=self.dt)
+        self.leader_ctrl = self._build_controller()
         self._apply_controller_profile(
             self.leader_ctrl,
             gain_scale=self.config.leader_gain_scale,
@@ -246,19 +263,40 @@ class FormationSimulation:
         ctrl.max_vel = max_vel
         ctrl.max_acc = max_acc
 
+    def _resolved_controller_kind(self) -> str:
+        kind = getattr(self.config, "controller_kind", "pid_smc")
+        if kind != "pid_smc":
+            return kind
+        if self.config.use_backstepping:
+            return "backstepping_smc"
+        if self.use_smc:
+            return "pid_smc"
+        return "pid"
+
+    def _build_controller(self) -> Controller:
+        kind = self._resolved_controller_kind()
+        common = {
+            "m": self.drone_params.mass,
+            "inertia": self.drone_params.inertia_matrix,
+            "dt": self.dt,
+        }
+        if kind == "backstepping_smc":
+            return BacksteppingController(**common)
+        if kind == "se3_geometric":
+            return GeometricSE3Controller(**common)
+        if kind == "pid":
+            return Controller(**common)
+        ctrl = HybridAttitudeController(**common)
+        ctrl.use_smc = True
+        return ctrl
+
     def _build_followers(self) -> None:
         offsets = self.topology.get_offsets(self.config.initial_formation)
         for offset in offsets:
-            follower = Drone(dt=self.dt)
+            follower = Drone(dt=self.dt, params=self.drone_params)
             follower.set_initial_state(self.leader.state[0:3] + offset, [0.0, 0.0, 0.0])
             self.followers.append(follower)
-            if self.config.use_backstepping:
-                ctrl = BacksteppingController(m=1.0, dt=self.dt)
-            elif self.use_smc:
-                ctrl = HybridAttitudeController(dt=self.dt)
-                ctrl.use_smc = True
-            else:
-                ctrl = Controller(dt=self.dt)
+            ctrl = self._build_controller()
             self._apply_controller_profile(
                 ctrl,
                 gain_scale=self.config.follower_gain_scale,

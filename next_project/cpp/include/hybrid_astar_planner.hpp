@@ -258,6 +258,7 @@ inline double HybridAStarPlanner::primitive_cost(int pi, int prev_pi) const {
 
 inline HybridAStarResult HybridAStarPlanner::plan(
     const Vec3& start, const Vec3& goal, const OccupancyGrid& grid, int seed) {
+    (void)seed;
 
     HybridAStarResult result;
     grid_ = &grid;
@@ -292,7 +293,6 @@ inline HybridAStarResult HybridAStarPlanner::plan(
     std::priority_queue<SearchNode, std::vector<SearchNode>, std::greater<SearchNode>> pq;
     pq.push({h0, 0.0, sk});
 
-    int tie = 0;
     for (int iter = 0; iter < max_iter_; ++iter) {
         if (pq.empty()) break;
         auto [f, g, ck] = pq.top(); pq.pop();

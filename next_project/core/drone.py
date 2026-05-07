@@ -1,49 +1,16 @@
-"""无人机动力学模型。
-
-用途
-----
-提供单机四旋翼的可运行仿真对象，包含欧拉角版本与四元数版本，
-用于控制算法验证与编队仿真。
-
-原理
-----
-1) 平移动力学（机体系推力映射到惯性系）：
-
-    m * v_dot = R(eta) * [0, 0, T]^T + F_d - m * g * e3
-
-    其中 eta = [roll, pitch, yaw]，R(eta) 为 ZYX 旋转矩阵，
-    F_d = -k_d * ||v - v_w|| * (v - v_w) 为二次阻力模型。
-
-2) 转动动力学（刚体 Newton-Euler 方程）：
-
-    I * omega_dot = tau - omega x (I * omega) + tau_g
-
-    tau_g 是旋翼陀螺耦合项，这里采用等效形式：
-
-    tau_g = -J_r * Omega_net * (omega x e3)
-
-3) 四元数姿态运动学：
-
-    q_dot = 0.5 * q ⊗ [0, omega]^T
-
-    每步积分后进行单位化，避免数值漂移导致 ||q|| != 1。
-
-4) 数值积分方法：
-
-    使用 RK4（四阶 Runge-Kutta）离散积分，提高稳定性与精度。
-
-"""
+"""Quadrotor dynamics models used by the simulation stack."""
 
 from __future__ import annotations
 
 import numpy as np
 
-from .rotor import Rotor
 from .allocator import ControlAllocator
+from .drone_params import DroneParams, get_drone_params
+from .rotor import BEMRotor, Rotor
 
 
 def rotation_matrix(roll: float, pitch: float, yaw: float) -> np.ndarray:
-    """ZYX 欧拉角旋转矩阵。"""
+    """Return the ZYX Euler rotation matrix."""
     c_r, s_r = np.cos(roll), np.sin(roll)
     c_p, s_p = np.cos(pitch), np.sin(pitch)
     c_y, s_y = np.cos(yaw), np.sin(yaw)
@@ -56,7 +23,7 @@ def rotation_matrix(roll: float, pitch: float, yaw: float) -> np.ndarray:
 
 
 def euler_to_quat(roll: float, pitch: float, yaw: float) -> np.ndarray:
-    """欧拉角转四元数。"""
+    """Convert Euler angles to a quaternion."""
     cr, sr = np.cos(roll / 2.0), np.sin(roll / 2.0)
     cp, sp = np.cos(pitch / 2.0), np.sin(pitch / 2.0)
     cy, sy = np.cos(yaw / 2.0), np.sin(yaw / 2.0)
@@ -69,7 +36,7 @@ def euler_to_quat(roll: float, pitch: float, yaw: float) -> np.ndarray:
 
 
 def quat_to_euler(q: np.ndarray) -> np.ndarray:
-    """四元数转欧拉角。"""
+    """Convert a quaternion to Euler angles."""
     q0, q1, q2, q3 = q
     sinr_cosp = 2.0 * (q0 * q1 + q2 * q3)
     cosr_cosp = 1.0 - 2.0 * (q1 * q1 + q2 * q2)
@@ -85,7 +52,7 @@ def quat_to_euler(q: np.ndarray) -> np.ndarray:
 
 
 def quat_multiply(p: np.ndarray, q: np.ndarray) -> np.ndarray:
-    """Hamilton 四元数乘法。"""
+    """Hamilton quaternion product."""
     p0, p1, p2, p3 = p
     q0, q1, q2, q3 = q
     return np.array([
@@ -97,25 +64,78 @@ def quat_multiply(p: np.ndarray, q: np.ndarray) -> np.ndarray:
 
 
 class Drone:
-    """基于欧拉角的四旋翼动力学对象。"""
+    """Euler-angle quadrotor dynamics."""
 
-    def __init__(self, m: float = 1.0, inertia=None, arm_length: float = 0.2, dt: float = 0.01):
-        self.m = float(m)
-        self.I = np.diag([0.01, 0.01, 0.02]) if inertia is None else np.array(inertia, dtype=float)
+    def __init__(
+        self,
+        m: float = 1.0,
+        inertia=None,
+        arm_length: float = 0.2,
+        dt: float = 0.01,
+        *,
+        params: DroneParams | None = None,
+        drone_profile: str = "default_1kg",
+    ):
+        self.params = self._resolve_params(m, inertia, arm_length, params, drone_profile)
+        self.m = float(self.params.mass)
+        self.I = self.params.inertia_matrix if inertia is None else np.array(inertia, dtype=float)
         self.I_inv = np.linalg.inv(self.I)
         self.g = 9.81
-        self.L = float(arm_length)
+        self.L = float(self.params.arm_length if arm_length == 0.2 else arm_length)
         self.dt = float(dt)
-        self.k_drag = 0.05
+        self.k_drag = float(self.params.k_drag)
         self.wind = np.zeros(3, dtype=float)
-        self.J_rotor = 3.0e-5
+        self.J_rotor = float(self.params.j_rotor)
         self.state = np.zeros(12, dtype=float)
-        self.rotors = [Rotor(direction=1), Rotor(direction=-1), Rotor(direction=1), Rotor(direction=-1)]
+        self.rotors = [
+            self._build_rotor(direction=1),
+            self._build_rotor(direction=-1),
+            self._build_rotor(direction=1),
+            self._build_rotor(direction=-1),
+        ]
         self.allocator = ControlAllocator(arm_length=self.L, kf=self.rotors[0].kf, km=self.rotors[0].km)
 
-        # 论文4 L1: 执行器故障注入
-        self.fault_mask = np.ones(4, dtype=float)  # 1.0 = 正常, 0.0 = 完全失效
+        self.fault_mask = np.ones(4, dtype=float)
         self.fault_active = False
+
+    @staticmethod
+    def _resolve_params(
+        m: float,
+        inertia,
+        arm_length: float,
+        params: DroneParams | None,
+        drone_profile: str,
+    ) -> DroneParams:
+        if params is not None:
+            return params
+        if inertia is None and arm_length == 0.2 and m == 1.0:
+            return get_drone_params(drone_profile)
+        return DroneParams(
+            name="custom",
+            mass=float(m),
+            inertia=(0.01, 0.01, 0.02) if inertia is None else tuple(np.array(inertia, dtype=float).tolist()),
+            arm_length=float(arm_length),
+            notes="Constructed from legacy Drone constructor arguments.",
+        )
+
+    def _build_rotor(self, direction: int) -> Rotor:
+        rotor_kwargs = dict(
+            kf=self.params.kf,
+            km=self.params.km,
+            direction=direction,
+            tau_motor=self.params.tau_motor,
+            omega_max=self.params.omega_max,
+        )
+        if self.params.rotor_model == "bem":
+            return BEMRotor(
+                **rotor_kwargs,
+                num_blades=self.params.bem_num_blades,
+                radius=self.params.bem_radius,
+                chord=self.params.bem_chord,
+                theta_tip=self.params.bem_theta_tip,
+                theta_root=self.params.bem_theta_root,
+            )
+        return Rotor(**rotor_kwargs)
 
     def set_initial_state(self, position, velocity, attitude=None, angular_velocity=None, dt=None):
         if attitude is None:
@@ -130,16 +150,11 @@ class Drone:
         self.state[9:12] = np.array(angular_velocity, dtype=float)
 
     def inject_fault(self, rotor_index: int, severity: float) -> None:
-        """注入执行器故障（论文4 L1）。
-
-        severity: 0.0=完全失效, 0.5=推力减半, 1.0=正常
-        """
         if 0 <= rotor_index < 4:
             self.fault_mask[rotor_index] = float(np.clip(severity, 0.0, 1.0))
             self.fault_active = True
 
     def clear_faults(self) -> None:
-        """清除所有故障掩码。"""
         self.fault_mask = np.ones(4, dtype=float)
         self.fault_active = False
 
@@ -156,7 +171,6 @@ class Drone:
 
     def _rotor_step(self, desired_u) -> np.ndarray:
         thrusts_cmd = self.allocator.allocate_thrusts(desired_u)
-        # 论文4 L1: 故障注入点
         thrusts_cmd = thrusts_cmd * self.fault_mask
         max_thrust = self.rotors[0].kf * (self.rotors[0].omega_max ** 2)
         thrusts_cmd = np.clip(thrusts_cmd, 0.0, max_thrust)
@@ -167,7 +181,7 @@ class Drone:
         return self.allocator.omegas_to_u(omegas)
 
     def dynamics(self, t, state, u, wind=None) -> np.ndarray:
-        x, y, z, vx, vy, vz, roll, pitch, yaw, wx, wy, wz = state
+        _, _, _, vx, vy, vz, roll, pitch, yaw, wx, wy, wz = state
         R = rotation_matrix(roll, pitch, yaw)
         wind_vec = self._resolve_wind(wind, position=state[0:3])
         v_vector = np.array([vx, vy, vz], dtype=float)
@@ -222,10 +236,26 @@ class Drone:
 
 
 class QuaternionDrone(Drone):
-    """四元数姿态版本的无人机动力学对象。"""
+    """Quaternion-state quadrotor dynamics."""
 
-    def __init__(self, m: float = 1.0, inertia=None, arm_length: float = 0.2, dt: float = 0.01):
-        super().__init__(m=m, inertia=inertia, arm_length=arm_length, dt=dt)
+    def __init__(
+        self,
+        m: float = 1.0,
+        inertia=None,
+        arm_length: float = 0.2,
+        dt: float = 0.01,
+        *,
+        params: DroneParams | None = None,
+        drone_profile: str = "default_1kg",
+    ):
+        super().__init__(
+            m=m,
+            inertia=inertia,
+            arm_length=arm_length,
+            dt=dt,
+            params=params,
+            drone_profile=drone_profile,
+        )
         self.state = np.zeros(13, dtype=float)
         self.state[6] = 1.0
 

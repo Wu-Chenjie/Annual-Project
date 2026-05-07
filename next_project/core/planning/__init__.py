@@ -28,6 +28,7 @@ from .visibility_graph import VisibilityGraph
 from .gnn_planner import GNNPlanner
 from .dual_mode import DualModeScheduler, FormationAPF
 from .firi import FIRIRefiner, FIRICorridor
+from .trajectory_optimizer import TrajectoryOptimizer, TrajectoryResult, TrajectorySample
 
 __all__ = [
     "Planner",
@@ -49,4 +50,7 @@ __all__ = [
     "FormationAPF",
     "FIRIRefiner",
     "FIRICorridor",
+    "TrajectoryOptimizer",
+    "TrajectoryResult",
+    "TrajectorySample",
 ]

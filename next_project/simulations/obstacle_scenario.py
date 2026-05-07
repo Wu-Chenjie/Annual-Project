@@ -17,11 +17,21 @@ from core.map_loader import load_from_json, load_from_npz
 from core.sensors import RangeSensor6
 from core.artificial_potential_field import ImprovedArtificialPotentialField
 from core.fault_detector import FaultDetector
+from core.formation_safety import (
+    FormationSafetyConfig,
+    deconflict_follower_target,
+    downwash_zone,
+    follower_safety_correction,
+    is_in_downwash_zone,
+    min_inter_drone_distance,
+    nominal_target_ready_for_recovery,
+)
 from core.planning import (
     AStar, TurnConstrainedAStar, HybridAStar, Dijkstra, RRTStar,
     InformedRRTStar, DStarLite, WindowReplanner, RiskAdaptiveReplanInterval,
     Planner, CostAwareGrid,
     VisibilityGraph, GNNPlanner, DualModeScheduler, FormationAPF,
+    TrajectoryOptimizer,
 )
 from core.planning.firi import FIRIRefiner
 
@@ -63,11 +73,31 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
     def __init__(self, config: SimulationConfig):
         first_wp = config.waypoints[0] if config.waypoints else np.zeros(3)
+        self.planned_trajectory = None
         super().__init__(config=config)
         arm_length = 0.2  # Drone 默认臂长
         self._collision_margin = arm_length + config.safety_margin * config.detect_margin_scale
         self._setup_obstacles()
         self._setup_planning()
+        self.formation_safety = FormationSafetyConfig(
+            enabled=bool(getattr(config, "formation_safety_enabled", False)),
+            min_inter_drone_distance=float(getattr(config, "formation_min_inter_drone_distance", 0.35)),
+            downwash_radius=float(getattr(config, "formation_downwash_radius", 0.45)),
+            downwash_height=float(getattr(config, "formation_downwash_height", 0.80)),
+            conflict_vertical_step=max(
+                float(getattr(config, "formation_downwash_height", 0.80)) * 0.5,
+                0.25,
+            ),
+            conflict_lateral_step=max(
+                float(getattr(config, "formation_min_inter_drone_distance", 0.35)) * 0.75,
+                0.20,
+            ),
+        )
+        self._formation_recovery_counts = [0] * int(getattr(config, "num_followers", 0))
+        self._downwash_zone = downwash_zone(
+            self.formation_safety.downwash_radius,
+            self.formation_safety.downwash_height,
+        )
         safe_first_wp = self._planning_waypoints[0] if getattr(self, "_planning_waypoints", None) else first_wp
         # 灏嗛鑸満涓庝粠鏈鸿捣濮嬩綅缃Щ鑷充慨姝ｅ悗鐨勭涓€涓埅鐐癸紝閬垮厤鍒濆鐬€佺┛瓒婇殰纰嶇墿
         self.leader.set_initial_state(safe_first_wp, [0.0, 0.0, 0.0])
@@ -176,7 +206,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         # 浣撶礌鍖栵紙濡傚皻鏈粠 NPZ 鍔犺浇锛?
         if not hasattr(self, "grid") or self.grid is None:
             self.grid = self.obstacles.to_voxel_grid(self._map_bounds, cfg.planner_resolution)
-            self.grid = self.grid.inflate(self._inflate_r())
+            self.grid = self.grid.inflate(self._inflate_margin_xyz())
 
         # SDF 鎰熺煡鍖呰锛氱簿鍒よ杽闅滅鐗╋紙鍗婂緞 < 鏍呮牸鍒嗚鲸鐜囷級锛岄伩鍏嶄綋绱犲寲涓㈠け
         if getattr(cfg, "planner_sdf_aware", False):
@@ -220,12 +250,28 @@ class ObstacleScenarioSimulation(FormationSimulation):
             float(reading[4] + reading[5]),
         )
 
+    def _inflate_margin_xyz(self) -> float | tuple[float, float, float]:
+        """返回规划栅格膨胀半径。
+
+        标量接口继续服务于传统单机/固定裕度场景；启用编队包络时，使用三轴半径
+        让横向通道宽度不再被纵向编队长度错误放大。
+        """
+        if not getattr(self.config, "planner_use_formation_envelope", False):
+            return float(self.config.safety_margin)
+        lateral, longitudinal, vertical = self.topology.envelope_per_axis()
+        margin = float(self.config.safety_margin)
+        return (
+            lateral + margin,
+            longitudinal + margin,
+            vertical + margin,
+        )
+
     def _rebuild_planning_grid(self) -> None:
         """按当前队形重新生成规划网格，避免队形切换后继续沿用旧膨胀层。"""
         if self._map_bounds is None or len(self._map_bounds) == 0:
             return
         base_grid = self.obstacles.to_voxel_grid(self._map_bounds, self.config.planner_resolution)
-        plan_grid = base_grid.inflate(self._inflate_r())
+        plan_grid = base_grid.inflate(self._inflate_margin_xyz())
         if getattr(self.config, "planner_sdf_aware", False):
             clearance = max(float(self.config.safety_margin), float(getattr(self, "_collision_margin", 0.0)))
             plan_grid = SDFAwareGrid(
@@ -265,6 +311,10 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.firi_refiner = FIRIRefiner(
             self.obstacles,
             min_clearance=cfg.safety_margin + cfg.plan_clearance_extra,
+        )
+        self.trajectory_optimizer = TrajectoryOptimizer(
+            nominal_speed=getattr(cfg, "trajectory_optimizer_nominal_speed", 1.0),
+            sample_dt=getattr(cfg, "trajectory_optimizer_sample_dt", 0.2),
         )
         self._planning_waypoints = self._sanitize_waypoints(cfg.waypoints)
         self._task_waypoints = [wp.copy() for wp in cfg.waypoints]
@@ -686,8 +736,19 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 if np.linalg.norm(first - last) < 1e-4:
                     smoothed = smoothed[1:]
             full_path.extend(smoothed.tolist())
-
-        return np.array(full_path, dtype=float)
+        planned = np.array(full_path, dtype=float)
+        if len(planned) == 0:
+            return planned
+        if getattr(self.config, "trajectory_optimizer_enabled", False):
+            self.planned_trajectory = self.trajectory_optimizer.optimize(
+                planned,
+                method=getattr(self.config, "trajectory_optimizer_method", "moving_average"),
+                clearance_checker=lambda candidate: self._segment_is_safe(candidate, min_clearance),
+                fallback_to_raw=True,
+            )
+            return np.asarray(self.planned_trajectory.positions, dtype=float)
+        self.planned_trajectory = None
+        return planned
 
     def _plan_segment_fallback(self, start: np.ndarray, goal: np.ndarray, min_clearance: float) -> np.ndarray | None:
         """段规划失败时使用低约束 A* 重试，禁止直接用直线穿障碍兜底。"""
@@ -811,6 +872,18 @@ class ObstacleScenarioSimulation(FormationSimulation):
         current = None if current_pos is None else np.asarray(current_pos, dtype=float)
         min_clearance = max(float(self._collision_margin) + 0.05, float(self.config.safety_margin))
 
+        if getattr(self, "formation_safety", None) is not None and self.formation_safety.enabled:
+            return follower_safety_correction(
+                leader_pos,
+                raw_target,
+                current_pos=current,
+                signed_distance=lambda p: float(self.obstacles.signed_distance(np.asarray(p, dtype=float))),
+                segment_is_safe=lambda path, clearance: bool(self._segment_is_safe(np.asarray(path, dtype=float), float(clearance))),
+                project_to_free=self._project_to_planning_free,
+                min_clearance=min_clearance,
+                shrink_steps=self.formation_safety.follower_shrink_steps,
+            )
+
         candidates: list[np.ndarray] = []
         # 优先尝试完整队形，再逐步向 leader 收缩，保证窄通道/近障碍时不把从机目标放进障碍物。
         for scale in np.linspace(1.0, 0.0, 11):
@@ -845,6 +918,59 @@ class ObstacleScenarioSimulation(FormationSimulation):
         if current is not None and float(self.obstacles.signed_distance(current)) >= 0.0:
             return current.copy()
         return leader_pos.copy()
+
+    def _deconflict_follower_target(
+        self,
+        leader_pos: np.ndarray,
+        candidate_target: np.ndarray,
+        nominal_target: np.ndarray,
+        reserved_positions: list[np.ndarray],
+        follower_idx: int,
+        current_pos: np.ndarray | None = None,
+    ) -> np.ndarray:
+        """对已安全化的 follower 目标再做机间去冲突修正。"""
+        if not (getattr(self, "formation_safety", None) is not None and self.formation_safety.enabled):
+            return np.asarray(candidate_target, dtype=float)
+        min_clearance = max(float(self._collision_margin) + 0.05, float(self.config.safety_margin))
+        nominal_target = np.asarray(nominal_target, dtype=float)
+        reserved = [np.asarray(p, dtype=float) for p in reserved_positions]
+        current = None if current_pos is None else np.asarray(current_pos, dtype=float)
+        if nominal_target_ready_for_recovery(
+            nominal_target,
+            reserved_positions=reserved,
+            current_pos=current,
+            signed_distance=lambda p: float(self.obstacles.signed_distance(np.asarray(p, dtype=float))),
+            segment_is_safe=lambda path, clearance: bool(self._segment_is_safe(np.asarray(path, dtype=float), float(clearance))),
+            min_clearance=min_clearance,
+            min_inter_distance=self.formation_safety.min_inter_drone_distance,
+            downwash=self._downwash_zone,
+            recovery_margin=self.formation_safety.recovery_clearance_margin,
+        ):
+            self._formation_recovery_counts[follower_idx] += 1
+            if self._formation_recovery_counts[follower_idx] >= self.formation_safety.recovery_hold_steps:
+                return nominal_target.copy()
+        else:
+            self._formation_recovery_counts[follower_idx] = 0
+
+        preferred_target = (
+            nominal_target
+            if self._formation_recovery_counts[follower_idx] >= self.formation_safety.recovery_hold_steps
+            else None
+        )
+        return deconflict_follower_target(
+            candidate_target,
+            leader_pos=np.asarray(leader_pos, dtype=float),
+            reserved_positions=reserved,
+            current_pos=current,
+            signed_distance=lambda p: float(self.obstacles.signed_distance(np.asarray(p, dtype=float))),
+            segment_is_safe=lambda path, clearance: bool(self._segment_is_safe(np.asarray(path, dtype=float), float(clearance))),
+            min_clearance=min_clearance,
+            min_inter_distance=self.formation_safety.min_inter_drone_distance,
+            downwash=self._downwash_zone,
+            vertical_step=self.formation_safety.conflict_vertical_step,
+            lateral_step=self.formation_safety.conflict_lateral_step,
+            preferred_target=preferred_target,
+        )
 
     def _project_drone_state_to_safe(self, drone, min_clearance: float) -> bool:
         """执行层安全屏障：若动力学积分后进入安全边界，则投影回自由侧。"""
@@ -967,6 +1093,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.fault_log = []
         self._faulted_followers = set()
         self._fault_injected = False
+        self._formation_recovery_counts = [0] * follower_count
 
         while time_now < self.max_sim_time:
             self._maybe_switch_formation(time_now)
@@ -1182,14 +1309,25 @@ class ObstacleScenarioSimulation(FormationSimulation):
             leader_acc = (leader_vel_new - leader_vel) / dt
             leader_acc_filt = alpha * leader_acc + (1.0 - alpha) * leader_acc_filt
 
+            reserved_targets: list[np.ndarray] = [leader_pos_new.copy()]
             for i, follower in enumerate(followers):
                 wind_follower = winds[i].sample(dt)
                 follower_current_pos = follower.get_state()[0]
+                nominal_target = leader_pos_new + offsets[i]
                 target_pos = self._safe_follower_target(
                     leader_pos_new,
-                    leader_pos_new + offsets[i],
+                    nominal_target,
                     current_pos=follower_current_pos,
                 )
+                target_pos = self._deconflict_follower_target(
+                    leader_pos_new,
+                    target_pos,
+                    nominal_target,
+                    reserved_targets,
+                    i,
+                    current_pos=follower_current_pos,
+                )
+                reserved_targets.append(np.asarray(target_pos, dtype=float))
 
                 # 鏀硅繘 APF锛氶殰纰嶇墿鏂ュ姏 + 鏈洪棿鏂ュ姏
                 # 鏀堕泦鍏朵粬浠庢満浣嶇疆鐢ㄤ簬鏈洪棿鏂ュ姏
@@ -1264,6 +1402,27 @@ class ObstacleScenarioSimulation(FormationSimulation):
         }
 
         executed_arr = np.array(self.executed_path, dtype=float) if self.executed_path else np.zeros((0, 3), dtype=float)
+        safety_metrics: dict[str, float | int] = {}
+        if follower_count > 0:
+            all_positions = [history_leader[valid, :]]
+            all_positions.extend(history_followers[i, valid, :] for i in range(follower_count))
+            min_pair_distance = float("inf")
+            downwash_hits = 0
+            for step in range(step_idx):
+                poses = [history_leader[step, :]]
+                poses.extend(history_followers[i, step, :] for i in range(follower_count))
+                min_pair_distance = min(min_pair_distance, min_inter_drone_distance(poses))
+                if getattr(self, "formation_safety", None) is not None and self.formation_safety.enabled:
+                    for upper_i, upper in enumerate(poses):
+                        for lower_i, lower in enumerate(poses):
+                            if upper_i == lower_i:
+                                continue
+                            if is_in_downwash_zone(upper, lower, self._downwash_zone):
+                                downwash_hits += 1
+            safety_metrics = {
+                "min_inter_drone_distance": float(min_pair_distance),
+                "downwash_hits": int(downwash_hits),
+            }
 
         return {
             "time": history_time[valid],
@@ -1279,9 +1438,11 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "replanned_waypoints": np.array(local_path, dtype=float),
             "obstacles": self.obstacles,
             "planned_path": self.planned_path if self.planned_path is not None else executed_arr[:0],
+            "planned_trajectory": None if self.planned_trajectory is None else self.planned_trajectory.to_dict(),
             "executed_path": executed_arr,
             "replan_events": self.replan_events,
             "sensor_logs": np.array(self.sensor_logs, dtype=float) if self.sensor_logs else None,
             "collision_log": self.collision_log,
             "fault_log": self.fault_log,
+            "safety_metrics": safety_metrics,
         }
