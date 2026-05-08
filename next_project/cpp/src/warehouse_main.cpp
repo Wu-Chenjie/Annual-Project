@@ -7,6 +7,7 @@
 #include <string>
 
 #include "config.hpp"
+#include "json_writer.hpp"
 #include "obstacle_scenario.hpp"
 
 namespace sim {
@@ -54,67 +55,96 @@ ObstacleField make_warehouse() {
 
 namespace {
 
-void dump_vec3(std::ostream& out, const sim::Vec3& value) {
-    out << "[" << value.x << "," << value.y << "," << value.z << "]";
-}
-
-void dump_vec3_array(std::ostream& out, const std::vector<sim::Vec3>& values) {
-    out << "[";
-    for (std::size_t i = 0; i < values.size(); ++i) {
-        if (i) out << ",";
-        dump_vec3(out, values[i]);
+std::string timestamp_dir_name() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm* local = std::localtime(&t);
+    std::ostringstream oss;
+    if (local != nullptr) {
+        oss << std::put_time(local, "%Y%m%d-%H%M%S");
+    } else {
+        oss << "unknown";
     }
-    out << "]";
-}
-
-void dump_string(std::ostream& out, const std::string& value) {
-    out << "\"";
-    for (char c : value) {
-        if (c == '"' || c == '\\') out << "\\";
-        out << c;
-    }
-    out << "\"";
-}
-
-void dump_string_array(std::ostream& out, const std::vector<std::string>& values) {
-    out << "[";
-    for (std::size_t i = 0; i < values.size(); ++i) {
-        if (i) out << ",";
-        dump_string(out, values[i]);
-    }
-    out << "]";
+    return oss.str();
 }
 
 void write_obstacle_result_json(
     const std::filesystem::path& output_path,
     const sim::SimulationResult& result,
     double planning_s,
-    double sim_s
+    double sim_s,
+    const std::string& preset
 ) {
-    std::filesystem::create_directories(output_path.parent_path());
+    namespace fs = std::filesystem;
+    fs::create_directories(output_path.parent_path());
     std::ofstream out(output_path, std::ios::binary);
     if (!out) {
         throw std::runtime_error("cannot write obstacle result json");
     }
-    out << std::fixed << std::setprecision(8);
-    out << "{";
-    out << "\"timing\":{\"planning_s\":" << planning_s
-        << ",\"simulation_s\":" << sim_s
-        << ",\"total_s\":" << (planning_s + sim_s) << "},";
-    out << "\"completed_waypoint_count\":" << result.completed_waypoint_count << ",";
-    out << "\"task_waypoints\":";
-    dump_vec3_array(out, result.task_waypoints);
-    out << ",\"replanned_waypoints\":";
-    dump_vec3_array(out, result.replanned_waypoints);
-    out << ",\"executed_path\":";
-    dump_vec3_array(out, result.executed_path);
-    out << ",\"fault_log\":";
-    dump_string_array(out, result.fault_log);
-    out << ",\"safety_metrics\":{"
-        << "\"min_inter_drone_distance\":" << result.safety_metrics.min_inter_drone_distance
-        << ",\"downwash_hits\":" << result.safety_metrics.downwash_hits
-        << "}";
-    out << "}\n";
+
+    double overall_mean = 0.0;
+    double overall_max = 0.0;
+    double overall_final = 0.0;
+    if (!result.metrics.mean.empty()) {
+        for (double v : result.metrics.mean) overall_mean += v;
+        overall_mean /= static_cast<double>(result.metrics.mean.size());
+    }
+    if (!result.metrics.max.empty()) {
+        for (double v : result.metrics.max) overall_max = std::max(overall_max, v);
+    }
+    if (!result.metrics.final.empty()) {
+        for (double v : result.metrics.final) overall_final += v;
+        overall_final /= static_cast<double>(result.metrics.final.size());
+    }
+
+    sim::JsonWriter w(out);
+
+    w.begin_object();
+    w.key("schema_version").value("1.0.0");
+    w.key("preset").value(preset);
+    w.key("runtime_engine").value("cpp");
+    w.key("engine_version").value(sim::engine_version());
+    w.key("generated_at").value(sim::iso8601_utc(std::chrono::system_clock::now()));
+
+    w.key("metrics").begin_object();
+    w.key("mean").array_double(result.metrics.mean);
+    w.key("max").array_double(result.metrics.max);
+    w.key("final").array_double(result.metrics.final);
+    w.end_object();  // metrics
+
+    w.key("completed_waypoint_count").value(result.completed_waypoint_count);
+    w.key("runtime_s").value(planning_s + sim_s);
+
+    // summary
+    w.key("summary").begin_object();
+    w.key("mean_error_overall").value(overall_mean);
+    w.key("max_error_overall").value(overall_max);
+    w.key("final_error_overall").value(overall_final);
+    w.key("collision_count").value(0);
+    w.key("replan_count").value(0);
+    w.key("fault_count").value(static_cast<int>(result.fault_log.size()));
+    w.end_object();  // summary
+
+    // timing snapshot (custom field, passthrough)
+    w.key("timing").begin_object();
+    w.key("planning_s").value(planning_s);
+    w.key("simulation_s").value(sim_s);
+    w.key("total_s").value(planning_s + sim_s);
+    w.end_object();
+
+    // optional passthrough fields
+    w.key("task_waypoints").array_vec3(result.task_waypoints);
+    w.key("replanned_waypoints").array_vec3(result.replanned_waypoints);
+    w.key("executed_path").array_vec3(result.executed_path);
+    w.key("fault_log").array_string(result.fault_log);
+
+    w.key("safety_metrics").begin_object();
+    w.key("min_inter_drone_distance").value(result.safety_metrics.min_inter_drone_distance);
+    w.key("downwash_hits").value(result.safety_metrics.downwash_hits);
+    w.end_object();  // safety_metrics
+
+    w.end_object();  // root
+    out << "\n";
 }
 
 }  // namespace
@@ -149,8 +179,10 @@ int main() {
     std::cout << "Safety: min_inter=" << result.safety_metrics.min_inter_drone_distance
               << " downwash_hits=" << result.safety_metrics.downwash_hits << "\n";
 
-    const std::filesystem::path output_path = std::filesystem::path("outputs") / "warehouse_result.json";
-    write_obstacle_result_json(output_path, result, tp, ts);
+    const std::string preset = "warehouse";
+    const std::filesystem::path output_path =
+        std::filesystem::path("outputs") / preset / timestamp_dir_name() / "sim_result.json";
+    write_obstacle_result_json(output_path, result, tp, ts, preset);
     std::cout << "结果文件: " << output_path.string() << "\n";
     return 0;
 }

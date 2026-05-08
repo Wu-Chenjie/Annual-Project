@@ -20,6 +20,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
+    "pytest-xdist",
+    "jsonschema",
 ]
 
 [tool.setuptools]
@@ -27,6 +29,8 @@ packages = ["core", "core.planning", "simulations"]
 py-modules = ["config", "main"]
 
 [tool.pytest.ini_options]
+# 唯一权威 pytest 配置；pytest.ini 已删除。
+# 如需并行执行：pip install pytest-xdist && pytest -n auto
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"

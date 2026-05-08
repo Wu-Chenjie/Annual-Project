@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "formation_simulation.hpp"
+#include "json_writer.hpp"
 
 namespace {
 
@@ -19,6 +20,7 @@ struct BenchmarkRecord {
     std::vector<double> max_error;
     std::vector<double> final_error;
     int completed_waypoint_count = 0;
+    int seed = 0;
 };
 
 double mean(const std::vector<double>& data) {
@@ -45,17 +47,89 @@ double stddev(const std::vector<double>& data) {
     return std::sqrt(s / static_cast<double>(data.size()));
 }
 
-std::string array_to_json(const std::vector<double>& values, int precision = 6) {
+std::string timestamp_dir_name() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm* local = std::localtime(&t);
     std::ostringstream oss;
-    oss << "[";
-    for (std::size_t i = 0; i < values.size(); ++i) {
-        if (i > 0) {
-            oss << ", ";
-        }
-        oss << std::fixed << std::setprecision(precision) << values[i];
+    if (local != nullptr) {
+        oss << std::put_time(local, "%Y%m%d-%H%M%S");
+    } else {
+        oss << "unknown";
     }
-    oss << "]";
     return oss.str();
+}
+
+void write_benchmark_json(
+    const std::filesystem::path& output_path,
+    const std::string& preset,
+    const std::string& runtime_engine,
+    int runs,
+    const std::vector<BenchmarkRecord>& records,
+    const std::vector<double>& mean_error_mean,
+    const std::vector<double>& mean_error_std,
+    const std::vector<double>& max_error_mean,
+    const std::vector<double>& max_error_std,
+    double runtime_mean,
+    double runtime_std,
+    double worst_case_max_error,
+    bool all_runs_pass_0_3m
+) {
+    namespace fs = std::filesystem;
+    fs::create_directories(output_path.parent_path());
+
+    std::ofstream out(output_path, std::ios::binary);
+    if (!out) {
+        std::cerr << "无法写入结果文件: " << output_path.string() << "\n";
+        return;
+    }
+
+    sim::JsonWriter w(out);
+
+    w.begin_object();
+    w.key("schema_version").value("1.0.0");
+    w.key("preset").value(preset);
+    w.key("runtime_engine").value(runtime_engine);
+    w.key("engine_version").value(sim::engine_version());
+    w.key("generated_at").value(sim::iso8601_utc(std::chrono::system_clock::now()));
+
+    // config_template (最小快照)
+    w.key("config_template").begin_object();
+    w.key("max_sim_time").value(30.0);
+    w.key("use_smc").value(true);
+    w.end_object();  // config_template
+
+    // summary
+    w.key("summary").begin_object();
+    w.key("runs").value(runs);
+    w.key("runtime_mean_s").value(runtime_mean);
+    w.key("runtime_std_s").value(runtime_std);
+    w.key("mean_error_mean").array_double(mean_error_mean);
+    w.key("mean_error_std").array_double(mean_error_std);
+    w.key("max_error_mean").array_double(max_error_mean);
+    w.key("max_error_std").array_double(max_error_std);
+    w.key("worst_case_max_error").value(worst_case_max_error);
+    w.key("all_runs_pass_0_3m").value(all_runs_pass_0_3m);
+    w.end_object();  // summary
+
+    // records
+    w.key("records").begin_array();
+    for (std::size_t i = 0; i < records.size(); ++i) {
+        const auto& r = records[i];
+        w.begin_object();
+        w.key("run_index").value(r.run_index);
+        w.key("runtime_s").value(r.runtime_s);
+        w.key("mean_error").array_double(r.mean_error);
+        w.key("max_error").array_double(r.max_error);
+        w.key("final_error").array_double(r.final_error);
+        w.key("completed_waypoint_count").value(r.completed_waypoint_count);
+        w.key("seed").value(r.seed);
+        w.end_object();
+    }
+    w.end_array();  // records
+
+    w.end_object();  // root
+    out << "\n";
 }
 
 }  // namespace
@@ -64,6 +138,8 @@ int main() {
     using sim::FormationSimulation;
     using sim::SimulationConfig;
 
+    const std::string preset = "benchmark_default";
+    const std::string runtime_engine = "cpp";
     constexpr int runs = 5;
     std::vector<BenchmarkRecord> records;
     records.reserve(static_cast<std::size_t>(runs));
@@ -86,6 +162,7 @@ int main() {
         record.max_error = result.metrics.max;
         record.final_error = result.metrics.final;
         record.completed_waypoint_count = result.completed_waypoint_count;
+        record.seed = 42 + i;
         records.push_back(record);
     }
 
@@ -125,48 +202,31 @@ int main() {
         max_error_std[j] = stddev(max_matrix[j]);
     }
 
-    const std::filesystem::path output_path = std::filesystem::path("outputs") / "benchmark_results.json";
-    std::filesystem::create_directories(output_path.parent_path());
+    const double runtime_mean_val = mean(runtime_values);
+    const double runtime_std_val = stddev(runtime_values);
 
-    std::ofstream out(output_path, std::ios::binary);
-    if (!out) {
-        std::cerr << "无法写入结果文件: " << output_path.string() << "\n";
-        return 1;
-    }
+    const std::filesystem::path output_path =
+        std::filesystem::path("outputs") / preset / timestamp_dir_name() / "benchmark_results.json";
 
-    out << "{\n";
-    out << "  \"summary\": {\n";
-    out << "    \"runs\": " << runs << ",\n";
-    out << "    \"runtime_mean_s\": " << std::fixed << std::setprecision(6) << mean(runtime_values) << ",\n";
-    out << "    \"runtime_std_s\": " << stddev(runtime_values) << ",\n";
-    out << "    \"mean_error_mean\": " << array_to_json(mean_error_mean) << ",\n";
-    out << "    \"mean_error_std\": " << array_to_json(mean_error_std) << ",\n";
-    out << "    \"max_error_mean\": " << array_to_json(max_error_mean) << ",\n";
-    out << "    \"max_error_std\": " << array_to_json(max_error_std) << ",\n";
-    out << "    \"worst_case_max_error\": " << worst_case_max_error << ",\n";
-    out << "    \"all_runs_pass_0_3m\": " << (all_runs_pass_0_3m ? "true" : "false") << "\n";
-    out << "  },\n";
-    out << "  \"records\": [\n";
-
-    for (std::size_t i = 0; i < records.size(); ++i) {
-        const BenchmarkRecord& r = records[i];
-        out << "    {\n";
-        out << "      \"run_index\": " << r.run_index << ",\n";
-        out << "      \"runtime_s\": " << r.runtime_s << ",\n";
-        out << "      \"mean_error\": " << array_to_json(r.mean_error) << ",\n";
-        out << "      \"max_error\": " << array_to_json(r.max_error) << ",\n";
-        out << "      \"final_error\": " << array_to_json(r.final_error) << ",\n";
-        out << "      \"completed_waypoint_count\": " << r.completed_waypoint_count << "\n";
-        out << "    }" << (i + 1 < records.size() ? "," : "") << "\n";
-    }
-
-    out << "  ]\n";
-    out << "}\n";
-    out.close();
+    write_benchmark_json(
+        output_path,
+        preset,
+        runtime_engine,
+        runs,
+        records,
+        mean_error_mean,
+        mean_error_std,
+        max_error_mean,
+        max_error_std,
+        runtime_mean_val,
+        runtime_std_val,
+        worst_case_max_error,
+        all_runs_pass_0_3m
+    );
 
     std::cout << "批量评测完成\n";
     std::cout << "结果文件: " << output_path.string() << "\n";
-    std::cout << "平均运行时间: " << std::fixed << std::setprecision(6) << mean(runtime_values) << " s\n";
+    std::cout << "平均运行时间: " << std::fixed << std::setprecision(6) << runtime_mean_val << " s\n";
     std::cout << "最差工况最大误差: " << worst_case_max_error << "\n";
     std::cout << "0.3m 阈值全通过: " << (all_runs_pass_0_3m ? "true" : "false") << "\n";
 

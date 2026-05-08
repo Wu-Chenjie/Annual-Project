@@ -8,8 +8,10 @@
 .
 ├── main.py              # CLI entry point
 ├── config.py            # simulation preset definitions
-├── core/                # dynamics, control, topology, obstacles, planning
+├── core/                # dynamics, control, topology, obstacles, planning, schema utils
 ├── simulations/         # simulation orchestration, visualization, benchmark
+├── schemas/             # JSON Schema for sim_result / benchmark_result
+├── scripts/             # reproduce.sh / reproduce.ps1 / compare_results.py
 ├── maps/                # indoor scenario JSON files
 ├── tests/               # pytest tests and regression checks
 ├── docs/                # design notes and technical documents
@@ -29,6 +31,28 @@ For editable development:
 python -m pip install -e ".[dev]"
 ```
 
+## 快速复现（≤10 行）
+
+新机器执行以下命令即可完成 `环境检查 → pytest → 关键场景仿真 → benchmark → 汇总报告`：
+
+```bash
+# Linux / macOS
+python -m pip install -e ".[dev]"
+bash scripts/reproduce.sh           # 或加 --quick / --skip-tests
+```
+
+```powershell
+# Windows PowerShell
+python -m pip install -e ".[dev]"
+powershell -ExecutionPolicy Bypass -File scripts/reproduce.ps1
+```
+
+复现产物：
+
+- `outputs/<preset>/<run_name>/sim_result.json` — 单场景结果，遵循 `schemas/sim_result.schema.json`
+- `outputs/benchmark_default/<run_name>/benchmark_results.json` — 多次评测，遵循 `schemas/benchmark_result.schema.json`
+- `outputs/_reproduce/<run_name>/summary.txt` — 一站式日志
+
 ## Run
 
 Default preset:
@@ -45,19 +69,33 @@ python main.py --preset meeting_room --output-dir outputs/meeting_room
 python main.py --preset warehouse_danger --max-sim-time 10 --no-plot
 ```
 
-Available presets are defined in `config.py`.
+Available presets are defined in `config.py`. 每次运行结果默认落到
+`outputs/<preset>/<timestamp>/`，可用 `--run-name` 覆盖时间戳子目录以获得稳定路径。
 
 ## Test
 
 ```bash
-python -m pytest
+python -m pytest          # 串行
+python -m pytest -n auto  # 需要先 pip install pytest-xdist
 ```
 
 ## Generated Files
 
-Runtime figures and benchmark outputs are written to `outputs/` by default. Previous generated files and caches were moved to `artifacts/` so the source tree stays readable.
+Runtime figures and benchmark outputs are written to `outputs/<preset>/<timestamp>/` by default。
+Each run writes a schema-validated `sim_result.json` (and benchmark scripts write
+`benchmark_results.json`)，schema 详见 [`docs/benchmark-schema.md`](docs/benchmark-schema.md)。
 
 The repository-level `.gitignore` excludes fresh outputs, Python caches, pytest caches, and C++ build products.
+
+## 跨线结果对比
+
+```bash
+python scripts/compare_results.py \
+    --py  outputs/basic/<ts>/sim_result.json \
+    --cpp outputs/basic_cpp/<ts>/sim_result.json \
+    --rel-tol 0.05 --abs-tol 0.02 \
+    --report outputs/_compare/basic.md
+```
 
 ## C++ Build
 

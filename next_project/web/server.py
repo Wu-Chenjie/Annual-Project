@@ -26,6 +26,13 @@ from fastapi.responses import HTMLResponse, Response
 app = FastAPI(title="Dynamic Replay Server")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+import sys
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+try:
+    from core.result_schema import build_web_sim_result_payload
+except ImportError:  # pragma: no cover
+    build_web_sim_result_payload = None  # type: ignore[assignment]
 MAPS_DIR = PROJECT_ROOT / "maps"
 WEB_DIR = PROJECT_ROOT / "web"
 RECONSTRUCTION_DIR = PROJECT_ROOT / "artifacts" / "reconstruction"
@@ -770,6 +777,7 @@ async def simulate(request: Request) -> dict[str, Any]:
                     base_config["map_file"] = str(tmp_map)
                     sim_input["base_config"] = base_config
         input_path.write_text(json.dumps(sim_input, indent=2, ensure_ascii=False), encoding="utf-8")
+        ts_start = time.perf_counter()
         result = subprocess.run(
             [str(exe), str(input_path), "-o", str(output_path)],
             cwd=str(PROJECT_ROOT),
@@ -777,12 +785,17 @@ async def simulate(request: Request) -> dict[str, Any]:
             text=True,
             timeout=300,
         )
+        ts_elapsed = time.perf_counter() - ts_start
         if result.returncode != 0:
             detail = result.stderr.strip() or result.stdout.strip() or f"unknown C++ error (exit {result.returncode})"
             raise HTTPException(500, f"C++ simulation failed: {detail}")
         if not output_path.exists():
             raise HTTPException(500, "C++ simulation did not produce output.json")
-        return {"results": json.loads(output_path.read_text(encoding="utf-8"))}
+        raw = json.loads(output_path.read_text(encoding="utf-8"))
+        preset = body.get("preset") or body.get("base_config", {}).get("preset", "custom")
+        if build_web_sim_result_payload is not None:
+            return build_web_sim_result_payload(preset=preset, web_results=raw, runtime_s=ts_elapsed)
+        return {"results": raw}
 
 
 @app.get("/", response_class=HTMLResponse)

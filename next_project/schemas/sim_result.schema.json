@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://uav-formation-platform/schemas/sim_result.schema.json",
+  "title": "SimulationResult",
+  "description": "单次场景仿真的标准化结果。覆盖 Python FormationSimulation / ObstacleScenarioSimulation 与 C++ / Web 三条运行线。所有距离以米、时间以秒、坐标系为 ENU。",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "preset",
+    "runtime_engine",
+    "metrics",
+    "completed_waypoint_count",
+    "summary"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "preset": { "type": "string" },
+    "runtime_engine": {
+      "type": "string",
+      "enum": ["python", "cpp", "web"]
+    },
+    "engine_version": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+
+    "config_snapshot": {
+      "type": "object",
+      "description": "运行所用 SimulationConfig 的可序列化快照。",
+      "additionalProperties": true
+    },
+
+    "metrics": {
+      "type": "object",
+      "description": "每架从机的跟踪误差统计，单位 m，长度等于 num_followers。",
+      "required": ["mean", "max", "final"],
+      "additionalProperties": false,
+      "properties": {
+        "mean":  { "type": "array", "items": { "type": "number", "minimum": 0.0 } },
+        "max":   { "type": "array", "items": { "type": "number", "minimum": 0.0 } },
+        "final": { "type": "array", "items": { "type": "number", "minimum": 0.0 } }
+      }
+    },
+
+    "completed_waypoint_count": { "type": "integer", "minimum": 0 },
+    "runtime_s": { "type": "number", "minimum": 0.0 },
+
+    "summary": {
+      "type": "object",
+      "description": "便于命令行/Web 直接展示的标量摘要。",
+      "required": ["mean_error_overall", "max_error_overall", "final_error_overall"],
+      "additionalProperties": true,
+      "properties": {
+        "mean_error_overall":  { "type": "number", "minimum": 0.0 },
+        "max_error_overall":   { "type": "number", "minimum": 0.0 },
+        "final_error_overall": { "type": "number", "minimum": 0.0 },
+        "collision_count":     { "type": "integer", "minimum": 0 },
+        "replan_count":        { "type": "integer", "minimum": 0 },
+        "fault_count":         { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "trajectories": {
+      "type": "object",
+      "description": "可选，时序轨迹数据。若过大可省略，使用 summary + metrics 即可。",
+      "additionalProperties": true,
+      "properties": {
+        "time":      { "type": "array", "items": { "type": "number" } },
+        "leader":    { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 } },
+        "followers": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+          }
+        }
+      }
+    },
+
+    "planned_path": {
+      "type": ["array", "null"],
+      "description": "全局规划得到的航点序列，每点 [x,y,z]。",
+      "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+    },
+    "executed_path": {
+      "type": ["array", "null"],
+      "description": "领航机实际执行轨迹采样。",
+      "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+    },
+
+    "replan_events": {
+      "type": "array",
+      "description": "在线重规划事件序列。",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "t":         { "type": "number" },
+          "trigger":   { "type": "string" },
+          "from":      { "type": "array", "items": { "type": "number" } },
+          "to":        { "type": "array", "items": { "type": "number" } }
+        }
+      }
+    },
+    "collision_log": {
+      "type": "array",
+      "description": "检测到的碰撞事件。",
+      "items": { "type": "object", "additionalProperties": true }
+    },
+    "fault_log": {
+      "type": "array",
+      "description": "故障注入与重构事件。",
+      "items": { "type": "object", "additionalProperties": true }
+    },
+    "sensor_logs": {
+      "type": ["array", "null"],
+      "description": "传感器最近距离日志，可为时间×传感器矩阵。"
+    },
+    "safety_metrics": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "min_inter_drone_distance": { "type": "number", "minimum": 0.0 },
+        "downwash_hits":            { "type": "integer", "minimum": 0 }
+      }
+    },
+    "risk_report": {
+      "type": ["object", "null"],
+      "description": "由 core.risk_report.build_risk_report 生成的合规性报告。",
+      "additionalProperties": true
+    }
+  }
+}

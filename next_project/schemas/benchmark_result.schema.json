@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://uav-formation-platform/schemas/benchmark_result.schema.json",
+  "title": "BenchmarkResult",
+  "description": "跨 Python/C++/Web 三条运行线统一的批量评测结果格式。多次重复实验聚合误差与耗时统计。",
+  "type": "object",
+  "required": ["schema_version", "preset", "runtime_engine", "summary", "records"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Schema 语义版本，遵循 SemVer。",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "preset": {
+      "type": "string",
+      "description": "config.py / 等价 C++ 配置中的预设名，如 basic、warehouse_danger。"
+    },
+    "runtime_engine": {
+      "type": "string",
+      "description": "产生该结果的运行线。",
+      "enum": ["python", "cpp", "web"]
+    },
+    "engine_version": {
+      "type": "string",
+      "description": "运行线的版本号或 git 短 hash，便于追溯。"
+    },
+    "generated_at": {
+      "type": "string",
+      "description": "ISO-8601 时间戳，UTC 优先。",
+      "format": "date-time"
+    },
+    "config_template": {
+      "type": "object",
+      "description": "运行所用的（去掉 numpy 数组后的）SimulationConfig 字段快照。",
+      "additionalProperties": true
+    },
+    "summary": {
+      "type": "object",
+      "description": "多次重复实验的聚合统计。所有误差以米为单位，耗时以秒为单位。",
+      "required": [
+        "runs",
+        "runtime_mean_s",
+        "runtime_std_s",
+        "mean_error_mean",
+        "mean_error_std",
+        "max_error_mean",
+        "max_error_std",
+        "worst_case_max_error",
+        "all_runs_pass_0_3m"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "runs": { "type": "integer", "minimum": 1 },
+        "runtime_mean_s": { "type": "number", "minimum": 0.0 },
+        "runtime_std_s": { "type": "number", "minimum": 0.0 },
+        "mean_error_mean": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0.0 },
+          "description": "每架从机平均跟踪误差在 N 次重复实验上的均值。"
+        },
+        "mean_error_std": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0.0 }
+        },
+        "max_error_mean": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0.0 }
+        },
+        "max_error_std": {
+          "type": "array",
+          "items": { "type": "number", "minimum": 0.0 }
+        },
+        "worst_case_max_error": { "type": "number", "minimum": 0.0 },
+        "all_runs_pass_0_3m": {
+          "type": "boolean",
+          "description": "是否所有重复实验的最大误差 < 0.3 m。"
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "description": "每次重复实验的原始指标。",
+      "items": {
+        "type": "object",
+        "required": [
+          "run_index",
+          "runtime_s",
+          "mean_error",
+          "max_error",
+          "final_error",
+          "completed_waypoint_count"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "run_index": { "type": "integer", "minimum": 0 },
+          "runtime_s": { "type": "number", "minimum": 0.0 },
+          "mean_error": {
+            "type": "array",
+            "items": { "type": "number", "minimum": 0.0 }
+          },
+          "max_error": {
+            "type": "array",
+            "items": { "type": "number", "minimum": 0.0 }
+          },
+          "final_error": {
+            "type": "array",
+            "items": { "type": "number", "minimum": 0.0 }
+          },
+          "completed_waypoint_count": { "type": "integer", "minimum": 0 },
+          "seed": {
+            "type": "integer",
+            "description": "可选：本次重复实验所用的主随机种子。"
+          }
+        }
+      }
+    }
+  }
+}
