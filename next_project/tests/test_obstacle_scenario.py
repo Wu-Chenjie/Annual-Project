@@ -768,7 +768,7 @@ def test_cpp_formation_apf_switch_changes_probe_behavior():
         exe = build_dir / "sim_apf_formation_probe"
 
     subprocess.run(
-        ["cmake", "--build", str(build_dir), "--target", "sim_apf_formation_probe"],
+        ["cmake", "--build", str(build_dir), "--clean-first", "--target", "sim_apf_formation_probe"],
         cwd=root / "cpp",
         check=True,
         capture_output=True,
@@ -847,13 +847,13 @@ def test_cpp_warehouse_writes_obstacle_result_json():
     root = Path(__file__).resolve().parent.parent
     exe = _build_cpp_target("sim_warehouse")
 
-    output_path = root / "cpp" / "outputs" / "warehouse_result.json"
-    if output_path.exists():
-        output_path.unlink()
+    cpp_dir = root / "cpp"
+    output_root = cpp_dir / "outputs" / "warehouse"
+    before = set(output_root.glob("*/sim_result.json")) if output_root.exists() else set()
 
     stdout = subprocess.run(
         [str(exe)],
-        cwd=root / "cpp",
+        cwd=cpp_dir,
         check=True,
         capture_output=True,
         text=True,
@@ -862,7 +862,10 @@ def test_cpp_warehouse_writes_obstacle_result_json():
     ).stdout
 
     assert "Safety: min_inter=" in stdout
-    assert output_path.exists(), stdout
+    after = set(output_root.glob("*/sim_result.json"))
+    new_outputs = sorted(after - before, key=lambda p: p.stat().st_mtime, reverse=True)
+    assert new_outputs, stdout
+    output_path = new_outputs[0]
 
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     assert "task_waypoints" in payload

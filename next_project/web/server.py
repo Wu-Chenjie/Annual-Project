@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+import os
 import re
 import shutil
 import struct
@@ -35,9 +36,11 @@ except ImportError:  # pragma: no cover
     build_web_sim_result_payload = None  # type: ignore[assignment]
 MAPS_DIR = PROJECT_ROOT / "maps"
 WEB_DIR = PROJECT_ROOT / "web"
-RECONSTRUCTION_DIR = PROJECT_ROOT / "artifacts" / "reconstruction"
-COLMAP_BIN = Path(r"D:\tools\photogrammetry\colmap-4.0.4\bin\colmap.exe")
-OPENMVS_DIR = Path(r"D:\tools\photogrammetry\openmvs-2.4.0\vc17\x64\Release")
+REPO_ROOT = PROJECT_ROOT.parent
+RECONSTRUCTION_DIR = REPO_ROOT / "experiments" / "photogrammetry" / "reconstruction"
+RECONSTRUCTION_EXPERIMENTAL_ENABLED = os.environ.get("UAV_ENABLE_PHOTO_RECONSTRUCTION") == "1"
+COLMAP_BIN = Path(os.environ.get("UAV_COLMAP_BIN", r"D:\tools\photogrammetry\colmap-4.0.4\bin\colmap.exe"))
+OPENMVS_DIR = Path(os.environ.get("UAV_OPENMVS_DIR", r"D:\tools\photogrammetry\openmvs-2.4.0\vc17\x64\Release"))
 RECON_JOBS: dict[str, dict[str, Any]] = {}
 RECON_LOCK = threading.Lock()
 
@@ -122,6 +125,11 @@ def _safe_upload_filename(filename: str, index: int) -> str:
 
 
 def _require_reconstruction_image_count(count: int) -> None:
+    if not RECONSTRUCTION_EXPERIMENTAL_ENABLED:
+        raise HTTPException(
+            403,
+            "EXPERIMENTAL photo reconstruction is disabled. Set UAV_ENABLE_PHOTO_RECONSTRUCTION=1 to enable it.",
+        )
     if count < 2:
         raise HTTPException(400, "Reconstruction needs at least 2 photos; 10+ overlapping indoor photos is more realistic.")
 

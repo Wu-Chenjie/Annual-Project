@@ -23,6 +23,12 @@ dev = [
     "pytest-xdist",
     "jsonschema",
 ]
+web = [
+    "fastapi",
+    "uvicorn",
+    "plotly",
+    "python-multipart",
+]
 
 [tool.setuptools]
 packages = ["core", "core.planning", "simulations"]

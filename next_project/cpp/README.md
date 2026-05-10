@@ -17,6 +17,12 @@ Generated C++ outputs, object files, and the previous build directory were moved
 
 ## Build
 
+Required toolchain:
+
+- CMake >= 3.20
+- A C++20 compiler (GCC 11+, Clang 14+, MSVC 2022, or MinGW-w64 with C++20)
+- Ninja is recommended for Docker/Conda builds but not required
+
 From the project root:
 
 ```bash
@@ -62,3 +68,13 @@ g++ -O3 -std=c++20 -Iinclude \
 ```
 
 On Windows/MSYS2, the executable names may end with `.exe`.
+
+## Reproducible Environments
+
+The project root provides:
+
+- `environment.yml` for Conda: `conda env create -f environment.yml`
+- `Dockerfile` for container validation: `docker build -t uav-sim .`
+- `requirements.lock.txt` / `requirements-dev.lock.txt` for pip-only installs
+
+`cvxpy`/`osqp` can produce small numeric differences across operating systems and solver backends. For cross-platform reports, keep the Docker result as the reference run and use SCS as the documented fallback solver when OSQP is unavailable or unstable.

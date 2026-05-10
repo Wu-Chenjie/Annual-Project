@@ -69,7 +69,7 @@ def build_cpp_risk_report(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build Markdown/JSON risk reports from C++ obstacle result JSON.")
-    parser.add_argument("input", help="Path to C++ obstacle result json, e.g. cpp/outputs/warehouse_result.json")
+    parser.add_argument("input", help="Path to C++ obstacle result json, e.g. outputs/warehouse/<timestamp>/sim_result.json")
     parser.add_argument("--safety-profile", default="indoor_demo", help="Safety profile name")
     parser.add_argument("--output-dir", default=None, help="Directory for generated reports")
     args = parser.parse_args()

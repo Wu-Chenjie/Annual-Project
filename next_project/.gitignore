@@ -1,40 +1,36 @@
-# Python
+# === Python (next_project scoped) ===
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 
-# Virtual environments
+# === Virtual environments ===
 .venv/
 venv/
 env/
 
-# Runtime artifacts
+# === Runtime artifacts ===
 outputs/
-artifacts/*
-!artifacts/README.md
-!artifacts/reconstruction/
-artifacts/reconstruction/*
-!artifacts/reconstruction/.gitkeep
+artifacts/cache/
+artifacts/cpp/
+artifacts/python/
 
-# Photogrammetry and local reconstruction outputs
+# === C++ build ===
+cpp/build/
+cpp/build_*/
+cpp/outputs/
+cpp/*.o
+cpp/**/*.o
+
+# === IDE / Editor ===
+.idea/
+.DS_Store
+Thumbs.db
+
+# === Photogrammetry logs ===
 InterfaceCOLMAP-*.log
 ReconstructMesh-*.log
 DensifyPointCloud-*.log
 RefineMesh-*.log
 TextureMesh-*.log
-
-# C++ build products
-cpp/build/
-cpp/outputs/
-cpp/*.o
-cpp/**/*.o
-CMakeFiles/
-CMakeCache.txt
-compile_commands.json
-
-# Editor and OS noise
-.idea/
-.DS_Store
-Thumbs.db

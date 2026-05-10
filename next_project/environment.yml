@@ -1,0 +1,23 @@
+name: uav-formation-platform
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - cmake>=3.20
+  - ninja
+  - numpy
+  - scipy
+  - matplotlib
+  - plotly
+  - cvxpy
+  - osqp
+  - scs
+  - pytest
+  - pytest-xdist
+  - jsonschema
+  - fastapi
+  - uvicorn
+  - python-multipart
+  - pip:
+      - -e ".[dev,web]"

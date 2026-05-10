@@ -2,6 +2,8 @@
 
 室内多无人机编队、避障、在线重规划和容错控制实验项目。
 
+项目主线在 `next_project/`：Python/C++/Web 三条运行线共享 `maps/`、`schemas/` 和 `outputs/` 约定。早期独立脚本保留在仓库外层 `old_code/`，论文和历史 PDF 归档在 `references/papers/`，照片重建工件归档在 `experiments/photogrammetry/`。
+
 ## Project Layout
 
 ```text
@@ -86,6 +88,10 @@ Each run writes a schema-validated `sim_result.json` (and benchmark scripts writ
 `benchmark_results.json`)，schema 详见 [`docs/benchmark-schema.md`](docs/benchmark-schema.md)。
 
 The repository-level `.gitignore` excludes fresh outputs, Python caches, pytest caches, and C++ build products.
+
+## Experimental Branches
+
+照片重建是实验性支线：Web 端点 `EXPERIMENTAL /api/reconstruction/*` 只把 COLMAP/OpenMVS 输出转换成静态 `maps/*.json` 障碍物地图，不生成 `task_waypoints`，也不代表完整数字孪生。默认关闭；需要时先设置 `UAV_ENABLE_PHOTO_RECONSTRUCTION=1`，工具路径可用 `UAV_COLMAP_BIN` 和 `UAV_OPENMVS_DIR` 覆盖。
 
 ## 跨线结果对比
 

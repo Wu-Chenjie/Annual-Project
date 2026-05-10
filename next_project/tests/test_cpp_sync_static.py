@@ -221,11 +221,12 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     assert "result.safety_metrics.downwash_hits" in scenario_source
     assert 'std::cout << "Safety: min_inter="' in warehouse_main
     assert "result.safety_metrics.downwash_hits" in warehouse_main
-    assert '\\"task_waypoints\\":' in warehouse_main
-    assert '\\"executed_path\\":' in warehouse_main
-    assert '\\"fault_log\\":' in warehouse_main
-    assert '\\"safety_metrics\\":{' in warehouse_main
-    assert 'warehouse_result.json' in warehouse_main
+    assert 'w.key("task_waypoints").array_vec3(result.task_waypoints);' in warehouse_main
+    assert 'w.key("replanned_waypoints").array_vec3(result.replanned_waypoints);' in warehouse_main
+    assert 'w.key("executed_path").array_vec3(result.executed_path);' in warehouse_main
+    assert 'w.key("fault_log").array_string(result.fault_log);' in warehouse_main
+    assert 'w.key("safety_metrics").begin_object();' in warehouse_main
+    assert 'sim_result.json' in warehouse_main
     assert "scenario.safe_follower_target(" in safety_probe
     assert "scenario.deconflict_follower_target(" in safety_probe
     assert "scenario.formation_recovery_counts_[0]" in safety_probe

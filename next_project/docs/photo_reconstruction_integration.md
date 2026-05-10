@@ -30,10 +30,10 @@
 
 ### 2.1 目录约定
 
-建议新增工作目录，不把原始照片放进 `maps/`：
+建议使用仓库外层实验目录，不把原始照片放进 `maps/`，也不把重建工件混入 UAV 主线：
 
 ```text
-next_project/artifacts/reconstruction/<scene_name>/
+experiments/photogrammetry/reconstruction/<scene_name>/
   images/
     001.jpg
     002.jpg
@@ -53,7 +53,7 @@ D:\tools\photogrammetry\openmvs-2.4.0\vc17\x64\Release\
 
 ```powershell
 $scene = "meeting_room_photo"
-$root = (Resolve-Path "next_project/artifacts/reconstruction/$scene").Path
+$root = (Resolve-Path "experiments/photogrammetry/reconstruction/$scene").Path
 & "D:\tools\photogrammetry\colmap-4.0.4\bin\colmap.exe" `
   automatic_reconstructor `
   --workspace_path "$root\colmap" `
@@ -90,7 +90,7 @@ COLMAP 结果通常需要先导出/整理成 MVS 可读数据，再交给 OpenMV
 
 ```powershell
 curl.exe -X POST "http://127.0.0.1:8000/api/maps/import-model" `
-  -F "file=@next_project/artifacts/reconstruction/meeting_room_photo/openmvs/scene_dense_mesh.ply" `
+  -F "file=@experiments/photogrammetry/reconstruction/meeting_room_photo/openmvs/scene_dense_mesh.ply" `
   -F "map_name=meeting_room_photo" `
   -F "voxel_size=0.35" `
   -F "scale=1.0" `

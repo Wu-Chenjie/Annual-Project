@@ -97,13 +97,12 @@ def test_risk_report_accepts_cpp_warehouse_result_json_subset():
     root = _PROJECT
     exe = _build_cpp_target("sim_warehouse")
 
-    output_path = root / "cpp" / "outputs" / "warehouse_result.json"
-    if output_path.exists():
-        output_path.unlink()
+    output_root = root / "outputs" / "warehouse"
+    before = set(output_root.glob("*/sim_result.json"))
 
     subprocess.run(
         [str(exe)],
-        cwd=root / "cpp",
+        cwd=root,
         check=True,
         capture_output=True,
         text=True,
@@ -111,6 +110,10 @@ def test_risk_report_accepts_cpp_warehouse_result_json_subset():
         errors="replace",
     )
 
+    after = set(output_root.glob("*/sim_result.json"))
+    new_outputs = sorted(after - before, key=lambda p: p.stat().st_mtime, reverse=True)
+    assert new_outputs
+    output_path = new_outputs[0]
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     report = build_risk_report(payload, "indoor_demo").to_dict()
     assert report["conops"]["task_waypoint_count"] == len(payload["task_waypoints"])
@@ -124,19 +127,23 @@ def test_cpp_risk_report_tool_writes_json_and_markdown(tmp_path: Path):
     root = _PROJECT
     exe = _build_cpp_target("sim_warehouse")
 
-    output_path = root / "cpp" / "outputs" / "warehouse_result.json"
-    if output_path.exists():
-        output_path.unlink()
+    output_root = root / "outputs" / "warehouse"
+    before = set(output_root.glob("*/sim_result.json"))
 
     subprocess.run(
         [str(exe)],
-        cwd=root / "cpp",
+        cwd=root,
         check=True,
         capture_output=True,
         text=True,
         encoding="utf-8",
         errors="replace",
     )
+
+    after = set(output_root.glob("*/sim_result.json"))
+    new_outputs = sorted(after - before, key=lambda p: p.stat().st_mtime, reverse=True)
+    assert new_outputs
+    output_path = new_outputs[0]
 
     json_path, md_path = build_cpp_risk_report(
         output_path,

@@ -286,11 +286,30 @@ def build_web_sim_result_payload(
         "runtime_engine": "web",
         "engine_version": _engine_version(),
         "generated_at": utc_now_iso(),
+        "metrics": {
+            "mean": [],
+            "max": [],
+            "final": [],
+        },
+        "completed_waypoint_count": 0,
+        "summary": {
+            "mean_error_overall": 0.0,
+            "max_error_overall": 0.0,
+            "final_error_overall": 0.0,
+            "collision_count": 0,
+            "replan_count": 0,
+            "fault_count": 0,
+        },
     }
     if runtime_s is not None:
         payload["runtime_s"] = float(runtime_s)
     if web_results is not None:
         payload["results"] = json_safe(dict(web_results))
+        if isinstance(web_results.get("summary"), Mapping):
+            summary = web_results["summary"]
+            payload["summary"]["collision_count"] = int(summary.get("collision_count") or 0)
+            payload["summary"]["replan_count"] = int(summary.get("replan_count") or 0)
+            payload["summary"]["fault_count"] = int(summary.get("fault_count") or 0)
     return payload
 
 

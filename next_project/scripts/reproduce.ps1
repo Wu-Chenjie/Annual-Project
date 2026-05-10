@@ -1,15 +1,15 @@
 <#
     scripts/reproduce.ps1
-    一键复现 (Windows PowerShell)：环境检查 → 全量 pytest → 关键场景仿真 → benchmark → 结果汇总。
+    One-command reproduction (Windows PowerShell): env check -> pytest -> scenarios -> benchmark -> summary.
 
-    用法:
+    Usage:
         powershell -ExecutionPolicy Bypass -File scripts/reproduce.ps1
         powershell -ExecutionPolicy Bypass -File scripts/reproduce.ps1 -SkipTests
         powershell -ExecutionPolicy Bypass -File scripts/reproduce.ps1 -Quick
 
-    设计原则：
-    - 与 reproduce.sh 完全一致的步骤与参数；
-    - 任何一步失败立即退出，所有产物落到同一时间戳目录。
+    Design:
+    - Keep steps aligned with reproduce.sh.
+    - Stop on the first failed step and write all artifacts under one run name.
 #>
 
 [CmdletBinding()]
@@ -56,11 +56,11 @@ function Invoke-Step($cmd) {
 Write-Log "PROJECT_ROOT = $ProjectRoot"
 Write-Log "RUN_NAME     = $RunName"
 
-# ---- 1) 环境检查 ----
-Write-Log 'step 1/4: 环境检查'
+# ---- 1) Environment check ----
+Write-Log 'step 1/4: environment check'
 Invoke-Step 'python -c "import sys, numpy, scipy, matplotlib; print(''python'', sys.version.split()[0]); print(''numpy'', numpy.__version__); print(''scipy'', scipy.__version__)"'
 
-# ---- 2) 全量测试 ----
+# ---- 2) Tests ----
 if (-not $SkipTests) {
     Write-Log 'step 2/4: pytest'
     Invoke-Step 'python -m pytest -q'
@@ -68,18 +68,20 @@ if (-not $SkipTests) {
     Write-Log 'step 2/4: pytest (skipped)'
 }
 
-# ---- 3) 关键场景仿真 ----
-Write-Log "step 3/4: 关键场景仿真 (presets: $($Presets -join ', '))"
+# ---- 3) Scenario runs ----
+Write-Log "step 3/4: scenario runs (presets: $($Presets -join ', '))"
 foreach ($preset in $Presets) {
     Invoke-Step "python main.py --preset $preset --run-name $RunName --no-plot"
 }
 
-# ---- 4) benchmark ----
+# ---- 4) Benchmark ----
 Write-Log "step 4/4: benchmark (runs=$BenchRuns)"
 $benchOut = "outputs/benchmark_default/$RunName/benchmark_results.json"
 $benchPy = @"
-from simulations.benchmark import run_benchmark
 import pathlib
+import sys
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3]))
+from simulations.benchmark import run_benchmark
 out = pathlib.Path(r'$benchOut')
 res = run_benchmark(runs=$BenchRuns, output_file=str(out), preset='benchmark_default')
 print('benchmark wrote:', out)
@@ -88,7 +90,7 @@ print('worst_case_max_error =', res['summary']['worst_case_max_error'])
 $benchPy | Set-Content -Path (Join-Path $SummaryDir '_run_benchmark.py') -Encoding utf8
 Invoke-Step "python `"$($SummaryDir.Replace('\','/'))/_run_benchmark.py`""
 
-Write-Log '全部完成。结果根目录:'
+Write-Log 'completed. result paths:'
 Write-Log "  outputs/<preset>/$RunName/sim_result.json"
 Write-Log "  $benchOut"
 Write-Log "  $SummaryFile"

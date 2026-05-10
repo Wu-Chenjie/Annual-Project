@@ -20,6 +20,7 @@ from core.result_schema import (
     SCHEMA_VERSION,
     build_benchmark_payload,
     build_sim_result_payload,
+    build_web_sim_result_payload,
     load_schema,
     validate,
 )
@@ -89,6 +90,19 @@ def test_build_benchmark_payload_validates():
         summary=summary,
     )
     assert validate(payload, "benchmark_result", strict=False) == []
+
+
+def test_build_web_sim_result_payload_validates():
+    payload = build_web_sim_result_payload(
+        preset="school_corridor_online",
+        web_results={"summary": {"collision_count": 0, "replan_count": 2}},
+        runtime_s=0.25,
+    )
+
+    assert payload["runtime_engine"] == "web"
+    assert payload["completed_waypoint_count"] == 0
+    assert payload["summary"]["replan_count"] == 2
+    assert validate(payload, "sim_result", strict=False) == []
 
 
 def test_validate_strict_raises_on_missing_required_field():

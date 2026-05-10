@@ -60,30 +60,34 @@ public:
     // ---- value types ----
 
     JsonWriter& value(double v) {
-        comma();
+        value_prefix();
         if (std::isnan(v)) {
             os_ << "null";
         } else {
             os_ << std::fixed << std::setprecision(8) << v;
         }
+        finish_value();
         return *this;
     }
 
     JsonWriter& value(int v) {
-        comma();
+        value_prefix();
         os_ << v;
+        finish_value();
         return *this;
     }
 
     JsonWriter& value(bool v) {
-        comma();
+        value_prefix();
         os_ << (v ? "true" : "false");
+        finish_value();
         return *this;
     }
 
     JsonWriter& value(const char* v) {
-        comma();
+        value_prefix();
         dump_string(v);
+        finish_value();
         return *this;
     }
 
@@ -97,6 +101,7 @@ public:
         comma();
         dump_string(k);
         os_ << ":";
+        after_key_ = true;
         return *this;
     }
 
@@ -108,30 +113,32 @@ public:
 
     template <typename Fn>
     JsonWriter& array_int(int count, Fn fn) {
-        comma();
+        value_prefix();
         os_ << "[";
         for (int i = 0; i < count; ++i) {
             if (i > 0) os_ << ",";
             fn(os_, i);
         }
         os_ << "]";
+        finish_value();
         return *this;
     }
 
     template <typename Fn>
     JsonWriter& array(std::size_t count, Fn fn) {
-        comma();
+        value_prefix();
         os_ << "[";
         for (std::size_t i = 0; i < count; ++i) {
             if (i > 0) os_ << ",";
             fn(os_, i);
         }
         os_ << "]";
+        finish_value();
         return *this;
     }
 
     JsonWriter& array_double(const std::vector<double>& values) {
-        comma();
+        value_prefix();
         os_ << "[";
         for (std::size_t i = 0; i < values.size(); ++i) {
             if (i > 0) os_ << ",";
@@ -142,11 +149,12 @@ public:
             }
         }
         os_ << "]";
+        finish_value();
         return *this;
     }
 
     JsonWriter& array_vec3(const std::vector<Vec3>& values) {
-        comma();
+        value_prefix();
         os_ << "[";
         for (std::size_t i = 0; i < values.size(); ++i) {
             if (i > 0) os_ << ",";
@@ -154,24 +162,26 @@ public:
                 << values[i].x << "," << values[i].y << "," << values[i].z << "]";
         }
         os_ << "]";
+        finish_value();
         return *this;
     }
 
     JsonWriter& array_string(const std::vector<std::string>& values) {
-        comma();
+        value_prefix();
         os_ << "[";
         for (std::size_t i = 0; i < values.size(); ++i) {
             if (i > 0) os_ << ",";
             dump_string(values[i]);
         }
         os_ << "]";
+        finish_value();
         return *this;
     }
 
     // ---- container open/close ----
 
     JsonWriter& begin_object() {
-        comma();
+        value_prefix();
         os_ << "{";
         push_scope();
         return *this;
@@ -183,7 +193,7 @@ public:
     }
 
     JsonWriter& begin_array() {
-        comma();
+        value_prefix();
         os_ << "[";
         push_scope();
         return *this;
@@ -223,6 +233,19 @@ private:
         }
     }
 
+    void value_prefix() {
+        if (after_key_) {
+            after_key_ = false;
+            return;
+        }
+        comma();
+    }
+
+    void finish_value() {
+        need_comma_ = true;
+        pending_newline_ = false;
+    }
+
     void push_scope() {
         indent_++;
         need_comma_ = false;
@@ -242,6 +265,7 @@ private:
     int indent_ = 0;
     bool need_comma_ = false;
     bool pending_newline_ = false;
+    bool after_key_ = false;
 };
 
 }  // namespace sim
