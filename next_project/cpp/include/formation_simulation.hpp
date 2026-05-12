@@ -67,6 +67,30 @@ struct FormationSafetyMetrics {
     int downwash_hits = 0;
 };
 
+struct PlanningEvent {
+    double t = 0.0;
+    std::string phase;
+    std::string planner;
+    int segment_index = -1;
+    double wall_time_s = 0.0;
+    int point_count = 0;
+    bool accepted = false;
+    std::string fallback_reason;
+};
+
+struct WaypointEvent {
+    double t = 0.0;
+    std::string type = "waypoint_reached";
+    int index = 0;
+    double distance = 0.0;
+};
+
+struct CollisionEvent {
+    double t = 0.0;
+    std::string drone;
+    Vec3 pos;
+};
+
 struct SimulationResult {
     std::vector<double> time;
     std::vector<Vec3> leader;
@@ -78,8 +102,12 @@ struct SimulationResult {
     int completed_waypoint_count = 0;
     std::vector<Vec3> waypoints;
     std::vector<Vec3> task_waypoints;
+    std::vector<Vec3> planned_path;
     std::vector<Vec3> replanned_waypoints;
     std::vector<Vec3> executed_path;
+    std::vector<PlanningEvent> planning_events;
+    std::vector<WaypointEvent> waypoint_events;
+    std::vector<CollisionEvent> collision_log;
     std::vector<std::string> fault_log;
     FormationSafetyMetrics safety_metrics;
 };

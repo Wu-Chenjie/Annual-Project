@@ -29,6 +29,17 @@ def test_trajectory_optimizer_returns_time_parameterized_samples():
     assert len(result.samples) == len(result.timestamps)
     assert result.timestamps[0] == 0.0
     assert result.path_length > 0.0
+    assert result.max_speed > 0.0
+    assert result.max_acceleration >= 0.0
+    assert result.mean_jerk >= 0.0
+    assert result.max_jerk >= result.mean_jerk
+    assert result.jerk_squared_integral >= 0.0
+    assert result.snap_squared_integral >= 0.0
+    payload = result.to_dict()
+    assert payload["max_speed"] == result.max_speed
+    assert "max_jerk" in payload
+    assert "jerk_squared_integral" in payload
+    assert "snap_squared_integral" in payload
     json.dumps(result.to_dict())
 
 
@@ -74,3 +85,41 @@ def test_obstacle_scenario_emits_planned_trajectory_when_enabled():
     assert planned_trajectory is not None
     assert planned_trajectory["timestamps"][0] == 0.0
     assert len(planned_trajectory["samples"]) == len(planned_trajectory["timestamps"])
+    assert "max_speed" in planned_trajectory
+    assert "mean_jerk" in planned_trajectory
+    assert "jerk_squared_integral" in planned_trajectory
+    assert "snap_squared_integral" in planned_trajectory
+
+
+def test_trajectory_optimizer_supports_minimum_jerk_method():
+    optimizer = TrajectoryOptimizer(nominal_speed=1.0, sample_dt=0.1, smoothing_window=3)
+    path = np.array([
+        [0.0, 0.0, 1.0],
+        [1.0, 0.0, 1.0],
+        [2.0, 1.0, 1.0],
+    ], dtype=float)
+
+    result = optimizer.optimize(path, method="minimum_jerk")
+
+    assert result.method == "minimum_jerk"
+    assert result.accepted is True
+    assert len(result.positions) > len(path)
+    assert result.jerk_squared_integral >= 0.0
+    assert np.allclose(result.positions[0], path[0])
+    assert np.allclose(result.positions[-1], path[-1])
+
+
+def test_trajectory_optimizer_can_select_by_snap_proxy_cost():
+    optimizer = TrajectoryOptimizer(nominal_speed=1.0, sample_dt=0.1, smoothing_window=3)
+    path = np.array([
+        [0.0, 0.0, 1.0],
+        [1.0, 0.0, 1.0],
+        [2.0, 1.0, 1.0],
+    ], dtype=float)
+
+    result = optimizer.optimize(path, method="min_snap_proxy")
+
+    assert result.method.startswith("min_snap_proxy:")
+    assert result.accepted is True
+    assert result.jerk_squared_integral >= 0.0
+    assert result.snap_squared_integral >= 0.0

@@ -174,6 +174,11 @@ class SimulationConfig:
     formation_min_inter_drone_distance: float = 0.35
     formation_downwash_radius: float = 0.45
     formation_downwash_height: float = 0.80
+    formation_adaptation_enabled: bool = False
+    formation_adaptation_candidates: tuple[str, ...] = ("diamond", "v_shape", "triangle", "line")
+    formation_adaptation_min_hold_time: float = 1.0
+    formation_adaptation_recovery_margin: float = 0.15
+    formation_adaptation_transition_time: float = 1.5
 
     # ---- S2: DroneParams profile ----
     drone_profile: str = "default_1kg"
@@ -348,6 +353,8 @@ class FormationSimulation:
         time_now = 0.0
         step_idx = 0
         leader_acc_filt = np.zeros(3, dtype=float)
+        waypoint_events: list[dict] = []
+        reached_waypoints: set[int] = set()
         terminal_hold_pose: np.ndarray | None = None
         terminal_hold_steps = 0
         terminal_hold_required = max(8, int(round(0.15 / max(self.dt, 1e-6))))
@@ -389,6 +396,14 @@ class FormationSimulation:
                     if dist_to_wp < radius:
                         terminal_hold_steps += 1
                         if terminal_hold_pose is None:
+                            if current_wp_idx not in reached_waypoints:
+                                waypoint_events.append({
+                                    "t": float(time_now),
+                                    "type": "waypoint_reached",
+                                    "index": int(current_wp_idx),
+                                    "distance": float(dist_to_wp),
+                                })
+                                reached_waypoints.add(current_wp_idx)
                             terminal_hold_pose = leader_pos_new.copy()
                             leader_ctrl.reset()
                         if terminal_hold_steps >= terminal_hold_required:
@@ -396,6 +411,14 @@ class FormationSimulation:
                     else:
                         terminal_hold_steps = 0
                 elif dist_to_wp < radius:
+                    if current_wp_idx not in reached_waypoints:
+                        waypoint_events.append({
+                            "t": float(time_now),
+                            "type": "waypoint_reached",
+                            "index": int(current_wp_idx),
+                            "distance": float(dist_to_wp),
+                        })
+                        reached_waypoints.add(current_wp_idx)
                     current_wp_idx += 1
                     if current_wp_idx >= len(self.waypoints):
                         finished = True
@@ -445,4 +468,5 @@ class FormationSimulation:
             "metrics": metrics,
             "completed_waypoint_count": len(self.waypoints) if finished else current_wp_idx,
             "waypoints": np.array(self.waypoints, dtype=float),
+            "waypoint_events": waypoint_events,
         }

@@ -9,6 +9,8 @@
 
 from __future__ import annotations
 
+import time
+
 import numpy as np
 
 from .formation_simulation import FormationSimulation, SimulationConfig
@@ -26,6 +28,8 @@ from core.formation_safety import (
     min_inter_drone_distance,
     nominal_target_ready_for_recovery,
 )
+from core.formation_clearance import FormationClearancePolicy
+from core.formation_adaptation import FormationAdaptationPolicy
 from core.planning import (
     AStar, TurnConstrainedAStar, HybridAStar, Dijkstra, RRTStar,
     InformedRRTStar, DStarLite, WindowReplanner, RiskAdaptiveReplanInterval,
@@ -74,11 +78,17 @@ class ObstacleScenarioSimulation(FormationSimulation):
     def __init__(self, config: SimulationConfig):
         first_wp = config.waypoints[0] if config.waypoints else np.zeros(3)
         self.planned_trajectory = None
+        self.planning_events: list[dict] = []
         super().__init__(config=config)
         arm_length = 0.2  # Drone 默认臂长
         self._collision_margin = arm_length + config.safety_margin * config.detect_margin_scale
         self._setup_obstacles()
+        self.formation_clearance_policy = self._make_formation_clearance_policy()
+        self.formation_adaptation_policy = self._make_formation_adaptation_policy()
+        self.formation_adaptation_events: list[dict] = []
+        self._last_formation_adaptation_time: float | None = None
         self._setup_planning()
+        self._preflight_formation_adaptation_events = [dict(event) for event in self.formation_adaptation_events]
         self.formation_safety = FormationSafetyConfig(
             enabled=bool(getattr(config, "formation_safety_enabled", False)),
             min_inter_drone_distance=float(getattr(config, "formation_min_inter_drone_distance", 0.35)),
@@ -250,6 +260,105 @@ class ObstacleScenarioSimulation(FormationSimulation):
             float(reading[4] + reading[5]),
         )
 
+    def _formation_clearance_base(self, clearance: float | None = None) -> float:
+        if clearance is not None:
+            return float(clearance)
+        return max(float(self.config.safety_margin), float(getattr(self, "_collision_margin", 0.0))) + float(
+            self.config.plan_clearance_extra
+        )
+
+    def _formation_clearance_enabled(self) -> bool:
+        return bool(
+            getattr(self.config, "planner_use_formation_envelope", False)
+            or getattr(self.config, "formation_safety_enabled", False)
+        )
+
+    def _active_formation_name(self) -> str:
+        if getattr(self.topology, "is_switching", False) and getattr(self.topology, "_target_formation", ""):
+            return str(self.topology._target_formation)
+        return str(getattr(self.topology, "current_formation", self.config.initial_formation))
+
+    def _make_formation_clearance_policy(
+        self,
+        clearance: float | None = None,
+        *,
+        formation_aware: bool | None = None,
+    ) -> FormationClearancePolicy:
+        formation = self._active_formation_name()
+        try:
+            offsets = self.topology.get_offsets(formation)
+        except Exception:
+            offsets = self.topology.get_offsets(self.config.initial_formation)
+        sample_spacing = max(min(float(self.config.planner_resolution) * 0.5, 0.10), 0.05)
+        return FormationClearancePolicy(
+            signed_distance=lambda p: float(self.obstacles.signed_distance(np.asarray(p, dtype=float))),
+            follower_offsets=offsets,
+            base_clearance=self._formation_clearance_base(clearance),
+            sample_spacing=sample_spacing,
+            formation_aware=self._formation_clearance_enabled() if formation_aware is None else bool(formation_aware),
+        )
+
+    def _make_formation_adaptation_policy(self) -> FormationAdaptationPolicy:
+        return FormationAdaptationPolicy(
+            formations=tuple(getattr(self.config, "formation_adaptation_candidates", ("diamond", "v_shape", "triangle", "line"))),
+            default_formation=str(self.config.initial_formation),
+            min_hold_time_s=float(getattr(self.config, "formation_adaptation_min_hold_time", 1.0)),
+            recovery_clearance_margin=float(getattr(self.config, "formation_adaptation_recovery_margin", 0.15)),
+        )
+
+    def _candidate_formation_envelopes(self) -> dict[str, tuple[float, float, float]]:
+        envelopes: dict[str, tuple[float, float, float]] = {}
+        for formation in getattr(self.config, "formation_adaptation_candidates", ("diamond", "v_shape", "triangle", "line")):
+            try:
+                envelopes[str(formation)] = self.topology.envelope_per_axis(str(formation))
+            except Exception:
+                continue
+        return envelopes
+
+    def _apply_formation_adaptation(
+        self,
+        time_now: float,
+        channel_width: tuple[float, float, float] | None,
+        clearance_margin: float | None,
+    ) -> dict | None:
+        if not getattr(self.config, "formation_adaptation_enabled", False):
+            return None
+        decision = self.formation_adaptation_policy.decide(
+            time_now=float(time_now),
+            current_formation=self._active_formation_name(),
+            channel_width=channel_width,
+            envelope_by_formation=self._candidate_formation_envelopes(),
+            clearance_margin=clearance_margin,
+            last_switch_time_s=self._last_formation_adaptation_time,
+        )
+        if not decision.should_switch:
+            return None
+        self.topology.switch_formation(
+            decision.target_formation,
+            transition_time=float(getattr(self.config, "formation_adaptation_transition_time", 1.5)),
+        )
+        self._last_formation_adaptation_time = float(time_now)
+        event = decision.to_event(float(time_now))
+        self.formation_adaptation_events.append(event)
+        return event
+
+    def _maybe_preplan_formation_adaptation(self) -> None:
+        if not getattr(self.config, "formation_adaptation_enabled", False):
+            return
+        if not self._formation_clearance_enabled() or len(self._planning_waypoints) < 2:
+            return
+        reference = np.asarray(self._planning_waypoints, dtype=float)
+        evaluation = self._make_formation_clearance_policy(formation_aware=True).evaluate_path(reference)
+        if evaluation.min_formation_margin >= 0.0:
+            return
+        event = self._apply_formation_adaptation(
+            0.0,
+            channel_width=None,
+            clearance_margin=float(evaluation.min_formation_margin),
+        )
+        if event is not None:
+            self._rebuild_planning_grid()
+
     def _inflate_margin_xyz(self) -> float | tuple[float, float, float]:
         """返回规划栅格膨胀半径。
 
@@ -321,6 +430,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.config.waypoints = [wp.copy() for wp in self._planning_waypoints]
         self.waypoints = self.config.waypoints
         self.planned_path: np.ndarray | None = None
+        self._maybe_preplan_formation_adaptation()
 
         if cfg.planner_mode == "offline":
             self.planned_path = self._plan_offline()
@@ -596,6 +706,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
     def _path_segment_clearance(self, path: np.ndarray, min_clearance: float, spacing: float | None = None) -> float:
         """返回路径线段采样得到的最小 SDF 间隙。"""
         path = np.asarray(path, dtype=float)
+        if self._formation_clearance_enabled():
+            policy = self._make_formation_clearance_policy(min_clearance)
+            evaluation = policy.evaluate_path(
+                path,
+                base_clearance=float(min_clearance),
+                sample_spacing=spacing,
+            )
+            return float(evaluation.min_formation_signed_distance)
         if len(path) == 0:
             return float("-inf")
         if len(path) == 1:
@@ -696,19 +814,43 @@ class ObstacleScenarioSimulation(FormationSimulation):
         for i in range(len(waypoints) - 1):
             start = waypoints[i]
             goal = waypoints[i + 1]
+            segment_started = time.perf_counter()
+            fallback_reason = None
             try:
                 segment = self.planner.plan(start, goal, grid)
             except Exception:
+                fallback_reason = "primary_planner_failed"
                 fallback = self._plan_segment_fallback(start, goal, min_clearance)
                 if fallback is None:
+                    self.planning_events.append({
+                        "t": 0.0,
+                        "phase": "offline_segment",
+                        "planner": str(getattr(self.config, "planner_kind", "")),
+                        "segment_index": int(i),
+                        "wall_time_s": float(time.perf_counter() - segment_started),
+                        "point_count": 0,
+                        "accepted": False,
+                        "fallback_reason": fallback_reason,
+                    })
                     continue
                 segment = fallback
 
             if not self._segment_is_safe(segment, min_clearance):
                 fallback = self._plan_segment_fallback(start, goal, min_clearance)
                 if fallback is not None:
+                    fallback_reason = "clearance_fallback"
                     segment = fallback
                 elif not self._segment_is_safe(segment, 0.0):
+                    self.planning_events.append({
+                        "t": 0.0,
+                        "phase": "offline_segment",
+                        "planner": str(getattr(self.config, "planner_kind", "")),
+                        "segment_index": int(i),
+                        "wall_time_s": float(time.perf_counter() - segment_started),
+                        "point_count": int(len(segment)) if segment is not None else 0,
+                        "accepted": False,
+                        "fallback_reason": "unsafe_segment",
+                    })
                     continue
 
             try:
@@ -720,6 +862,16 @@ class ObstacleScenarioSimulation(FormationSimulation):
             if not self._segment_is_safe(smoothed, min_clearance):
                 smoothed = self._enforce_path_clearance(smoothed, min_clearance)
             if not self._segment_is_safe(smoothed, 0.0):
+                self.planning_events.append({
+                    "t": 0.0,
+                    "phase": "offline_segment",
+                    "planner": str(getattr(self.config, "planner_kind", "")),
+                    "segment_index": int(i),
+                    "wall_time_s": float(time.perf_counter() - segment_started),
+                    "point_count": int(len(smoothed)) if smoothed is not None else 0,
+                    "accepted": False,
+                    "fallback_reason": "unsafe_smoothed_segment",
+                })
                 continue
             # 鎺ㄨ繙鍚庡姞瀵嗭細SDF 鎺ㄧ浼氬澶ч棿闅欙紝寮ч暱閲嶉噰鏍疯ˉ鍥炲瘑搴?
             if min_clearance > self.config.safety_margin + 0.25:
@@ -735,6 +887,16 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 last = full_path[-1]
                 if np.linalg.norm(first - last) < 1e-4:
                     smoothed = smoothed[1:]
+            self.planning_events.append({
+                "t": 0.0,
+                "phase": "offline_segment",
+                "planner": str(getattr(self.config, "planner_kind", "")),
+                "segment_index": int(i),
+                "wall_time_s": float(time.perf_counter() - segment_started),
+                "point_count": int(len(smoothed)),
+                "accepted": True,
+                "fallback_reason": fallback_reason,
+            })
             full_path.extend(smoothed.tolist())
         planned = np.array(full_path, dtype=float)
         if len(planned) == 0:
@@ -1058,6 +1220,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
         time_now = 0.0
         step_idx = 0
         leader_acc_filt = np.zeros(3, dtype=float)
+        waypoint_events: list[dict] = []
+        reached_waypoints: set[int] = set()
         dt = self.dt
         terminal_hold_pose: np.ndarray | None = None
         terminal_hold_steps = 0
@@ -1091,6 +1255,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.sensor_logs = []
         self.executed_path = []
         self.fault_log = []
+        self.formation_adaptation_events = [
+            dict(event) for event in getattr(self, "_preflight_formation_adaptation_events", [])
+        ]
         self._faulted_followers = set()
         self._fault_injected = False
         self._formation_recovery_counts = [0] * follower_count
@@ -1124,7 +1291,16 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         self.sensor_logs.append(last_sensor_reading.copy())
                     sensor_reading = last_sensor_reading
 
-                if getattr(cfg, "planner_use_formation_envelope", False):
+                if getattr(cfg, "formation_adaptation_enabled", False):
+                    channel_width = self._channel_width_from_sensor(sensor_reading)
+                    event = self._apply_formation_adaptation(
+                        time_now,
+                        channel_width=channel_width,
+                        clearance_margin=None,
+                    )
+                    if event is not None:
+                        self._rebuild_planning_grid()
+                elif getattr(cfg, "planner_use_formation_envelope", False):
                     channel_width = self._channel_width_from_sensor(sensor_reading)
                     if channel_width is not None:
                         previous = self.topology.current_formation
@@ -1156,14 +1332,24 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     and np.linalg.norm(local_path[-1] - task_goal) > max(wp_radius, self.grid.resolution)
                     and path_remaining_dist < max(wp_radius * 1.5, cfg.leader_max_vel * 1.0)
                 )
+                planning_event_started = None
+                planning_phase = None
+                planning_planner = str(getattr(cfg, "planner_kind", ""))
+                planning_fallback_reason = None
                 if force_replan:
+                    planning_event_started = time.perf_counter()
+                    planning_phase = "online_force_replan"
                     planned_segment = self._planned_segment_for_task(leader_pos, target_goal)
                     if planned_segment is not None and self._segment_is_safe(planned_segment, collision_margin):
                         new_path = planned_segment
+                        planning_planner = "planned_segment"
                     else:
+                        planning_fallback_reason = "planned_segment_unavailable"
                         self.replanner._last_replan_time = -float("inf")
                         new_path = self.replanner.step(time_now, leader_pos, sensor_reading, target_goal)
                 elif local_path_exhausted:
+                    planning_event_started = time.perf_counter()
+                    planning_phase = "online_exhausted_replan"
                     self.replanner._last_replan_time = -float("inf")
                     new_path = self.replanner.step(time_now, leader_pos, sensor_reading, target_goal)
                 elif (
@@ -1171,12 +1357,24 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     and len(sensor_reading) > 0
                     and float(np.min(sensor_reading)) < max(1.0, cfg.safety_margin * 3.0)
                 ):
+                    planning_event_started = time.perf_counter()
+                    planning_phase = "online_sensor_replan"
                     new_path = self.replanner.step(time_now, leader_pos, sensor_reading, target_goal)
                 else:
                     new_path = None
                 if new_path is not None:
                     self.replan_events.extend(self.replanner.get_new_events())
                     accepted_path = self._accept_online_path(new_path, leader_pos, target_goal, time_now)
+                    if planning_event_started is not None:
+                        self.planning_events.append({
+                            "t": float(time_now),
+                            "phase": planning_phase,
+                            "planner": planning_planner,
+                            "wall_time_s": float(time.perf_counter() - planning_event_started),
+                            "point_count": int(len(new_path)),
+                            "accepted": accepted_path is not None,
+                            "fallback_reason": planning_fallback_reason,
+                        })
                     if accepted_path is not None:
                         local_path = np.asarray(accepted_path, dtype=float)
                         local_path_task_idx = current_wp_idx
@@ -1278,6 +1476,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         if dist_to_task_wp < radius:
                             terminal_hold_steps += 1
                             if terminal_hold_pose is None:
+                                if current_wp_idx not in reached_waypoints:
+                                    waypoint_events.append({
+                                        "t": float(time_now),
+                                        "type": "waypoint_reached",
+                                        "index": int(current_wp_idx),
+                                        "distance": float(dist_to_task_wp),
+                                    })
+                                    reached_waypoints.add(current_wp_idx)
                                 terminal_hold_pose = leader_pos_new.copy()
                                 leader_ctrl.reset()
                             if terminal_hold_steps >= terminal_hold_required:
@@ -1285,6 +1491,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         else:
                             terminal_hold_steps = 0
                     elif dist_to_task_wp < radius:
+                        if current_wp_idx not in reached_waypoints:
+                            waypoint_events.append({
+                                "t": float(time_now),
+                                "type": "waypoint_reached",
+                                "index": int(current_wp_idx),
+                                "distance": float(dist_to_task_wp),
+                            })
+                            reached_waypoints.add(current_wp_idx)
                         current_wp_idx += 1
                         local_path_idx = 0
                         local_path = np.array([leader_pos_new.copy()], dtype=float)
@@ -1295,6 +1509,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         if dist_to_wp < radius:
                             terminal_hold_steps += 1
                             if terminal_hold_pose is None:
+                                if current_wp_idx not in reached_waypoints:
+                                    waypoint_events.append({
+                                        "t": float(time_now),
+                                        "type": "waypoint_reached",
+                                        "index": int(current_wp_idx),
+                                        "distance": float(dist_to_wp),
+                                    })
+                                    reached_waypoints.add(current_wp_idx)
                                 terminal_hold_pose = leader_pos_new.copy()
                                 leader_ctrl.reset()
                             if terminal_hold_steps >= terminal_hold_required:
@@ -1302,6 +1524,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         else:
                             terminal_hold_steps = 0
                     elif dist_to_wp < radius:
+                        if current_wp_idx not in reached_waypoints:
+                            waypoint_events.append({
+                                "t": float(time_now),
+                                "type": "waypoint_reached",
+                                "index": int(current_wp_idx),
+                                "distance": float(dist_to_wp),
+                            })
+                            reached_waypoints.add(current_wp_idx)
                         current_wp_idx += 1
                         if current_wp_idx >= len(waypoints_list):
                             finished = True
@@ -1423,6 +1653,11 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 "min_inter_drone_distance": float(min_pair_distance),
                 "downwash_hits": int(downwash_hits),
             }
+        if len(executed_arr) > 0:
+            clearance_eval = self._make_formation_clearance_policy().evaluate_path(executed_arr)
+            safety_metrics["formation_clearance"] = clearance_eval.to_dict()
+            posthoc_eval = self._make_formation_clearance_policy(formation_aware=True).evaluate_path(executed_arr)
+            safety_metrics["formation_clearance_posthoc"] = posthoc_eval.to_dict()
 
         return {
             "time": history_time[valid],
@@ -1441,6 +1676,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "planned_trajectory": None if self.planned_trajectory is None else self.planned_trajectory.to_dict(),
             "executed_path": executed_arr,
             "replan_events": self.replan_events,
+            "planning_events": self.planning_events,
+            "waypoint_events": waypoint_events,
+            "formation_adaptation_events": self.formation_adaptation_events,
             "sensor_logs": np.array(self.sensor_logs, dtype=float) if self.sensor_logs else None,
             "collision_log": self.collision_log,
             "fault_log": self.fault_log,

@@ -216,8 +216,15 @@ def build_sim_result_payload(
 
     optional_passthrough = (
         "planned_path",
+        "planned_trajectory",
         "executed_path",
+        "time",
+        "task_waypoints",
+        "replanned_waypoints",
         "replan_events",
+        "planning_events",
+        "waypoint_events",
+        "formation_adaptation_events",
         "collision_log",
         "fault_log",
         "sensor_logs",

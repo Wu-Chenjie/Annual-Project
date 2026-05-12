@@ -74,20 +74,22 @@ inline ObstacleConfig config_obstacle() {
 
 inline ObstacleConfig config_warehouse() {
     ObstacleConfig c;
-    c.max_sim_time = 65.0; c.use_smc = true; c.use_backstepping = true;
-    c.num_followers = 3; c.formation_spacing = 0.5; c.initial_formation = "diamond";
+    c.max_sim_time = 100.0; c.use_smc = true; c.use_backstepping = true;
+    c.num_followers = 3; c.formation_spacing = 0.25; c.initial_formation = "diamond";
     c.wp_radius = 0.8; c.wp_radius_final = 0.4;
-    c.leader_max_vel = 2.0; c.leader_max_acc = 2.5; c.leader_gain_scale = 0.80;
-    c.follower_gain_scale = 1.0; c.follower_max_vel = 8.0; c.follower_max_acc = 8.0;
+    c.leader_max_vel = 1.1; c.leader_max_acc = 1.4; c.leader_gain_scale = 0.65;
+    c.follower_gain_scale = 0.9; c.follower_max_vel = 4.5; c.follower_max_acc = 4.5;
     c.leader_acc_alpha = 0.30;
     c.enable_obstacles = true; c.map_file = "../maps/sample_warehouse.json";
     c.planner_kind = "astar"; c.planner_mode = "online";
-    c.planner_resolution = 0.4; c.safety_margin = 0.3;
-    c.sensor_enabled = true; c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;
+    c.planner_resolution = 0.25; c.safety_margin = 0.3;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.55;
+    c.formation_safety_enabled = true; c.formation_min_inter_drone_distance = 0.25;
+    c.sensor_enabled = true; c.planner_replan_interval = 0.6; c.planner_horizon = 9.0;
     c.replan_adaptive_interval = false; c.replan_interval_min = 0.1; c.replan_interval_max = 1.0;
     c.danger_mode_enabled = false;
     c.detect_margin_scale = 0.5;
-    c.formation_schedule = {{15,"line",6},{28,"diamond",6}};
+    c.formation_schedule = {};
     c.waypoints = {{4.2,13.2,5.7},{11.4,10.2,2.4},{19.8,15.2,7},{29.2,22.4,3.7},{35.8,10,8.3},{42,4.8,1}};
     return c;
 }

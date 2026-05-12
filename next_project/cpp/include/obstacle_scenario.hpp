@@ -77,10 +77,22 @@ struct ObstacleConfig : SimulationConfig {
     double fault_injection_severity = 0.3;
 };
 
-struct CollisionEvent {
-    double t;
-    std::string drone;
-    Vec3 pos;
+class TelemetryObserver {
+public:
+    void clear_runtime();
+    void clear_all();
+    void record_planning(const PlanningEvent& event);
+    void record_waypoint(const WaypointEvent& event);
+    void record_collision(const CollisionEvent& event);
+
+    const std::vector<PlanningEvent>& planning_events() const { return planning_events_; }
+    const std::vector<WaypointEvent>& waypoint_events() const { return waypoint_events_; }
+    const std::vector<CollisionEvent>& collision_events() const { return collision_events_; }
+
+private:
+    std::vector<PlanningEvent> planning_events_;
+    std::vector<WaypointEvent> waypoint_events_;
+    std::vector<CollisionEvent> collision_events_;
 };
 
 class ObstacleScenarioSimulation {
@@ -143,6 +155,7 @@ public:
     std::vector<Vec3> replanned_waypoints_;
     std::vector<Vec3> executed_path_;
     std::vector<std::string> fault_log_;
+    TelemetryObserver observer_;
     mutable std::vector<int> formation_recovery_counts_;
     DownwashZone downwash_zone_;
 };

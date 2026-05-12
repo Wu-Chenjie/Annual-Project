@@ -166,6 +166,14 @@ public:
         return *this;
     }
 
+    JsonWriter& vec3(const Vec3& value) {
+        value_prefix();
+        os_ << "[" << std::fixed << std::setprecision(8)
+            << value.x << "," << value.y << "," << value.z << "]";
+        finish_value();
+        return *this;
+    }
+
     JsonWriter& array_string(const std::vector<std::string>& values) {
         value_prefix();
         os_ << "[";

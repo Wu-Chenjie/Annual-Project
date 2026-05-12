@@ -24,6 +24,8 @@ from .formation_safety import (
     follower_safety_correction,
     deconflict_follower_target,
 )
+from .formation_clearance import FormationClearanceEvaluation, FormationClearancePolicy
+from .formation_adaptation import FormationAdaptationDecision, FormationAdaptationPolicy
 from .planning import AStar, TurnConstrainedAStar, HybridAStar, Dijkstra, RRTStar, Planner, PlannerError, WindowReplanner
 
 __all__ = [
@@ -64,4 +66,8 @@ __all__ = [
     "min_inter_drone_distance",
     "follower_safety_correction",
     "deconflict_follower_target",
+    "FormationClearanceEvaluation",
+    "FormationClearancePolicy",
+    "FormationAdaptationDecision",
+    "FormationAdaptationPolicy",
 ]

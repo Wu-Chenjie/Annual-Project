@@ -17,6 +17,7 @@ from core.result_schema import (
     validate,
     write_json,
 )
+from experiments.result_reporter import generate_result_report
 from simulations.formation_simulation import FormationSimulation, SimulationConfig
 from simulations.obstacle_scenario import ObstacleScenarioSimulation
 from simulations.visualization import SimulationVisualizer
@@ -68,6 +69,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="把 time/leader/followers 轨迹时序写入 sim_result.json（文件会变大）。",
     )
+    parser.add_argument(
+        "--no-report",
+        action="store_true",
+        help="Do not generate the Chinese Markdown result report after simulation.",
+    )
+    parser.add_argument(
+        "--report-title",
+        default=None,
+        help="Override the generated Chinese report title.",
+    )
     return parser
 
 
@@ -104,6 +115,8 @@ def run_with_config(
     run_name: str | None = None,
     validate_schema: bool = True,
     include_trajectories: bool = False,
+    generate_report: bool = True,
+    report_title: str | None = None,
 ) -> dict:
     sim = make_simulation(config)
 
@@ -130,8 +143,18 @@ def run_with_config(
         validate(payload, "sim_result", strict=True)
 
     sim_result_path = write_json(payload, run_dir / "sim_result.json")
+    report_path = None
+    if generate_report:
+        report_path = generate_result_report(sim_result_path, title=report_title)
 
-    print_summary(config, result, elapsed, figure_paths, sim_result_path=sim_result_path)
+    print_summary(
+        config,
+        result,
+        elapsed,
+        figure_paths,
+        sim_result_path=sim_result_path,
+        report_path=report_path,
+    )
     return result
 
 
@@ -142,6 +165,7 @@ def print_summary(
     figure_paths: dict[str, str],
     *,
     sim_result_path: Path | None = None,
+    report_path: Path | None = None,
 ) -> None:
     means = result["metrics"]["mean"]
     maxs = result["metrics"]["max"]
@@ -177,6 +201,8 @@ def print_summary(
     if sim_result_path is not None:
         print("-" * 56)
         print(f"sim_result.json: {sim_result_path}")
+    if report_path is not None:
+        print(f"report.md:       {report_path}")
     print("=" * 56)
 
 
@@ -193,6 +219,8 @@ def main(argv: list[str] | None = None) -> None:
         run_name=args.run_name,
         validate_schema=not args.no_validate,
         include_trajectories=args.include_trajectories,
+        generate_report=not args.no_report,
+        report_title=args.report_title,
     )
 
 

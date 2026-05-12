@@ -718,6 +718,39 @@ def test_online_auto_shrink_rebuilds_grid_and_switches_to_line():
     assert int(np.count_nonzero(after >= 1)) <= int(np.count_nonzero(before >= 1))
 
 
+def test_formation_adaptation_event_is_reported_when_channel_is_narrow():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=6.0,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_use_formation_envelope=True,
+        formation_adaptation_enabled=True,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        sensor_enabled=False,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+
+    event = sim._apply_formation_adaptation(
+        1.0,
+        channel_width=(0.3, 40.0, 5.0),
+        clearance_margin=-0.2,
+    )
+
+    assert event is not None
+    assert event["from"] == "diamond"
+    assert event["to"] == "line"
+    assert event["reason"] in {"channel_too_narrow", "clearance_violation"}
+
+
 def test_formation_apf_switch_is_no_longer_dead_config():
     """apf_formation_centroid 打开后应真正构建编队势场组件。"""
     cfg = SimulationConfig(

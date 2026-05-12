@@ -61,6 +61,29 @@ def test_build_sim_result_payload_validates():
     assert validate(payload, "sim_result", strict=False) == []
 
 
+def test_build_sim_result_payload_passes_reporting_fields():
+    payload = build_sim_result_payload(
+        preset="demo",
+        sim_result={
+            "metrics": {"mean": [0.1], "max": [0.2], "final": [0.05]},
+            "completed_waypoint_count": 1,
+            "planned_trajectory": {"path_length": 1.0, "snap_squared_integral": 0.5},
+            "planning_events": [{"t": 0.0, "planner": "astar", "wall_time_s": 0.01}],
+            "waypoint_events": [{"t": 0.2, "type": "waypoint_reached", "index": 0}],
+            "task_waypoints": [[0, 0, 0], [1, 0, 0]],
+            "replanned_waypoints": [[0, 0, 0], [0.5, 0, 0]],
+        },
+        runtime_s=0.3,
+        config_snapshot={"planner_kind": "astar"},
+    )
+
+    assert payload["planned_trajectory"]["path_length"] == 1.0
+    assert payload["planning_events"][0]["planner"] == "astar"
+    assert payload["waypoint_events"][0]["type"] == "waypoint_reached"
+    assert payload["task_waypoints"][1] == [1, 0, 0]
+    assert payload["replanned_waypoints"][1] == [0.5, 0, 0]
+
+
 def test_build_benchmark_payload_validates():
     records = [
         {

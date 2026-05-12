@@ -40,6 +40,18 @@
 | Plotly/PNG 可视化 | 完整 | PNG/SVG 子集 | Web 交互展示 | 展示能力不是算法能力 |
 | 照片重建 COLMAP/OpenMVS | Web 支线工具 | 不适用 | 实验性支线 | 只转换成静态地图 |
 
+## 2.1 中期新增能力矩阵
+
+| 功能点 | Python | C++ | Web | 说明 |
+| --- | --- | --- | --- | --- |
+| trajectory optimizer 指标 | 完整 | 不适用 | 不适用 | `TrajectoryResult` 输出 path length、speed、acceleration、mean/max jerk、jerk squared integral、snap squared integral |
+| minimum-jerk / snap proxy 轨迹原型 | 完整原型 | 缺失/暂不同步 | 不适用 | Python 支持 `minimum_jerk` 与 `min_snap_proxy`，不是完整 GCOPTER/MINCO |
+| 实验场景注册表 | 完整 | 不适用 | 不适用 | `experiments/scenario_registry.py` 覆盖 offline/online 代表场景 |
+| 消融实验运行器 | 完整 | 不适用 | 不适用 | `experiments/run_ablation.py` 支持 baseline、no_esdf、no_gnn、no_apf、with_trajectory_optimizer 等变体 |
+| 指标提取与报告 | 完整 | 不适用 | 不适用 | `metrics_extractor.py` + `report_writer.py` 输出 CSV/Markdown |
+| DroneParams 标定骨架 | 完整原型 | 待同步 | 不适用 | `experiments/calibration/drone_params_calibration.py` 从预处理 CSV 输出候选 profile JSON |
+| DroneParams profile 文档 | 完整 | 子集说明 | 不适用 | `docs/drone-params-profile.md` 明确 profile 边界，不宣称实测标定 |
+
 ## 3. 场景覆盖矩阵
 
 | 预设/场景 | Python | C++ | Web | 回归用途 |

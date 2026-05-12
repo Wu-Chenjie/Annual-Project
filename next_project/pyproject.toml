@@ -31,7 +31,7 @@ web = [
 ]
 
 [tool.setuptools]
-packages = ["core", "core.planning", "simulations"]
+packages = ["core", "core.planning", "simulations", "experiments", "experiments.calibration"]
 py-modules = ["config", "main"]
 
 [tool.pytest.ini_options]
