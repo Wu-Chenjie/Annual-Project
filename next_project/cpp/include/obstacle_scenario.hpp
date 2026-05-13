@@ -131,6 +131,10 @@ public:
     double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
     // Path-level acceptance gate: true only when all sampled path segments satisfy min_clearance.
     bool path_is_clearance_safe(const std::vector<Vec3>& path, double min_clearance) const;
+    /// Signed distance as visible to the planner: in unknown-map mode only
+    /// returns negative distance for sensor-discovered occupied cells (grid),
+    /// otherwise +inf; in normal mode delegates to the full obstacle field.
+    double planning_signed_distance(const Vec3& point) const;
     Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal,
                                 const std::vector<Vec3>& other_positions = {});
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,

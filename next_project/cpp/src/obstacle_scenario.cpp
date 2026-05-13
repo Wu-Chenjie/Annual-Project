@@ -237,7 +237,7 @@ Vec3 ObstacleScenarioSimulation::safe_follower_target(
             static_cast<int>(std::lround(candidate.y * 10000.0)),
             static_cast<int>(std::lround(candidate.z * 10000.0)));
         if (!seen.insert(key).second) continue;
-        if (obstacles_.signed_distance(candidate) < min_clearance - 1e-8) continue;
+        if (planning_signed_distance(candidate) < min_clearance - 1e-8) continue;
         if (current_pos) {
             std::vector<Vec3> segment{*current_pos, candidate};
             if (!path_is_clearance_safe(segment, min_clearance)) continue;
@@ -245,7 +245,7 @@ Vec3 ObstacleScenarioSimulation::safe_follower_target(
         return candidate;
     }
 
-    if (current_pos && obstacles_.signed_distance(*current_pos) >= 0.0) {
+    if (current_pos && planning_signed_distance(*current_pos) >= 0.0) {
         return *current_pos;
     }
     return leader_pos;
@@ -276,7 +276,7 @@ Vec3 ObstacleScenarioSimulation::deconflict_follower_target(
         nominal_target,
         reserved_positions,
         current_pos,
-        obstacles_.signed_distance(nominal_target),
+        planning_signed_distance(nominal_target),
         segment_safe,
         min_clearance,
         min_inter_distance,
@@ -315,7 +315,7 @@ Vec3 ObstacleScenarioSimulation::deconflict_follower_target(
 
     for (const auto& delta : deltas) {
         const Vec3 probe = candidate_target + delta;
-        if (obstacles_.signed_distance(probe) < min_clearance - 1e-8) continue;
+        if (planning_signed_distance(probe) < min_clearance - 1e-8) continue;
         if (current_pos) {
             std::vector<Vec3> segment{*current_pos, probe};
             if (!path_is_clearance_safe(segment, min_clearance)) continue;
@@ -691,7 +691,7 @@ Vec3 ObstacleScenarioSimulation::project_to_planning_free(
     const double min_clearance = compute_clearance();
     auto idx = plan_grid.world_to_index(point);
     if (!plan_grid.is_occupied(idx[0], idx[1], idx[2])
-        && obstacles_.signed_distance(point) >= min_clearance - 1e-8) {
+        && planning_signed_distance(point) >= min_clearance - 1e-8) {
         return point;
     }
 
@@ -724,7 +724,7 @@ Vec3 ObstacleScenarioSimulation::project_to_planning_free(
                     }
                     if (plan_grid.is_occupied(ix, iy, iz)) continue;
                     Vec3 candidate = plan_grid.index_to_world(ix, iy, iz);
-                    double sd = obstacles_.signed_distance(candidate);
+                    double sd = planning_signed_distance(candidate);
                     if (sd < min_clearance - 1e-8) continue;
 
                     Vec3 delta = candidate - point;
@@ -794,7 +794,7 @@ std::vector<Vec3> ObstacleScenarioSimulation::plan_offline() {
 
         auto smoothed = smooth_path(path_segment, 4);
         smoothed = enforce_path_clearance(smoothed, min_clearance);
-        if (config_.firi_enabled) {
+        if (config_.firi_enabled && !config_.planner_initial_map_unknown) {
             FIRIRefiner refiner(obstacles_, min_clearance, config_.firi_sample_step,
                                 config_.firi_max_projection_iter);
             smoothed = refiner.refine(smoothed, path_segment);
@@ -859,23 +859,23 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
 
     for (auto& wp : out) {
         for (int iter = 0; iter < 60; ++iter) {
-            double min_sd = obstacles_.signed_distance(wp);
+            double min_sd = planning_signed_distance(wp);
             Vec3 worst = wp;
             for (const auto& off : offsets) {
                 Vec3 check = wp + off;
-                double sd = obstacles_.signed_distance(check);
+                double sd = planning_signed_distance(check);
                 if (sd < min_sd) { min_sd = sd; worst = check; }
             }
             if (min_sd >= min_clearance) break;
 
             double eps = 0.05;
             Vec3 grad{
-                obstacles_.signed_distance({worst.x + eps, worst.y, worst.z})
-                    - obstacles_.signed_distance({worst.x - eps, worst.y, worst.z}),
-                obstacles_.signed_distance({worst.x, worst.y + eps, worst.z})
-                    - obstacles_.signed_distance({worst.x, worst.y - eps, worst.z}),
-                obstacles_.signed_distance({worst.x, worst.y, worst.z + eps})
-                    - obstacles_.signed_distance({worst.x, worst.y, worst.z - eps}),
+                planning_signed_distance({worst.x + eps, worst.y, worst.z})
+                    - planning_signed_distance({worst.x - eps, worst.y, worst.z}),
+                planning_signed_distance({worst.x, worst.y + eps, worst.z})
+                    - planning_signed_distance({worst.x, worst.y - eps, worst.z}),
+                planning_signed_distance({worst.x, worst.y, worst.z + eps})
+                    - planning_signed_distance({worst.x, worst.y, worst.z - eps}),
             };
             grad = grad / (2.0 * eps);
             double gn = norm(grad);
@@ -889,7 +889,7 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
 double ObstacleScenarioSimulation::path_segment_clearance(
     const std::vector<Vec3>& path, double min_clearance) const {
     if (path.empty()) return -std::numeric_limits<double>::infinity();
-    if (path.size() == 1) return obstacles_.signed_distance(path.front());
+    if (path.size() == 1) return planning_signed_distance(path.front());
 
     const double sample_step = std::max(
         0.02,
@@ -903,7 +903,7 @@ double ObstacleScenarioSimulation::path_segment_clearance(
         for (int j = 0; j <= samples; ++j) {
             const double u = static_cast<double>(j) / static_cast<double>(samples);
             const Vec3 p = a * (1.0 - u) + b * u;
-            worst = std::min(worst, obstacles_.signed_distance(p));
+            worst = std::min(worst, planning_signed_distance(p));
             if (worst < min_clearance) return worst;
         }
     }
@@ -913,6 +913,16 @@ double ObstacleScenarioSimulation::path_segment_clearance(
 bool ObstacleScenarioSimulation::path_is_clearance_safe(
     const std::vector<Vec3>& path, double min_clearance) const {
     return path_segment_clearance(path, min_clearance) >= min_clearance - 1e-6;
+}
+
+double ObstacleScenarioSimulation::planning_signed_distance(const Vec3& point) const {
+    if (config_.planner_initial_map_unknown) {
+        auto idx = grid_.world_to_index(point);
+        return grid_.is_occupied(idx[0], idx[1], idx[2])
+            ? -grid_.resolution
+            : std::numeric_limits<double>::infinity();
+    }
+    return obstacles_.signed_distance(point);
 }
 
 Vec3 ObstacleScenarioSimulation::obstacle_repulsion_acc(
@@ -1051,7 +1061,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
             if (!new_path.empty()) {
                 auto candidate_path = stitch_local_path_to_task_goal(new_path, task_goal);
                 const double clearance = compute_clearance();
-                if (config_.firi_enabled && candidate_path.size() >= 2) {
+                if (config_.firi_enabled && !config_.planner_initial_map_unknown && candidate_path.size() >= 2) {
                     FIRIRefiner refiner(obstacles_, clearance, config_.firi_sample_step,
                                         config_.firi_max_projection_iter);
                     candidate_path = refiner.refine(candidate_path, candidate_path);
