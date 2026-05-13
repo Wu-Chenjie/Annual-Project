@@ -232,6 +232,16 @@ std::vector<sim::Vec3> waypoints_or(const JsonValue& value, std::vector<sim::Vec
     return out.empty() ? fallback : out;
 }
 
+std::vector<std::string> string_array_or(const JsonValue& value, std::vector<std::string> fallback) {
+    if (value.type != JsonValue::Type::Array) return fallback;
+    std::vector<std::string> out;
+    for (const auto& item : value.array) {
+        std::string text = string_or(item, "");
+        if (!text.empty()) out.push_back(text);
+    }
+    return out.empty() ? fallback : out;
+}
+
 void dump_string_array(std::ostream& out, const std::vector<std::string>& values) {
     out << "[";
     for (std::size_t i = 0; i < values.size(); ++i) {
@@ -336,6 +346,30 @@ void apply_config_overrides(sim::ObstacleConfig& cfg, const JsonValue& root) {
     cfg.apf_comm_constraint = bool_or(source.at("apf_comm_constraint"), cfg.apf_comm_constraint);
     cfg.apf_rotational_escape = bool_or(source.at("apf_rotational_escape"), cfg.apf_rotational_escape);
     cfg.danger_mode_enabled = bool_or(source.at("danger_mode_enabled"), cfg.danger_mode_enabled);
+    cfg.formation_adaptation_enabled = bool_or(
+        source.at("formation_adaptation_enabled"), cfg.formation_adaptation_enabled);
+    cfg.formation_adaptation_candidates = string_array_or(
+        source.at("formation_adaptation_candidates"), cfg.formation_adaptation_candidates);
+    cfg.formation_adaptation_min_hold_time = number_or(
+        source.at("formation_adaptation_min_hold_time"), cfg.formation_adaptation_min_hold_time);
+    cfg.formation_adaptation_recovery_margin = number_or(
+        source.at("formation_adaptation_recovery_margin"), cfg.formation_adaptation_recovery_margin);
+    cfg.formation_adaptation_transition_time = number_or(
+        source.at("formation_adaptation_transition_time"), cfg.formation_adaptation_transition_time);
+    cfg.formation_lookahead_enabled = bool_or(
+        source.at("formation_lookahead_enabled"), cfg.formation_lookahead_enabled);
+    cfg.formation_lookahead_distance = number_or(
+        source.at("formation_lookahead_distance"), cfg.formation_lookahead_distance);
+    cfg.formation_lookahead_turn_threshold_rad = number_or(
+        source.at("formation_lookahead_turn_threshold_rad"), cfg.formation_lookahead_turn_threshold_rad);
+    cfg.formation_lookahead_min_interval = number_or(
+        source.at("formation_lookahead_min_interval"), cfg.formation_lookahead_min_interval);
+    cfg.formation_lookahead_rrt_enabled = bool_or(
+        source.at("formation_lookahead_rrt_enabled"), cfg.formation_lookahead_rrt_enabled);
+    cfg.formation_lookahead_rrt_max_iter = static_cast<int>(number_or(
+        source.at("formation_lookahead_rrt_max_iter"), static_cast<double>(cfg.formation_lookahead_rrt_max_iter)));
+    cfg.formation_lookahead_rrt_rewire_radius = number_or(
+        source.at("formation_lookahead_rrt_rewire_radius"), cfg.formation_lookahead_rrt_rewire_radius);
     cfg.waypoints = waypoints_or(source.at("waypoints"), cfg.waypoints);
 }
 
@@ -500,6 +534,49 @@ void dump_fault_event(std::ostream& out, const sim::ReplayFaultEvent& event) {
     out << "}";
 }
 
+void dump_formation_adaptation_event(std::ostream& out, const sim::FormationAdaptationEvent& event) {
+    out << "{\"t\":" << event.t;
+    if (!event.kind.empty()) {
+        out << ",\"kind\":";
+        dump_string(out, event.kind);
+    }
+    out << ",\"from\":";
+    dump_string(out, event.from);
+    out << ",\"to\":";
+    dump_string(out, event.to);
+    out << ",\"reason\":";
+    dump_string(out, event.reason);
+    if (event.has_channel_width) {
+        out << ",\"channel_width\":["
+            << event.channel_width[0] << "," << event.channel_width[1] << "," << event.channel_width[2] << "]";
+    }
+    if (event.has_selected_envelope) {
+        out << ",\"selected_envelope\":["
+            << event.selected_envelope[0] << "," << event.selected_envelope[1] << "," << event.selected_envelope[2] << "]";
+    }
+    if (event.has_clearance_margin) {
+        out << ",\"clearance_margin\":" << event.clearance_margin;
+    }
+    if (event.has_max_turn_angle) {
+        out << ",\"max_turn_angle_rad\":" << event.max_turn_angle_rad;
+    }
+    if (!event.planner.empty()) {
+        out << ",\"planner\":";
+        dump_string(out, event.planner);
+    }
+    if (!event.goal_kind.empty()) {
+        out << ",\"goal_kind\":";
+        dump_string(out, event.goal_kind);
+    }
+    if (event.goal_count > 0) {
+        out << ",\"goal_count\":" << event.goal_count;
+    }
+    if (event.point_count > 0) {
+        out << ",\"point_count\":" << event.point_count;
+    }
+    out << ",\"blocked_by_hold_time\":" << (event.blocked_by_hold_time ? "true" : "false") << "}";
+}
+
 void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
     out << "{\"metadata\":{\"map_file\":";
     dump_string(out, replay.metadata.map_file);
@@ -519,6 +596,19 @@ void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
     dump_string_array(out, replay.metadata.apf_python_only_fields);
     out << ",\"apf_cpp_pending_fields\":";
     dump_string_array(out, replay.metadata.apf_cpp_pending_fields);
+    out << ",\"initial_formation\":";
+    dump_string(out, replay.metadata.initial_formation);
+    out << ",\"formation_adaptation_candidates\":";
+    dump_string_array(out, replay.metadata.formation_adaptation_candidates);
+    out << ",\"formation_adaptation_enabled\":"
+        << (replay.metadata.formation_adaptation_enabled ? "true" : "false")
+        << ",\"formation_lookahead_enabled\":"
+        << (replay.metadata.formation_lookahead_enabled ? "true" : "false")
+        << ",\"formation_lookahead_rrt_enabled\":"
+        << (replay.metadata.formation_lookahead_rrt_enabled ? "true" : "false")
+        << ",\"formation_lookahead_distance\":" << replay.metadata.formation_lookahead_distance
+        << ",\"formation_lookahead_turn_threshold_rad\":"
+        << replay.metadata.formation_lookahead_turn_threshold_rad;
     out << ",\"step_count\":" << replay.metadata.step_count
         << ",\"dt\":" << replay.metadata.dt
         << ",\"total_time\":" << replay.metadata.total_time
@@ -537,6 +627,11 @@ void dump_replay(std::ostream& out, const sim::ReplayOutput& replay) {
     for (std::size_t i = 0; i < replay.dynamic_events.size(); ++i) {
         if (i) out << ",";
         dump_event(out, replay.dynamic_events[i]);
+    }
+    out << "],\"formation_adaptation_events\":[";
+    for (std::size_t i = 0; i < replay.formation_adaptation_events.size(); ++i) {
+        if (i) out << ",";
+        dump_formation_adaptation_event(out, replay.formation_adaptation_events[i]);
     }
     out << "],\"waypoints\":[";
     for (std::size_t i = 0; i < replay.waypoints.size(); ++i) {

@@ -164,6 +164,33 @@ python -m experiments.run_cpp_report `
 python -m experiments.report_cpp_results outputs/warehouse/<ts>/sim_result.json --title C++仓库仿真报告
 ```
 
+编队调控压力场景与 C++ 对齐：
+
+```powershell
+python -m experiments.run_ablation `
+  --quick `
+  --scenario rrt_dual_channel_online `
+  --variant leader_only_planner `
+  --variant formation_aware_adaptive `
+  --variant formation_aware_lookahead_adaptive `
+  --output-dir outputs/ablation_rrt_dual_channel
+
+python -m experiments.run_ablation `
+  --quick `
+  --scenario formation_maze_stress_online `
+  --variant leader_only_planner `
+  --variant formation_aware_adaptive `
+  --variant formation_aware_lookahead_adaptive `
+  --output-dir outputs/ablation_formation_maze_stress
+
+python -m experiments.run_cpp_report `
+  --exe cpp/build/sim_warehouse.exe `
+  --title C++编队调控预设报告 `
+  -- --preset rrt_dual_channel_online --max-sim-time 0.5
+```
+
+相关报告会记录队形自适应、前瞻窗口、RRT escape attempt/accepted/failed、规划器耗时、路径参数、飞行参数和飞行事件。
+
 ## Experimental Branches
 
 照片重建是实验性支线：Web 端点 `EXPERIMENTAL /api/reconstruction/*` 只把 COLMAP/OpenMVS 输出转换成静态 `maps/*.json` 障碍物地图，不生成 `task_waypoints`，也不代表完整数字孪生。默认关闭；需要时先设置 `UAV_ENABLE_PHOTO_RECONSTRUCTION=1`，工具路径可用 `UAV_COLMAP_BIN` 和 `UAV_OPENMVS_DIR` 覆盖。
@@ -190,3 +217,4 @@ The C++ targets currently include:
 - `sim_main`
 - `sim_benchmark`
 - `sim_warehouse`
+- `sim_dynamic_replay`

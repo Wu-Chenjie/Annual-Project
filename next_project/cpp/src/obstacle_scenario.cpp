@@ -339,6 +339,263 @@ std::tuple<double, double, double> ObstacleScenarioSimulation::channel_width_fro
     };
 }
 
+std::vector<Vec3> ObstacleScenarioSimulation::path_window_from_position(
+    const std::vector<Vec3>& path, const Vec3& position, double lookahead_distance) const {
+    if (path.empty()) return {};
+    if (path.size() == 1) return path;
+
+    std::size_t closest = 0;
+    double best = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i < path.size(); ++i) {
+        const double d = norm(path[i] - position);
+        if (d < best) {
+            best = d;
+            closest = i;
+        }
+    }
+
+    std::vector<Vec3> window{position};
+    double traveled = 0.0;
+    Vec3 prev = position;
+    const double horizon = std::max(lookahead_distance, grid_.resolution);
+    for (std::size_t i = closest + 1; i < path.size(); ++i) {
+        const Vec3 point = path[i];
+        const double seg_len = norm(point - prev);
+        if (seg_len < 1e-9) {
+            prev = point;
+            continue;
+        }
+        if (traveled + seg_len >= horizon) {
+            const double ratio = std::clamp((horizon - traveled) / seg_len, 0.0, 1.0);
+            window.push_back(prev + (point - prev) * ratio);
+            break;
+        }
+        window.push_back(point);
+        traveled += seg_len;
+        prev = point;
+    }
+    if (window.size() == 1) {
+        window.push_back(path[std::min(closest + 1, path.size() - 1)]);
+    }
+    return window;
+}
+
+double ObstacleScenarioSimulation::path_max_turn_angle(const std::vector<Vec3>& path) const {
+    if (path.size() < 3) return 0.0;
+    double max_angle = 0.0;
+    for (std::size_t i = 1; i + 1 < path.size(); ++i) {
+        const Vec3 left = path[i] - path[i - 1];
+        const Vec3 right = path[i + 1] - path[i];
+        const double ln = norm(left);
+        const double rn = norm(right);
+        if (ln < 1e-9 || rn < 1e-9) continue;
+        const double cos_angle = std::clamp(dot(left, right) / (ln * rn), -1.0, 1.0);
+        max_angle = std::max(max_angle, std::acos(cos_angle));
+    }
+    return max_angle;
+}
+
+bool ObstacleScenarioSimulation::apply_formation_adaptation(
+    double time_now,
+    const std::tuple<double, double, double>* channel_width,
+    double clearance_margin,
+    bool has_clearance_margin,
+    const std::string& reason_override) {
+    if (!config_.formation_adaptation_enabled) return false;
+
+    auto& topology = formation_.topology_;
+    const std::string current = topology.current_formation();
+    if (last_formation_adaptation_time_ >= 0.0
+        && time_now - last_formation_adaptation_time_ < config_.formation_adaptation_min_hold_time) {
+        return false;
+    }
+
+    auto fits = [](const std::tuple<double, double, double>& width,
+                   const std::tuple<double, double, double>& envelope) {
+        return std::get<0>(width) >= 2.0 * std::get<0>(envelope)
+            && std::get<1>(width) >= 2.0 * std::get<1>(envelope)
+            && std::get<2>(width) >= 2.0 * std::get<2>(envelope);
+    };
+    auto deficit_score = [](const std::tuple<double, double, double>& width,
+                            const std::tuple<double, double, double>& envelope) {
+        return std::max(2.0 * std::get<0>(envelope) - std::get<0>(width), 0.0)
+            + std::max(2.0 * std::get<1>(envelope) - std::get<1>(width), 0.0)
+            + std::max(2.0 * std::get<2>(envelope) - std::get<2>(width), 0.0);
+    };
+    auto compact_score = [](const std::tuple<double, double, double>& envelope) {
+        return std::max({std::get<0>(envelope), std::get<1>(envelope), std::get<2>(envelope)});
+    };
+
+    const bool clearance_bad = has_clearance_margin && clearance_margin < 0.0;
+    const auto current_env = topology.envelope_per_axis(current);
+    const bool current_fits = channel_width == nullptr || fits(*channel_width, current_env);
+    std::string reason = reason_override.empty()
+        ? (clearance_bad ? "clearance_violation" : "channel_too_narrow")
+        : reason_override;
+    std::string target = current;
+
+    if (clearance_bad || !current_fits) {
+        bool found = false;
+        double best_score = std::numeric_limits<double>::infinity();
+        for (const auto& candidate : config_.formation_adaptation_candidates) {
+            auto env = topology.envelope_per_axis(candidate);
+            double score = channel_width == nullptr
+                ? compact_score(env)
+                : (fits(*channel_width, env) ? compact_score(env) : 1000.0 + deficit_score(*channel_width, env));
+            if (score < best_score) {
+                best_score = score;
+                target = candidate;
+                found = true;
+            }
+        }
+        if (!found) target = "line";
+    } else if (
+        current != config_.initial_formation
+        && has_clearance_margin
+        && clearance_margin >= config_.formation_adaptation_recovery_margin
+        && (channel_width == nullptr || fits(*channel_width, topology.envelope_per_axis(config_.initial_formation)))) {
+        target = config_.initial_formation;
+        reason = "recover_default";
+    } else {
+        return false;
+    }
+
+    if (target == current) return false;
+
+    if (time_now <= 0.0) {
+        topology.set_current_formation(target);
+    } else {
+        topology.switch_formation(
+            target,
+            std::max(config_.formation_adaptation_transition_time, config_.dt),
+            time_now);
+    }
+    last_formation_adaptation_time_ = time_now;
+
+    FormationAdaptationEvent event;
+    event.t = time_now;
+    event.from = current;
+    event.to = target;
+    event.reason = reason;
+    if (channel_width != nullptr) {
+        event.has_channel_width = true;
+        event.channel_width = {std::get<0>(*channel_width), std::get<1>(*channel_width), std::get<2>(*channel_width)};
+    }
+    const auto selected_env = topology.envelope_per_axis(target);
+    event.has_selected_envelope = true;
+    event.selected_envelope = {std::get<0>(selected_env), std::get<1>(selected_env), std::get<2>(selected_env)};
+    if (has_clearance_margin) {
+        event.has_clearance_margin = true;
+        event.clearance_margin = clearance_margin;
+    }
+    formation_adaptation_events_.push_back(event);
+    return true;
+}
+
+std::vector<Vec3> ObstacleScenarioSimulation::maybe_lookahead_escape(
+    double time_now,
+    const Vec3& leader_pos,
+    const std::vector<Vec3>& active_path,
+    const Vec3& task_goal) {
+    if (!config_.formation_lookahead_enabled || !config_.formation_lookahead_rrt_enabled) return {};
+    if (active_path.size() < 2) return {};
+    if (last_lookahead_escape_time_ >= 0.0
+        && time_now - last_lookahead_escape_time_ < config_.formation_lookahead_min_interval) {
+        return {};
+    }
+
+    const double min_clearance = compute_clearance();
+    const auto window = path_window_from_position(active_path, leader_pos, config_.formation_lookahead_distance);
+    const double max_turn = path_max_turn_angle(window);
+    const double clearance = window.size() >= 2 ? path_segment_clearance(window, min_clearance) : min_clearance;
+    const double clearance_margin = clearance - min_clearance;
+    bool blocked = clearance_margin < 0.0;
+    std::string reason = blocked ? "lookahead_reference_blocked" : "lookahead_clear";
+    if (max_turn >= config_.formation_lookahead_turn_threshold_rad) {
+        blocked = true;
+        reason = "lookahead_sharp_turn";
+    }
+    if (!blocked) return {};
+
+    FormationAdaptationEvent blocked_event;
+    blocked_event.t = time_now;
+    blocked_event.kind = "lookahead_reference_blocked";
+    blocked_event.from = formation_.topology_.current_formation();
+    blocked_event.to = blocked_event.from;
+    blocked_event.reason = reason;
+    blocked_event.has_clearance_margin = true;
+    blocked_event.clearance_margin = clearance_margin;
+    blocked_event.has_max_turn_angle = true;
+    blocked_event.max_turn_angle_rad = max_turn;
+    formation_adaptation_events_.push_back(blocked_event);
+
+    apply_formation_adaptation(time_now, nullptr, clearance_margin, true, reason);
+
+    FormationAdaptationEvent attempt;
+    attempt.t = time_now;
+    attempt.kind = "rrt_escape_attempt";
+    attempt.from = formation_.topology_.current_formation();
+    attempt.to = attempt.from;
+    attempt.reason = reason;
+    attempt.planner = "rrt_star_escape";
+    attempt.goal_count = 2;
+    formation_adaptation_events_.push_back(attempt);
+
+    std::vector<std::pair<std::string, Vec3>> goals;
+    if (!window.empty()) goals.push_back({"lookahead_window_end", window.back()});
+    goals.push_back({"task_goal", task_goal});
+    for (const auto& item : goals) {
+        if (norm(item.second - leader_pos) < std::max(grid_.resolution, 1e-6)) continue;
+        std::vector<Vec3> candidate{leader_pos, item.second};
+        if (!path_is_clearance_safe(candidate, min_clearance)) continue;
+        FormationAdaptationEvent accepted;
+        accepted.t = time_now;
+        accepted.kind = "rrt_escape_accepted";
+        accepted.from = formation_.topology_.current_formation();
+        accepted.to = accepted.from;
+        accepted.reason = reason;
+        accepted.planner = "direct_clear_escape";
+        accepted.goal_kind = item.first;
+        accepted.point_count = static_cast<int>(candidate.size());
+        formation_adaptation_events_.push_back(accepted);
+        last_lookahead_escape_time_ = time_now;
+        observer_.record_planning(PlanningEvent{
+            time_now,
+            "online_lookahead_rrt_escape",
+            "rrt_star_escape",
+            -1,
+            0.0,
+            static_cast<int>(candidate.size()),
+            true,
+            "",
+        });
+        return candidate;
+    }
+
+    FormationAdaptationEvent failed;
+    failed.t = time_now;
+    failed.kind = "rrt_escape_failed";
+    failed.from = formation_.topology_.current_formation();
+    failed.to = failed.from;
+    failed.reason = reason;
+    failed.planner = "rrt_star_escape";
+    failed.goal_count = static_cast<int>(goals.size());
+    failed.point_count = 0;
+    formation_adaptation_events_.push_back(failed);
+    last_lookahead_escape_time_ = time_now;
+    observer_.record_planning(PlanningEvent{
+        time_now,
+        "online_lookahead_rrt_escape",
+        "rrt_star_escape",
+        -1,
+        0.0,
+        0,
+        false,
+        "rrt_escape_failed",
+    });
+    return {};
+}
+
 void ObstacleScenarioSimulation::rebuild_planning_grid() {
     Vec3 extent{
         map_bounds_[1].x - map_bounds_[0].x,
@@ -705,6 +962,9 @@ SimulationResult ObstacleScenarioSimulation::run() {
     replanned_waypoints_.clear();
     executed_path_.clear();
     fault_log_.clear();
+    formation_adaptation_events_.clear();
+    last_formation_adaptation_time_ = -1.0;
+    last_lookahead_escape_time_ = -1.0;
     observer_.clear_runtime();
     std::fill(formation_recovery_counts_.begin(), formation_recovery_counts_.end(), 0);
 
@@ -752,7 +1012,12 @@ SimulationResult ObstacleScenarioSimulation::run() {
             if (sensor_) {
                 sdata = sensor_->sense(ls_before_replan.position, obstacles_);
                 sp = &sdata;
-                if (config_.planner_use_formation_envelope) {
+                if (config_.formation_adaptation_enabled) {
+                    auto channel_width = channel_width_from_sensor(sp);
+                    if (apply_formation_adaptation(t, &channel_width, 0.0, false)) {
+                        rebuild_planning_grid();
+                    }
+                } else if (config_.planner_use_formation_envelope) {
                     const std::string before = topology.current_formation();
                     if (topology.auto_shrink(channel_width_from_sensor(sp)) && topology.current_formation() != before) {
                         rebuild_planning_grid();
@@ -762,7 +1027,11 @@ SimulationResult ObstacleScenarioSimulation::run() {
 
             Vec3 task_goal = tasks[task_wp_idx];
             auto replan_started = std::chrono::high_resolution_clock::now();
-            auto new_path = replanner_->step(t, ls_before_replan.position, sp, task_goal);
+            auto new_path = maybe_lookahead_escape(t, ls_before_replan.position, active_path, task_goal);
+            const bool lookahead_used = !new_path.empty();
+            if (!lookahead_used) {
+                new_path = replanner_->step(t, ls_before_replan.position, sp, task_goal);
+            }
             if (!new_path.empty()) {
                 auto candidate_path = stitch_local_path_to_task_goal(new_path, task_goal);
                 const double clearance = compute_clearance();
@@ -779,16 +1048,18 @@ SimulationResult ObstacleScenarioSimulation::run() {
                 }
                 const double replan_wall_time_s = std::chrono::duration<double>(
                     std::chrono::high_resolution_clock::now() - replan_started).count();
-                observer_.record_planning(PlanningEvent{
-                    t,
-                    "online_replan",
-                    config_.planner_kind,
-                    task_wp_idx,
-                    replan_wall_time_s,
-                    static_cast<int>(candidate_path.size()),
-                    candidate_safe,
-                    candidate_safe ? "" : "clearance_rejected",
-                });
+                if (!lookahead_used) {
+                    observer_.record_planning(PlanningEvent{
+                        t,
+                        "online_replan",
+                        config_.planner_kind,
+                        task_wp_idx,
+                        replan_wall_time_s,
+                        static_cast<int>(candidate_path.size()),
+                        candidate_safe,
+                        candidate_safe ? "" : "clearance_rejected",
+                    });
+                }
                 if (candidate_safe) {
                     active_path = std::move(candidate_path);
                     waypoints_ = active_path;
@@ -993,6 +1264,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
     result.planning_events = observer_.planning_events();
     result.waypoint_events = observer_.waypoint_events();
     result.collision_log = observer_.collision_events();
+    result.formation_adaptation_events = formation_adaptation_events_;
     result.fault_log = fault_log_;
     int valid = step_idx;
 

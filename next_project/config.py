@@ -10,6 +10,28 @@ import numpy as np
 
 from simulations.formation_simulation import SimulationConfig
 
+AVAILABLE_PRESETS = [
+    "basic",
+    "obstacle",
+    "warehouse",
+    "warehouse_a",
+    "warehouse_online",
+    "warehouse_danger",
+    "fault_tolerance",
+    "fault_tolerance_online",
+    "school_corridor",
+    "school_corridor_online",
+    "company_cubicles",
+    "company_cubicles_online",
+    "meeting_room",
+    "meeting_room_online",
+    "rrt_dual_channel_online",
+    "formation_maze_stress_online",
+    "laboratory",
+    "laboratory_online",
+    "custom",
+]
+
 
 def get_config(preset: str = "basic") -> SimulationConfig:
     """返回指定预设场景的仿真配置。
@@ -28,6 +50,8 @@ def get_config(preset: str = "basic") -> SimulationConfig:
         company_cubicles_online 公司格子间在线版（Hybrid A* + 传感器 + D* Lite）
         meeting_room         会议室场景（离线 A*，cm 级精度）
         meeting_room_online  会议室在线版（A* + 传感器 + 实时重规划）
+        rrt_dual_channel_online RRT 双通道绕行压力测试（前瞻窗口 + RRT escape）
+        formation_maze_stress_online 编队迷宫压力测试（狭长通道 + 急转弯 + 队形切换）
         laboratory           实验室场景（离线 A*）
         laboratory_online    实验室在线版（Hybrid A* + 传感器 + D* Lite）
         custom               自定义（修改此函数返回值即可）
@@ -60,6 +84,10 @@ def get_config(preset: str = "basic") -> SimulationConfig:
         return _config_company_cubicles_online()
     elif preset == "meeting_room_online":
         return _config_meeting_room_online()
+    elif preset == "rrt_dual_channel_online":
+        return _config_rrt_dual_channel_online()
+    elif preset == "formation_maze_stress_online":
+        return _config_formation_maze_stress_online()
     elif preset == "laboratory_online":
         return _config_laboratory_online()
     elif preset == "laboratory":
@@ -67,7 +95,7 @@ def get_config(preset: str = "basic") -> SimulationConfig:
     elif preset == "custom":
         return _config_custom()
     else:
-        raise ValueError(f"未知预设: {preset}，可用: basic, obstacle, warehouse, warehouse_a, warehouse_online, warehouse_danger, fault_tolerance, school_corridor, school_corridor_online, company_cubicles, company_cubicles_online, meeting_room, meeting_room_online, laboratory, laboratory_online, custom")
+        raise ValueError(f"未知预设: {preset}，可用: {', '.join(AVAILABLE_PRESETS)}")
 
 
 # ============================================================
@@ -668,6 +696,112 @@ def _config_meeting_room_online() -> SimulationConfig:
             np.array([7.0, 1.5, 2.0], dtype=float),
             np.array([13.5, 5.0, 2.0], dtype=float),
             np.array([7.0, 11.0, 2.0], dtype=float),
+        ],
+    )
+
+
+def _config_rrt_dual_channel_online() -> SimulationConfig:
+    """RRT双通道绕行对照图：局部前瞻假死路 + RRT旁路escape + 编队提前变换。"""
+    from pathlib import Path
+    pkg = Path(__file__).resolve().parent
+    return SimulationConfig(
+        max_sim_time=28.0,
+        use_smc=True,
+        use_backstepping=True,
+        num_followers=3,
+        formation_spacing=0.55,
+        initial_formation="diamond",
+        wp_radius=0.45,
+        wp_radius_final=0.25,
+        leader_max_vel=1.0,
+        leader_max_acc=1.4,
+        leader_gain_scale=0.80,
+        follower_gain_scale=1.0,
+        follower_max_vel=5.0,
+        follower_max_acc=5.0,
+        leader_acc_alpha=0.30,
+        enable_obstacles=True,
+        map_file=str(pkg / "maps" / "rrt_dual_channel_escape.json"),
+        planner_kind="astar",
+        planner_mode="online",
+        planner_resolution=0.25,
+        safety_margin=0.22,
+        plan_clearance_extra=0.18,
+        planner_z_bounds=(1.4, 2.4),
+        sensor_enabled=True,
+        planner_replan_interval=1.0,
+        planner_horizon=4.0,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.45,
+        formation_downwash_height=0.80,
+        formation_adaptation_enabled=True,
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        formation_lookahead_distance=4.2,
+        formation_lookahead_turn_threshold_rad=1.0,
+        formation_lookahead_min_interval=0.8,
+        formation_lookahead_rrt_max_iter=900,
+        formation_lookahead_rrt_rewire_radius=1.2,
+        waypoints=[
+            np.array([0.0, 0.0, 1.8], dtype=float),
+            np.array([5.5, 0.0, 1.8], dtype=float),
+            np.array([12.0, 4.5, 1.8], dtype=float),
+            np.array([22.5, 4.5, 1.8], dtype=float),
+        ],
+    )
+
+
+def _config_formation_maze_stress_online() -> SimulationConfig:
+    """编队迷宫压力图：窄门、假分支、RRT旁路、U形转弯与宽区恢复。"""
+    from pathlib import Path
+    pkg = Path(__file__).resolve().parent
+    return SimulationConfig(
+        max_sim_time=38.0,
+        use_smc=True,
+        use_backstepping=True,
+        num_followers=3,
+        formation_spacing=0.55,
+        initial_formation="diamond",
+        wp_radius=0.50,
+        wp_radius_final=0.28,
+        leader_max_vel=1.0,
+        leader_max_acc=1.4,
+        leader_gain_scale=0.80,
+        follower_gain_scale=1.0,
+        follower_max_vel=5.0,
+        follower_max_acc=5.0,
+        leader_acc_alpha=0.30,
+        enable_obstacles=True,
+        map_file=str(pkg / "maps" / "formation_maze_stress.json"),
+        planner_kind="astar",
+        planner_mode="online",
+        planner_resolution=0.25,
+        safety_margin=0.22,
+        plan_clearance_extra=0.18,
+        planner_z_bounds=(1.4, 2.4),
+        sensor_enabled=True,
+        planner_replan_interval=1.0,
+        planner_horizon=4.5,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.45,
+        formation_downwash_height=0.80,
+        formation_adaptation_enabled=True,
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        formation_lookahead_distance=4.5,
+        formation_lookahead_turn_threshold_rad=1.0,
+        formation_lookahead_min_interval=0.8,
+        formation_lookahead_rrt_max_iter=1000,
+        formation_lookahead_rrt_rewire_radius=1.25,
+        waypoints=[
+            np.array([0.0, 0.0, 1.8], dtype=float),
+            np.array([4.5, 3.5, 1.8], dtype=float),
+            np.array([10.0, 3.5, 1.8], dtype=float),
+            np.array([10.0, -2.5, 1.8], dtype=float),
+            np.array([17.0, -2.5, 1.8], dtype=float),
+            np.array([20.5, 5.0, 1.8], dtype=float),
         ],
     )
 

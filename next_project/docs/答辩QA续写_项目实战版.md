@@ -371,3 +371,34 @@ FIRI 是优化器，不是安全唯一来源；如果 FIRI 没修好，门禁会
 4. 最后说边界：这是工程安全兜底，不是绝对安全证明。
 
 这个顺序最稳：先承认问题，再解释机制，再给证据，最后说明边界。
+
+---
+
+## 10. 中期新增：编队调控实战问答
+
+### Q：为什么 leader-only planner 不够？
+
+leader-only planner 只保证领航机中心点安全，但编队飞行时从机会分布在 leader 周围。窄通道、门洞和急转弯场景中，leader 可以通过不代表整个编队可以通过。因此中期版本把从机包络和队形安全裕度纳入 clearance 判断，形成 formation-aware clearance。
+
+### Q：队形自适应和普通避障有什么不同？
+
+普通避障主要改变路径；队形自适应改变的是“编队占用空间”。例如 diamond 队形横向宽，进入窄通道前要切换到 line 或更窄队形。它不是替代规划器，而是给规划器提供更合理的安全包络。
+
+### Q：为什么要提前触发队形变换？
+
+队形变换需要过渡时间。如果等到 leader 到达窄通道口才切换，从机可能已经进入危险区域。前瞻窗口的作用是在路径前方提前检测通道宽度和转弯角度，让队形变化发生在仍有空间调整的时候。
+
+### Q：RRT escape 是不是万能兜底？
+
+不是。RRT escape 只在局部窗口出现阻断或假死路时提供候选绕行路径，候选路径仍要经过 clearance gate。报告中会记录 attempt、accepted 和 failed，因此它是可审计的辅助机制，不是无条件替换路径。
+
+### Q：如何证明不是只靠调参？
+
+看消融结构。项目同时运行 `leader_only_planner`、`formation_aware_adaptive` 和 `formation_aware_lookahead_adaptive`。如果只是调参，无法解释事件日志中的 `lookahead_reference_blocked`、`rrt_escape_attempt`、`rrt_escape_accepted` 这些机制性证据。
+
+### Q：中期最新证据在哪里？
+
+- `docs/中期验收记录.md` 第 11 节：测试、构建和 C++ 回归结果。
+- `outputs/ablation_rrt_dual_channel/report.md`：双通道 RRT escape 消融报告。
+- `outputs/ablation_formation_maze_stress/report.md`：迷宫压力图消融报告。
+- `docs/capability-matrix.md` 第 6 节：Python/C++/Web 最新边界。

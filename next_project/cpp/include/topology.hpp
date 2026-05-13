@@ -16,6 +16,7 @@ public:
     std::vector<Vec3> get_current_offsets(double elapsed_time);
 
     void set_custom_offsets(const std::vector<Vec3>& offsets);
+    void set_current_formation(const std::string& formation);
     void switch_formation(const std::string& target_formation, double transition_time, double current_time);
 
     [[nodiscard]] bool is_switching() const { return switching_; }

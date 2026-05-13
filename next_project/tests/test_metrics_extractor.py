@@ -95,6 +95,23 @@ def test_extract_metrics_from_raw_simulation_result():
     assert metrics["executed_path_length"] == 3.0
 
 
+def test_extract_metrics_counts_lookahead_escape_events():
+    payload = {
+        "formation_adaptation_events": [
+            {"kind": "lookahead_reference_blocked", "reason": "lookahead_sharp_turn"},
+            {"kind": "rrt_escape_attempt", "reason": "lookahead_sharp_turn"},
+            {"kind": "rrt_escape_accepted", "reason": "lookahead_sharp_turn"},
+        ],
+    }
+
+    metrics = extract_metrics(payload)
+
+    assert metrics["lookahead_reference_blocked_count"] == 1
+    assert metrics["rrt_escape_attempt_count"] == 1
+    assert metrics["rrt_escape_accepted_count"] == 1
+    assert metrics["rrt_escape_failed_count"] == 0
+
+
 def test_extract_metrics_derives_trajectory_fields_without_planned_trajectory():
     payload = {
         "planned_path": [[0, 0, 0], [0, 7.5, 0]],

@@ -138,6 +138,17 @@ void FormationTopology::set_custom_offsets(const std::vector<Vec3>& offsets) {
     custom_offsets_ = offsets;
 }
 
+void FormationTopology::set_current_formation(const std::string& formation) {
+    current_offsets_ = compute_offsets(formation);
+    current_formation_ = formation;
+    target_formation_.clear();
+    source_offsets_.clear();
+    target_offsets_.clear();
+    switch_start_time_ = 0.0;
+    transition_time_ = 0.0;
+    switching_ = false;
+}
+
 void FormationTopology::switch_formation(const std::string& target_formation, double transition_time, double current_time) {
     if (transition_time <= 0.0) {
         throw std::invalid_argument("transition_time must be positive");

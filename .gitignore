@@ -5,6 +5,12 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+.ipynb_checkpoints/
 
 # === Virtual environments ===
 .venv/
@@ -15,15 +21,31 @@ env/
 # === C/C++ build ===
 build/
 build_*/
+cmake-build-*/
+out/
 *.o
 *.obj
 *.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+*.ilk
+*.exp
 CMakeFiles/
 CMakeCache.txt
 compile_commands.json
+Testing/
+*.ninja
+.ninja_*
+CMakeUserPresets.json
 
 # === Runtime outputs ===
 outputs/
+artifacts/
+reports/
 
 # === IDE / Editor ===
 .idea/
@@ -61,3 +83,6 @@ TextureMesh-*.log
 # === Temp ===
 *.tmp
 *.log
+*.err
+*.out
+*.prof

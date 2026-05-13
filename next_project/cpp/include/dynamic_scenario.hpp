@@ -108,6 +108,13 @@ struct ReplayOutput {
         std::vector<std::string> apf_runtime_fields;
         std::vector<std::string> apf_python_only_fields;
         std::vector<std::string> apf_cpp_pending_fields;
+        std::string initial_formation;
+        std::vector<std::string> formation_adaptation_candidates;
+        bool formation_adaptation_enabled = false;
+        bool formation_lookahead_enabled = false;
+        bool formation_lookahead_rrt_enabled = false;
+        double formation_lookahead_distance = 0.0;
+        double formation_lookahead_turn_threshold_rad = 0.0;
         int step_count = 0;
         double dt = 0.0;
         double total_time = 0.0;
@@ -118,6 +125,7 @@ struct ReplayOutput {
     std::vector<ObstacleDesc> static_obstacles;
     std::array<Vec3, 2> bounds{};
     std::vector<DynamicEvent> dynamic_events;
+    std::vector<FormationAdaptationEvent> formation_adaptation_events;
     std::vector<Vec3> waypoints;
     std::vector<Vec3> task_waypoints;
     std::vector<Vec3> replanned_waypoints;
@@ -227,6 +235,13 @@ inline ReplayOutput DynamicScenarioRunner::run() {
     output.metadata.dt = std::max(config_.dt, std::max(0.05, config_.planner_replan_interval));
     output.metadata.total_time = config_.max_sim_time;
     output.metadata.seed = seed_;
+    output.metadata.initial_formation = config_.initial_formation;
+    output.metadata.formation_adaptation_candidates = config_.formation_adaptation_candidates;
+    output.metadata.formation_adaptation_enabled = config_.formation_adaptation_enabled;
+    output.metadata.formation_lookahead_enabled = config_.formation_lookahead_enabled;
+    output.metadata.formation_lookahead_rrt_enabled = config_.formation_lookahead_rrt_enabled;
+    output.metadata.formation_lookahead_distance = config_.formation_lookahead_distance;
+    output.metadata.formation_lookahead_turn_threshold_rad = config_.formation_lookahead_turn_threshold_rad;
     output.metadata.apf_runtime_fields = {
         "apf_paper1_profile",
         "apf_comm_range",
@@ -314,6 +329,19 @@ inline ReplayOutput DynamicScenarioRunner::run() {
                 replanned_waypoints.insert(replanned_waypoints.end(), active_path.begin(), active_path.end());
             } else {
                 frame.clearance_blocked = true;
+                if (config_.formation_adaptation_enabled || config_.formation_lookahead_enabled) {
+                    FormationAdaptationEvent event;
+                    event.t = t;
+                    event.kind = "lookahead_reference_blocked";
+                    event.from = config_.initial_formation;
+                    event.to = config_.initial_formation;
+                    event.reason = "dynamic_replay_clearance_gate";
+                    event.has_clearance_margin = true;
+                    event.clearance_margin = path_segment_clearance(selected_path, accept_clearance) - accept_clearance;
+                    event.planner = "dynamic_replay";
+                    event.point_count = static_cast<int>(selected_path.size());
+                    output.formation_adaptation_events.push_back(event);
+                }
                 ensure_reachable_replan_grid(leader_pose, goal);
             }
         }

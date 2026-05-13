@@ -101,6 +101,11 @@ def extract_metrics(sim_result: Mapping[str, Any]) -> dict[str, float | int | st
     last_event = adaptation_events[-1] if adaptation_events else {}
     metrics["formation_adaptation_last"] = str(last_event.get("to") or "")
     metrics["formation_adaptation_last_reason"] = str(last_event.get("reason") or "")
+    event_kinds = [str(event.get("kind") or "") for event in adaptation_events if isinstance(event, Mapping)]
+    metrics["lookahead_reference_blocked_count"] = event_kinds.count("lookahead_reference_blocked")
+    metrics["rrt_escape_attempt_count"] = event_kinds.count("rrt_escape_attempt")
+    metrics["rrt_escape_accepted_count"] = event_kinds.count("rrt_escape_accepted")
+    metrics["rrt_escape_failed_count"] = event_kinds.count("rrt_escape_failed")
     return metrics
 
 

@@ -139,6 +139,7 @@ def _render_markdown(
     ]
     if obstacle_model:
         lines.extend(_obstacle_model_markdown(obstacle_model))
+    lines.extend(_formation_adaptation_markdown(payload, metrics, cfg))
     lines.extend([
         "",
         "## 规划器与规划耗时",
@@ -500,6 +501,71 @@ def _obstacle_model_markdown(obstacle_model: Mapping[str, Any]) -> list[str]:
             )
         if len(primitives) > 20:
             lines.append(f"| ... | ... | 其余 {len(primitives) - 20} 个障碍物见 sim_result.json |")
+    return lines
+
+
+def _formation_adaptation_markdown(
+    payload: Mapping[str, Any],
+    metrics: Mapping[str, Any],
+    cfg: Mapping[str, Any],
+) -> list[str]:
+    events = [event for event in (payload.get("formation_adaptation_events") or []) if isinstance(event, Mapping)]
+    enabled = bool(cfg.get("formation_adaptation_enabled"))
+    lookahead_enabled = bool(cfg.get("formation_lookahead_enabled"))
+    rrt_enabled = bool(cfg.get("formation_lookahead_rrt_enabled"))
+    if not (events or enabled or lookahead_enabled or rrt_enabled):
+        return []
+
+    lines = [
+        "",
+        "## 编队调控机制",
+        "",
+        "| 项目 | 值 |",
+        "|---|---:|",
+        f"| 队形自适应 | {_yes_no(enabled)} |",
+        f"| 前瞻窗口 | {_yes_no(lookahead_enabled)} |",
+        f"| 前瞻 RRT escape | {_yes_no(rrt_enabled)} |",
+        f"| 队形调整事件数 | {_fmt(metrics.get('formation_adaptation_count'))} |",
+        f"| 最终队形 | {metrics.get('formation_adaptation_last') or ''} |",
+        f"| 最后调整原因 | {metrics.get('formation_adaptation_last_reason') or ''} |",
+        f"| 前瞻阻断次数 | {_fmt(metrics.get('lookahead_reference_blocked_count'))} |",
+        f"| RRT escape 尝试数 | {_fmt(metrics.get('rrt_escape_attempt_count'))} |",
+        f"| RRT escape 接受数 | {_fmt(metrics.get('rrt_escape_accepted_count'))} |",
+        f"| RRT escape 失败数 | {_fmt(metrics.get('rrt_escape_failed_count'))} |",
+    ]
+    if events:
+        lines.extend([
+            "",
+            "### 编队调控事件",
+            "",
+            "| 时间 s | 类型 | from | to | 原因 | 规划器 | 点数 | 裕度/转角 |",
+            "|---|---|---|---|---|---|---:|---|",
+        ])
+        for event in events[:20]:
+            kind = str(event.get("kind") or "formation_switch")
+            detail = []
+            if event.get("clearance_margin") is not None:
+                detail.append(f"clearance_margin={_fmt(event.get('clearance_margin'))}")
+            if event.get("max_turn_angle_rad") is not None:
+                detail.append(f"max_turn={_fmt(event.get('max_turn_angle_rad'))}")
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        _fmt(event.get("t")),
+                        kind,
+                        str(event.get("from") or ""),
+                        str(event.get("to") or ""),
+                        str(event.get("reason") or ""),
+                        str(event.get("planner") or ""),
+                        _fmt(event.get("point_count")),
+                        "; ".join(detail),
+                    ]
+                )
+                + " |"
+            )
+        if len(events) > 20:
+            lines.append(f"| ... | ... | ... | ... | ... | ... |  | 其余 {len(events) - 20} 条事件见 sim_result.json |")
     return lines
 
 

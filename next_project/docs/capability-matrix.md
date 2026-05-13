@@ -85,3 +85,38 @@
 - `test_cross_line_regression.py` 默认契约测试通过。
 - 在至少一台已构建 C++ 的机器上，`RUN_CROSS_LINE_REGRESSION=1` 的 runtime 回归通过或形成有解释的偏差报告。
 - Web dynamic replay 不再被描述成完整多机风险报告，只作为 leader-centric 动态回放入口。
+
+## 6. 2026-05-13 中期收口能力补充
+
+本节补充 M2 后新增的编队调控和 C++ 报告对齐状态。它不替代上面的基础矩阵，而是给答辩和验收提供最新边界。
+
+| 功能点 | Python | C++ | Web | 说明 |
+|---|---|---|---|---|
+| formation-aware clearance 策略模块 | 完整 | 可运行子集 | 报告展示 | Python 由 `core/formation_adaptation.py` 独立决策；C++ 输出对应配置和事件字段 |
+| 从机安全裕度消融 | 完整 | 报告字段兼容 | 不作为 benchmark | `leader_only_planner`、`formation_aware_adaptive`、`formation_aware_lookahead_adaptive` 可对比 |
+| 前瞻窗口队形调整 | 完整 | 可运行子集 | replay metadata | 在探测窗口中识别窄通道/急转弯，提前触发队形调整 |
+| RRT escape 事件链 | 完整 | 直接 clear escape 子集 | replay metadata | Python 使用 RRT escape 候选路径；C++ 记录 attempt/accepted/failed 事件口径 |
+| 新压力场景 | 完整 | `sim_warehouse --preset` 可运行 | 可作为 base_config | `rrt_dual_channel_online` 与 `formation_maze_stress_online` 已注册 |
+| 中文结果报告 | 完整 | 完整子集 | 不适用 | Python 报告输出 `report.md`，C++ 报告输出 `cpp_report.md`、`cpp_metrics.json` 和 PNG |
+
+最新验证命令：
+
+```powershell
+python -m pytest -q
+cmake --build cpp/build --target sim_main sim_benchmark sim_warehouse sim_dynamic_replay --config Release
+python -m pytest tests/test_cpp_result_reporting.py -q
+$env:RUN_CROSS_LINE_REGRESSION='1'; python -m pytest tests/test_cross_line_regression.py -q
+```
+
+最新结果：
+
+- 全量测试：`170 passed, 3 skipped`，其中 3 个 skipped 均为构建/环境开关型跳过。
+- C++ 报告测试：`6 passed`。
+- C++ 跨线回归：`3 passed`。
+
+答辩边界口径：
+
+- 可以说“Python 主线完成 formation-aware clearance、队形自适应、RRT 前瞻 escape 和消融报告闭环”。
+- 可以说“C++ 已对齐关键配置、事件字段、报告输出和 preset 入口，是可运行子集”。
+- 不说“C++ 完整复现 Python 全部 RRT* / Informed RRT* 能力”。
+- 不说“Web replay 是完整多机动力学 benchmark”。

@@ -249,6 +249,19 @@ def test_map_loader():
         assert bounds.shape == (2, 3)
 
 
+def test_rrt_dual_channel_escape_map_loads():
+    map_path = _project / "maps" / "rrt_dual_channel_escape.json"
+
+    field, bounds = load_from_json(str(map_path))
+
+    assert bounds.shape == (2, 3)
+    assert bounds[0].tolist() == [-2.0, -5.0, 0.0]
+    assert bounds[1].tolist() == [26.0, 12.0, 4.0]
+    assert len(field) >= 16
+    assert field.signed_distance(np.array([0.0, 0.0, 1.8], dtype=float)) > 0.2
+    assert field.signed_distance(np.array([20.5, 4.5, 1.8], dtype=float)) > 0.2
+
+
 def test_smooth_path():
     """路径平滑增加航点数。"""
     raw = np.array([[0, 0, 0], [5, 0, 0], [10, 0, 0]], dtype=float)
@@ -527,6 +540,32 @@ def test_online_accept_path_rejects_unsafe_clearance_without_fallback():
     assert sim.replan_events[-1]["reason"] == "no_continuous_clearance_path"
 
 
+def test_path_segment_clearance_samples_beyond_first_boundary_touch():
+    field = ObstacleField()
+    field.add_sphere([4.0, 0.0, 1.0], 0.5)
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_kind="astar",
+        planner_mode="offline",
+        planner_resolution=0.5,
+        safety_margin=0.3,
+        obstacle_field=field,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    path = np.array([[0.0, 0.0, 1.0], [4.0, 0.0, 1.0]], dtype=float)
+
+    clearance = sim._path_segment_clearance(path, min_clearance=0.3)
+
+    assert clearance < 0.0
+    assert not sim._segment_is_safe(path, 0.3)
+
+
 def test_inflate_radius_uses_runtime_formation_envelope():
     """规划膨胀半径应跟随运行时队形，而不是固定 initial_formation。"""
     cfg = SimulationConfig(
@@ -749,6 +788,299 @@ def test_formation_adaptation_event_is_reported_when_channel_is_narrow():
     assert event["from"] == "diamond"
     assert event["to"] == "line"
     assert event["reason"] in {"channel_too_narrow", "clearance_violation"}
+
+
+def test_formation_adaptation_applies_spacing_guard():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=0.3,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_use_formation_envelope=True,
+        formation_safety_enabled=True,
+        formation_adaptation_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.45,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        sensor_enabled=False,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+
+    event = sim._apply_formation_adaptation(
+        1.0,
+        channel_width=(0.3, 40.0, 5.0),
+        clearance_margin=-0.2,
+    )
+
+    assert event is not None
+    assert event["target_spacing"] >= cfg.formation_downwash_radius
+    assert sim.topology.spacing == event["target_spacing"]
+
+
+def test_preflight_formation_adaptation_applies_immediately():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        formation_spacing=0.3,
+        initial_formation="diamond",
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_use_formation_envelope=True,
+        formation_adaptation_enabled=True,
+        planner_resolution=0.5,
+        safety_margin=0.5,
+        sensor_enabled=False,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+
+    event = sim._apply_formation_adaptation(
+        0.0,
+        channel_width=None,
+        clearance_margin=-0.2,
+    )
+
+    assert event is not None
+    assert sim.topology.current_formation == event["to"]
+    assert not sim.topology.is_switching
+
+
+def test_inter_drone_state_projection_restores_min_distance():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=1,
+        formation_spacing=0.3,
+        initial_formation="line",
+        enable_obstacles=True,
+        planner_mode="offline",
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    follower = sim.followers[0]
+    follower.state[0:3] = np.array([0.05, 0.0, 1.0], dtype=float)
+
+    projected = sim._project_drone_state_from_neighbors(
+        follower,
+        [np.array([0.0, 0.0, 1.0], dtype=float)],
+        min_distance=0.35,
+    )
+
+    assert projected
+    assert np.linalg.norm(follower.state[0:3] - np.array([0.0, 0.0, 1.0])) >= 0.35 - 1e-6
+
+
+def test_lookahead_diagnosis_detects_sharp_corner_before_arrival():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=3,
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_use_formation_envelope=True,
+        formation_adaptation_enabled=True,
+        formation_lookahead_enabled=True,
+        formation_lookahead_distance=4.0,
+        formation_lookahead_turn_threshold_rad=1.0,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    path = np.array(
+        [
+            [0.0, 0.0, 1.0],
+            [2.0, 0.0, 1.0],
+            [2.0, 2.0, 1.0],
+            [4.0, 2.0, 1.0],
+        ],
+        dtype=float,
+    )
+
+    diagnosis = sim._lookahead_path_diagnosis(path, path[0])
+
+    assert diagnosis["blocked"] is True
+    assert diagnosis["reason"] == "lookahead_sharp_turn"
+    assert diagnosis["max_turn_angle_rad"] >= 1.0
+
+
+def test_rrt_escape_path_records_attempt_and_acceptance():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_mode="online",
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        formation_lookahead_rrt_max_iter=80,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+
+    path = sim._plan_rrt_escape_path(
+        np.array([0.0, 0.0, 1.0], dtype=float),
+        np.array([4.0, 0.0, 1.0], dtype=float),
+        min_clearance=0.3,
+        time_now=1.0,
+    )
+
+    kinds = [event.get("kind") for event in sim.formation_adaptation_events]
+    assert path is not None
+    assert "rrt_escape_attempt" in kinds
+    assert "rrt_escape_accepted" in kinds
+    assert sim.formation_adaptation_events[-1]["point_count"] == len(path)
+
+
+def test_rrt_escape_path_accepts_reachable_lookahead_subgoal_when_task_goal_is_blocked():
+    field = ObstacleField()
+    field.add_sphere([4.0, 0.0, 1.0], 0.5)
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_mode="online",
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        formation_lookahead_rrt_max_iter=40,
+        obstacle_field=field,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    subgoal = np.array([1.2, 0.0, 1.0], dtype=float)
+
+    path = sim._plan_rrt_escape_path(
+        np.array([0.0, 0.0, 1.0], dtype=float),
+        np.array([4.0, 0.0, 1.0], dtype=float),
+        min_clearance=0.3,
+        time_now=1.0,
+        candidate_goals=[("lookahead_window_end", subgoal)],
+    )
+
+    assert path is not None
+    np.testing.assert_allclose(path[-1], subgoal)
+    assert sim.formation_adaptation_events[-1]["kind"] == "rrt_escape_accepted"
+    assert sim.formation_adaptation_events[-1]["goal_kind"] == "lookahead_window_end"
+
+
+def test_lookahead_escape_runs_before_regular_sensor_replan():
+    cfg = SimulationConfig(
+        max_sim_time=1.0,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_mode="online",
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        formation_lookahead_rrt_max_iter=80,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([4.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    local_path = np.array(
+        [
+            [0.0, 0.0, 1.0],
+            [1.0, 0.0, 1.0],
+            [1.0, 1.5, 1.0],
+            [4.0, 1.5, 1.0],
+        ],
+        dtype=float,
+    )
+
+    new_path = sim._maybe_rrt_lookahead_escape(
+        time_now=1.0,
+        leader_pos=local_path[0],
+        local_path=local_path,
+        task_goal=np.array([4.0, 0.0, 1.0], dtype=float),
+    )
+
+    assert new_path is not None
+    assert any(event.get("kind") == "lookahead_reference_blocked" for event in sim.formation_adaptation_events)
+    assert any(event.get("phase") == "online_lookahead_rrt_escape" for event in sim.planning_events)
+
+
+def test_online_loop_invokes_lookahead_escape_before_regular_replan(monkeypatch):
+    calls = []
+
+    def fake_lookahead(self, time_now, leader_pos, local_path, task_goal):
+        calls.append({
+            "t": float(time_now),
+            "local_path_len": int(len(local_path)),
+            "task_goal": np.asarray(task_goal, dtype=float).tolist(),
+        })
+        return None
+
+    monkeypatch.setattr(ObstacleScenarioSimulation, "_maybe_rrt_lookahead_escape", fake_lookahead)
+    cfg = SimulationConfig(
+        dt=0.02,
+        max_sim_time=0.06,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_kind="astar",
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([2.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+
+    sim.run()
+
+    assert calls
+
+
+def test_run_resets_lookahead_escape_interval_state():
+    cfg = SimulationConfig(
+        dt=0.02,
+        max_sim_time=0.02,
+        num_followers=1,
+        enable_obstacles=True,
+        planner_mode="online",
+        planner_kind="astar",
+        formation_lookahead_enabled=True,
+        formation_lookahead_rrt_enabled=True,
+        obstacle_field=ObstacleField(),
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([2.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+    sim = ObstacleScenarioSimulation(cfg)
+    sim._last_lookahead_escape_time = 99.0
+
+    sim.run()
+
+    assert sim._last_lookahead_escape_time is None
 
 
 def test_formation_apf_switch_is_no_longer_dead_config():

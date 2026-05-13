@@ -52,7 +52,7 @@ def test_policy_recovers_default_when_roomy_and_clearance_is_safe():
     assert decision.reason == "recover_default"
 
 
-def test_policy_uses_smallest_lateral_envelope_when_channel_is_unknown_and_clearance_violates():
+def test_policy_uses_smallest_overall_envelope_when_channel_is_unknown_and_clearance_violates():
     policy = FormationAdaptationPolicy(
         formations=("diamond", "line", "triangle"),
         default_formation="diamond",
@@ -73,7 +73,7 @@ def test_policy_uses_smallest_lateral_envelope_when_channel_is_unknown_and_clear
     )
 
     assert decision.should_switch
-    assert decision.target_formation == "line"
+    assert decision.target_formation == "triangle"
 
 
 def test_policy_does_not_recover_default_without_clearance_evidence():

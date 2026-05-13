@@ -7,7 +7,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <system_error>
 #include <variant>
+#include <vector>
 
 #include "config.hpp"
 #include "json_writer.hpp"
@@ -70,6 +72,47 @@ std::string timestamp_dir_name() {
         oss << "unknown";
     }
     return oss.str();
+}
+
+bool path_exists(const std::filesystem::path& path) {
+    std::error_code ec;
+    return std::filesystem::exists(path, ec);
+}
+
+std::string resolve_map_file(const std::string& raw) {
+    if (raw.empty()) return raw;
+    const std::filesystem::path path(raw);
+    if (path_exists(path)) return path.string();
+
+    std::vector<std::filesystem::path> candidates;
+    candidates.push_back(std::filesystem::path("maps") / path.filename());
+    candidates.push_back(std::filesystem::path("..") / "maps" / path.filename());
+    candidates.push_back(std::filesystem::path("next_project") / "maps" / path.filename());
+
+    for (const auto& candidate : candidates) {
+        if (path_exists(candidate)) return candidate.string();
+    }
+    return raw;
+}
+
+struct CliOptions {
+    std::string preset = "warehouse";
+    double max_sim_time = -1.0;
+};
+
+CliOptions parse_cli(int argc, char* argv[]) {
+    CliOptions options;
+    for (int i = 1; i < argc; ++i) {
+        const std::string arg = argv[i];
+        if (arg == "--preset" && i + 1 < argc) {
+            options.preset = argv[++i];
+        } else if (arg == "--max-sim-time" && i + 1 < argc) {
+            options.max_sim_time = std::stod(argv[++i]);
+        } else if (arg.rfind("--", 0) != 0) {
+            options.preset = arg;
+        }
+    }
+    return options;
 }
 
 int accepted_replan_count(const sim::SimulationResult& result) {
@@ -188,6 +231,44 @@ void write_collision_log(sim::JsonWriter& w, const std::vector<sim::CollisionEve
     w.end_array();
 }
 
+void write_formation_adaptation_events(
+    sim::JsonWriter& w,
+    const std::vector<sim::FormationAdaptationEvent>& events
+) {
+    w.key("formation_adaptation_events").begin_array();
+    for (const auto& event : events) {
+        w.begin_object();
+        w.key("t").value(event.t);
+        if (!event.kind.empty()) w.key("kind").value(event.kind);
+        w.key("from").value(event.from);
+        w.key("to").value(event.to);
+        w.key("reason").value(event.reason);
+        if (event.has_channel_width) {
+            w.key("channel_width").begin_array();
+            w.value(event.channel_width[0]);
+            w.value(event.channel_width[1]);
+            w.value(event.channel_width[2]);
+            w.end_array();
+        }
+        if (event.has_selected_envelope) {
+            w.key("selected_envelope").begin_array();
+            w.value(event.selected_envelope[0]);
+            w.value(event.selected_envelope[1]);
+            w.value(event.selected_envelope[2]);
+            w.end_array();
+        }
+        if (event.has_clearance_margin) w.key("clearance_margin").value(event.clearance_margin);
+        if (event.has_max_turn_angle) w.key("max_turn_angle_rad").value(event.max_turn_angle_rad);
+        if (!event.planner.empty()) w.key("planner").value(event.planner);
+        if (!event.goal_kind.empty()) w.key("goal_kind").value(event.goal_kind);
+        if (event.goal_count > 0) w.key("goal_count").value(event.goal_count);
+        if (event.point_count > 0) w.key("point_count").value(event.point_count);
+        w.key("blocked_by_hold_time").value(event.blocked_by_hold_time);
+        w.end_object();
+    }
+    w.end_array();
+}
+
 void write_obstacle_model(
     sim::JsonWriter& w,
     const sim::ObstacleField& obstacles,
@@ -267,6 +348,16 @@ void write_obstacle_result_json(
     const int hard_collision_steps = hard_collision_step_count(result.collision_log, obstacles);
     const int hard_collision_intervals = hard_collision_interval_count(result.collision_log, obstacles, config.dt);
     const double min_obstacle_sd = min_airframe_signed_distance(result, obstacles);
+    int lookahead_blocked = 0;
+    int rrt_attempt = 0;
+    int rrt_accepted = 0;
+    int rrt_failed = 0;
+    for (const auto& event : result.formation_adaptation_events) {
+        if (event.kind == "lookahead_reference_blocked") ++lookahead_blocked;
+        else if (event.kind == "rrt_escape_attempt") ++rrt_attempt;
+        else if (event.kind == "rrt_escape_accepted") ++rrt_accepted;
+        else if (event.kind == "rrt_escape_failed") ++rrt_failed;
+    }
 
     sim::JsonWriter w(out);
 
@@ -295,6 +386,11 @@ void write_obstacle_result_json(
     w.key("sensor_enabled").value(config.sensor_enabled);
     w.key("danger_mode_enabled").value(config.danger_mode_enabled);
     w.key("apf_formation_centroid").value(config.apf_formation_centroid);
+    w.key("formation_adaptation_enabled").value(config.formation_adaptation_enabled);
+    w.key("formation_lookahead_enabled").value(config.formation_lookahead_enabled);
+    w.key("formation_lookahead_rrt_enabled").value(config.formation_lookahead_rrt_enabled);
+    w.key("formation_lookahead_distance").value(config.formation_lookahead_distance);
+    w.key("formation_lookahead_turn_threshold_rad").value(config.formation_lookahead_turn_threshold_rad);
     w.key("trajectory_optimizer_enabled").value(false);
     w.key("trajectory_optimizer_method").value("");
     w.end_object();
@@ -322,6 +418,11 @@ void write_obstacle_result_json(
     w.key("min_obstacle_signed_distance").value(min_obstacle_sd);
     w.key("replan_count").value(accepted_replan_count(result));
     w.key("fault_count").value(static_cast<int>(result.fault_log.size()));
+    w.key("formation_adaptation_count").value(static_cast<int>(result.formation_adaptation_events.size()));
+    w.key("lookahead_reference_blocked_count").value(lookahead_blocked);
+    w.key("rrt_escape_attempt_count").value(rrt_attempt);
+    w.key("rrt_escape_accepted_count").value(rrt_accepted);
+    w.key("rrt_escape_failed_count").value(rrt_failed);
     w.end_object();  // summary
 
     // timing snapshot (custom field, passthrough)
@@ -340,6 +441,7 @@ void write_obstacle_result_json(
     write_planning_events(w, result.planning_events);
     write_waypoint_events(w, result.waypoint_events);
     write_collision_log(w, result.collision_log);
+    write_formation_adaptation_events(w, result.formation_adaptation_events);
     write_obstacle_model(w, obstacles, bounds);
     w.key("fault_log").array_string(result.fault_log);
 
@@ -354,24 +456,43 @@ void write_obstacle_result_json(
 
 }  // namespace
 
-int main() {
+int main(int argc, char* argv[]) {
     using sim::ObstacleConfig;
     using sim::ObstacleScenarioSimulation;
     using sim::Vec3;
 
-    ObstacleConfig config = sim::config_warehouse();
-    config.map_file = "";
+    const CliOptions cli = parse_cli(argc, argv);
+    const std::string preset = cli.preset;
+    ObstacleConfig config = sim::get_config(preset);
+    if (cli.max_sim_time > 0.0) {
+        config.max_sim_time = cli.max_sim_time;
+    }
 
-    std::cout << "===== C++ warehouse scenario (Python-compatible subset) =====\n";
+    const bool use_manual_warehouse = preset == "warehouse";
+    if (use_manual_warehouse) {
+        config.map_file = "";
+    } else {
+        config.map_file = resolve_map_file(config.map_file);
+    }
+
+    std::cout << "===== C++ obstacle scenario: " << preset << " (Python-compatible subset) =====\n";
 
     auto t0 = std::chrono::high_resolution_clock::now();
     ObstacleScenarioSimulation sim(config);
-    auto warehouse_obstacles = sim::make_warehouse();
-    std::array<Vec3, 2> bounds{Vec3{-3,-3,0}, Vec3{45,28,10}};
-    sim.set_obstacles(warehouse_obstacles, bounds);
+    sim::ObstacleField report_obstacles;
+    std::array<Vec3, 2> report_bounds{Vec3{}, Vec3{}};
+    if (use_manual_warehouse) {
+        report_obstacles = sim::make_warehouse();
+        report_bounds = {Vec3{-3,-3,0}, Vec3{45,28,10}};
+        sim.set_obstacles(report_obstacles, report_bounds);
+    }
     auto t1 = std::chrono::high_resolution_clock::now();
     auto result = sim.run();
     auto t2 = std::chrono::high_resolution_clock::now();
+    if (!use_manual_warehouse) {
+        report_obstacles = sim.obstacles_;
+        report_bounds = sim.map_bounds_;
+    }
 
     double tp = std::chrono::duration<double>(t1 - t0).count();
     double ts = std::chrono::duration<double>(t2 - t1).count();
@@ -385,10 +506,9 @@ int main() {
     std::cout << "Safety: min_inter=" << result.safety_metrics.min_inter_drone_distance
               << " downwash_hits=" << result.safety_metrics.downwash_hits << "\n";
 
-    const std::string preset = "warehouse";
     const std::filesystem::path output_path =
         std::filesystem::path("outputs") / preset / timestamp_dir_name() / "sim_result.json";
-    write_obstacle_result_json(output_path, result, tp, ts, preset, config, warehouse_obstacles, bounds);
+    write_obstacle_result_json(output_path, result, tp, ts, preset, config, report_obstacles, report_bounds);
     std::cout << "结果文件: " << output_path.string() << "\n";
     return 0;
 }

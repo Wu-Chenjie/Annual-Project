@@ -22,6 +22,8 @@ inline ObstacleConfig config_company_cubicles();
 inline ObstacleConfig config_company_cubicles_online();
 inline ObstacleConfig config_meeting_room();
 inline ObstacleConfig config_meeting_room_online();
+inline ObstacleConfig config_rrt_dual_channel_online();
+inline ObstacleConfig config_formation_maze_stress_online();
 inline ObstacleConfig config_laboratory();
 inline ObstacleConfig config_laboratory_online();
 inline ObstacleConfig config_custom();
@@ -44,6 +46,8 @@ inline ObstacleConfig get_config(const std::string& preset) {
     if (preset == "company_cubicles_online") return config_company_cubicles_online();
     if (preset == "meeting_room") return config_meeting_room();
     if (preset == "meeting_room_online") return config_meeting_room_online();
+    if (preset == "rrt_dual_channel_online") return config_rrt_dual_channel_online();
+    if (preset == "formation_maze_stress_online") return config_formation_maze_stress_online();
     if (preset == "laboratory") return config_laboratory();
     if (preset == "laboratory_online") return config_laboratory_online();
     if (preset == "custom") return config_custom();
@@ -245,6 +249,48 @@ inline ObstacleConfig config_meeting_room_online() {
     c.planner_mode = "online";
     c.planner_horizon = 3.5;
     c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2}};
+    return c;
+}
+
+inline ObstacleConfig config_rrt_dual_channel_online() {
+    ObstacleConfig c;
+    c.max_sim_time = 28.0; c.use_smc = true; c.use_backstepping = true;
+    c.num_followers = 3; c.formation_spacing = 0.55; c.initial_formation = "diamond";
+    c.wp_radius = 0.45; c.wp_radius_final = 0.25;
+    c.leader_max_vel = 1.0; c.leader_max_acc = 1.4; c.leader_gain_scale = 0.80;
+    c.follower_gain_scale = 1.0; c.follower_max_vel = 5.0; c.follower_max_acc = 5.0;
+    c.leader_acc_alpha = 0.30;
+    c.enable_obstacles = true; c.map_file = "../maps/rrt_dual_channel_escape.json";
+    c.planner_kind = "astar"; c.planner_mode = "online";
+    c.planner_resolution = 0.25; c.safety_margin = 0.22; c.plan_clearance_extra = 0.18;
+    c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.4;
+    c.sensor_enabled = true; c.planner_replan_interval = 1.0; c.planner_horizon = 4.0;
+    c.planner_use_formation_envelope = true;
+    c.formation_safety_enabled = true;
+    c.formation_min_inter_drone_distance = 0.35;
+    c.formation_downwash_radius = 0.45;
+    c.formation_downwash_height = 0.80;
+    c.formation_adaptation_enabled = true;
+    c.formation_lookahead_enabled = true;
+    c.formation_lookahead_rrt_enabled = true;
+    c.formation_lookahead_distance = 4.2;
+    c.formation_lookahead_turn_threshold_rad = 1.0;
+    c.formation_lookahead_min_interval = 0.8;
+    c.formation_lookahead_rrt_max_iter = 900;
+    c.formation_lookahead_rrt_rewire_radius = 1.2;
+    c.waypoints = {{0,0,1.8},{5.5,0,1.8},{12,4.5,1.8},{22.5,4.5,1.8}};
+    return c;
+}
+
+inline ObstacleConfig config_formation_maze_stress_online() {
+    ObstacleConfig c = config_rrt_dual_channel_online();
+    c.max_sim_time = 38.0;
+    c.map_file = "../maps/formation_maze_stress.json";
+    c.planner_horizon = 4.5;
+    c.formation_lookahead_distance = 4.5;
+    c.formation_lookahead_rrt_max_iter = 1000;
+    c.formation_lookahead_rrt_rewire_radius = 1.25;
+    c.waypoints = {{0,0,1.8},{4.5,3.5,1.8},{10,3.5,1.8},{10,-2.5,1.8},{17,-2.5,1.8},{20.5,5,1.8}};
     return c;
 }
 

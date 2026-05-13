@@ -4,6 +4,12 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.hypothesis/
+.ipynb_checkpoints/
 
 # === Virtual environments ===
 .venv/
@@ -12,21 +18,44 @@ env/
 
 # === Runtime artifacts ===
 outputs/
+artifacts/
 artifacts/cache/
 artifacts/cpp/
 artifacts/python/
+reports/
 
 # === C++ build ===
 cpp/build/
 cpp/build_*/
+cpp/cmake-build-*/
+cpp/out/
 cpp/outputs/
 cpp/*.o
 cpp/**/*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+*.ilk
+*.exp
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+Testing/
+*.ninja
+.ninja_*
+CMakeUserPresets.json
 
 # === IDE / Editor ===
 .idea/
+.vscode/
 .DS_Store
 Thumbs.db
+*.code-workspace
 
 # === Photogrammetry logs ===
 InterfaceCOLMAP-*.log
@@ -34,3 +63,10 @@ ReconstructMesh-*.log
 DensifyPointCloud-*.log
 RefineMesh-*.log
 TextureMesh-*.log
+
+# === Temp ===
+*.tmp
+*.log
+*.err
+*.out
+*.prof

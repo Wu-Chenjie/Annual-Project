@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import pytest
 from pathlib import Path
 
@@ -23,6 +24,13 @@ def _cpp_payload() -> dict:
             "replan_count": 0,
             "fault_count": 0,
         },
+        "config_snapshot": {
+            "planner_kind": "cpp",
+            "planner_mode": "online",
+            "formation_adaptation_enabled": True,
+            "formation_lookahead_enabled": True,
+            "formation_lookahead_rrt_enabled": True,
+        },
         "completed_waypoint_count": 2,
         "task_waypoints": [[0, 0, 1], [2, 0, 1]],
         "replanned_waypoints": [[0, 0, 1], [1, 0, 1], [2, 0, 1]],
@@ -42,6 +50,43 @@ def _cpp_payload() -> dict:
         "waypoint_events": [
             {"t": 0.2, "type": "waypoint_reached", "index": 0, "distance": 0.1},
         ],
+        "formation_adaptation_events": [
+            {
+                "t": 0.1,
+                "kind": "lookahead_reference_blocked",
+                "from": "diamond",
+                "to": "diamond",
+                "reason": "lookahead_sharp_turn",
+                "clearance_margin": -0.05,
+                "max_turn_angle_rad": 1.4,
+            },
+            {
+                "t": 0.1,
+                "from": "diamond",
+                "to": "line",
+                "reason": "lookahead_sharp_turn",
+                "channel_width": [0.8, 4.0, 3.0],
+                "clearance_margin": -0.05,
+            },
+            {
+                "t": 0.1,
+                "kind": "rrt_escape_attempt",
+                "from": "line",
+                "to": "line",
+                "reason": "lookahead_sharp_turn",
+                "planner": "rrt_star_escape",
+                "goal_count": 2,
+            },
+            {
+                "t": 0.1,
+                "kind": "rrt_escape_accepted",
+                "from": "line",
+                "to": "line",
+                "reason": "lookahead_sharp_turn",
+                "planner": "direct_clear_escape",
+                "point_count": 3,
+            },
+        ],
         "collision_log": [],
         "safety_metrics": {"min_inter_drone_distance": 0.4, "downwash_hits": 0},
     }
@@ -60,11 +105,34 @@ def test_generate_cpp_result_report_uses_cpp_output_names(tmp_path: Path):
     assert "# C++ 仿真结果报告" in text
     assert "| 运行引擎 | cpp |" in text
     assert "| 规划器 | cpp |" in text
+    assert "## 编队调控机制" in text
+    assert "| 队形自适应 | 是 |" in text
+    assert "| 前瞻 RRT escape | 是 |" in text
+    assert "| 前瞻阻断次数 | 1 |" in text
+    assert "| RRT escape 接受数 | 1 |" in text
+    assert "lookahead_reference_blocked" in text
     assert "offline_segment" in text
     assert "## 障碍物建模" in text
     assert "| sphere | 1 |" in text
     metrics = json.loads((tmp_path / "cpp_metrics.json").read_text(encoding="utf-8"))
     assert metrics["planned_path_length"] == 2.0
+    assert metrics["formation_adaptation_count"] == 4
+    assert metrics["rrt_escape_accepted_count"] == 1
+
+
+def test_cpp_sources_expose_formation_adaptation_presets_and_fields():
+    config_h = Path("cpp/include/config.hpp").read_text(encoding="utf-8")
+    dynamic_main = Path("cpp/src/dynamic_main.cpp").read_text(encoding="utf-8")
+    warehouse_main = Path("cpp/src/warehouse_main.cpp").read_text(encoding="utf-8")
+
+    assert "config_rrt_dual_channel_online" in config_h
+    assert "config_formation_maze_stress_online" in config_h
+    assert 'preset == "rrt_dual_channel_online"' in config_h
+    assert 'preset == "formation_maze_stress_online"' in config_h
+    assert "formation_adaptation_enabled" in dynamic_main
+    assert "formation_lookahead_enabled" in dynamic_main
+    assert "formation_lookahead_rrt_enabled" in dynamic_main
+    assert "formation_adaptation_events" in warehouse_main
 
 
 def test_find_sim_result_path_from_cpp_stdout(tmp_path: Path):
@@ -115,4 +183,76 @@ def test_cpp_warehouse_output_contains_observer_and_obstacle_model(tmp_path: Pat
     assert metrics["trajectory_jerk_squared_integral"] is not None
     assert metrics["trajectory_snap_squared_integral"] is not None
     assert report_path.is_file()
+    assert (tmp_path / "cpp_report" / "cpp_report_figures" / "场景与路线.png").is_file()
+
+
+def test_cpp_dynamic_replay_outputs_formation_metadata_for_new_presets(tmp_path: Path):
+    exe = Path("cpp/build/sim_dynamic_replay.exe")
+    if not exe.is_file():
+        pytest.skip("C++ dynamic replay executable is not built")
+
+    input_path = tmp_path / "input.json"
+    output_path = tmp_path / "replay_output.json"
+    input_path.write_text(
+        json.dumps(
+            {
+                "preset": "rrt_dual_channel_online",
+                "base_config": {
+                    "preset": "rrt_dual_channel_online",
+                    "max_sim_time": 0.2,
+                    "planner_horizon": 2.0,
+                    "planner_replan_interval": 0.2,
+                },
+                "compare_planners": ["astar"],
+                "repeat_count": 1,
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+
+    completed = subprocess.run(
+        [str(exe), str(input_path), "-o", str(output_path)],
+        cwd=Path.cwd(),
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    replay = json.loads(output_path.read_text(encoding="utf-8"))[0]
+    metadata = replay["metadata"]
+
+    assert metadata["formation_adaptation_enabled"] is True
+    assert metadata["formation_lookahead_enabled"] is True
+    assert metadata["formation_lookahead_rrt_enabled"] is True
+    assert metadata["formation_lookahead_distance"] > 0.0
+    assert "formation_adaptation_events" in replay
+    assert isinstance(replay["formation_adaptation_events"], list)
+
+
+def test_cpp_standard_sim_accepts_new_formation_preset(tmp_path: Path):
+    exe = Path("cpp/build/sim_warehouse.exe")
+    if not exe.is_file():
+        pytest.skip("C++ warehouse executable is not built")
+
+    sim_result, report_path = run_cpp_and_report(
+        exe,
+        cwd=Path.cwd(),
+        output_dir=tmp_path / "cpp_report",
+        title="C++ 编队调控预设报告",
+        extra_args=["--preset", "rrt_dual_channel_online", "--max-sim-time", "0.5"],
+    )
+    payload = json.loads(sim_result.read_text(encoding="utf-8"))
+    snapshot = payload["config_snapshot"]
+
+    assert payload["preset"] == "rrt_dual_channel_online"
+    assert snapshot["formation_adaptation_enabled"] is True
+    assert snapshot["formation_lookahead_enabled"] is True
+    assert snapshot["formation_lookahead_rrt_enabled"] is True
+    assert "formation_adaptation_events" in payload
+    assert report_path.is_file()
+    assert "## 编队调控机制" in report_path.read_text(encoding="utf-8")
     assert (tmp_path / "cpp_report" / "cpp_report_figures" / "场景与路线.png").is_file()

@@ -20,6 +20,9 @@ FormationSimulation::FormationSimulation(const SimulationConfig& config)
     if (!config_.custom_initial_offsets.empty()) {
         topology_.set_custom_offsets(config_.custom_initial_offsets);
     }
+    if (config_.formation_adaptation_enabled || config_.formation_lookahead_enabled) {
+        topology_.set_current_formation(config_.initial_formation);
+    }
 
     if (config_.use_backstepping) {
         leader_ctrl_ = std::make_unique<BacksteppingController>(1.0, 9.81, std::array<double, 3>{0.01, 0.01, 0.02}, dt_);

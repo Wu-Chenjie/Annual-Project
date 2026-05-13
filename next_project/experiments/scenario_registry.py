@@ -40,6 +40,16 @@ SCENARIOS: dict[str, ScenarioSpec] = {
         category="online",
         description="Meeting room online obstacle avoidance scenario.",
     ),
+    "rrt_dual_channel_online": ScenarioSpec(
+        name="rrt_dual_channel_online",
+        category="online",
+        description="Dual-channel RRT lookahead escape and formation adaptation scenario.",
+    ),
+    "formation_maze_stress_online": ScenarioSpec(
+        name="formation_maze_stress_online",
+        category="online",
+        description="Maze-like formation stress test with false branches, narrow gates, and RRT escape.",
+    ),
     "meeting_room": ScenarioSpec(
         name="meeting_room",
         category="offline",

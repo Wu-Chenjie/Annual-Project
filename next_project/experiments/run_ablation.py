@@ -45,7 +45,7 @@ def main() -> int:
             rows.append(metrics)
 
     write_summary_csv(rows, out_dir / "summary.csv")
-    write_markdown_report(rows, out_dir / "report.md", title="Ablation Report")
+    write_markdown_report(rows, out_dir / "report.md", title="消融对比报告")
     print(f"wrote {out_dir / 'summary.csv'}")
     print(f"wrote {out_dir / 'report.md'}")
     return 0

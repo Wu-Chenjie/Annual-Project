@@ -171,7 +171,7 @@ class FormationAdaptationPolicy:
 
     def _compactness_score(self, envelope: Envelope) -> tuple[float, float, float]:
         lateral, longitudinal, vertical = envelope
-        return (float(lateral), float(max(lateral, longitudinal, vertical)), float(lateral + longitudinal + vertical))
+        return (float(max(lateral, longitudinal, vertical)), float(lateral + longitudinal + vertical), float(lateral))
 
     def _channel_deficit_score(self, channel_width: ChannelWidth, envelope: Envelope | None) -> tuple[float, float, float]:
         if channel_width is None or envelope is None:

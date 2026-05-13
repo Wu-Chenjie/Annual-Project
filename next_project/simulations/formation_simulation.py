@@ -179,6 +179,13 @@ class SimulationConfig:
     formation_adaptation_min_hold_time: float = 1.0
     formation_adaptation_recovery_margin: float = 0.15
     formation_adaptation_transition_time: float = 1.5
+    formation_lookahead_enabled: bool = False
+    formation_lookahead_distance: float = 4.0
+    formation_lookahead_turn_threshold_rad: float = 1.05
+    formation_lookahead_min_interval: float = 0.8
+    formation_lookahead_rrt_enabled: bool = False
+    formation_lookahead_rrt_max_iter: int = 800
+    formation_lookahead_rrt_rewire_radius: float = 1.2
 
     # ---- S2: DroneParams profile ----
     drone_profile: str = "default_1kg"

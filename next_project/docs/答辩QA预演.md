@@ -536,3 +536,38 @@ FIRI 在项目中用于路径安全走廊精修，目前实现的是工程化版
 
 我的主要工作可以概括为：构建多层安全规划控制框架、实现 Safe/Danger 双模式 GNN 规划、修正在线任务航点与局部路径语义、加入风险自适应重规划和容错拓扑重构，并整理了完整技术文档和测试验证链路。
 
+---
+
+## 十四、中期新增高频问答（2026-05-13）
+
+### Q1：你现在的中期目标到底达标了吗？
+
+达标。我的判断依据不是主观完成度，而是四类证据：第一，全量测试当前为 `170 passed, 3 skipped`，跳过项都是构建或环境开关型；第二，C++ 关键目标可以构建；第三，C++ 报告测试 `6 passed`，跨线回归开启后 `3 passed`；第四，中期要求的轨迹指标、编队安全、消融报告和中文报告都有产物路径。
+
+### Q2：中期最能体现创新的点是什么？
+
+不是单独用了某个规划器，而是把“编队安全裕度”从结果检查前移到了规划决策中。leader-only planner 只看领航机路径，我这里增加 formation-aware clearance，考虑从机包络和队形宽度；再通过前瞻窗口提前识别窄通道和急转弯；如果局部窗口误判成死路，再用 RRT escape 生成候选路径。最后通过消融实验对比 leader-only、普通 formation-aware 和 lookahead adaptive 三种模式。
+
+### Q3：为什么后来不把 jerk 平方积分作为主要最优判据？
+
+四旋翼不是简单二阶质点系统。对位置轨迹而言，jerk 可以反映一部分平滑性，但四旋翼控制通常还会关注更高阶导数，尤其 snap 对姿态变化和控制输入平滑更有解释力。所以我保留 `trajectory_jerk_squared_integral` 作为辅助指标，把 `trajectory_snap_squared_integral` 作为更高阶的平滑性代理。这里仍是工程指标，不宣称完成了完整最优控制求解。
+
+### Q4：RRT escape 解决的是什么问题？
+
+它解决的是“局部前瞻窗口看到死路，但全局上有绕行通道”的问题。只沿当前窗口采样时，大角度转弯或假分支容易被判定为不可达；RRT escape 提供一个从当前点到任务目标或窗口端点的候选绕行路径，再通过 clearance gate 接收。报告中会记录 `rrt_escape_attempt`、`rrt_escape_accepted` 和 `rrt_escape_failed`，不是黑箱替换路径。
+
+### Q5：C++ 和 Python 现在一致了吗？
+
+要分层回答。Python 是完整研究主线；C++ 是可运行子集。当前 C++ 已对齐关键 preset、配置字段、编队调控事件、中文报告和跨线 schema 回归，但我不会说 C++ 完整复现了 Python 的全部 RRT* / Informed RRT* 能力。这个边界已经写进 `docs/capability-matrix.md`。
+
+### Q6：你的碰撞减少证据在哪里？
+
+可以看 `outputs/ablation_rrt_dual_channel/summary.csv` 和 `outputs/ablation_formation_maze_stress/summary.csv`。在两个压力场景中，`formation_aware_lookahead_adaptive` 都记录了前瞻阻断和 RRT accepted 事件，同时硬碰撞为 0。这个结论不是靠一张图，而是来自 `formation_adaptation_events`、`summary.csv` 和报告图共同支撑。
+
+### Q7：为什么要把队形变换提前到探测窗口触发？
+
+如果等到 leader 到达窄通道边缘才变形，从机包络可能已经与障碍物冲突，或者局部路径会因为当前队形过宽而被拒绝。提前触发的意义是：在队形还来得及过渡时，先把 diamond / triangle 这类宽队形切成 line 或更窄队形，再进入通道。
+
+### Q8：这个系统现在最大的边界是什么？
+
+第一，仍是仿真系统，还没有实机飞行验证；第二，轨迹优化是轻量工程原型，不是完整 GCOPTER/MINCO；第三，C++ 是可运行子集，Web replay 是展示和回放入口，不是完整多机闭环 benchmark。这些边界我会主动说明，避免把工程原型说成论文级完整复现。

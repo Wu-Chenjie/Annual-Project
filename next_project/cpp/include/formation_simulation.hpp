@@ -45,6 +45,18 @@ struct SimulationConfig {
     double leader_acc_alpha = 0.2;
 
     std::vector<FormationSwitchEvent> formation_schedule{};
+    bool formation_adaptation_enabled = false;
+    std::vector<std::string> formation_adaptation_candidates{"diamond", "v_shape", "triangle", "line"};
+    double formation_adaptation_min_hold_time = 1.0;
+    double formation_adaptation_recovery_margin = 0.15;
+    double formation_adaptation_transition_time = 1.5;
+    bool formation_lookahead_enabled = false;
+    double formation_lookahead_distance = 4.0;
+    double formation_lookahead_turn_threshold_rad = 1.05;
+    double formation_lookahead_min_interval = 0.8;
+    bool formation_lookahead_rrt_enabled = false;
+    int formation_lookahead_rrt_max_iter = 800;
+    double formation_lookahead_rrt_rewire_radius = 1.2;
     std::vector<Vec3> custom_initial_offsets{};
     std::vector<Vec3> waypoints{
         Vec3{0.0, 0.0, 0.0},
@@ -91,6 +103,27 @@ struct CollisionEvent {
     Vec3 pos;
 };
 
+struct FormationAdaptationEvent {
+    double t = 0.0;
+    std::string kind;
+    std::string from;
+    std::string to;
+    std::string reason;
+    bool has_channel_width = false;
+    std::array<double, 3> channel_width{0.0, 0.0, 0.0};
+    bool has_selected_envelope = false;
+    std::array<double, 3> selected_envelope{0.0, 0.0, 0.0};
+    bool has_clearance_margin = false;
+    double clearance_margin = 0.0;
+    bool has_max_turn_angle = false;
+    double max_turn_angle_rad = 0.0;
+    std::string planner;
+    std::string goal_kind;
+    int goal_count = 0;
+    int point_count = 0;
+    bool blocked_by_hold_time = false;
+};
+
 struct SimulationResult {
     std::vector<double> time;
     std::vector<Vec3> leader;
@@ -108,6 +141,7 @@ struct SimulationResult {
     std::vector<PlanningEvent> planning_events;
     std::vector<WaypointEvent> waypoint_events;
     std::vector<CollisionEvent> collision_log;
+    std::vector<FormationAdaptationEvent> formation_adaptation_events;
     std::vector<std::string> fault_log;
     FormationSafetyMetrics safety_metrics;
 };

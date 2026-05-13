@@ -134,6 +134,19 @@ public:
                                 const std::vector<Vec3>& other_positions = {});
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,
                                                      const Vec3& task_goal) const;
+    bool apply_formation_adaptation(double time_now,
+                                    const std::tuple<double, double, double>* channel_width,
+                                    double clearance_margin,
+                                    bool has_clearance_margin,
+                                    const std::string& reason_override = "");
+    std::vector<Vec3> maybe_lookahead_escape(double time_now,
+                                             const Vec3& leader_pos,
+                                             const std::vector<Vec3>& active_path,
+                                             const Vec3& task_goal);
+    std::vector<Vec3> path_window_from_position(const std::vector<Vec3>& path,
+                                                const Vec3& position,
+                                                double lookahead_distance) const;
+    double path_max_turn_angle(const std::vector<Vec3>& path) const;
 
     ObstacleConfig config_;
     FormationSimulation formation_;
@@ -157,6 +170,9 @@ public:
     std::vector<std::string> fault_log_;
     TelemetryObserver observer_;
     mutable std::vector<int> formation_recovery_counts_;
+    std::vector<FormationAdaptationEvent> formation_adaptation_events_;
+    double last_formation_adaptation_time_ = -1.0;
+    double last_lookahead_escape_time_ = -1.0;
     DownwashZone downwash_zone_;
 };
 
