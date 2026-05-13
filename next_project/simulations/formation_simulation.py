@@ -115,6 +115,7 @@ class SimulationConfig:
     planner_sdf_aware: bool = True        # 是否启用 SDF 感知栅格（捕获薄障碍物）
     planner_esdf_aware: bool = True       # 是否启用 ESDF 软代价（路径自动远离障碍物）
     planner_use_formation_envelope: bool = False  # 是否用完整编队包络膨胀规划栅格
+    planner_initial_map_unknown: bool = False  # True 时规划器初始地图为空，仅靠传感器逐步发现障碍
     planner_z_bounds: tuple[float, float] | None = None  # 可选规划高度范围 [z_min, z_max]
     plan_clearance_extra: float = 0.0     # 规划时额外推远距离 m
     detect_margin_scale: float = 0.5      # 检测阈值缩放: arm_length + safety_margin*scale

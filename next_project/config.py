@@ -27,6 +27,7 @@ AVAILABLE_PRESETS = [
     "meeting_room_online",
     "rrt_dual_channel_online",
     "formation_maze_stress_online",
+    "unknown_map_online",
     "laboratory",
     "laboratory_online",
     "custom",
@@ -52,6 +53,7 @@ def get_config(preset: str = "basic") -> SimulationConfig:
         meeting_room_online  会议室在线版（A* + 传感器 + 实时重规划）
         rrt_dual_channel_online RRT 双通道绕行压力测试（前瞻窗口 + RRT escape）
         formation_maze_stress_online 编队迷宫压力测试（狭长通道 + 急转弯 + 队形切换）
+        unknown_map_online  完全未知地图在线探索（初始规划地图为空，传感器发现障碍）
         laboratory           实验室场景（离线 A*）
         laboratory_online    实验室在线版（Hybrid A* + 传感器 + D* Lite）
         custom               自定义（修改此函数返回值即可）
@@ -88,6 +90,8 @@ def get_config(preset: str = "basic") -> SimulationConfig:
         return _config_rrt_dual_channel_online()
     elif preset == "formation_maze_stress_online":
         return _config_formation_maze_stress_online()
+    elif preset == "unknown_map_online":
+        return _config_unknown_map_online()
     elif preset == "laboratory_online":
         return _config_laboratory_online()
     elif preset == "laboratory":
@@ -802,6 +806,59 @@ def _config_formation_maze_stress_online() -> SimulationConfig:
             np.array([10.0, -2.5, 1.8], dtype=float),
             np.array([17.0, -2.5, 1.8], dtype=float),
             np.array([20.5, 5.0, 1.8], dtype=float),
+        ],
+    )
+
+
+def _config_unknown_map_online() -> SimulationConfig:
+    """完全未知地图在线探索：规划器初始地图为空，仅通过传感器逐步发现障碍。"""
+    from pathlib import Path
+    pkg = Path(__file__).resolve().parent
+    return SimulationConfig(
+        max_sim_time=26.0,
+        use_smc=True,
+        use_backstepping=True,
+        num_followers=2,
+        formation_spacing=0.45,
+        initial_formation="line",
+        wp_radius=0.45,
+        wp_radius_final=0.25,
+        leader_max_vel=1.0,
+        leader_max_acc=1.3,
+        leader_gain_scale=0.80,
+        follower_gain_scale=1.0,
+        follower_max_vel=5.0,
+        follower_max_acc=5.0,
+        leader_acc_alpha=0.30,
+        enable_obstacles=True,
+        map_file=str(pkg / "maps" / "unknown_map_arena.json"),
+        planner_kind="astar",
+        planner_mode="online",
+        planner_resolution=0.25,
+        safety_margin=0.22,
+        plan_clearance_extra=0.10,
+        planner_initial_map_unknown=True,
+        planner_sdf_aware=False,
+        planner_esdf_aware=False,
+        planner_use_formation_envelope=False,
+        sensor_enabled=True,
+        sensor_max_range=4.5,
+        sensor_noise_std=0.0,
+        planner_replan_interval=0.35,
+        planner_horizon=3.2,
+        danger_mode_enabled=False,
+        formation_safety_enabled=True,
+        formation_min_inter_drone_distance=0.35,
+        formation_downwash_radius=0.45,
+        formation_downwash_height=0.80,
+        formation_adaptation_enabled=False,
+        formation_lookahead_enabled=False,
+        formation_lookahead_rrt_enabled=False,
+        waypoints=[
+            np.array([1.0, 0.0, 1.8], dtype=float),
+            np.array([5.5, 0.0, 1.8], dtype=float),
+            np.array([9.5, 2.8, 1.8], dtype=float),
+            np.array([16.0, 2.8, 1.8], dtype=float),
         ],
     )
 

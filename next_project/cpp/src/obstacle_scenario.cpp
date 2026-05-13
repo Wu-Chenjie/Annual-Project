@@ -113,6 +113,12 @@ ImprovedArtificialPotentialField ObstacleScenarioSimulation::build_apf() const {
         mu_escape = 0.5;
     }
 
+    if (config_.planner_initial_map_unknown) {
+        k_rep = 0.0;
+        r_rep = 0.0;
+        k_inter = 0.0;
+    }
+
     return ImprovedArtificialPotentialField(
         k_rep, r_rep, n_decay, k_inter, s_inter, mu_escape, max_acc,
         k_comm, comm_range, adaptive_n_decay);
@@ -132,11 +138,13 @@ void ObstacleScenarioSimulation::set_obstacles(ObstacleField field, const std::a
     task_waypoints_ = config_.waypoints;
 
     Vec3 extent{bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y, bounds[1].z - bounds[0].z};
-    grid_ = OccupancyGrid::from_obstacles(obstacles_, bounds[0], extent, config_.planner_resolution);
+    ObstacleField empty_planning_field;
+    const ObstacleField& planning_field = config_.planner_initial_map_unknown ? empty_planning_field : obstacles_;
+    grid_ = OccupancyGrid::from_obstacles(planning_field, bounds[0], extent, config_.planner_resolution);
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
 
-    if (config_.planner_sdf_aware) {
+    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
     } else {
         sdf_grid_.reset();
@@ -165,11 +173,13 @@ void ObstacleScenarioSimulation::setup_obstacles() {
     map_bounds_ = bounds;
 
     Vec3 extent{bounds[1].x - bounds[0].x, bounds[1].y - bounds[0].y, bounds[1].z - bounds[0].z};
-    grid_ = OccupancyGrid::from_obstacles(obstacles_, bounds[0], extent, config_.planner_resolution);
+    ObstacleField empty_planning_field;
+    const ObstacleField& planning_field = config_.planner_initial_map_unknown ? empty_planning_field : obstacles_;
+    grid_ = OccupancyGrid::from_obstacles(planning_field, bounds[0], extent, config_.planner_resolution);
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
 
-    if (config_.planner_sdf_aware) {
+    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
     } else {
         sdf_grid_.reset();
@@ -602,10 +612,12 @@ void ObstacleScenarioSimulation::rebuild_planning_grid() {
         map_bounds_[1].y - map_bounds_[0].y,
         map_bounds_[1].z - map_bounds_[0].z,
     };
-    grid_ = OccupancyGrid::from_obstacles(obstacles_, map_bounds_[0], extent, config_.planner_resolution);
+    ObstacleField empty_planning_field;
+    const ObstacleField& planning_field = config_.planner_initial_map_unknown ? empty_planning_field : obstacles_;
+    grid_ = OccupancyGrid::from_obstacles(planning_field, map_bounds_[0], extent, config_.planner_resolution);
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
-    if (config_.planner_sdf_aware) {
+    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
     } else {
         sdf_grid_.reset();
@@ -616,7 +628,9 @@ void ObstacleScenarioSimulation::rebuild_planning_grid() {
             : static_cast<const OccupancyGrid&>(grid_);
         replanner_ = std::make_unique<WindowReplanner>(pg, config_.planner_replan_interval,
                                                        config_.planner_horizon, 0.5, 3);
-        replanner_->set_obstacle_field(&obstacles_);
+        if (!config_.planner_initial_map_unknown) {
+            replanner_->set_obstacle_field(&obstacles_);
+        }
         if (config_.replan_adaptive_interval) {
             replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
         }
@@ -914,7 +928,9 @@ void ObstacleScenarioSimulation::setup_online() {
         : static_cast<const OccupancyGrid&>(grid_);
     replanner_ = std::make_unique<WindowReplanner>(pg, config_.planner_replan_interval,
                                                     config_.planner_horizon, 0.5, 3);
-    replanner_->set_obstacle_field(&obstacles_);
+    if (!config_.planner_initial_map_unknown) {
+        replanner_->set_obstacle_field(&obstacles_);
+    }
     if (config_.replan_adaptive_interval) {
         replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
     }

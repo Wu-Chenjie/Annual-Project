@@ -376,6 +376,7 @@ void write_obstacle_result_json(
     w.key("leader_max_acc").value(config.leader_max_acc);
     w.key("planner_kind").value(config.planner_kind);
     w.key("planner_mode").value(config.planner_mode);
+    w.key("planner_initial_map_unknown").value(config.planner_initial_map_unknown);
     w.key("planner_resolution").value(config.planner_resolution);
     w.key("planner_replan_interval").value(config.planner_replan_interval);
     w.key("planner_horizon").value(config.planner_horizon);
@@ -431,6 +432,14 @@ void write_obstacle_result_json(
     w.key("simulation_s").value(sim_s);
     w.key("total_s").value(planning_s + sim_s);
     w.end_object();
+
+    if (config.planner_initial_map_unknown) {
+        w.key("map_knowledge").begin_object();
+        w.key("initial_map_unknown").value(true);
+        w.key("truth_obstacle_count").value(static_cast<int>(obstacles.size()));
+        w.key("planner_static_occupied_count").value(0);
+        w.end_object();
+    }
 
     // optional passthrough fields
     w.key("time").array_double(result.time);

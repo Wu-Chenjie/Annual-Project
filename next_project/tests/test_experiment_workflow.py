@@ -142,6 +142,26 @@ def test_formation_maze_stress_online_scenario_is_registered():
     assert cfg.map_file.endswith("formation_maze_stress.json")
 
 
+def test_unknown_map_online_scenario_starts_with_empty_planner_map():
+    scenarios = list_scenarios("online")
+    assert any(spec.name == "unknown_map_online" for spec in scenarios)
+
+    cfg = get_scenario_config("unknown_map_online", quick=True)
+
+    assert cfg.enable_obstacles is True
+    assert cfg.planner_mode == "online"
+    assert cfg.sensor_enabled is True
+    assert cfg.planner_initial_map_unknown is True
+    assert cfg.map_file is not None
+    assert cfg.map_file.endswith("unknown_map_arena.json")
+
+    sim = ObstacleScenarioSimulation(cfg)
+
+    assert len(list(sim.obstacles)) > 0
+    assert int(sim.replanner._static_occupied.sum()) == 0
+    assert min(float(sim.obstacles.signed_distance(wp)) for wp in cfg.waypoints) > sim._collision_margin
+
+
 def test_report_writer_outputs_csv_and_markdown(tmp_path: Path):
     rows = [
         {
@@ -173,3 +193,4 @@ def test_config_error_lists_new_rrt_test_presets():
     message = str(exc_info.value)
     assert "rrt_dual_channel_online" in message
     assert "formation_maze_stress_online" in message
+    assert "unknown_map_online" in message

@@ -1169,6 +1169,7 @@
         company_cubicles: 'company_cubicles', company_cubicles_online: 'company_cubicles',
         meeting_room: 'meeting_room', meeting_room_online: 'meeting_room',
         laboratory: 'laboratory', laboratory_online: 'laboratory',
+        unknown_map_online: 'unknown_map_arena',
         custom: 'sample_warehouse'
       };
 
@@ -1179,7 +1180,8 @@
         school_corridor: 'school_corridor_online',
         company_cubicles: 'company_cubicles_online',
         meeting_room: 'meeting_room_online',
-        laboratory: 'laboratory_online'
+        laboratory: 'laboratory_online',
+        unknown_map_arena: 'unknown_map_online'
       };
 
       const presetDefaults = {
@@ -1199,6 +1201,7 @@
         meeting_room_online: {simTime: 45, resolution: 0.2, margin: 0.2, replanInterval: 2.0, leaderVel: 0.8},
         laboratory: {simTime: 55, resolution: 0.3, margin: 0.3, replanInterval: 2.0, leaderVel: 1.5},
         laboratory_online: {simTime: 45, resolution: 0.3, margin: 0.3, replanInterval: 2.0, leaderVel: 1.5},
+        unknown_map_online: {simTime: 26, resolution: 0.25, margin: 0.22, replanInterval: 0.35, leaderVel: 1.0},
         custom: {simTime: 65, resolution: 0.4, margin: 0.3, replanInterval: 0.4, leaderVel: 2.0}
       };
 

@@ -69,6 +69,7 @@ SCENARIO_LABELS = {
     "meeting_room_online": "会议室在线",
     "rrt_dual_channel_online": "RRT双通道绕行测试",
     "formation_maze_stress_online": "编队迷宫压力测试",
+    "unknown_map_online": "完全未知地图在线测试",
 }
 
 VARIANT_LABELS = {

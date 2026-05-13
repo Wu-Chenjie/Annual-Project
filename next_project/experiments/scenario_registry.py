@@ -50,6 +50,11 @@ SCENARIOS: dict[str, ScenarioSpec] = {
         category="online",
         description="Maze-like formation stress test with false branches, narrow gates, and RRT escape.",
     ),
+    "unknown_map_online": ScenarioSpec(
+        name="unknown_map_online",
+        category="online",
+        description="Unknown-map online exploration with an empty initial planner map and sensor-discovered obstacles.",
+    ),
     "meeting_room": ScenarioSpec(
         name="meeting_room",
         category="offline",

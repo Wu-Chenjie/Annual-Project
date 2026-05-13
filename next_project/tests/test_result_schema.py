@@ -72,6 +72,12 @@ def test_build_sim_result_payload_passes_reporting_fields():
             "waypoint_events": [{"t": 0.2, "type": "waypoint_reached", "index": 0}],
             "task_waypoints": [[0, 0, 0], [1, 0, 0]],
             "replanned_waypoints": [[0, 0, 0], [0.5, 0, 0]],
+            "map_knowledge": {
+                "initial_map_unknown": True,
+                "truth_obstacle_count": 9,
+                "planner_static_occupied_count": 0,
+                "planner_sensor_occupied_count": 12,
+            },
         },
         runtime_s=0.3,
         config_snapshot={"planner_kind": "astar"},
@@ -82,6 +88,8 @@ def test_build_sim_result_payload_passes_reporting_fields():
     assert payload["waypoint_events"][0]["type"] == "waypoint_reached"
     assert payload["task_waypoints"][1] == [1, 0, 0]
     assert payload["replanned_waypoints"][1] == [0.5, 0, 0]
+    assert payload["map_knowledge"]["initial_map_unknown"] is True
+    assert payload["map_knowledge"]["planner_static_occupied_count"] == 0
 
 
 def test_build_benchmark_payload_validates():

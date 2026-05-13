@@ -33,6 +33,10 @@ FIGURE_NAMES = {
     "planning": "规划器耗时.png",
 }
 
+PRESET_LABELS = {
+    "unknown_map_online": "完全未知地图在线测试",
+}
+
 
 def generate_result_report(
     input_json: str | Path,
@@ -65,7 +69,7 @@ def generate_result_report(
         "planning": _plot_planning_times(payload, figure_dir / FIGURE_NAMES["planning"]),
     }
 
-    report_title = title or f"{payload.get('preset', '仿真')} 仿真结果报告"
+    report_title = title or _default_report_title(payload)
     report_path = target_dir / report_name
     report_path.write_text(
         _render_markdown(payload, metrics, report_title, figures, figure_dir_name=figure_dir_name),
@@ -137,6 +141,7 @@ def _render_markdown(
         f"| jerk 平方积分 | {_fmt(trajectory_summary.get('jerk_squared_integral'))} |",
         f"| snap 平方积分 | {_fmt(trajectory_summary.get('snap_squared_integral'))} |",
     ]
+    lines.extend(_map_knowledge_markdown(payload))
     if obstacle_model:
         lines.extend(_obstacle_model_markdown(obstacle_model))
     lines.extend(_formation_adaptation_markdown(payload, metrics, cfg))
@@ -228,6 +233,29 @@ def _render_markdown(
         lines.extend(f"- {note}" for note in missing_notes)
         lines.append("")
     return "\n".join(lines)
+
+
+def _default_report_title(payload: Mapping[str, Any]) -> str:
+    preset = str(payload.get("preset") or "仿真")
+    label = PRESET_LABELS.get(preset, preset)
+    return f"{label} 仿真结果报告"
+
+
+def _map_knowledge_markdown(payload: Mapping[str, Any]) -> list[str]:
+    knowledge = payload.get("map_knowledge") or {}
+    if not isinstance(knowledge, Mapping) or not knowledge:
+        return []
+    return [
+        "",
+        "## 地图知识状态",
+        "",
+        "| 项目 | 值 |",
+        "|---|---:|",
+        f"| 初始规划地图未知 | {_yes_no(knowledge.get('initial_map_unknown'))} |",
+        f"| 真实障碍物数量 | {_fmt(knowledge.get('truth_obstacle_count'))} |",
+        f"| 初始静态占据栅格数 | {_fmt(knowledge.get('planner_static_occupied_count'))} |",
+        f"| 传感器发现占据栅格数 | {_fmt(knowledge.get('planner_sensor_occupied_count'))} |",
+    ]
 
 
 def _plot_route(payload: Mapping[str, Any], path: Path) -> Path:

@@ -85,6 +85,7 @@ PRESETS: dict[str, str] = {
     "meeting_room_online": "会议室在线",
     "rrt_dual_channel_online": "RRT双通道绕行压力测试",
     "formation_maze_stress_online": "编队迷宫压力测试",
+    "unknown_map_online": "完全未知地图在线测试",
     "laboratory": "实验室离线",
     "laboratory_online": "实验室在线",
     "custom": "自定义",

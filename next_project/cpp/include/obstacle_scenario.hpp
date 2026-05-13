@@ -29,6 +29,7 @@ struct ObstacleConfig : SimulationConfig {
     double detect_margin_scale = 0.5;
     std::string planner_kind = "astar";
     std::string planner_mode = "offline";  // "offline" | "online"
+    bool planner_initial_map_unknown = false;
     double planner_replan_interval = 0.4;
     double planner_horizon = 6.0;
     bool planner_use_formation_envelope = false;

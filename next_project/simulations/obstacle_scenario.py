@@ -167,6 +167,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
             params["adaptive_n_decay"] = bool(cfg.apf_adaptive_n_decay)
             params["k_comm"] = 0.3 if getattr(cfg, "apf_comm_constraint", False) else 0.0
             params["mu_escape"] = 0.5 if getattr(cfg, "apf_rotational_escape", False) else 0.0
+        if getattr(cfg, "planner_initial_map_unknown", False):
+            # 未知地图场景中，APF 不直接读取真实障碍物；避障证据来自传感器更新后的规划栅格。
+            params.update({"k_rep": 0.0, "r_rep": 0.0, "k_inter": 0.0})
         return ImprovedArtificialPotentialField(**params)
 
     def _build_fault_detector(self) -> FaultDetector | None:
@@ -194,6 +197,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
     def _setup_obstacles(self) -> None:
         """鍔犺浇闅滅鐗╁満骞朵綋绱犲寲銆"""
         cfg = self.config
+        self._planner_initial_map_unknown = bool(getattr(cfg, "planner_initial_map_unknown", False))
         if cfg.map_file is not None:
             filepath = cfg.map_file
             if filepath.endswith(".json"):
@@ -215,17 +219,21 @@ class ObstacleScenarioSimulation(FormationSimulation):
             self.obstacles = ObstacleField()
             self._map_bounds = np.array([[-10, -10, 0], [30, 30, 10]], dtype=float)
 
+        self._planner_obstacles = ObstacleField() if self._planner_initial_map_unknown else self.obstacles
+        if self._planner_initial_map_unknown and hasattr(self, "grid"):
+            self.grid = None
+
         # 浣撶礌鍖栵紙濡傚皻鏈粠 NPZ 鍔犺浇锛?
         if not hasattr(self, "grid") or self.grid is None:
-            self.grid = self.obstacles.to_voxel_grid(self._map_bounds, cfg.planner_resolution)
+            self.grid = self._planner_obstacles.to_voxel_grid(self._map_bounds, cfg.planner_resolution)
             self.grid = self.grid.inflate(self._inflate_margin_xyz())
 
         # SDF 鎰熺煡鍖呰锛氱簿鍒よ杽闅滅鐗╋紙鍗婂緞 < 鏍呮牸鍒嗚鲸鐜囷級锛岄伩鍏嶄綋绱犲寲涓㈠け
-        if getattr(cfg, "planner_sdf_aware", False):
+        if getattr(cfg, "planner_sdf_aware", False) and not self._planner_initial_map_unknown:
             clearance = max(float(cfg.safety_margin), float(getattr(self, "_collision_margin", 0.0)))
             self.grid = SDFAwareGrid(
                 self.grid,
-                self.obstacles,
+                self._planner_obstacles,
                 clearance=clearance,
             )
 
@@ -238,6 +246,13 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 cap_distance=4.0,
             )
         self._apply_planning_z_bounds()
+
+    def _planning_signed_distance(self, point: np.ndarray) -> float:
+        """Signed distance visible to the planner, not necessarily the full truth map."""
+        if getattr(self, "_planner_initial_map_unknown", False):
+            idx = self.grid.world_to_index(np.asarray(point, dtype=float))
+            return -float(self.grid.resolution) if self.grid.is_occupied(idx) else float("inf")
+        return float(self.obstacles.signed_distance(np.asarray(point, dtype=float)))
 
     def _apply_planning_z_bounds(self) -> None:
         """将规划搜索限制在配置的高度层内，避免室内场景绕到天花板或墙体上方。"""
@@ -293,7 +308,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             offsets = self.topology.get_offsets(self.config.initial_formation)
         sample_spacing = max(min(float(self.config.planner_resolution) * 0.5, 0.10), 0.05)
         return FormationClearancePolicy(
-            signed_distance=lambda p: float(self.obstacles.signed_distance(np.asarray(p, dtype=float))),
+            signed_distance=lambda p: float(self._planning_signed_distance(np.asarray(p, dtype=float))),
             follower_offsets=offsets,
             base_clearance=self._formation_clearance_base(clearance),
             sample_spacing=sample_spacing,
@@ -434,13 +449,13 @@ class ObstacleScenarioSimulation(FormationSimulation):
         """按当前队形重新生成规划网格，避免队形切换后继续沿用旧膨胀层。"""
         if self._map_bounds is None or len(self._map_bounds) == 0:
             return
-        base_grid = self.obstacles.to_voxel_grid(self._map_bounds, self.config.planner_resolution)
+        base_grid = self._planner_obstacles.to_voxel_grid(self._map_bounds, self.config.planner_resolution)
         plan_grid = base_grid.inflate(self._inflate_margin_xyz())
-        if getattr(self.config, "planner_sdf_aware", False):
+        if getattr(self.config, "planner_sdf_aware", False) and not getattr(self, "_planner_initial_map_unknown", False):
             clearance = max(float(self.config.safety_margin), float(getattr(self, "_collision_margin", 0.0)))
             plan_grid = SDFAwareGrid(
                 plan_grid,
-                self.obstacles,
+                self._planner_obstacles,
                 clearance=clearance,
             )
         if getattr(self.config, "planner_esdf_aware", True):
@@ -473,7 +488,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             smooth_method="bspline",
         )
         self.firi_refiner = FIRIRefiner(
-            self.obstacles,
+            self._planner_obstacles,
             min_clearance=cfg.safety_margin + cfg.plan_clearance_extra,
         )
         self.trajectory_optimizer = TrajectoryOptimizer(
@@ -559,7 +574,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 danger_planner=danger_planner,
                 dual_mode=dual_mode,
                 adaptive_interval=adaptive_interval,
-                obstacle_field=self.obstacles,
+                obstacle_field=None if getattr(cfg, "planner_initial_map_unknown", False) else self.obstacles,
             )
             self.replanner.path_refiner = self.firi_refiner
 
@@ -605,7 +620,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         if max_radius_m is None:
             max_radius_m = max(6.0, self._inflate_r() + 2.0)
 
-        point_sd = float(self.obstacles.signed_distance(point))
+        point_sd = float(self._planning_signed_distance(point))
         point_idx = self.grid.world_to_index(point)
         if (not self.grid.is_occupied(point_idx)) and point_sd >= min_clearance - 1e-8:
             return point.copy()
@@ -639,7 +654,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         if self.grid.is_occupied(idx):
                             continue
                         candidate = self.grid.index_to_world(idx)
-                        sd = float(self.obstacles.signed_distance(candidate))
+                        sd = float(self._planning_signed_distance(candidate))
                         if sd < min_clearance - 1e-8:
                             continue
 
@@ -772,7 +787,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         if len(path) == 0:
             return float("-inf")
         if len(path) == 1:
-            return float(self.obstacles.signed_distance(path[0]))
+            return float(self._planning_signed_distance(path[0]))
         sample_spacing = float(spacing or max(min(self.grid.resolution * 0.5, 0.10), 0.08))
         worst = float("inf")
         for i in range(len(path) - 1):
@@ -782,7 +797,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             n = max(1, int(np.ceil(dist / sample_spacing)))
             for j in range(n + 1):
                 point = a + (b - a) * (j / n)
-                worst = min(worst, float(self.obstacles.signed_distance(point)))
+                worst = min(worst, float(self._planning_signed_distance(point)))
                 if worst < 0.0:
                     return worst
         return worst
@@ -802,23 +817,23 @@ class ObstacleScenarioSimulation(FormationSimulation):
         for idx in range(len(path)):
             wp = path[idx]
             for _ in range(max_iter):
-                min_sd = self.obstacles.signed_distance(wp)
+                min_sd = self._planning_signed_distance(wp)
                 worst_pos = wp
                 for off in offsets:
                     check_pos = wp + off
-                    sd = self.obstacles.signed_distance(check_pos)
+                    sd = self._planning_signed_distance(check_pos)
                     if sd < min_sd:
                         min_sd = sd
                         worst_pos = check_pos
                 if min_sd >= min_clearance:
                     break
                 grad = np.array([
-                    self.obstacles.signed_distance(worst_pos + [eps, 0, 0])
-                    - self.obstacles.signed_distance(worst_pos - [eps, 0, 0]),
-                    self.obstacles.signed_distance(worst_pos + [0, eps, 0])
-                    - self.obstacles.signed_distance(worst_pos - [0, eps, 0]),
-                    self.obstacles.signed_distance(worst_pos + [0, 0, eps])
-                    - self.obstacles.signed_distance(worst_pos - [0, 0, eps]),
+                    self._planning_signed_distance(worst_pos + [eps, 0, 0])
+                    - self._planning_signed_distance(worst_pos - [eps, 0, 0]),
+                    self._planning_signed_distance(worst_pos + [0, eps, 0])
+                    - self._planning_signed_distance(worst_pos - [0, eps, 0]),
+                    self._planning_signed_distance(worst_pos + [0, 0, eps])
+                    - self._planning_signed_distance(worst_pos - [0, 0, eps]),
                 ], dtype=float) / (2.0 * eps)
                 grad_norm = float(np.linalg.norm(grad))
                 if grad_norm < 1e-10:
@@ -836,9 +851,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
             for j in range(1, n_samples):
                 t = j / n_samples
                 sp = a + (b - a) * t
-                min_sd_sp = self.obstacles.signed_distance(sp)
+                min_sd_sp = self._planning_signed_distance(sp)
                 for off in offsets:
-                    sd = self.obstacles.signed_distance(sp + off)
+                    sd = self._planning_signed_distance(sp + off)
                     if sd < min_sd_sp:
                         min_sd_sp = sd
                 if min_sd_sp < worst_sd:
@@ -2050,6 +2065,20 @@ class ObstacleScenarioSimulation(FormationSimulation):
             posthoc_eval = self._make_formation_clearance_policy(formation_aware=True).evaluate_path(executed_arr)
             safety_metrics["formation_clearance_posthoc"] = posthoc_eval.to_dict()
 
+        map_knowledge = {
+            "initial_map_unknown": bool(getattr(self.config, "planner_initial_map_unknown", False)),
+            "truth_obstacle_count": int(len(list(self.obstacles))),
+            "planner_static_occupied_count": None,
+            "planner_sensor_occupied_count": None,
+        }
+        if getattr(self, "replanner", None) is not None:
+            static_occupied = getattr(self.replanner, "_static_occupied", None)
+            sensor_occupied = getattr(self.replanner, "_sensor_occupied", None)
+            if static_occupied is not None:
+                map_knowledge["planner_static_occupied_count"] = int(np.asarray(static_occupied, dtype=bool).sum())
+            if sensor_occupied is not None:
+                map_knowledge["planner_sensor_occupied_count"] = int(np.asarray(sensor_occupied, dtype=bool).sum())
+
         return {
             "time": history_time[valid],
             "leader": history_leader[valid, :],
@@ -2071,6 +2100,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "waypoint_events": waypoint_events,
             "formation_adaptation_events": self.formation_adaptation_events,
             "sensor_logs": np.array(self.sensor_logs, dtype=float) if self.sensor_logs else None,
+            "map_knowledge": map_knowledge,
             "collision_log": self.collision_log,
             "fault_log": self.fault_log,
             "safety_metrics": safety_metrics,

@@ -64,6 +64,7 @@
 | `meeting_room_online` | 在线重规划 | `get_config("meeting_room_online")` | 推荐 Web 回放场景 | 近障碍在线响应 |
 | `laboratory` | 离线 A* | `get_config("laboratory")` | 可作为 base_config | 多层高度障碍 |
 | `laboratory_online` | Hybrid A* 在线 | `get_config("laboratory_online")` | 推荐 Web 回放场景 | Hybrid A* + 传感器 |
+| `unknown_map_online` | 初始空规划地图 + 传感器发现 | `sim_warehouse --preset unknown_map_online` 可运行 | 可作为 base_config | 完全未知地图 smoke、地图知识状态报告 |
 
 ## 4. 回归验收方式
 
@@ -96,7 +97,7 @@
 | 从机安全裕度消融 | 完整 | 报告字段兼容 | 不作为 benchmark | `leader_only_planner`、`formation_aware_adaptive`、`formation_aware_lookahead_adaptive` 可对比 |
 | 前瞻窗口队形调整 | 完整 | 可运行子集 | replay metadata | 在探测窗口中识别窄通道/急转弯，提前触发队形调整 |
 | RRT escape 事件链 | 完整 | 直接 clear escape 子集 | replay metadata | Python 使用 RRT escape 候选路径；C++ 记录 attempt/accepted/failed 事件口径 |
-| 新压力场景 | 完整 | `sim_warehouse --preset` 可运行 | 可作为 base_config | `rrt_dual_channel_online` 与 `formation_maze_stress_online` 已注册 |
+| 新压力/未知地图场景 | 完整 | `sim_warehouse --preset` 可运行 | 可作为 base_config | `rrt_dual_channel_online`、`formation_maze_stress_online` 与 `unknown_map_online` 已注册 |
 | 中文结果报告 | 完整 | 完整子集 | 不适用 | Python 报告输出 `report.md`，C++ 报告输出 `cpp_report.md`、`cpp_metrics.json` 和 PNG |
 
 最新验证命令：

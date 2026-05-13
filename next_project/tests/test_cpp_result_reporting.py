@@ -127,12 +127,16 @@ def test_cpp_sources_expose_formation_adaptation_presets_and_fields():
 
     assert "config_rrt_dual_channel_online" in config_h
     assert "config_formation_maze_stress_online" in config_h
+    assert "config_unknown_map_online" in config_h
     assert 'preset == "rrt_dual_channel_online"' in config_h
     assert 'preset == "formation_maze_stress_online"' in config_h
+    assert 'preset == "unknown_map_online"' in config_h
+    assert "planner_initial_map_unknown" in config_h
     assert "formation_adaptation_enabled" in dynamic_main
     assert "formation_lookahead_enabled" in dynamic_main
     assert "formation_lookahead_rrt_enabled" in dynamic_main
     assert "formation_adaptation_events" in warehouse_main
+    assert "map_knowledge" in warehouse_main
 
 
 def test_find_sim_result_path_from_cpp_stdout(tmp_path: Path):

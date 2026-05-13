@@ -76,6 +76,12 @@ def _sample_payload() -> dict:
         "replan_events": [{"t": 1.0, "phase": "local"}],
         "collision_log": [],
         "fault_log": [{"t": 1.5, "type": "inject"}],
+        "map_knowledge": {
+            "initial_map_unknown": True,
+            "truth_obstacle_count": 9,
+            "planner_static_occupied_count": 0,
+            "planner_sensor_occupied_count": 18,
+        },
         "safety_metrics": {"min_inter_drone_distance": 0.7, "downwash_hits": 0},
     }
 
@@ -91,6 +97,9 @@ def test_generate_result_report_writes_chinese_markdown_and_figures(tmp_path: Pa
     assert "# 仓库在线测试报告" in text
     assert "## 预设场景" in text
     assert "## 路径规划路线参数" in text
+    assert "## 地图知识状态" in text
+    assert "| 初始规划地图未知 | 是 |" in text
+    assert "| 传感器发现占据栅格数 | 18 |" in text
     assert "## 规划器与规划耗时" in text
     assert "![场景与路线](report_figures/场景与路线.png)" in text
     assert "![飞行事件时间线](report_figures/飞行事件时间线.png)" in text
@@ -98,6 +107,18 @@ def test_generate_result_report_writes_chinese_markdown_and_figures(tmp_path: Pa
     assert (tmp_path / "report_figures" / "飞行参数.png").is_file()
     assert (tmp_path / "report_figures" / "规划器耗时.png").is_file()
     assert (tmp_path / "metrics.json").is_file()
+
+
+def test_generate_result_report_uses_chinese_unknown_map_title(tmp_path: Path):
+    payload = _sample_payload()
+    payload["preset"] = "unknown_map_online"
+    payload_path = tmp_path / "sim_result.json"
+    payload_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+    report_path = generate_result_report(payload_path)
+
+    text = report_path.read_text(encoding="utf-8")
+    assert "# 完全未知地图在线测试 仿真结果报告" in text
 
 
 def test_generate_result_report_handles_missing_optional_sections(tmp_path: Path):

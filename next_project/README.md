@@ -187,9 +187,16 @@ python -m experiments.run_cpp_report `
   --exe cpp/build/sim_warehouse.exe `
   --title C++编队调控预设报告 `
   -- --preset rrt_dual_channel_online --max-sim-time 0.5
+
+python main.py --preset unknown_map_online --run-name unknown_map_smoke --no-plot
+
+python -m experiments.run_cpp_report `
+  --exe cpp/build/sim_warehouse.exe `
+  --title C++完全未知地图冒烟报告 `
+  -- --preset unknown_map_online --max-sim-time 0.5
 ```
 
-相关报告会记录队形自适应、前瞻窗口、RRT escape attempt/accepted/failed、规划器耗时、路径参数、飞行参数和飞行事件。
+相关报告会记录队形自适应、前瞻窗口、RRT escape attempt/accepted/failed、规划器耗时、路径参数、飞行参数、飞行事件和未知地图场景的地图知识状态。
 
 ## Experimental Branches
 

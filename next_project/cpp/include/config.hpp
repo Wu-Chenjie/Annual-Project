@@ -24,6 +24,7 @@ inline ObstacleConfig config_meeting_room();
 inline ObstacleConfig config_meeting_room_online();
 inline ObstacleConfig config_rrt_dual_channel_online();
 inline ObstacleConfig config_formation_maze_stress_online();
+inline ObstacleConfig config_unknown_map_online();
 inline ObstacleConfig config_laboratory();
 inline ObstacleConfig config_laboratory_online();
 inline ObstacleConfig config_custom();
@@ -48,6 +49,7 @@ inline ObstacleConfig get_config(const std::string& preset) {
     if (preset == "meeting_room_online") return config_meeting_room_online();
     if (preset == "rrt_dual_channel_online") return config_rrt_dual_channel_online();
     if (preset == "formation_maze_stress_online") return config_formation_maze_stress_online();
+    if (preset == "unknown_map_online") return config_unknown_map_online();
     if (preset == "laboratory") return config_laboratory();
     if (preset == "laboratory_online") return config_laboratory_online();
     if (preset == "custom") return config_custom();
@@ -291,6 +293,34 @@ inline ObstacleConfig config_formation_maze_stress_online() {
     c.formation_lookahead_rrt_max_iter = 1000;
     c.formation_lookahead_rrt_rewire_radius = 1.25;
     c.waypoints = {{0,0,1.8},{4.5,3.5,1.8},{10,3.5,1.8},{10,-2.5,1.8},{17,-2.5,1.8},{20.5,5,1.8}};
+    return c;
+}
+
+inline ObstacleConfig config_unknown_map_online() {
+    ObstacleConfig c;
+    c.max_sim_time = 26.0; c.use_smc = true; c.use_backstepping = true;
+    c.num_followers = 2; c.formation_spacing = 0.45; c.initial_formation = "line";
+    c.wp_radius = 0.45; c.wp_radius_final = 0.25;
+    c.leader_max_vel = 1.0; c.leader_max_acc = 1.3; c.leader_gain_scale = 0.80;
+    c.follower_gain_scale = 1.0; c.follower_max_vel = 5.0; c.follower_max_acc = 5.0;
+    c.leader_acc_alpha = 0.30;
+    c.enable_obstacles = true; c.map_file = "../maps/unknown_map_arena.json";
+    c.planner_kind = "astar"; c.planner_mode = "online";
+    c.planner_resolution = 0.25; c.safety_margin = 0.22; c.plan_clearance_extra = 0.10;
+    c.planner_initial_map_unknown = true;
+    c.planner_sdf_aware = false; c.planner_esdf_aware = false;
+    c.planner_use_formation_envelope = false;
+    c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.35; c.planner_horizon = 3.2;
+    c.danger_mode_enabled = false;
+    c.formation_safety_enabled = true;
+    c.formation_min_inter_drone_distance = 0.35;
+    c.formation_downwash_radius = 0.45;
+    c.formation_downwash_height = 0.80;
+    c.formation_adaptation_enabled = false;
+    c.formation_lookahead_enabled = false;
+    c.formation_lookahead_rrt_enabled = false;
+    c.waypoints = {{1.0,0.0,1.8},{5.5,0.0,1.8},{9.5,2.8,1.8},{16.0,2.8,1.8}};
     return c;
 }
 

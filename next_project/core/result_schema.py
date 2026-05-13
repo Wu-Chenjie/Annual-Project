@@ -228,6 +228,7 @@ def build_sim_result_payload(
         "collision_log",
         "fault_log",
         "sensor_logs",
+        "map_knowledge",
         "safety_metrics",
     )
     for key in optional_passthrough:
