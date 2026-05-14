@@ -38,8 +38,11 @@ public:
     void enable_adaptive_interval(double min_interval, double max_interval);
 
     [[nodiscard]] const std::vector<ReplanEvent>& events() const { return events_; }
+    [[nodiscard]] const OccupancyGrid& current_grid() const { return mutable_grid_; }
     [[nodiscard]] double current_interval() const;
     [[nodiscard]] double last_risk() const { return last_risk_; }
+    std::vector<std::pair<std::array<int,3>, bool>> observe_sensor(
+        const Vec3& leader_pose, const std::array<double, 6>& sensor_reading);
     std::vector<ReplanEvent> get_new_events();
 
 private:
@@ -124,6 +127,12 @@ inline std::vector<ReplanEvent> WindowReplanner::get_new_events() {
     std::vector<ReplanEvent> out(events_.begin() + events_consumed_, events_.end());
     events_consumed_ = static_cast<int>(events_.size());
     return out;
+}
+
+inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::observe_sensor(
+    const Vec3& leader_pose, const std::array<double, 6>& sensor_reading) {
+    decay_sensor_obstacles();
+    return update_grid_from_sensor(leader_pose, sensor_reading);
 }
 
 inline std::vector<Vec3> WindowReplanner::step(

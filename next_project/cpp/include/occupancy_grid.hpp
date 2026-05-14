@@ -56,6 +56,11 @@ private:
 
 class SDFAwareGrid : public OccupancyGrid {
 public:
+    /// NOTE: OccupancyGrid(base) deep-copies the data vector (C++ value semantics).
+    /// In Python, SDFAwareGrid shares the same ndarray.  This copy is safe because
+    /// SDFAwareGrid is only created in known-map mode where the base grid never
+    /// changes after construction.  If unknown-mode ever enables SDF, this class
+    /// must be refactored to hold a pointer to the base grid.
     SDFAwareGrid(const OccupancyGrid& base, const ObstacleField& obs, double clearance)
         : OccupancyGrid(base), obs_(&obs), clearance_(clearance) {}
 

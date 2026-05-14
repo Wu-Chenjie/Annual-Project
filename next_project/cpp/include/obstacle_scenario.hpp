@@ -104,7 +104,7 @@ public:
 
 public:
     void setup_obstacles();
-    void set_obstacles(ObstacleField field, const std::array<Vec3, 2>& bounds);
+    void set_obstacles(const ObstacleField& field, const std::array<Vec3, 2>& bounds);
     void setup_online();
     std::vector<Vec3> plan_offline();
     double inflate_r() const;
@@ -126,6 +126,7 @@ public:
     ImprovedArtificialPotentialField build_apf() const;
     std::unique_ptr<FormationAPF> build_formation_apf() const;
     std::vector<Vec3> enforce_path_clearance(const std::vector<Vec3>& path, double min_clearance);
+    bool project_drone_state_to_safe(Drone& drone, double min_clearance);
     // Returns the minimum SDF clearance sampled along every segment of a candidate path.
     // Stops early once the sampled clearance falls below min_clearance.
     double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
@@ -135,6 +136,11 @@ public:
     /// returns negative distance for sensor-discovered occupied cells (grid),
     /// otherwise +inf; in normal mode delegates to the full obstacle field.
     double planning_signed_distance(const Vec3& point) const;
+    /// Build an ObstacleField from the current sensor-discovered grid cells
+    /// using 3D 6-connected component labelling.
+    ObstacleField build_discovered_obstacle_field() const;
+    /// Rebuild the discovered obstacle field from the latest grid state.
+    void update_discovered_obstacles();
     Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal,
                                 const std::vector<Vec3>& other_positions = {});
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,
@@ -156,6 +162,7 @@ public:
     ObstacleConfig config_;
     FormationSimulation formation_;
     ObstacleField obstacles_;
+    ObstacleField discovered_obstacles_;  // sensor-discovered only, grows during flight
     std::array<Vec3, 2> map_bounds_{};
     OccupancyGrid grid_;
     std::unique_ptr<SDFAwareGrid> sdf_grid_;

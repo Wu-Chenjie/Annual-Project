@@ -143,6 +143,7 @@ inline ObstacleConfig config_warehouse_a() {
     c.planner_horizon = 6.0;
     c.replan_adaptive_interval = false;
     c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     return c;
 }
 
@@ -170,6 +171,7 @@ inline ObstacleConfig config_warehouse_danger() {
     c.replan_interval_min = 0.1;
     c.replan_interval_max = 1.0;
     c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     return c;
 }
 
@@ -218,6 +220,7 @@ inline ObstacleConfig config_school_corridor() {
     c.planner_has_z_bounds = true; c.planner_z_min = 1.5; c.planner_z_max = 3.0;
     c.sensor_enabled = true; c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;
     c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.formation_schedule = {{20,"diamond",2},{38,"line",3}};
     c.waypoints = {{1,2,2},{10,2,2},{23,2,2},{27.5,1,2},{34,5.5,2},{41,2,2},{47,2,2.5}};
     return c;
@@ -346,7 +349,9 @@ inline ObstacleConfig config_unknown_map_online() {
     c.planner_use_formation_envelope = false;
     c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.35; c.planner_horizon = 3.2;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.formation_safety_enabled = true;
     c.formation_min_inter_drone_distance = 0.35;
     c.formation_downwash_radius = 0.45;
@@ -406,7 +411,9 @@ inline ObstacleConfig config_obstacle_unknown() {
     c.planner_use_formation_envelope = false;
     c.sensor_enabled = true; c.sensor_max_range = 3.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 3.0;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.waypoints = {{2,10,2},{20,10,2}};
     return c;
@@ -425,10 +432,12 @@ inline ObstacleConfig config_warehouse_unknown() {
     c.planner_resolution = 0.4; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.0;
     c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{20,"line",6},{36,"diamond",6}};
     c.waypoints = {{4.2,13.2,5.7},{11.4,10.2,2.4},{19.8,15.2,7},{29.2,22.4,3.7},{35.8,10,8.3},{42,4.8,1}};
@@ -456,7 +465,9 @@ inline ObstacleConfig config_warehouse_online_unknown() {
     c.planner_use_formation_envelope = false;
     c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 4.5;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.waypoints = {{4.2,13.2,5.7},{19.8,15.2,7},{42,4.8,1}};
     return c;
@@ -512,7 +523,9 @@ inline ObstacleConfig config_school_corridor_unknown() {
     c.planner_has_z_bounds = true; c.planner_z_min = 1.5; c.planner_z_max = 3.0;
     c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.35; c.planner_horizon = 4.5;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{30,"diamond",2},{60,"line",3}};
     c.waypoints = {{1,2,2},{10,2,2},{23,2,2},{27.5,1,2},{34,5.5,2},{41,2,2},{47,2,2.5}};
@@ -545,7 +558,9 @@ inline ObstacleConfig config_company_cubicles_unknown() {
     c.planner_use_formation_envelope = false;
     c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 4.5;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{22,"line",4},{40,"diamond",4}};
     c.waypoints = {{3,4,2.5},{13,4,2.5},{22,4,2.5},{22,12,2.5},{13,12,2.5},{3,12,2.5},{3,21,2.5}};
@@ -577,7 +592,9 @@ inline ObstacleConfig config_meeting_room_unknown() {
     c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.8;
     c.sensor_enabled = true; c.sensor_max_range = 3.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 3.0;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{1,8,2}};
     return c;
@@ -608,7 +625,9 @@ inline ObstacleConfig config_rrt_dual_channel_online_unknown() {
     c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.4;
     c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.4; c.planner_horizon = 3.5;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_safety_enabled = true;
     c.formation_min_inter_drone_distance = 0.35;
@@ -647,7 +666,9 @@ inline ObstacleConfig config_laboratory_unknown() {
     c.planner_has_z_bounds = true; c.planner_z_min = 2.0; c.planner_z_max = 3.2;
     c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 5.0;
-    c.danger_mode_enabled = false;
+    c.apf_paper1_profile = "conservative";
+    c.danger_mode_enabled = true;
+    c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{24,"diamond",3},{46,"line",5}};
     c.waypoints = {{1,4,2.5},{3,10,2.5},{8,4,2.5},{13,4,2.5},{16,10,2.5},{21,12,2.5},{13,16,2.5},{3,16,2.5}};

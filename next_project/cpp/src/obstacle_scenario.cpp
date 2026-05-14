@@ -113,12 +113,7 @@ ImprovedArtificialPotentialField ObstacleScenarioSimulation::build_apf() const {
         mu_escape = 0.5;
     }
 
-    if (config_.planner_initial_map_unknown) {
-        k_rep = 0.0;
-        r_rep = 0.0;
-        k_inter = 0.0;
-    }
-
+    // 未知地图: APF 同样工作，排斥力来自传感器动态发现的障碍场
     return ImprovedArtificialPotentialField(
         k_rep, r_rep, n_decay, k_inter, s_inter, mu_escape, max_acc,
         k_comm, comm_range, adaptive_n_decay);
@@ -132,8 +127,8 @@ std::unique_ptr<FormationAPF> ObstacleScenarioSimulation::build_formation_apf() 
         config_.apf_centroid_beta);
 }
 
-void ObstacleScenarioSimulation::set_obstacles(ObstacleField field, const std::array<Vec3, 2>& bounds) {
-    obstacles_ = std::move(field);
+void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const std::array<Vec3, 2>& bounds) {
+    obstacles_ = field;
     map_bounds_ = bounds;
     task_waypoints_ = config_.waypoints;
 
@@ -628,9 +623,7 @@ void ObstacleScenarioSimulation::rebuild_planning_grid() {
             : static_cast<const OccupancyGrid&>(grid_);
         replanner_ = std::make_unique<WindowReplanner>(pg, config_.planner_replan_interval,
                                                        config_.planner_horizon, 0.5, 3);
-        if (!config_.planner_initial_map_unknown) {
-            replanner_->set_obstacle_field(&obstacles_);
-        }
+        replanner_->set_obstacle_field(config_.planner_initial_map_unknown ? &discovered_obstacles_ : &obstacles_);
         if (config_.replan_adaptive_interval) {
             replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
         }
@@ -857,6 +850,18 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
     FormationTopology topo(config_.num_followers, config_.formation_spacing);
     auto offsets = topo.get_offsets(config_.initial_formation);
 
+    if (config_.planner_initial_map_unknown) {
+        for (auto& wp : out) {
+            if (planning_signed_distance(wp) < min_clearance) {
+                wp = project_to_planning_free(
+                    wp,
+                    nullptr,
+                    std::max(config_.planner_resolution * 2.0, min_clearance + config_.planner_resolution));
+            }
+        }
+        return out;
+    }
+
     for (auto& wp : out) {
         for (int iter = 0; iter < 60; ++iter) {
             double min_sd = planning_signed_distance(wp);
@@ -878,12 +883,81 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
                     - planning_signed_distance({worst.x, worst.y, worst.z - eps}),
             };
             grad = grad / (2.0 * eps);
+            if (!std::isfinite(grad.x) || !std::isfinite(grad.y) || !std::isfinite(grad.z)) break;
             double gn = norm(grad);
             if (gn < 1e-10) break;
             wp = wp + (grad / gn) * 0.10;
         }
     }
     return out;
+}
+
+bool ObstacleScenarioSimulation::project_drone_state_to_safe(Drone& drone, double min_clearance) {
+    const KinematicState state = drone.get_state();
+    const Vec3 pos = state.position;
+    const double sd = obstacles_.signed_distance(pos);
+    if (sd >= min_clearance) return false;
+
+    const double eps = 0.03;
+    Vec3 grad{
+        (obstacles_.signed_distance(pos + Vec3{eps, 0.0, 0.0})
+         - obstacles_.signed_distance(pos - Vec3{eps, 0.0, 0.0})) / (2.0 * eps),
+        (obstacles_.signed_distance(pos + Vec3{0.0, eps, 0.0})
+         - obstacles_.signed_distance(pos - Vec3{0.0, eps, 0.0})) / (2.0 * eps),
+        (obstacles_.signed_distance(pos + Vec3{0.0, 0.0, eps})
+         - obstacles_.signed_distance(pos - Vec3{0.0, 0.0, eps})) / (2.0 * eps),
+    };
+
+    Vec3 normal{};
+    Vec3 corrected = pos;
+    const double grad_norm = norm(grad);
+    if (std::isfinite(grad.x) && std::isfinite(grad.y) && std::isfinite(grad.z)
+        && grad_norm >= 1e-9) {
+        normal = grad / grad_norm;
+        corrected = pos + normal * (min_clearance - sd + 1e-3);
+    } else {
+        const double search_radius = std::max(1.0, min_clearance + 0.8);
+        const double step = std::max(0.05, std::min(config_.planner_resolution, 0.2));
+        const int max_steps = std::max(1, static_cast<int>(std::ceil(search_radius / step)));
+        double best_score = std::numeric_limits<double>::infinity();
+        bool found = false;
+
+        for (int radius = 1; radius <= max_steps; ++radius) {
+            for (int ix = -radius; ix <= radius; ++ix) {
+                for (int iy = -radius; iy <= radius; ++iy) {
+                    for (int iz = -radius; iz <= radius; ++iz) {
+                        if (std::max({std::abs(ix), std::abs(iy), std::abs(iz)}) != radius) {
+                            continue;
+                        }
+                        Vec3 candidate = pos + Vec3{
+                            static_cast<double>(ix) * step,
+                            static_cast<double>(iy) * step,
+                            static_cast<double>(iz) * step,
+                        };
+                        if (obstacles_.signed_distance(candidate) < min_clearance) continue;
+                        Vec3 delta = candidate - pos;
+                        const double score = norm(delta) + 0.05 * std::abs(delta.z);
+                        if (score < best_score) {
+                            best_score = score;
+                            corrected = candidate;
+                            normal = normalized(delta);
+                            found = true;
+                        }
+                    }
+                }
+            }
+            if (found) break;
+        }
+        if (!found) return false;
+    }
+
+    Vec3 velocity = state.velocity;
+    const double normal_vel = dot(velocity, normal);
+    if (normal_vel < 0.0) {
+        velocity -= normal * normal_vel;
+    }
+    drone.set_initial_state(corrected, velocity, state.attitude, state.angular_velocity, drone.dt());
+    return true;
 }
 
 double ObstacleScenarioSimulation::path_segment_clearance(
@@ -925,9 +999,107 @@ double ObstacleScenarioSimulation::planning_signed_distance(const Vec3& point) c
     return obstacles_.signed_distance(point);
 }
 
+ObstacleField ObstacleScenarioSimulation::build_discovered_obstacle_field() const {
+    ObstacleField field;
+    if (grid_.data.empty()) return field;
+
+    const int nx = grid_.nx, ny = grid_.ny, nz = grid_.nz;
+    std::vector<int> labels(static_cast<std::size_t>(nx) * ny * nz, 0);
+    int current_label = 0;
+
+    // 3D 6-connected component labelling
+    const int di[] = {-1, 1, 0, 0, 0, 0};
+    const int dj[] = {0, 0, -1, 1, 0, 0};
+    const int dk[] = {0, 0, 0, 0, -1, 1};
+
+    for (int iz = 0; iz < nz; ++iz) {
+        for (int iy = 0; iy < ny; ++iy) {
+            for (int ix = 0; ix < nx; ++ix) {
+                const std::size_t idx = (static_cast<std::size_t>(iz) * ny + iy) * nx + ix;
+                if (grid_.data[idx] < 1 || labels[idx] != 0) continue;
+
+                ++current_label;
+                std::vector<std::size_t> q{idx};
+                labels[idx] = current_label;
+
+                for (std::size_t qi = 0; qi < q.size(); ++qi) {
+                    const std::size_t ci = q[qi];
+                    const int cx = static_cast<int>(ci % nx);
+                    const int cy = static_cast<int>((ci / nx) % ny);
+                    const int cz = static_cast<int>(ci / (nx * ny));
+
+                    for (int d = 0; d < 6; ++d) {
+                        const int nx_idx = cx + di[d];
+                        const int ny_idx = cy + dj[d];
+                        const int nz_idx = cz + dk[d];
+                        if (nx_idx < 0 || nx_idx >= nx || ny_idx < 0 || ny_idx >= ny || nz_idx < 0 || nz_idx >= nz)
+                            continue;
+                        const std::size_t nidx = (static_cast<std::size_t>(nz_idx) * ny + ny_idx) * nx + nx_idx;
+                        if (grid_.data[nidx] >= 1 && labels[nidx] == 0) {
+                            labels[nidx] = current_label;
+                            q.push_back(nidx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Build AABB per component
+    const double res = grid_.resolution;
+    std::vector<int> imin(current_label, nx + ny + nz);
+    std::vector<int> jmin(current_label, nx + ny + nz);
+    std::vector<int> kmin(current_label, nx + ny + nz);
+    std::vector<int> imax(current_label, -1);
+    std::vector<int> jmax(current_label, -1);
+    std::vector<int> kmax(current_label, -1);
+
+    for (int iz = 0; iz < nz; ++iz) {
+        for (int iy = 0; iy < ny; ++iy) {
+            for (int ix = 0; ix < nx; ++ix) {
+                const std::size_t idx = (static_cast<std::size_t>(iz) * ny + iy) * nx + ix;
+                const int lbl = labels[idx];
+                if (lbl == 0) continue;
+                const int li = lbl - 1;
+                if (ix < imin[li]) imin[li] = ix;
+                if (iy < jmin[li]) jmin[li] = iy;
+                if (iz < kmin[li]) kmin[li] = iz;
+                if (ix > imax[li]) imax[li] = ix;
+                if (iy > jmax[li]) jmax[li] = iy;
+                if (iz > kmax[li]) kmax[li] = iz;
+            }
+        }
+    }
+
+    for (int li = 0; li < current_label; ++li) {
+        if (imax[li] < 0) continue;
+        Vec3 min_world = grid_.index_to_world(imin[li], jmin[li], kmin[li]);
+        Vec3 max_world = grid_.index_to_world(imax[li], jmax[li], kmax[li]) + Vec3{res, res, res};
+        field.add_aabb(min_world, max_world);
+    }
+
+    return field;
+}
+
+void ObstacleScenarioSimulation::update_discovered_obstacles() {
+    if (!config_.planner_initial_map_unknown) return;
+    // Sync scenario grid with replanner's sensor-updated grid so all
+    // downstream consumers (planning_signed_distance, clearance checks,
+    // project_to_planning_free, etc.) see the latest sensor data.
+    if (replanner_) {
+        const auto& sg = replanner_->current_grid();
+        if (sg.data.size() == grid_.data.size()) {
+            grid_.data = sg.data;
+        }
+    }
+    discovered_obstacles_ = build_discovered_obstacle_field();
+}
+
 Vec3 ObstacleScenarioSimulation::obstacle_repulsion_acc(
     const Vec3& pos, const Vec3& goal, const std::vector<Vec3>& other_positions) {
-    return apf_.compute_avoidance_acceleration(pos, goal, obstacles_, other_positions);
+    const ObstacleField& avoid_field = config_.planner_initial_map_unknown
+        ? discovered_obstacles_ : obstacles_;
+    return apf_.compute_avoidance_acceleration(pos, goal, avoid_field, other_positions);
 }
 
 void ObstacleScenarioSimulation::setup_online() {
@@ -938,9 +1110,7 @@ void ObstacleScenarioSimulation::setup_online() {
         : static_cast<const OccupancyGrid&>(grid_);
     replanner_ = std::make_unique<WindowReplanner>(pg, config_.planner_replan_interval,
                                                     config_.planner_horizon, 0.5, 3);
-    if (!config_.planner_initial_map_unknown) {
-        replanner_->set_obstacle_field(&obstacles_);
-    }
+    replanner_->set_obstacle_field(config_.planner_initial_map_unknown ? &discovered_obstacles_ : &obstacles_);
     if (config_.replan_adaptive_interval) {
         replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
     }
@@ -1038,6 +1208,11 @@ SimulationResult ObstacleScenarioSimulation::run() {
             if (sensor_) {
                 sdata = sensor_->sense(ls_before_replan.position, obstacles_);
                 sp = &sdata;
+                // 未知模式：每步持续将传感器读数注入栅格并重建动态障碍场
+                if (config_.planner_initial_map_unknown) {
+                    replanner_->observe_sensor(ls_before_replan.position, *sp);
+                    update_discovered_obstacles();
+                }
                 if (config_.formation_adaptation_enabled) {
                     auto channel_width = channel_width_from_sensor(sp);
                     if (apply_formation_adaptation(t, &channel_width, 0.0, false)) {
@@ -1056,9 +1231,14 @@ SimulationResult ObstacleScenarioSimulation::run() {
             auto new_path = maybe_lookahead_escape(t, ls_before_replan.position, active_path, task_goal);
             const bool lookahead_used = !new_path.empty();
             if (!lookahead_used) {
-                new_path = replanner_->step(t, ls_before_replan.position, sp, task_goal);
+                const std::array<double, 6>* replan_sensor = config_.planner_initial_map_unknown ? nullptr : sp;
+                new_path = replanner_->step(t, ls_before_replan.position, replan_sensor, task_goal);
+                if (config_.planner_initial_map_unknown) {
+                    update_discovered_obstacles();
+                }
             }
             if (!new_path.empty()) {
+                update_discovered_obstacles();
                 auto candidate_path = stitch_local_path_to_task_goal(new_path, task_goal);
                 const double clearance = compute_clearance();
                 if (config_.firi_enabled && !config_.planner_initial_map_unknown && candidate_path.size() >= 2) {
@@ -1143,9 +1323,11 @@ SimulationResult ObstacleScenarioSimulation::run() {
         auto offsets = topology.get_current_offsets(t);
         Vec3 formation_leader_acc{};
         std::vector<Vec3> formation_follower_accs(followers.size(), Vec3{});
+        const ObstacleField& apf_field = config_.planner_initial_map_unknown
+            ? discovered_obstacles_ : obstacles_;
         if (formation_apf_ && !follower_positions_now.empty()) {
             auto formation_forces = formation_apf_->compute_formation_avoidance(
-                ls0.position, follower_positions_now, target, obstacles_, offsets);
+                ls0.position, follower_positions_now, target, apf_field, offsets);
             formation_leader_acc = formation_forces.first;
             formation_follower_accs = std::move(formation_forces.second);
         }
@@ -1157,6 +1339,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
 
         auto u = leader_ctrl->compute_control(leader.state(), target, Vec3{}, rep_acc);
         leader.update_state(u, leader_wind.sample(dt));
+        project_drone_state_to_safe(leader, collision_margin_);
 
         auto ls = leader.get_state();
         result.leader[step_idx] = ls.position;
@@ -1261,6 +1444,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
             }
 
             followers[i].update_state(u_f, winds[i].sample(dt));
+            project_drone_state_to_safe(followers[i], collision_margin_);
 
             auto fs = followers[i].get_state();
             Vec3 err_v = fs.position - target_pos;

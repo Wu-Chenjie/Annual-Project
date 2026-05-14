@@ -2,8 +2,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+# Allow execution from any working directory (e.g. C++ calls from cpp/)
+_script_dir = Path(__file__).resolve().parent
+_root_dir = _script_dir.parent
+if str(_root_dir) not in sys.path:
+    sys.path.insert(0, str(_root_dir))
 
 from experiments.result_reporter import generate_result_report
 

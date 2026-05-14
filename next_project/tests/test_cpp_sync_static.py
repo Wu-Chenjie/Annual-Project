@@ -76,6 +76,86 @@ def test_cpp_replanner_has_risk_adaptive_interval_and_sensor_ttl():
     assert "decay_sensor_obstacles()" in source
 
 
+def test_cpp_obstacle_entry_accepts_direct_map_file_for_all_map_sweeps():
+    source = read("cpp/src/warehouse_main.cpp")
+
+    assert "std::string map_file_override" in source
+    assert 'arg == "--map-file"' in source
+    assert "config.map_file = resolve_map_file(cli.map_file_override)" in source
+    assert "const bool use_manual_warehouse = preset == \"warehouse\" && cli.map_file_override.empty()" in source
+
+
+def test_cpp_unknown_map_sensor_updates_are_separate_from_replan_step():
+    replanner = read("cpp/include/replanner.hpp")
+    scenario = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "observe_sensor(" in replanner
+    sensor_block = re.search(
+        r"sdata\s*=\s*sensor_->sense\(.*?"
+        r"if\s*\(\s*config_\.planner_initial_map_unknown\s*\)\s*\{(?P<body>.*?)\n\s*\}",
+        scenario,
+        flags=re.DOTALL,
+    )
+    assert sensor_block is not None
+    body = sensor_block.group("body")
+    assert "observe_sensor(" in body
+    assert "replanner_->step(" not in body
+
+
+def test_cpp_unknown_map_discovered_obstacle_aabb_preserves_z_extent():
+    scenario = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "grid_.index_to_world(imax[li], jmax[li], kmax[li])" in scenario
+    assert "grid_.index_to_world(imax[li], jmax[li], kmin[li])" not in scenario
+
+
+def test_cpp_visibility_graph_rebuilds_adjacency_after_start_goal_insertions():
+    source = read("cpp/src/visibility_graph.cpp")
+
+    assert "adjacency.assign(vertices.size(), {})" in source
+    assert "adjacency.insert(adjacency.begin(), {})" not in source
+
+
+def test_cpp_unknown_map_clearance_projection_does_not_use_infinite_sdf_gradient():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    enforce = re.search(
+        r"std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance"
+        r"\(.*?\n\}",
+        source,
+        flags=re.DOTALL,
+    )
+    assert enforce is not None
+    body = enforce.group(0)
+    assert "config_.planner_initial_map_unknown" in body
+    assert re.search(r"project_to_planning_free\s*\(\s*wp", body)
+    assert "std::isfinite(grad.x)" in body
+
+
+def test_cpp_execution_layer_projects_drone_state_like_python():
+    source = read("cpp/src/obstacle_scenario.cpp")
+    header = read("cpp/include/obstacle_scenario.hpp")
+
+    assert "bool project_drone_state_to_safe(Drone& drone, double min_clearance);" in header
+    assert "ObstacleScenarioSimulation::project_drone_state_to_safe" in source
+    assert "project_drone_state_to_safe(leader, collision_margin_);" in source
+    assert "project_drone_state_to_safe(followers[i], collision_margin_);" in source
+    assert re.search(
+        r"leader\.update_state\(.*?\);\s*"
+        r"project_drone_state_to_safe\(leader,\s*collision_margin_\);\s*"
+        r"auto\s+ls\s*=\s*leader\.get_state\(\);",
+        source,
+        flags=re.DOTALL,
+    )
+    assert re.search(
+        r"followers\[i\]\.update_state\(.*?\);\s*"
+        r"project_drone_state_to_safe\(followers\[i\],\s*collision_margin_\);\s*"
+        r"auto\s+fs\s*=\s*followers\[i\]\.get_state\(\);",
+        source,
+        flags=re.DOTALL,
+    )
+
+
 def test_cpp_config_exposes_adaptive_interval_fields():
     header = read("cpp/include/obstacle_scenario.hpp")
 
@@ -226,6 +306,7 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     assert 'w.key("executed_path").array_vec3(result.executed_path);' in warehouse_main
     assert 'w.key("fault_log").array_string(result.fault_log);' in warehouse_main
     assert 'w.key("safety_metrics").begin_object();' in warehouse_main
+    assert "result.completed_waypoint_count << \"/\" << result.task_waypoints.size()" in warehouse_main
     assert 'sim_result.json' in warehouse_main
     assert "scenario.safe_follower_target(" in safety_probe
     assert "scenario.deconflict_follower_target(" in safety_probe
@@ -389,6 +470,7 @@ def test_cpp_apf_profile_config_surface_and_subset_runtime_are_explicit():
     assert "Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target, leader_other_positions);" in obstacle_source
     assert "Vec3 rep_acc_f = obstacle_repulsion_acc(follower_pos, target_pos, other_positions);" in obstacle_source
     assert "if (formation_apf_ && !follower_positions_now.empty())" in obstacle_source
+    assert "const ObstacleField& apf_field = config_.planner_initial_map_unknown" in obstacle_source
     assert "formation_apf_->compute_formation_avoidance(" in obstacle_source
     assert "rep_acc += formation_leader_acc;" in obstacle_source
     assert "rep_acc_f += formation_follower_accs" in obstacle_source

@@ -1,6 +1,7 @@
 #include <array>
 #include <algorithm>
 #include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -10,6 +11,9 @@
 #include <system_error>
 #include <variant>
 #include <vector>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "config.hpp"
 #include "json_writer.hpp"
@@ -97,6 +101,7 @@ std::string resolve_map_file(const std::string& raw) {
 
 struct CliOptions {
     std::string preset = "warehouse";
+    std::string map_file_override;
     double max_sim_time = -1.0;
 };
 
@@ -106,6 +111,8 @@ CliOptions parse_cli(int argc, char* argv[]) {
         const std::string arg = argv[i];
         if (arg == "--preset" && i + 1 < argc) {
             options.preset = argv[++i];
+        } else if (arg == "--map-file" && i + 1 < argc) {
+            options.map_file_override = argv[++i];
         } else if (arg == "--max-sim-time" && i + 1 < argc) {
             options.max_sim_time = std::stod(argv[++i]);
         } else if (arg.rfind("--", 0) != 0) {
@@ -386,14 +393,15 @@ void write_obstacle_result_json(
     w.key("planner_use_formation_envelope").value(config.planner_use_formation_envelope);
     w.key("sensor_enabled").value(config.sensor_enabled);
     w.key("danger_mode_enabled").value(config.danger_mode_enabled);
+    w.key("apf_paper1_profile").value(config.apf_paper1_profile);
     w.key("apf_formation_centroid").value(config.apf_formation_centroid);
     w.key("formation_adaptation_enabled").value(config.formation_adaptation_enabled);
     w.key("formation_lookahead_enabled").value(config.formation_lookahead_enabled);
     w.key("formation_lookahead_rrt_enabled").value(config.formation_lookahead_rrt_enabled);
     w.key("formation_lookahead_distance").value(config.formation_lookahead_distance);
     w.key("formation_lookahead_turn_threshold_rad").value(config.formation_lookahead_turn_threshold_rad);
-    w.key("trajectory_optimizer_enabled").value(false);
-    w.key("trajectory_optimizer_method").value("");
+    w.key("trajectory_optimizer_enabled").value(config.trajectory_optimizer_enabled);
+    w.key("trajectory_optimizer_method").value(config.trajectory_optimizer_method);
     w.end_object();
 
     w.key("metrics").begin_object();
@@ -466,6 +474,9 @@ void write_obstacle_result_json(
 }  // namespace
 
 int main(int argc, char* argv[]) {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     using sim::ObstacleConfig;
     using sim::ObstacleScenarioSimulation;
     using sim::Vec3;
@@ -477,7 +488,11 @@ int main(int argc, char* argv[]) {
         config.max_sim_time = cli.max_sim_time;
     }
 
-    const bool use_manual_warehouse = preset == "warehouse";
+    if (!cli.map_file_override.empty()) {
+        config.map_file = resolve_map_file(cli.map_file_override);
+    }
+
+    const bool use_manual_warehouse = preset == "warehouse" && cli.map_file_override.empty();
     if (use_manual_warehouse) {
         config.map_file = "";
     } else {
@@ -507,7 +522,7 @@ int main(int argc, char* argv[]) {
     double ts = std::chrono::duration<double>(t2 - t1).count();
 
     std::cout << "规划: " << tp << "s | 仿真: " << ts << "s | 总: " << (tp+ts) << "s\n";
-    std::cout << "路点: " << result.completed_waypoint_count << "/" << result.waypoints.size() << "\n";
+    std::cout << "路点: " << result.completed_waypoint_count << "/" << result.task_waypoints.size() << "\n";
     for (size_t i = 0; i < result.metrics.mean.size(); ++i)
         std::cout << "F" << (i+1) << ": mean=" << result.metrics.mean[i]
                   << " max=" << result.metrics.max[i]
@@ -519,5 +534,29 @@ int main(int argc, char* argv[]) {
         std::filesystem::path("outputs") / preset / timestamp_dir_name() / "sim_result.json";
     write_obstacle_result_json(output_path, result, tp, ts, preset, config, report_obstacles, report_bounds);
     std::cout << "结果文件: " << output_path.string() << "\n";
+
+    // Auto-generate Chinese report.md via Python report pipeline
+    {
+        std::filesystem::path report_script =
+            std::filesystem::absolute(std::filesystem::path("..") / "experiments" / "report_cpp_results.py");
+        std::filesystem::path abs_output = std::filesystem::absolute(output_path);
+        std::cout << "生成报告: " << std::flush;
+        int ret = -1;
+#ifdef _WIN32
+        std::wstring cmd = L"python \"" + report_script.wstring() + L"\" \""
+                         + abs_output.wstring() + L"\"";
+        ret = _wsystem(cmd.c_str());
+#else
+        std::string cmd = "python \"" + report_script.string() + "\" \""
+                        + abs_output.string() + "\"";
+        ret = std::system(cmd.c_str());
+#endif
+        if (ret == 0) {
+            std::filesystem::path report_path = output_path.parent_path() / "cpp_report.md";
+            std::cout << report_path.string() << "\n";
+        } else {
+            std::cout << "跳过 (python 不可用或脚本执行失败, code=" << ret << ")\n";
+        }
+    }
     return 0;
 }

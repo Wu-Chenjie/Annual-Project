@@ -35,6 +35,23 @@ FIGURE_NAMES = {
 
 PRESET_LABELS = {
     "unknown_map_online": "完全未知地图在线测试",
+    "obstacle_unknown": "简单障碍物完全未知",
+    "warehouse_unknown": "工业仓库完全未知",
+    "warehouse_a_unknown": "仓库 A* 完全未知",
+    "warehouse_online_unknown": "仓库在线完全未知",
+    "warehouse_danger_unknown": "仓库 Danger 完全未知",
+    "fault_tolerance_unknown": "容错测试完全未知",
+    "fault_tolerance_online_unknown": "容错在线完全未知",
+    "school_corridor_unknown": "学校走廊完全未知",
+    "school_corridor_online_unknown": "学校走廊在线完全未知",
+    "company_cubicles_unknown": "公司格子间完全未知",
+    "company_cubicles_online_unknown": "公司格子间在线完全未知",
+    "meeting_room_unknown": "会议室完全未知",
+    "meeting_room_online_unknown": "会议室在线完全未知",
+    "rrt_dual_channel_online_unknown": "RRT 双通道绕行完全未知",
+    "formation_maze_stress_online_unknown": "编队迷宫压力完全未知",
+    "laboratory_unknown": "实验室完全未知",
+    "laboratory_online_unknown": "实验室在线完全未知",
 }
 
 
@@ -120,7 +137,7 @@ def _render_markdown(
         f"| 航点数量 | {len(payload.get('task_waypoints') or payload.get('waypoints') or cfg.get('waypoints') or [])} |",
         f"| 传感器 | {_yes_no(cfg.get('sensor_enabled'))} |",
         f"| GNN danger 模式 | {_yes_no(cfg.get('danger_mode_enabled'))} |",
-        f"| APF 编队避障 | {_yes_no(cfg.get('apf_formation_centroid'))} |",
+        f"| APF 编队避障 | {_apf_label(cfg)} |",
         f"| 轨迹优化 | {_yes_no(cfg.get('trajectory_optimizer_enabled'))} {cfg.get('trajectory_optimizer_method', '')} |",
         "",
         "## 路径规划路线参数",
@@ -874,6 +891,13 @@ def _yes_no(value: Any) -> str:
     if value is False:
         return "否"
     return ""
+
+
+def _apf_label(cfg: dict[str, Any]) -> str:
+    profile = str(cfg.get("apf_paper1_profile") or "off")
+    if profile == "off":
+        return "否"
+    return f"是 ({profile})"
 
 
 __all__ = ["generate_result_report"]

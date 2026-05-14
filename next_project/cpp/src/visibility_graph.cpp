@@ -47,25 +47,17 @@ void VisibilityGraph::build_obstacle_graph(const ObstacleField& obstacle_field, 
 
 void VisibilityGraph::set_start_goal(const Vec3& start, const Vec3& goal,
                                      const ObstacleField& obstacle_field, double visible_range) {
-    if (!vertex_to_obs.empty() && vertex_to_obs[0] == -1) {
+    while (!vertex_to_obs.empty() && (vertex_to_obs[0] == -1 || vertex_to_obs[0] == -2)) {
         vertices.erase(vertices.begin());
         vertex_to_obs.erase(vertex_to_obs.begin());
-        adjacency.erase(adjacency.begin());
-    }
-    if (!vertex_to_obs.empty() && vertex_to_obs[0] == -2) {
-        vertices.erase(vertices.begin());
-        vertex_to_obs.erase(vertex_to_obs.begin());
-        adjacency.erase(adjacency.begin());
     }
 
-    vertices.insert(vertices.begin(), goal);
-    vertex_to_obs.insert(vertex_to_obs.begin(), -2);
-    adjacency.insert(adjacency.begin(), {});
     vertices.insert(vertices.begin(), start);
     vertex_to_obs.insert(vertex_to_obs.begin(), -1);
-    adjacency.insert(adjacency.begin(), {});
+    vertices.insert(vertices.begin() + 1, goal);
+    vertex_to_obs.insert(vertex_to_obs.begin() + 1, -2);
 
-    for (auto& edges : adjacency) edges.clear();
+    adjacency.assign(vertices.size(), {});
     for (std::size_t i = 0; i < vertices.size(); ++i) {
         for (std::size_t j = i + 1; j < vertices.size(); ++j) {
             if (is_visible(vertices[i], vertices[j], obstacle_field, visible_range)) {

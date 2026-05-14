@@ -57,6 +57,8 @@ struct SimulationConfig {
     bool formation_lookahead_rrt_enabled = false;
     int formation_lookahead_rrt_max_iter = 800;
     double formation_lookahead_rrt_rewire_radius = 1.2;
+    bool trajectory_optimizer_enabled = false;
+    std::string trajectory_optimizer_method = "moving_average";
     std::vector<Vec3> custom_initial_offsets{};
     std::vector<Vec3> waypoints{
         Vec3{0.0, 0.0, 0.0},

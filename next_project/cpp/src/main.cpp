@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "formation_simulation.hpp"
 #include "json_writer.hpp"
@@ -83,6 +86,9 @@ void write_sim_result_json(
 }  // namespace
 
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     using sim::FormationSimulation;
     using sim::SimulationConfig;
     using sim::SimulationVisualizer;

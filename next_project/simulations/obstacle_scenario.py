@@ -167,9 +167,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             params["adaptive_n_decay"] = bool(cfg.apf_adaptive_n_decay)
             params["k_comm"] = 0.3 if getattr(cfg, "apf_comm_constraint", False) else 0.0
             params["mu_escape"] = 0.5 if getattr(cfg, "apf_rotational_escape", False) else 0.0
-        if getattr(cfg, "planner_initial_map_unknown", False):
-            # 未知地图场景中，APF 不直接读取真实障碍物；避障证据来自传感器更新后的规划栅格。
-            params.update({"k_rep": 0.0, "r_rep": 0.0, "k_inter": 0.0})
+        # 未知地图场景中 APF 同样工作：排斥力来自传感器已发现的动态障碍场
         return ImprovedArtificialPotentialField(**params)
 
     def _build_fault_detector(self) -> FaultDetector | None:
@@ -220,6 +218,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             self._map_bounds = np.array([[-10, -10, 0], [30, 30, 10]], dtype=float)
 
         self._planner_obstacles = ObstacleField() if self._planner_initial_map_unknown else self.obstacles
+        self._discovered_obstacles = ObstacleField()  # grows as sensors discover cells
         if self._planner_initial_map_unknown and hasattr(self, "grid"):
             self.grid = None
 
@@ -253,6 +252,77 @@ class ObstacleScenarioSimulation(FormationSimulation):
             idx = self.grid.world_to_index(np.asarray(point, dtype=float))
             return -float(self.grid.resolution) if self.grid.is_occupied(idx) else float("inf")
         return float(self.obstacles.signed_distance(np.asarray(point, dtype=float)))
+
+    # ------------------------------------------------------------------
+    # 完全未知模式：从传感器发现的栅格构建动态障碍场
+    # ------------------------------------------------------------------
+
+    def _build_discovered_obstacle_field(self) -> ObstacleField:
+        """Convert sensor-discovered occupied grid cells to an AABB obstacle field.
+
+        Uses 3D 6-connected component labelling to cluster occupied voxels;
+        each cluster becomes one AABB.  The returned field represents *only*
+        what the drone fleet has observed so far — no truth-map leak.
+        """
+        from collections import deque
+
+        field = ObstacleField()
+        data = np.asarray(self.grid.data)
+        occupied = data >= 1
+        if not occupied.any():
+            return field
+
+        nx, ny, nz = data.shape
+        labels = np.zeros_like(data, dtype=np.int32)
+        current_label = 0
+
+        indices = np.argwhere(occupied)
+        for idx in indices:
+            i, j, k = int(idx[0]), int(idx[1]), int(idx[2])
+            if labels[i, j, k] != 0:
+                continue
+            current_label += 1
+            q: deque[tuple[int, int, int]] = deque([(i, j, k)])
+            labels[i, j, k] = current_label
+            while q:
+                ci, cj, ck = q.popleft()
+                for di, dj, dk in ((-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1)):
+                    ni, nj, nk = ci + di, cj + dj, ck + dk
+                    if 0 <= ni < nx and 0 <= nj < ny and 0 <= nk < nz:
+                        if occupied[ni, nj, nk] and labels[ni, nj, nk] == 0:
+                            labels[ni, nj, nk] = current_label
+                            q.append((ni, nj, nk))
+
+        res = float(self.grid.resolution)
+        for lbl in range(1, current_label + 1):
+            mask = labels == lbl
+            coords = np.argwhere(mask)
+            mn = coords.min(axis=0)
+            mx = coords.max(axis=0)
+            min_world = self.grid.index_to_world(mn)
+            max_world = self.grid.index_to_world(mx) + np.array([res, res, res], dtype=float)
+            field.add_aabb(min_world, max_world)
+
+        return field
+
+    def _update_discovered_obstacles(self) -> None:
+        """Rebuild the discovered obstacle field from the current sensor-updated grid."""
+        if not getattr(self, "_planner_initial_map_unknown", False):
+            return
+        self._discovered_obstacles = self._build_discovered_obstacle_field()
+        # Refresh FIRI refiner with discovered obstacles for correct post-process
+        if hasattr(self, "firi_refiner") and self.firi_refiner is not None:
+            self.firi_refiner.obstacle_field = self._discovered_obstacles
+        # Refresh trajectory optimizer
+        if hasattr(self, "trajectory_optimizer") and self.trajectory_optimizer is not None:
+            self.trajectory_optimizer.obstacle_field = self._discovered_obstacles
+        # Propagate to replanner for danger-mode SDF checks
+        if hasattr(self, "replanner") and self.replanner is not None:
+            self.replanner.obstacle_field = self._discovered_obstacles
+            # Update GNN lazy obstacles if danger mode is active
+            if self.replanner.danger_planner is not None:
+                self.replanner.danger_planner._lazy_obstacles = self._discovered_obstacles
+                self.replanner.danger_planner._cached_vis_graph = None
 
     def _apply_planning_z_bounds(self) -> None:
         """将规划搜索限制在配置的高度层内，避免室内场景绕到天花板或墙体上方。"""
@@ -540,7 +610,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
                         E=cfg.gnn_E,
                     )
                     # 鎯版€ф瀯寤猴細棣栨 Danger replan 鏃舵瀯寤哄彲瑙佸浘锛岄伩鍏?init 闃诲
-                    danger_planner._lazy_obstacles = self.obstacles
+                    danger_planner._lazy_obstacles = (
+                        self._discovered_obstacles if self._planner_initial_map_unknown else self.obstacles
+                    )
                     danger_planner._lazy_angular_res = cfg.gnn_angular_res
                     danger_planner._lazy_buffer_zone = cfg.gnn_buffer_zone
                     danger_planner._lazy_visible_range = cfg.planner_horizon * 4
@@ -574,7 +646,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 danger_planner=danger_planner,
                 dual_mode=dual_mode,
                 adaptive_interval=adaptive_interval,
-                obstacle_field=None if getattr(cfg, "planner_initial_map_unknown", False) else self.obstacles,
+                obstacle_field=self._discovered_obstacles if getattr(cfg, "planner_initial_map_unknown", False) else self.obstacles,
             )
             self.replanner.path_refiner = self.firi_refiner
 
@@ -1634,7 +1706,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
         winds = self.winds
         topology = self.topology
         alpha = cfg.leader_acc_alpha
-        obstacles = self.obstacles
+        truth_obstacles = self.obstacles  # sensor + collision always use ground truth
+        avoid_obstacles = self._discovered_obstacles if self._planner_initial_map_unknown else self.obstacles
         collision_margin = self._collision_margin
         leader_target_vel = np.zeros(3, dtype=float)
 
@@ -1675,10 +1748,18 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 if self.sensor is not None:
                     leader_pos = leader.get_state()[0]
                     if time_now - last_sensor_time >= sensor_period:
-                        last_sensor_reading = self.sensor.sense(leader_pos, obstacles)
+                        last_sensor_reading = self.sensor.sense(leader_pos, truth_obstacles)
                         last_sensor_time = time_now
                         self.sensor_logs.append(last_sensor_reading.copy())
                     sensor_reading = last_sensor_reading
+
+                    # 未知模式：每步持续将传感器读数注入栅格，保持动态障碍场最新
+                    # BFS 3D 连通分量较重，限流 ≥0.25s 重建一次
+                    if self._planner_initial_map_unknown and sensor_reading is not None:
+                        changed = self.replanner._update_grid_from_sensor(leader_pos, sensor_reading)
+                        if changed and time_now - getattr(self, '_last_disc_rebuild', 0.0) >= 1.5:
+                            self._update_discovered_obstacles()
+                            self._last_disc_rebuild = time_now
 
                 if getattr(cfg, "formation_adaptation_enabled", False):
                     channel_width = self._channel_width_from_sensor(sensor_reading)
@@ -1760,6 +1841,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     new_path = self.replanner.step(time_now, leader_pos, sensor_reading, target_goal)
                 else:
                     new_path = None
+                # 未知模式：每次重规划后同步传感器发现的障碍物到动态障碍场
+                if new_path is not None and self._planner_initial_map_unknown:
+                    self._update_discovered_obstacles()
                 if new_path is not None:
                     self.replan_events.extend(self.replanner.get_new_events())
                     accepted_path = self._accept_online_path(new_path, leader_pos, target_goal, time_now)
@@ -1834,14 +1918,14 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     leader_pos=leader_pos,
                     follower_positions=follower_positions_now,
                     goal=target_wp,
-                    obstacles=obstacles,
+                    obstacles=avoid_obstacles,
                     desired_offsets=offsets,
                 )
             # 鏀硅繘 APF锛氶殰纰嶇墿鏂ュ姏锛堝惈鐩爣璺濈琛板噺 + 灞€閮ㄦ瀬灏忓€奸€冮€革級
-            leader_sdf = float(obstacles.signed_distance(leader_pos))
+            leader_sdf = float(avoid_obstacles.signed_distance(leader_pos))
             if leader_sdf < self.apf.r_rep:
                 leader_repulsion_acc = self.apf.compute_avoidance_acceleration(
-                    leader_pos, target_wp, obstacles)
+                    leader_pos, target_wp, avoid_obstacles)
             else:
                 leader_repulsion_acc = np.zeros(3, dtype=float)
             leader_repulsion_acc = leader_repulsion_acc + formation_leader_acc
@@ -1857,7 +1941,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             self.executed_path.append(leader_pos_new.copy())
 
             # 棰嗚埅鏈虹鎾炴娴?
-            if step_idx % collision_check_steps == 0 and obstacles.is_collision(leader_pos_new, inflate=collision_margin):
+            if step_idx % collision_check_steps == 0 and truth_obstacles.is_collision(leader_pos_new, inflate=collision_margin):
                 self.collision_log.append({
                     "t": float(time_now),
                     "drone": "leader",
@@ -1964,9 +2048,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 for j, other_follower in enumerate(followers):
                     if j != i:
                         other_positions.append(other_follower.get_state()[0])
-                if float(obstacles.signed_distance(follower_current_pos)) < self.apf.r_rep or other_positions:
+                if float(avoid_obstacles.signed_distance(follower_current_pos)) < self.apf.r_rep or other_positions:
                     repulsion_acc = self.apf.compute_avoidance_acceleration(
-                        follower_current_pos, target_pos, obstacles,
+                        follower_current_pos, target_pos, avoid_obstacles,
                         other_positions=other_positions)
                 else:
                     repulsion_acc = np.zeros(3, dtype=float)
@@ -2010,7 +2094,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 reserved_actual_positions.append(follower_pos.copy())
 
                 # 浠庢満纰版挒妫€娴?
-                if step_idx % collision_check_steps == 0 and obstacles.is_collision(follower_pos, inflate=collision_margin):
+                if step_idx % collision_check_steps == 0 and truth_obstacles.is_collision(follower_pos, inflate=collision_margin):
                     self.collision_log.append({
                         "t": float(time_now),
                         "drone": f"follower_{i}",
