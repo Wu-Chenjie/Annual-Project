@@ -127,7 +127,10 @@ inline ObstacleConfig config_warehouse() {
     c.formation_safety_enabled = true; c.formation_min_inter_drone_distance = 0.25;
     c.sensor_enabled = true; c.planner_replan_interval = 0.6; c.planner_horizon = 9.0;
     c.replan_adaptive_interval = false; c.replan_interval_min = 0.1; c.replan_interval_max = 1.0;
-    c.danger_mode_enabled = false;
+    c.danger_mode_enabled = true;
+    c.danger_sensor_threshold = 0.05;    // 极小值，几乎不可能触发
+    c.danger_sdf_threshold = 0.01;       // 极小值，几乎不可能触发
+    c.trajectory_optimizer_enabled = false;
     c.detect_margin_scale = 0.5;
     c.formation_schedule = {};
     c.waypoints = {{4.2,13.2,5.7},{11.4,10.2,2.4},{19.8,15.2,7},{29.2,22.4,3.7},{35.8,10,8.3},{42,4.8,1}};
@@ -343,10 +346,10 @@ inline ObstacleConfig config_unknown_map_online() {
     c.leader_acc_alpha = 0.30;
     c.enable_obstacles = true; c.map_file = "../maps/unknown_map_arena.json";
     c.planner_kind = "astar"; c.planner_mode = "online";
-    c.planner_resolution = 0.25; c.safety_margin = 0.22; c.plan_clearance_extra = 0.10;
+    c.planner_resolution = 0.25; c.safety_margin = 0.22;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.35; c.planner_horizon = 3.2;
     c.apf_paper1_profile = "conservative";
@@ -400,18 +403,18 @@ inline ObstacleConfig config_obstacle_unknown() {
     ObstacleConfig c;
     c.max_sim_time = 60.0; c.use_smc = true; c.use_backstepping = false;
     c.num_followers = 2; c.formation_spacing = 0.3; c.initial_formation = "diamond";
-    c.wp_radius = 0.06; c.wp_radius_final = 0.03;
-    c.leader_max_vel = 0.35; c.leader_max_acc = 0.4; c.leader_gain_scale = 0.8;
+    c.wp_radius = 0.3; c.wp_radius_final = 0.15;
+    c.leader_max_vel = 0.5; c.leader_max_acc = 0.6; c.leader_gain_scale = 0.8;
     c.follower_gain_scale = 1.0; c.leader_acc_alpha = 0.35;
     c.enable_obstacles = true; c.map_file = "../maps/sample_simple.json";
     c.planner_kind = "astar"; c.planner_mode = "online";
     c.planner_resolution = 0.3; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
-    c.sensor_enabled = true; c.sensor_max_range = 3.5; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.5; c.planner_horizon = 3.0;
-    c.apf_paper1_profile = "conservative";
+    c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.15;
+    c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.5; c.planner_horizon = 6.0;
+    c.apf_paper1_profile = "off";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
@@ -432,8 +435,8 @@ inline ObstacleConfig config_warehouse_unknown() {
     c.planner_resolution = 0.4; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.0;
-    c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
+    c.sensor_enabled = true; c.sensor_max_range = 8.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
@@ -462,7 +465,7 @@ inline ObstacleConfig config_warehouse_online_unknown() {
     c.planner_resolution = 0.4; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 4.5;
     c.apf_paper1_profile = "conservative";
@@ -519,16 +522,16 @@ inline ObstacleConfig config_school_corridor_unknown() {
     c.planner_resolution = 0.3; c.safety_margin = 0.25;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.planner_has_z_bounds = true; c.planner_z_min = 1.5; c.planner_z_max = 3.0;
-    c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.35; c.planner_horizon = 4.5;
+    c.sensor_enabled = true; c.sensor_max_range = 6.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.35; c.planner_horizon = 6.0;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{30,"diamond",2},{60,"line",3}};
-    c.waypoints = {{1,2,2},{10,2,2},{23,2,2},{27.5,1,2},{34,5.5,2},{41,2,2},{47,2,2.5}};
+    c.waypoints = {{1,2,2},{10,2,2},{23,2,2},{27.5,1,2},{34,5.5,2},{41,2,2},{44,2,2.5}};
     return c;
 }
 
@@ -538,32 +541,32 @@ inline ObstacleConfig config_school_corridor_online_unknown() {
     c.planner_replan_interval = 0.3; c.planner_horizon = 4.5;
     c.replan_adaptive_interval = true;
     c.formation_schedule = {{20,"diamond",2},{38,"line",3}};
-    c.waypoints = {{1,2,2},{15,2,2},{27.5,1,2},{41,2,2},{47,2,2.5}};
+    c.waypoints = {{1,2,2},{15,2,2},{27.5,1,2},{41,2,2},{44,2,2.5}};
     return c;
 }
 
 inline ObstacleConfig config_company_cubicles_unknown() {
     ObstacleConfig c;
-    c.max_sim_time = 65.0; c.use_smc = true; c.use_backstepping = true;
+    c.max_sim_time = 80.0; c.use_smc = true; c.use_backstepping = true;
     c.num_followers = 3; c.formation_spacing = 0.5; c.initial_formation = "diamond";
     c.wp_radius = 0.6; c.wp_radius_final = 0.3;
     c.leader_max_vel = 1.4; c.leader_max_acc = 1.6; c.leader_gain_scale = 0.80;
     c.follower_gain_scale = 1.0; c.follower_max_vel = 7.0; c.follower_max_acc = 7.0;
     c.leader_acc_alpha = 0.30;
     c.enable_obstacles = true; c.map_file = "../maps/company_cubicles.json";
-    c.planner_kind = "hybrid_astar"; c.planner_mode = "online";
+    c.planner_kind = "astar"; c.planner_mode = "online";
     c.planner_resolution = 0.3; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
-    c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.5; c.planner_horizon = 4.5;
-    c.apf_paper1_profile = "conservative";
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
+    c.sensor_enabled = true; c.sensor_max_range = 6.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.5; c.planner_horizon = 6.0;
+    c.apf_paper1_profile = "off";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
     c.formation_schedule = {{22,"line",4},{40,"diamond",4}};
-    c.waypoints = {{3,4,2.5},{13,4,2.5},{22,4,2.5},{22,12,2.5},{13,12,2.5},{3,12,2.5},{3,21,2.5}};
+    c.waypoints = {{3,4,2.5},{13,4,2.5},{22,4,2.5},{22,12,4.0},{13,12,4.0},{3,12,2.5},{3,21,2.5}};
     return c;
 }
 
@@ -571,16 +574,16 @@ inline ObstacleConfig config_company_cubicles_online_unknown() {
     ObstacleConfig c = config_company_cubicles_unknown();
     c.max_sim_time = 500.0;
     c.formation_schedule = {{18,"line",4},{34,"diamond",4}};
-    c.waypoints = {{3,4,2.5},{13,4,2.5},{22,12,2.5},{13,12,2.5},{3,21,2.5}};
+    c.waypoints = {{3,4,2.5},{13,4,2.5},{22,12,4.0},{13,12,4.0},{3,21,2.5}};
     return c;
 }
 
 inline ObstacleConfig config_meeting_room_unknown() {
     ObstacleConfig c;
-    c.max_sim_time = 55.0; c.use_smc = true; c.use_backstepping = true;
+    c.max_sim_time = 90.0; c.use_smc = true; c.use_backstepping = true;
     c.num_followers = 2; c.formation_spacing = 0.3; c.initial_formation = "diamond";
-    c.wp_radius = 0.4; c.wp_radius_final = 0.2;
-    c.leader_max_vel = 0.6; c.leader_max_acc = 0.8; c.leader_gain_scale = 0.80;
+    c.wp_radius = 0.5; c.wp_radius_final = 0.35;
+    c.leader_max_vel = 0.8; c.leader_max_acc = 1.0; c.leader_gain_scale = 0.80;
     c.follower_gain_scale = 1.0; c.follower_max_vel = 5.0; c.follower_max_acc = 5.0;
     c.leader_acc_alpha = 0.35;
     c.enable_obstacles = true; c.map_file = "../maps/meeting_room.json";
@@ -588,21 +591,21 @@ inline ObstacleConfig config_meeting_room_unknown() {
     c.planner_resolution = 0.2; c.safety_margin = 0.2;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.8;
-    c.sensor_enabled = true; c.sensor_max_range = 3.0; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.5; c.planner_horizon = 3.0;
+    c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.5; c.planner_horizon = 5.0;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
-    c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{1,8,2}};
+    c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{-0.3,7,2}};
     return c;
 }
 
 inline ObstacleConfig config_meeting_room_online_unknown() {
     ObstacleConfig c = config_meeting_room_unknown();
-    c.max_sim_time = 50.0;
+    c.max_sim_time = 60.0;
     c.wp_radius = 0.3; c.wp_radius_final = 0.15;
     c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2}};
     return c;
@@ -618,13 +621,13 @@ inline ObstacleConfig config_rrt_dual_channel_online_unknown() {
     c.leader_acc_alpha = 0.30;
     c.enable_obstacles = true; c.map_file = "../maps/rrt_dual_channel_escape.json";
     c.planner_kind = "astar"; c.planner_mode = "online";
-    c.planner_resolution = 0.25; c.safety_margin = 0.22; c.plan_clearance_extra = 0.18;
+    c.planner_resolution = 0.25; c.safety_margin = 0.22;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.4;
-    c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.4; c.planner_horizon = 3.5;
+    c.sensor_enabled = true; c.sensor_max_range = 6.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.4; c.planner_horizon = 5.0;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
@@ -662,7 +665,7 @@ inline ObstacleConfig config_laboratory_unknown() {
     c.planner_resolution = 0.3; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = false;
+    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
     c.planner_has_z_bounds = true; c.planner_z_min = 2.0; c.planner_z_max = 3.2;
     c.sensor_enabled = true; c.sensor_max_range = 4.5; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.5; c.planner_horizon = 5.0;

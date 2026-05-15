@@ -446,6 +446,7 @@ void write_obstacle_result_json(
         w.key("initial_map_unknown").value(true);
         w.key("truth_obstacle_count").value(static_cast<int>(obstacles.size()));
         w.key("planner_static_occupied_count").value(0);
+        w.key("planner_sensor_occupied_count").value(0);
         w.end_object();
     }
 
@@ -537,18 +538,17 @@ int main(int argc, char* argv[]) {
 
     // Auto-generate Chinese report.md via Python report pipeline
     {
-        std::filesystem::path report_script =
-            std::filesystem::absolute(std::filesystem::path("..") / "experiments" / "report_cpp_results.py");
-        std::filesystem::path abs_output = std::filesystem::absolute(output_path);
+        // 使用相对路径避免中文绝对路径的 _wsystem 编码问题
+        std::string rel_output = output_path.string();
         std::cout << "生成报告: " << std::flush;
         int ret = -1;
 #ifdef _WIN32
-        std::wstring cmd = L"python \"" + report_script.wstring() + L"\" \""
-                         + abs_output.wstring() + L"\"";
-        ret = _wsystem(cmd.c_str());
+        std::string cmd = "python \"..\\..\\experiments\\report_cpp_results.py\" \""
+                        + rel_output + "\"";
+        ret = std::system(cmd.c_str());
 #else
-        std::string cmd = "python \"" + report_script.string() + "\" \""
-                        + abs_output.string() + "\"";
+        std::string cmd = "python \"../../experiments/report_cpp_results.py\" \""
+                        + rel_output + "\"";
         ret = std::system(cmd.c_str());
 #endif
         if (ret == 0) {

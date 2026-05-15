@@ -138,7 +138,7 @@ def _render_markdown(
         f"| 传感器 | {_yes_no(cfg.get('sensor_enabled'))} |",
         f"| GNN danger 模式 | {_yes_no(cfg.get('danger_mode_enabled'))} |",
         f"| APF 编队避障 | {_apf_label(cfg)} |",
-        f"| 轨迹优化 | {_yes_no(cfg.get('trajectory_optimizer_enabled'))} {cfg.get('trajectory_optimizer_method', '')} |",
+        f"| 轨迹优化 | {_yes_no(cfg.get('trajectory_optimizer_enabled'))} |",
         "",
         "## 路径规划路线参数",
         "",
