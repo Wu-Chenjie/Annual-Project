@@ -89,6 +89,7 @@ std::string resolve_map_file(const std::string& raw) {
     if (path_exists(path)) return path.string();
 
     std::vector<std::filesystem::path> candidates;
+    candidates.push_back(std::filesystem::path("..") / ".." / "maps" / path.filename());
     candidates.push_back(std::filesystem::path("maps") / path.filename());
     candidates.push_back(std::filesystem::path("..") / "maps" / path.filename());
     candidates.push_back(std::filesystem::path("next_project") / "maps" / path.filename());

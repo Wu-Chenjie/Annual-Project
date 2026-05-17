@@ -1940,8 +1940,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
             leader_pos_new, leader_vel_new, _, _ = leader.get_state()
             self.executed_path.append(leader_pos_new.copy())
 
-            # 棰嗚埅鏈虹鎾炴娴?
-            if step_idx % collision_check_steps == 0 and truth_obstacles.is_collision(leader_pos_new, inflate=collision_margin):
+            # 领航机碰撞检测 (每步检查，与 C++ 对齐)
+            if truth_obstacles.is_collision(leader_pos_new, inflate=collision_margin):
                 self.collision_log.append({
                     "t": float(time_now),
                     "drone": "leader",
@@ -2093,8 +2093,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 follower_pos = follower.get_state()[0]
                 reserved_actual_positions.append(follower_pos.copy())
 
-                # 浠庢満纰版挒妫€娴?
-                if step_idx % collision_check_steps == 0 and truth_obstacles.is_collision(follower_pos, inflate=collision_margin):
+                # 从机碰撞检测 (每步检查，与 C++ 对齐)
+                if truth_obstacles.is_collision(follower_pos, inflate=collision_margin):
                     self.collision_log.append({
                         "t": float(time_now),
                         "drone": f"follower_{i}",

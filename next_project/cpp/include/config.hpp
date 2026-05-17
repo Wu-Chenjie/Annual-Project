@@ -435,8 +435,8 @@ inline ObstacleConfig config_warehouse_unknown() {
     c.planner_resolution = 0.4; c.safety_margin = 0.3;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
-    c.sensor_enabled = true; c.sensor_max_range = 8.0; c.sensor_noise_std = 0.0;
+    c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.0;
+    c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;
     c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
@@ -599,7 +599,7 @@ inline ObstacleConfig config_meeting_room_unknown() {
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
     c.firi_enabled = false;
-    c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{-0.3,7,2}};
+    c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{0.8,7.0,2}};
     return c;
 }
 
@@ -624,10 +624,10 @@ inline ObstacleConfig config_rrt_dual_channel_online_unknown() {
     c.planner_resolution = 0.25; c.safety_margin = 0.22;
     c.planner_initial_map_unknown = true;
     c.planner_sdf_aware = false; c.planner_esdf_aware = false;
-    c.planner_use_formation_envelope = true; c.plan_clearance_extra = 0.3;
+    c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.18;
     c.planner_has_z_bounds = true; c.planner_z_min = 1.4; c.planner_z_max = 2.4;
-    c.sensor_enabled = true; c.sensor_max_range = 6.0; c.sensor_noise_std = 0.0;
-    c.planner_replan_interval = 0.4; c.planner_horizon = 5.0;
+    c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;
+    c.planner_replan_interval = 0.4; c.planner_horizon = 3.5;
     c.apf_paper1_profile = "conservative";
     c.danger_mode_enabled = true;
     c.trajectory_optimizer_enabled = true;
@@ -639,7 +639,7 @@ inline ObstacleConfig config_rrt_dual_channel_online_unknown() {
     c.formation_adaptation_enabled = false;
     c.formation_lookahead_enabled = false;
     c.formation_lookahead_rrt_enabled = false;
-    c.waypoints = {{0,0,1.8},{5.5,0,1.8},{12,4.5,1.8},{22.5,4.5,1.8}};
+    c.waypoints = {{0,0,1.8},{5.5,0,1.8},{12.25,4.0,1.8},{22.5,4.5,1.8}};
     return c;
 }
 

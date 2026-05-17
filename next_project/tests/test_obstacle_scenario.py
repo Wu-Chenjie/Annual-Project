@@ -540,6 +540,34 @@ def test_online_accept_path_rejects_unsafe_clearance_without_fallback():
     assert sim.replan_events[-1]["reason"] == "no_continuous_clearance_path"
 
 
+def test_meeting_room_unknown_final_waypoint_is_truth_reachable():
+    cfg = get_config("meeting_room_unknown")
+    sim = ObstacleScenarioSimulation(cfg)
+
+    final_wp = np.asarray(cfg.waypoints[-1], dtype=float)
+    assert sim.obstacles.signed_distance(final_wp) >= sim._collision_margin + 0.03
+
+
+def test_rrt_dual_channel_unknown_turn_waypoint_has_clearance_margin():
+    cfg = get_config("rrt_dual_channel_online_unknown")
+    sim = ObstacleScenarioSimulation(cfg)
+
+    turn_wp = np.asarray(cfg.waypoints[2], dtype=float)
+    assert sim.obstacles.signed_distance(turn_wp) >= 0.60
+
+
+def test_rrt_dual_channel_map_transition_gaps_fit_collision_margin():
+    field, _ = load_from_json(str(_project / "maps" / "rrt_dual_channel_escape.json"))
+    transition_centers = [
+        np.array([7.2, 1.6, 1.8], dtype=float),
+        np.array([9.0, 3.0, 1.8], dtype=float),
+        np.array([10.2, 4.4, 1.8], dtype=float),
+    ]
+
+    for center in transition_centers:
+        assert field.signed_distance(center) >= 0.45
+
+
 def test_path_segment_clearance_samples_beyond_first_boundary_touch():
     field = ObstacleField()
     field.add_sphere([4.0, 0.0, 1.0], 0.5)

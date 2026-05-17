@@ -9,6 +9,16 @@ def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
+def config_body(name: str) -> str:
+    match = re.search(
+        rf"inline ObstacleConfig {name}\(\) \{{(?P<body>.*?)\n\}}",
+        read("cpp/include/config.hpp"),
+        flags=re.DOTALL,
+    )
+    assert match is not None
+    return match.group("body")
+
+
 def test_cpp_online_replanner_preserves_task_waypoint_layer():
     source = read("cpp/src/obstacle_scenario.cpp")
     header = read("cpp/include/obstacle_scenario.hpp")
@@ -20,6 +30,62 @@ def test_cpp_online_replanner_preserves_task_waypoint_layer():
     assert "task_wp_idx" in source
     assert "active_path" in source
     assert "waypoints_ = new_path" not in source
+
+
+def test_cpp_meeting_room_unknown_keeps_reachable_python_waypoint():
+    body = config_body("config_meeting_room_unknown")
+
+    assert "c.waypoints = {{1,5,2},{7,1.5,2},{13.5,5,2},{7,11,2},{0.8,7.0,2}};" in body
+    assert "{-0.3,7,2}" not in body
+
+
+def test_cpp_rrt_dual_channel_unknown_uses_python_online_clearance_profile():
+    body = config_body("config_rrt_dual_channel_online_unknown")
+
+    assert "c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.18;" in body
+    assert "c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;" in body
+    assert "c.planner_replan_interval = 0.4; c.planner_horizon = 3.5;" in body
+    assert "c.waypoints = {{0,0,1.8},{5.5,0,1.8},{12.25,4.0,1.8},{22.5,4.5,1.8}};" in body
+
+
+def test_cpp_warehouse_unknown_uses_python_online_clearance_profile():
+    body = config_body("config_warehouse_unknown")
+
+    assert "c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.0;" in body
+    assert "c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;" in body
+    assert "c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;" in body
+
+
+def test_cpp_online_run_tracks_sanitized_waypoints_but_reports_original_tasks():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "const std::vector<Vec3> execution_tasks = waypoints_.empty() ? config_.waypoints : waypoints_;" in source
+    assert "const std::vector<Vec3>& reported_tasks = task_waypoints_.empty() ? execution_tasks : task_waypoints_;" in source
+    assert "Vec3 task_goal = execution_tasks[task_wp_idx];" in source
+    assert "norm(execution_tasks[task_wp_idx] - ls.position)" in source
+    assert "result.task_waypoints = reported_tasks;" in source
+    assert "const std::vector<Vec3>& tasks = task_waypoints_" not in source
+
+
+def test_cpp_online_target_selection_uses_clear_arc_length_lookahead():
+    source = read("cpp/src/obstacle_scenario.cpp")
+    header = read("cpp/include/obstacle_scenario.hpp")
+
+    assert "online_lookahead_distance" in header
+    assert "select_online_target" in header
+    assert "ObstacleScenarioSimulation::online_lookahead_distance" in source
+    assert "ObstacleScenarioSimulation::select_online_target" in source
+    assert "target = select_online_target(active_path, ls0.position, execution_tasks[task_wp_idx], local_wp_idx);" in source
+
+
+def test_cpp_online_leader_tracks_with_target_velocity_feedforward():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "Vec3 leader_target_vel{};" in source
+    assert "const Vec3 to_target = target - ls0.position;" in source
+    assert "const double speed_cmd = std::min(" in source
+    assert "leader_target_vel = to_target * (speed_cmd / to_target_dist);" in source
+    assert "leader_ctrl->compute_control(leader.state(), target, leader_target_vel, rep_acc)" in source
 
 
 def test_cpp_online_replanner_has_path_acceptance_clearance_gate():
@@ -81,6 +147,7 @@ def test_cpp_obstacle_entry_accepts_direct_map_file_for_all_map_sweeps():
 
     assert "std::string map_file_override" in source
     assert 'arg == "--map-file"' in source
+    assert 'std::filesystem::path("..") / ".." / "maps" / path.filename()' in source
     assert "config.map_file = resolve_map_file(cli.map_file_override)" in source
     assert "const bool use_manual_warehouse = preset == \"warehouse\" && cli.map_file_override.empty()" in source
 

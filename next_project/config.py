@@ -1528,7 +1528,7 @@ def _config_meeting_room_unknown() -> SimulationConfig:
             np.array([7.0, 1.5, 2.0], dtype=float),
             np.array([13.5, 5.0, 2.0], dtype=float),
             np.array([7.0, 11.0, 2.0], dtype=float),
-            np.array([1.0, 8.0, 2.0], dtype=float),
+            np.array([0.8, 7.0, 2.0], dtype=float),
         ],
     )
 
@@ -1631,7 +1631,7 @@ def _config_rrt_dual_channel_online_unknown() -> SimulationConfig:
         waypoints=[
             np.array([0.0, 0.0, 1.8], dtype=float),
             np.array([5.5, 0.0, 1.8], dtype=float),
-            np.array([12.0, 4.5, 1.8], dtype=float),
+            np.array([12.25, 4.0, 1.8], dtype=float),
             np.array([22.5, 4.5, 1.8], dtype=float),
         ],
     )

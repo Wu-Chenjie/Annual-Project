@@ -143,6 +143,8 @@ public:
     void update_discovered_obstacles();
     Vec3 obstacle_repulsion_acc(const Vec3& pos, const Vec3& goal,
                                 const std::vector<Vec3>& other_positions = {});
+    std::vector<Vec3> planned_segment_for_task(const Vec3& start,
+                                               const Vec3& task_goal) const;
     std::vector<Vec3> stitch_local_path_to_task_goal(const std::vector<Vec3>& local_path,
                                                      const Vec3& task_goal) const;
     bool apply_formation_adaptation(double time_now,
@@ -158,6 +160,11 @@ public:
                                                 const Vec3& position,
                                                 double lookahead_distance) const;
     double path_max_turn_angle(const std::vector<Vec3>& path) const;
+    double online_lookahead_distance(double task_distance) const;
+    Vec3 select_online_target(const std::vector<Vec3>& path,
+                              const Vec3& position,
+                              const Vec3& task_goal,
+                              int& previous_idx) const;
 
     ObstacleConfig config_;
     FormationSimulation formation_;

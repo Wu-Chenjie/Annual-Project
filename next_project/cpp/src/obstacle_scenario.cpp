@@ -51,7 +51,6 @@ ObstacleScenarioSimulation::ObstacleScenarioSimulation(const ObstacleConfig& con
     if (config.enable_obstacles && !config.map_file.empty()) {
         setup_obstacles();
         waypoints_ = sanitize_waypoints(config_.waypoints);
-        config_.waypoints = waypoints_;
         if (!waypoints_.empty()) {
             Vec3 first = waypoints_[0];
             formation_.leader_.set_initial_state(first, Vec3{});
@@ -146,15 +145,16 @@ void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const
     }
 
     waypoints_ = sanitize_waypoints(config_.waypoints);
-    config_.waypoints = waypoints_;
     observer_.clear_all();
     planned_path_.clear();
     auto path = plan_offline();
     if (!path.empty()) {
         planned_path_ = std::move(path);
-        waypoints_ = (config_.planner_mode == "online") ? task_waypoints_ : planned_path_;
+        if (config_.planner_mode != "online") {
+            waypoints_ = planned_path_;
+        }
     } else {
-        waypoints_ = task_waypoints_;
+        waypoints_ = config_.waypoints;
     }
 
     if (config_.planner_mode == "online") {
@@ -398,6 +398,103 @@ double ObstacleScenarioSimulation::path_max_turn_angle(const std::vector<Vec3>& 
         max_angle = std::max(max_angle, std::acos(cos_angle));
     }
     return max_angle;
+}
+
+double ObstacleScenarioSimulation::online_lookahead_distance(double task_distance) const {
+    const double base = std::max({
+        config_.leader_max_vel * 1.2,
+        config_.wp_radius * 2.0,
+        config_.planner_resolution * 3.0,
+    });
+    const double cap = std::max(config_.planner_resolution * 2.0, config_.planner_horizon * 0.6);
+    return std::max(
+        config_.planner_resolution,
+        std::min({base, cap, std::max(task_distance, config_.planner_resolution)}));
+}
+
+Vec3 ObstacleScenarioSimulation::select_online_target(
+    const std::vector<Vec3>& path,
+    const Vec3& position,
+    const Vec3& task_goal,
+    int& previous_idx) const {
+    if (path.empty()) return task_goal;
+    if (path.size() == 1) {
+        previous_idx = 0;
+        return path[0];
+    }
+
+    const double task_distance = norm(task_goal - position);
+    if (task_distance <= std::max(config_.wp_radius, config_.planner_resolution)) {
+        previous_idx = static_cast<int>(path.size()) - 1;
+        return task_goal;
+    }
+
+    const double tracking_clearance = std::max(config_.safety_margin, collision_margin_ + 0.03);
+    if (path_is_clearance_safe(std::vector<Vec3>{position, task_goal}, tracking_clearance)) {
+        previous_idx = static_cast<int>(path.size()) - 1;
+        return task_goal;
+    }
+
+    const int last_idx = static_cast<int>(path.size()) - 1;
+    const int search_start = std::clamp(previous_idx - 6, 0, last_idx);
+    int closest_idx = search_start;
+    double best_distance = std::numeric_limits<double>::infinity();
+    for (int i = search_start; i <= last_idx; ++i) {
+        const double distance = norm(path[static_cast<std::size_t>(i)] - position);
+        if (distance < best_distance) {
+            best_distance = distance;
+            closest_idx = i;
+        }
+    }
+
+    if (closest_idx == last_idx) {
+        previous_idx = last_idx;
+        return task_goal;
+    }
+
+    const double lookahead = online_lookahead_distance(task_distance);
+    double remaining = lookahead;
+    Vec3 candidate = path[static_cast<std::size_t>(closest_idx)];
+    int target_idx = closest_idx;
+
+    for (int idx = closest_idx; idx < last_idx; ++idx) {
+        const Vec3 left = path[static_cast<std::size_t>(idx)];
+        const Vec3 right = path[static_cast<std::size_t>(idx + 1)];
+        const double seg_len = norm(right - left);
+        if (seg_len < 1e-9) {
+            target_idx = idx + 1;
+            candidate = right;
+            continue;
+        }
+        if (remaining <= seg_len) {
+            const double ratio = std::clamp(remaining / seg_len, 0.0, 1.0);
+            candidate = left + (right - left) * ratio;
+            target_idx = idx + 1;
+            break;
+        }
+        remaining -= seg_len;
+        candidate = right;
+        target_idx = idx + 1;
+    }
+
+    auto segment_safe = [&](const Vec3& point) {
+        return path_is_clearance_safe(std::vector<Vec3>{position, point}, tracking_clearance);
+    };
+    if (segment_safe(candidate)) {
+        previous_idx = target_idx;
+        return candidate;
+    }
+    for (int i = target_idx; i > closest_idx; --i) {
+        const Vec3 point = path[static_cast<std::size_t>(i)];
+        if (segment_safe(point)) {
+            previous_idx = i;
+            return point;
+        }
+    }
+
+    const int fallback_idx = std::min(closest_idx + 1, last_idx);
+    previous_idx = fallback_idx;
+    return path[static_cast<std::size_t>(fallback_idx)];
 }
 
 bool ObstacleScenarioSimulation::apply_formation_adaptation(
@@ -1090,6 +1187,11 @@ void ObstacleScenarioSimulation::update_discovered_obstacles() {
         const auto& sg = replanner_->current_grid();
         if (sg.data.size() == grid_.data.size()) {
             grid_.data = sg.data;
+        } else if (!sg.data.empty()) {
+            fault_log_.push_back(
+                "grid_size_mismatch:scenario_" + std::to_string(grid_.data.size())
+                + ":replanner_" + std::to_string(sg.data.size())
+                + ":discovered_obstacles_stale");
         }
     }
     discovered_obstacles_ = build_discovered_obstacle_field();
@@ -1130,6 +1232,40 @@ void ObstacleScenarioSimulation::setup_online() {
         sensor_ = std::make_unique<RangeSensor6>(config_.sensor_max_range, config_.sensor_noise_std,
                                                   config_.leader_wind_seed);
     }
+}
+
+std::vector<Vec3> ObstacleScenarioSimulation::planned_segment_for_task(
+    const Vec3& start, const Vec3& task_goal) const {
+    if (planned_path_.size() < 2) return {};
+
+    int start_i = 0;
+    double start_best = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i < planned_path_.size(); ++i) {
+        const double d = norm(planned_path_[i] - start);
+        if (d < start_best) { start_best = d; start_i = static_cast<int>(i); }
+    }
+
+    int goal_i = 0;
+    double goal_best = std::numeric_limits<double>::infinity();
+    for (std::size_t i = 0; i < planned_path_.size(); ++i) {
+        const double d = norm(planned_path_[i] - task_goal);
+        if (d < goal_best) { goal_best = d; goal_i = static_cast<int>(i); }
+    }
+
+    std::vector<Vec3> segment;
+    segment.push_back(start);
+    if (goal_i <= start_i) {
+        segment.push_back(task_goal);
+    } else {
+        for (int i = start_i + 1; i <= goal_i; ++i) {
+            segment.push_back(planned_path_[static_cast<std::size_t>(i)]);
+        }
+        const double tail_dist = norm(segment.back() - task_goal);
+        if (tail_dist > std::max(config_.wp_radius * 0.5, config_.planner_resolution)) {
+            segment.push_back(task_goal);
+        }
+    }
+    return segment;
 }
 
 std::vector<Vec3> ObstacleScenarioSimulation::stitch_local_path_to_task_goal(
@@ -1173,11 +1309,12 @@ SimulationResult ObstacleScenarioSimulation::run() {
     auto& topology = formation_.topology_;
 
     bool online = config_.planner_mode == "online" && replanner_ != nullptr;
-    const std::vector<Vec3>& tasks = task_waypoints_.empty() ? config_.waypoints : task_waypoints_;
-    std::vector<Vec3> active_path = online ? tasks : waypoints_;
+    const std::vector<Vec3> execution_tasks = waypoints_.empty() ? config_.waypoints : waypoints_;
+    const std::vector<Vec3>& reported_tasks = task_waypoints_.empty() ? execution_tasks : task_waypoints_;
+    std::vector<Vec3> active_path = online ? execution_tasks : waypoints_;
     int task_wp_idx = 0;
     int local_wp_idx = 0;
-    bool finished = tasks.empty();
+    bool finished = online ? execution_tasks.empty() : active_path.empty();
     double t = 0.0;
     Vec3 leader_acc_filt{};
     std::size_t next_switch_idx = 0;
@@ -1202,7 +1339,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
     while (t < config_.max_sim_time && step_idx < steps) {
         auto ls_before_replan = leader.get_state();
 
-        if (online && !finished && task_wp_idx < static_cast<int>(tasks.size())) {
+        if (online && !finished && task_wp_idx < static_cast<int>(execution_tasks.size())) {
             std::array<double, 6> sdata{};
             const std::array<double, 6>* sp = nullptr;
             if (sensor_) {
@@ -1226,7 +1363,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
                 }
             }
 
-            Vec3 task_goal = tasks[task_wp_idx];
+            Vec3 task_goal = execution_tasks[task_wp_idx];
             auto replan_started = std::chrono::high_resolution_clock::now();
             auto new_path = maybe_lookahead_escape(t, ls_before_replan.position, active_path, task_goal);
             const bool lookahead_used = !new_path.empty();
@@ -1297,16 +1434,17 @@ SimulationResult ObstacleScenarioSimulation::run() {
                 + ":t_" + std::to_string(t));
         }
 
+        auto ls0 = leader.get_state();
         Vec3 target{};
         if (finished) {
-            target = tasks.empty() ? Vec3{} : tasks.back();
+            target = online
+                ? (execution_tasks.empty() ? Vec3{} : execution_tasks.back())
+                : (active_path.empty() ? Vec3{} : active_path.back());
         } else if (online) {
-            if (local_wp_idx < static_cast<int>(active_path.size())) {
-                target = active_path[local_wp_idx];
-            } else if (task_wp_idx < static_cast<int>(tasks.size())) {
-                target = tasks[task_wp_idx];
+            if (task_wp_idx < static_cast<int>(execution_tasks.size())) {
+                target = select_online_target(active_path, ls0.position, execution_tasks[task_wp_idx], local_wp_idx);
             } else {
-                target = tasks.back();
+                target = execution_tasks.back();
             }
         } else if (local_wp_idx < static_cast<int>(active_path.size())) {
             target = active_path[local_wp_idx];
@@ -1314,7 +1452,6 @@ SimulationResult ObstacleScenarioSimulation::run() {
             target = active_path.empty() ? Vec3{} : active_path.back();
         }
 
-        auto ls0 = leader.get_state();
         std::vector<Vec3> follower_positions_now;
         follower_positions_now.reserve(followers.size());
         for (const auto& follower : followers) {
@@ -1337,7 +1474,18 @@ SimulationResult ObstacleScenarioSimulation::run() {
         Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target, leader_other_positions);
         rep_acc += formation_leader_acc;
 
-        auto u = leader_ctrl->compute_control(leader.state(), target, Vec3{}, rep_acc);
+        Vec3 leader_target_vel{};
+        if (online && !finished) {
+            const Vec3 to_target = target - ls0.position;
+            const double to_target_dist = norm(to_target);
+            if (to_target_dist > 1e-9) {
+                const double speed_cmd = std::min(
+                    config_.leader_max_vel,
+                    std::max(0.0, (to_target_dist - 0.25 * config_.wp_radius) / std::max(dt * 8.0, 1e-6)));
+                leader_target_vel = to_target * (speed_cmd / to_target_dist);
+            }
+        }
+        auto u = leader_ctrl->compute_control(leader.state(), target, leader_target_vel, rep_acc);
         leader.update_state(u, leader_wind.sample(dt));
         project_drone_state_to_safe(leader, collision_margin_);
 
@@ -1357,11 +1505,11 @@ SimulationResult ObstacleScenarioSimulation::run() {
         }
 
         if (!finished) {
-            if (online && task_wp_idx < static_cast<int>(tasks.size())) {
-                double task_radius = (task_wp_idx == static_cast<int>(tasks.size()) - 1)
+            if (online && task_wp_idx < static_cast<int>(execution_tasks.size())) {
+                double task_radius = (task_wp_idx == static_cast<int>(execution_tasks.size()) - 1)
                     ? config_.wp_radius_final
                     : config_.wp_radius;
-                double distance = norm(tasks[task_wp_idx] - ls.position);
+                double distance = norm(execution_tasks[task_wp_idx] - ls.position);
                 if (distance < task_radius) {
                     observer_.record_waypoint(WaypointEvent{
                         t,
@@ -1371,10 +1519,10 @@ SimulationResult ObstacleScenarioSimulation::run() {
                     });
                     ++task_wp_idx;
                     local_wp_idx = 0;
-                    active_path = (task_wp_idx < static_cast<int>(tasks.size()))
-                        ? std::vector<Vec3>{tasks[task_wp_idx]}
-                        : std::vector<Vec3>{tasks.back()};
-                    if (task_wp_idx >= static_cast<int>(tasks.size())) finished = true;
+                    active_path = (task_wp_idx < static_cast<int>(execution_tasks.size()))
+                        ? std::vector<Vec3>{execution_tasks[task_wp_idx]}
+                        : std::vector<Vec3>{execution_tasks.back()};
+                    if (task_wp_idx >= static_cast<int>(execution_tasks.size())) finished = true;
                 } else if (local_wp_idx < static_cast<int>(active_path.size())) {
                     double local_radius = (local_wp_idx == static_cast<int>(active_path.size()) - 1)
                         ? task_radius
@@ -1467,7 +1615,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
 
     result.completed_waypoint_count = online ? task_wp_idx : local_wp_idx;
     result.waypoints = waypoints_;
-    result.task_waypoints = tasks;
+    result.task_waypoints = reported_tasks;
     result.planned_path = planned_path_;
     result.replanned_waypoints = replanned_waypoints_;
     result.executed_path = executed_path_;
