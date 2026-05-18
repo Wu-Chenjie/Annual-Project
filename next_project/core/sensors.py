@@ -64,7 +64,11 @@ class RangeSensor6:
     def _ray_cast(self, origin: np.ndarray, direction: np.ndarray, field) -> float:
         """解析求交：对每个障碍物直接计算射线交点，返回最近碰撞距离。"""
         t_min = self.max_range
-        for obs in field._obstacles:
+        if hasattr(field, "obstacles_in_ray_window"):
+            obstacles = field.obstacles_in_ray_window(origin, direction, self.max_range)
+        else:
+            obstacles = field._obstacles
+        for obs in obstacles:
             t = self._ray_obs_intersect(origin, direction, obs)
             if 0.0 < t < t_min:
                 t_min = t

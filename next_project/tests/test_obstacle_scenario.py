@@ -168,6 +168,27 @@ def test_sensor_range_matches_surface_contact_for_sphere_and_cylinder():
     assert abs(reading[2] - 3.5) < 1e-6
 
 
+def test_online_sensor_range_uses_planner_horizon_window():
+    cfg = SimulationConfig(
+        num_followers=1,
+        max_sim_time=0.1,
+        planner_mode="online",
+        planner_horizon=3.25,
+        sensor_enabled=True,
+        sensor_max_range=99.0,
+        waypoints=[
+            np.array([0.0, 0.0, 1.0], dtype=float),
+            np.array([2.0, 0.0, 1.0], dtype=float),
+        ],
+    )
+
+    sim = ObstacleScenarioSimulation(cfg)
+
+    assert sim.sensor is not None
+    assert np.isclose(sim.sensor.max_range, cfg.planner_horizon)
+    assert np.isclose(sim.replanner.horizon, cfg.planner_horizon)
+
+
 def test_envelope_radius():
     """编队包络标量接口应与分轴包络保持一致。"""
     topo = FormationTopology(num_followers=3, spacing=1.0)

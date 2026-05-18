@@ -529,10 +529,17 @@ def test_cpp_sensor_and_dynamic_replay_use_analytic_ranges():
     assert "ray_aabb" in sensor_header
     assert "ray_sphere" in sensor_header
     assert "ray_cylinder" in sensor_header
-    assert "field.obstacles()" in sensor_header
+    assert "field.obstacles_in_ray_window" in sensor_header
     assert "field.is_collision(p)" not in sensor_header
     assert "frame.sensor_readings = sensor_.sense(leader_pose, obstacles_);" in dynamic_header
     assert "config_.sensor_max_range, config_.sensor_max_range" not in dynamic_header
+
+
+def test_cpp_online_sensor_range_uses_planner_horizon_window():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "RangeSensor6>(config_.planner_horizon, config_.sensor_noise_std" in source
+    assert "RangeSensor6>(config_.sensor_max_range, config_.sensor_noise_std" not in source
 
 
 def test_cpp_dynamic_replay_exports_scope_and_trace_fields():

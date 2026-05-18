@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable
+from collections import defaultdict
 
 import numpy as np
 
@@ -103,9 +104,13 @@ class ObstacleField:
 
     def __init__(self):
         self._obstacles: list[AABB | Sphere | Cylinder] = []
+        self._spatial_index: dict[tuple[int, int, int], list[int]] | None = None
+        self._spatial_index_cell_size: float | None = None
+        self._spatial_index_count = 0
 
     def add(self, obs: AABB | Sphere | Cylinder) -> None:
         self._obstacles.append(obs)
+        self._invalidate_spatial_index()
 
     def add_aabb(self, min_corner, max_corner) -> None:
         self.add(AABB(np.asarray(min_corner, dtype=float), np.asarray(max_corner, dtype=float)))
@@ -131,6 +136,79 @@ class ObstacleField:
 
     def __iter__(self):
         return iter(self._obstacles)
+
+    def obstacles_in_ray_window(
+        self,
+        origin: np.ndarray,
+        direction: np.ndarray,
+        max_range: float,
+        padding: float = 1e-9,
+    ) -> list[AABB | Sphere | Cylinder]:
+        """Return obstacles whose bounding boxes overlap the sensor ray window.
+
+        The window is the finite segment from origin to origin + direction * max_range.
+        This is only a broad-phase filter; callers still do exact ray intersections.
+        """
+        if not self._obstacles:
+            return []
+        origin = np.asarray(origin, dtype=float)
+        direction = np.asarray(direction, dtype=float)
+        norm = float(np.linalg.norm(direction))
+        if norm <= 1e-12:
+            return []
+        direction = direction / norm
+        max_range = max(0.0, float(max_range))
+        end = origin + direction * max_range
+        window_min = np.minimum(origin, end) - float(padding)
+        window_max = np.maximum(origin, end) + float(padding)
+
+        cell_size = max(1.0, max_range * 0.25)
+        self._ensure_spatial_index(cell_size)
+        assert self._spatial_index is not None
+
+        min_cell = np.floor(window_min / cell_size).astype(int)
+        max_cell = np.floor(window_max / cell_size).astype(int)
+        seen: set[int] = set()
+        candidates: list[AABB | Sphere | Cylinder] = []
+        for ix in range(int(min_cell[0]), int(max_cell[0]) + 1):
+            for iy in range(int(min_cell[1]), int(max_cell[1]) + 1):
+                for iz in range(int(min_cell[2]), int(max_cell[2]) + 1):
+                    for obs_idx in self._spatial_index.get((ix, iy, iz), ()):
+                        if obs_idx in seen:
+                            continue
+                        seen.add(obs_idx)
+                        obs = self._obstacles[obs_idx]
+                        bbox_min, bbox_max = self._obs_bbox(obs)
+                        if np.all(bbox_max >= window_min) and np.all(bbox_min <= window_max):
+                            candidates.append(obs)
+        return candidates
+
+    def _invalidate_spatial_index(self) -> None:
+        self._spatial_index = None
+        self._spatial_index_cell_size = None
+        self._spatial_index_count = 0
+
+    def _ensure_spatial_index(self, cell_size: float) -> None:
+        cell_size = max(1e-6, float(cell_size))
+        if (
+            self._spatial_index is not None
+            and self._spatial_index_cell_size == cell_size
+            and self._spatial_index_count == len(self._obstacles)
+        ):
+            return
+
+        index: dict[tuple[int, int, int], list[int]] = defaultdict(list)
+        for obs_idx, obs in enumerate(self._obstacles):
+            bbox_min, bbox_max = self._obs_bbox(obs)
+            min_cell = np.floor(bbox_min / cell_size).astype(int)
+            max_cell = np.floor(bbox_max / cell_size).astype(int)
+            for ix in range(int(min_cell[0]), int(max_cell[0]) + 1):
+                for iy in range(int(min_cell[1]), int(max_cell[1]) + 1):
+                    for iz in range(int(min_cell[2]), int(max_cell[2]) + 1):
+                        index[(ix, iy, iz)].append(obs_idx)
+        self._spatial_index = dict(index)
+        self._spatial_index_cell_size = cell_size
+        self._spatial_index_count = len(self._obstacles)
 
     def to_voxel_grid(self, bounds: np.ndarray, resolution: float) -> OccupancyGrid:
         """将障碍物场体素化为占据栅格（按障碍物包围盒向量化，避免全网格遍历）。

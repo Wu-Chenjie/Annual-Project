@@ -1292,7 +1292,7 @@ void ObstacleScenarioSimulation::setup_online() {
     replanner_->set_global_planner(std::move(gp));
 
     if (config_.sensor_enabled) {
-        sensor_ = std::make_unique<RangeSensor6>(config_.sensor_max_range, config_.sensor_noise_std,
+        sensor_ = std::make_unique<RangeSensor6>(config_.planner_horizon, config_.sensor_noise_std,
                                                   config_.leader_wind_seed);
     }
 }
@@ -1485,7 +1485,9 @@ SimulationResult ObstacleScenarioSimulation::run() {
                 // 未知模式：每步持续将传感器读数注入栅格并重建动态障碍场
                 if (config_.planner_initial_map_unknown) {
                     replanner_->observe_sensor(ls_before_replan.position, *sp);
-                    update_discovered_obstacles();
+                    if (replanner_->consume_sensor_grid_dirty()) {
+                        update_discovered_obstacles();
+                    }
                 }
                 if (config_.formation_adaptation_enabled) {
                     auto channel_width = channel_width_from_sensor(sp);
@@ -1541,12 +1543,14 @@ SimulationResult ObstacleScenarioSimulation::run() {
             if (!lookahead_used && !reference_used && should_replan) {
                 const std::array<double, 6>* replan_sensor = config_.planner_initial_map_unknown ? nullptr : sp;
                 new_path = replanner_->step(t, ls_before_replan.position, replan_sensor, task_goal);
-                if (config_.planner_initial_map_unknown) {
+                if (config_.planner_initial_map_unknown && replanner_->consume_sensor_grid_dirty()) {
                     update_discovered_obstacles();
                 }
             }
             if (!new_path.empty()) {
-                update_discovered_obstacles();
+                if (!config_.planner_initial_map_unknown || replanner_->consume_sensor_grid_dirty()) {
+                    update_discovered_obstacles();
+                }
                 auto candidate_path = stitch_local_path_to_task_goal(new_path, task_goal);
                 const double clearance = compute_clearance();
                 if (config_.firi_enabled && !config_.planner_initial_map_unknown && candidate_path.size() >= 2) {

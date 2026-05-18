@@ -544,6 +544,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             self.replanner._sensor_ttl = np.zeros_like(self.grid.data, dtype=np.int16)
             self.replanner._sensor_clear_hits = np.zeros_like(self.grid.data, dtype=np.int16)
             self.replanner._changed_cells_since_last = []
+            self.replanner._sensor_grid_dirty = False
             self.replanner._current_path = None
             self.replanner._global_ref_path = None
             self.replanner.incremental_planner = None
@@ -652,7 +653,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
             if cfg.sensor_enabled:
                 self.sensor = RangeSensor6(
-                    max_range=cfg.sensor_max_range,
+                    max_range=cfg.planner_horizon,
                     noise_std=cfg.sensor_noise_std,
                     seed=cfg.leader_wind_seed,
                 )
@@ -1757,7 +1758,12 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     # BFS 3D 连通分量较重，限流 ≥0.25s 重建一次
                     if self._planner_initial_map_unknown and sensor_reading is not None:
                         changed = self.replanner._update_grid_from_sensor(leader_pos, sensor_reading)
-                        if changed and time_now - getattr(self, '_last_disc_rebuild', 0.0) >= 1.5:
+                        if changed:
+                            self.replanner.mark_sensor_grid_dirty()
+                        if (
+                            time_now - getattr(self, '_last_disc_rebuild', 0.0) >= 1.5
+                            and self.replanner.consume_sensor_grid_dirty()
+                        ):
                             self._update_discovered_obstacles()
                             self._last_disc_rebuild = time_now
 
@@ -1842,7 +1848,11 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 else:
                     new_path = None
                 # 未知模式：每次重规划后同步传感器发现的障碍物到动态障碍场
-                if new_path is not None and self._planner_initial_map_unknown:
+                if (
+                    new_path is not None
+                    and self._planner_initial_map_unknown
+                    and self.replanner.consume_sensor_grid_dirty()
+                ):
                     self._update_discovered_obstacles()
                 if new_path is not None:
                     self.replan_events.extend(self.replanner.get_new_events())

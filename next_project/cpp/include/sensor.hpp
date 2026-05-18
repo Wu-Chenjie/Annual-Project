@@ -42,8 +42,9 @@ inline std::array<double, 6> RangeSensor6::sense(const Vec3& pose, const Obstacl
     const auto& d = dirs();
     for (int di = 0; di < 6; ++di) {
         double t_min = max_range_;
-        for (const auto& obstacle : field.obstacles()) {
-            double t = ray_obstacle_intersect(pose, d[di], obstacle);
+        auto candidates = field.obstacles_in_ray_window(pose, d[di], max_range_);
+        for (const auto* obstacle : candidates) {
+            double t = ray_obstacle_intersect(pose, d[di], *obstacle);
             if (t > 0.0 && t < t_min) {
                 t_min = t;
             }

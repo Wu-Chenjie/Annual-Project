@@ -148,6 +148,7 @@ class WindowReplanner:
         self._local_fail_count: int = 0
         self._global_fail_count: int = 0     # 全局规划连续失败计数
         self._changed_cells_since_last: list[tuple[tuple, bool]] = []
+        self._sensor_grid_dirty: bool = False
         self._step_count: int = 0
         self.path_refiner = None
         self._last_fallback_reason: str | None = None
@@ -192,13 +193,15 @@ class WindowReplanner:
             return None
 
         self._step_count += 1
-        self._decay_sensor_obstacles()
+        decayed = self._decay_sensor_obstacles()
 
         # 用传感器数据局部更新 grid（仅 horizon 内）
         changed = []
         if sensor_reading is not None:
             changed = self._update_grid_from_sensor(leader_pose, sensor_reading)
         self._changed_cells_since_last.extend(changed)
+        if decayed or changed:
+            self._sensor_grid_dirty = True
 
         # 更新风险历史
         if self.adaptive_interval is not None:
@@ -256,6 +259,14 @@ class WindowReplanner:
             return self._publish_path(t, new_path)
 
         return None
+
+    def mark_sensor_grid_dirty(self) -> None:
+        self._sensor_grid_dirty = True
+
+    def consume_sensor_grid_dirty(self) -> bool:
+        dirty = self._sensor_grid_dirty
+        self._sensor_grid_dirty = False
+        return dirty
 
     # ------------------------------------------------------------------
     # 三级规划
@@ -583,7 +594,8 @@ class WindowReplanner:
                             changed.append((idx, False))
         return changed
 
-    def _decay_sensor_obstacles(self) -> None:
+    def _decay_sensor_obstacles(self) -> bool:
+        changed = False
         sensor_indices = np.argwhere(self._sensor_occupied)
         for idx_arr in sensor_indices:
             idx = tuple(int(v) for v in idx_arr)
@@ -591,6 +603,7 @@ class WindowReplanner:
                 self._sensor_occupied[idx] = False
                 self._sensor_ttl[idx] = 0
                 self._sensor_clear_hits[idx] = 0
+                changed = True
                 continue
             self._sensor_ttl[idx] = max(0, int(self._sensor_ttl[idx]) - 1)
             if self._sensor_ttl[idx] <= 0:
@@ -598,6 +611,8 @@ class WindowReplanner:
                 self._sensor_occupied[idx] = False
                 self._sensor_clear_hits[idx] = 0
                 self._changed_cells_since_last.append((idx, False))
+                changed = True
+        return changed
 
     # ------------------------------------------------------------------
     # 路径偏差度量

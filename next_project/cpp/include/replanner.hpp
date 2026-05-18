@@ -43,6 +43,7 @@ public:
     [[nodiscard]] double last_risk() const { return last_risk_; }
     std::vector<std::pair<std::array<int,3>, bool>> observe_sensor(
         const Vec3& leader_pose, const std::array<double, 6>& sensor_reading);
+    bool consume_sensor_grid_dirty();
     std::vector<ReplanEvent> get_new_events();
 
 private:
@@ -57,7 +58,7 @@ private:
     bool ref_path_feasible_in_horizon(const Vec3& pose) const;
     Vec3 compute_subgoal(const Vec3& pose, const Vec3& goal) const;
     std::vector<Vec3> publish_path(double t, std::vector<Vec3> new_path);
-    void decay_sensor_obstacles();
+    bool decay_sensor_obstacles();
     std::vector<std::pair<std::array<int,3>, bool>> update_grid_from_sensor(
         const Vec3& pose, const std::array<double, 6>& readings);
     void update_risk(const Vec3& pose, const std::array<double, 6>* readings);
@@ -90,6 +91,7 @@ private:
     std::vector<int> sensor_clear_hits_;
     int sensor_obstacle_ttl_steps_ = 3;
     int sensor_clear_confirm_steps_ = 1;
+    bool sensor_grid_dirty_ = false;
 };
 
 // ====================================================================
@@ -131,8 +133,16 @@ inline std::vector<ReplanEvent> WindowReplanner::get_new_events() {
 
 inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::observe_sensor(
     const Vec3& leader_pose, const std::array<double, 6>& sensor_reading) {
-    decay_sensor_obstacles();
-    return update_grid_from_sensor(leader_pose, sensor_reading);
+    const bool decayed = decay_sensor_obstacles();
+    auto changed = update_grid_from_sensor(leader_pose, sensor_reading);
+    if (decayed || !changed.empty()) sensor_grid_dirty_ = true;
+    return changed;
+}
+
+inline bool WindowReplanner::consume_sensor_grid_dirty() {
+    const bool dirty = sensor_grid_dirty_;
+    sensor_grid_dirty_ = false;
+    return dirty;
 }
 
 inline std::vector<Vec3> WindowReplanner::step(
@@ -143,8 +153,10 @@ inline std::vector<Vec3> WindowReplanner::step(
     last_replan_time_ = t;
     ++step_count_;
 
-    decay_sensor_obstacles();
-    if (sensor_reading) update_grid_from_sensor(leader_pose, *sensor_reading);
+    const bool decayed = decay_sensor_obstacles();
+    std::vector<std::pair<std::array<int,3>, bool>> changed;
+    if (sensor_reading) changed = update_grid_from_sensor(leader_pose, *sensor_reading);
+    if (decayed || !changed.empty()) sensor_grid_dirty_ = true;
 
     std::vector<Vec3> new_path;
 
@@ -313,13 +325,15 @@ inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::update_g
     return changed;
 }
 
-inline void WindowReplanner::decay_sensor_obstacles() {
+inline bool WindowReplanner::decay_sensor_obstacles() {
+    bool changed = false;
     for (std::size_t flat = 0; flat < sensor_occupied_.size(); ++flat) {
         if (!sensor_occupied_[flat]) continue;
         if (static_occupied_[flat]) {
             sensor_occupied_[flat] = 0;
             sensor_ttl_[flat] = 0;
             sensor_clear_hits_[flat] = 0;
+            changed = true;
             continue;
         }
         sensor_ttl_[flat] = std::max(0, sensor_ttl_[flat] - 1);
@@ -327,8 +341,10 @@ inline void WindowReplanner::decay_sensor_obstacles() {
             mutable_grid_.data[flat] = 0;
             sensor_occupied_[flat] = 0;
             sensor_clear_hits_[flat] = 0;
+            changed = true;
         }
     }
+    return changed;
 }
 
 inline void WindowReplanner::update_risk(const Vec3& pose, const std::array<double, 6>* readings) {
