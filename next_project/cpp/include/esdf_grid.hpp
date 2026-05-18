@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <queue>
 #include <vector>
 
@@ -14,10 +15,12 @@ namespace sim {
 
 // 三维欧几里得有符号距离场：O(1) 查表替代 O(N) 障碍物遍历
 class ESDFGrid {
+class ESDFGrid {
 public:
     ESDFGrid() = default;
 
     // 从 OccupancyGrid 构建（occupied>=1 的体素作为障碍物源点）
+    void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
     void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
         origin_ = grid.origin;
         resolution_ = grid.resolution;
@@ -46,6 +49,8 @@ public:
         bfs_expand(q, outside_, truncation_distance);
 
         // 构建 inside distance（obstacle→free）：从 free cell 反向 BFS
+        bfs_expand(q, outside_, truncation_distance);
+
         std::queue<std::array<int, 3>> q_in;
         for (int iz = 0; iz < nz_; ++iz)
             for (int iy = 0; iy < ny_; ++iy)
@@ -58,22 +63,23 @@ public:
                 }
         bfs_expand(q_in, inside_, truncation_distance);
 
+        build_gradient();
+
         // 预计算梯度
         build_gradient();
     }
 
     // O(1) 有符号距离查询
     [[nodiscard]] double signed_distance(const Vec3& p) const {
+    [[nodiscard]] double signed_distance(const Vec3& p) const {
         auto [ix, iy, iz, fx, fy, fz] = world_to_frac(p);
         if (!inside_bounds(ix, iy, iz)) {
             // 在网格外：返回最近边界距离 + 到边界外点的距离
-            int cx = std::clamp(ix, 0, nx_ - 1);
-            int cy = std::clamp(iy, 0, ny_ - 1);
-            int cz = std::clamp(iz, 0, nz_ - 1);
-            double d_boundary = trilinear_sample(outside_, cx, cy, cz, fx, fy, fz);
             Vec3 clamped{std::clamp(p.x, origin_.x, origin_.x + (nx_ - 1) * resolution_),
                          std::clamp(p.y, origin_.y, origin_.y + (ny_ - 1) * resolution_),
                          std::clamp(p.z, origin_.z, origin_.z + (nz_ - 1) * resolution_)};
+            auto [cix, ciy, ciz, cfx, cfy, cfz] = world_to_frac(clamped);
+            double d_boundary = trilinear_sample(outside_, cix, ciy, ciz, cfx, cfy, cfz);
             return d_boundary + norm(p - clamped);
         }
 
@@ -110,7 +116,7 @@ public:
     [[nodiscard]] double resolution() const { return resolution_; }
 
 private:
-    static constexpr double INF = 1e18;
+    static constexpr float INF = std::numeric_limits<float>::infinity();
     Vec3 origin_{};
     double resolution_ = 1.0;
     int nx_ = 0, ny_ = 0, nz_ = 0;
@@ -149,6 +155,7 @@ private:
     void bfs_expand(std::queue<std::array<int, 3>>& q, std::vector<float>& dist, double trunc) {
         // 预计算 26 邻域偏移及步长（一次，非 static 避免成员捕获问题）
         struct Nb { int dx, dy, dz; double step; };
+        struct Nb { int dx, dy, dz; double step; };
         std::array<Nb, 26> nb;
         int ni = 0;
         for (int dz = -1; dz <= 1; ++dz)
@@ -160,11 +167,28 @@ private:
                     nb[ni++] = {dx, dy, dz, step * resolution_};
                 }
 
+        struct Node {
+            double dist;
+            int x, y, z;
+        };
+        struct Greater {
+            bool operator()(const Node& a, const Node& b) const { return a.dist > b.dist; }
+        };
+
+        std::priority_queue<Node, std::vector<Node>, Greater> pq;
         while (!q.empty()) {
             auto [x, y, z] = q.front();
             q.pop();
+            pq.push(Node{dist[idx(x, y, z)], x, y, z});
+        }
+
+        while (!pq.empty()) {
+            Node node = pq.top();
+            pq.pop();
+            int x = node.x, y = node.y, z = node.z;
             size_t ci = idx(x, y, z);
             double cd = dist[ci];
+            if (node.dist > cd) continue;
 
             if (trunc > 0 && cd >= trunc) continue;
 
@@ -175,13 +199,14 @@ private:
                 double nd = cd + n.step;
                 if (nd < dist[nidx]) {
                     dist[nidx] = static_cast<float>(nd);
-                    q.push({nx, ny, nz});
+                    pq.push(Node{nd, nx, ny, nz});
                 }
             }
         }
     }
 
     // 三线性插值
+    [[nodiscard]] double trilinear_sample(const std::vector<float>& data,
     [[nodiscard]] double trilinear_sample(const std::vector<float>& data,
                                            int ix, int iy, int iz,
                                            double fx, double fy, double fz) const {
@@ -242,19 +267,28 @@ private:
     void build_gradient() {
         grad_.resize(outside_.size(), Vec3{});
         double step = resolution_ * 2.0;
-        for (int iz = 1; iz < nz_ - 1; ++iz)
-            for (int iy = 1; iy < ny_ - 1; ++iy)
-                for (int ix = 1; ix < nx_ - 1; ++ix) {
+        for (int iz = 0; iz < nz_; ++iz)
+            for (int iy = 0; iy < ny_; ++iy)
+                for (int ix = 0; ix < nx_; ++ix) {
                     size_t i = idx(ix, iy, iz);
                     // 用 outside 距离场计算梯度
                     double dx = (outside_[idx(ix+1, iy, iz)] - outside_[idx(ix-1, iy, iz)]) / step;
-                    double dy = (outside_[idx(ix, iy+1, iz)] - outside_[idx(ix, iy-1, iz)]) / step;
-                    double dz = (outside_[idx(ix, iy, iz+1)] - outside_[idx(ix, iy, iz-1)]) / step;
+                    double dx = (signed_distance_cell(ix+1, iy, iz) - signed_distance_cell(ix-1, iy, iz)) / step;
+                    double dy = (signed_distance_cell(ix, iy+1, iz) - signed_distance_cell(ix, iy-1, iz)) / step;
+                    double dz = (signed_distance_cell(ix, iy, iz+1) - signed_distance_cell(ix, iy, iz-1)) / step;
                     double len = std::sqrt(dx*dx + dy*dy + dz*dz);
                     if (len > 1e-12) {
                         grad_[i] = Vec3{dx/len, dy/len, dz/len};
                     }
                 }
+    }
+
+    [[nodiscard]] double signed_distance_cell(int ix, int iy, int iz) const {
+        ix = std::clamp(ix, 0, nx_ - 1);
+        iy = std::clamp(iy, 0, ny_ - 1);
+        iz = std::clamp(iz, 0, nz_ - 1);
+        size_t i = idx(ix, iy, iz);
+        return outside_[i] < 1e-9f ? -inside_[i] : outside_[i];
     }
 };
 

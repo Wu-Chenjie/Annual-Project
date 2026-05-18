@@ -1,6 +1,11 @@
 #include <chrono>
+#include <ctime>
+#include <cstdlib>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 #include "model_importer.hpp"
 #include "obstacle_scenario.hpp"
@@ -21,19 +26,28 @@ std::string timestamp_dir_name() {
 }
 }
 
-int main() {
+int main(int argc, char** argv) {
     using sim::Vec3;
     using sim::ObstacleConfig;
     using sim::ObstacleScenarioSimulation;
     using sim::SimulationVisualizer;
     using sim::import_model;
 
-    const std::string ply_path = "/Users/wuchenjie/Desktop/Annual-Project/scene_20260418_135639_caa51f30_gaussian_raw.ply";
+    if (argc < 2) {
+        std::cerr << "usage: sim_scene_3dgs <model.ply|model.obj|model.stl> "
+                  << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000]\n";
+        return 2;
+    }
+    const std::string model_path = argv[1];
+    const double voxel_size = (argc > 2) ? std::stod(argv[2]) : 0.3;
+    const double model_scale = (argc > 3) ? std::stod(argv[3]) : 1.0;
+    const double padding = (argc > 4) ? std::stod(argv[4]) : 0.5;
+    const int max_obstacles = (argc > 5) ? std::stoi(argv[5]) : 10000;
 
     // [1] 导入 PLY
     std::cout << "[1] import_model... " << std::flush;
     auto t0 = now();
-    auto [field, bounds] = import_model(ply_path, 0.3, 1.0, 0.5, 10000);
+    auto [field, bounds] = import_model(model_path, voxel_size, model_scale, padding, max_obstacles);
     auto t1 = now();
     std::cout << field.size() << " obstacles, " << sec(t0,t1) << "s\n";
 

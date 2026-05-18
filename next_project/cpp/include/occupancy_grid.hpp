@@ -25,6 +25,7 @@ struct OccupancyGrid {
     [[nodiscard]] std::array<int, 3> world_to_index(const Vec3& p) const {
         // floor 截断，与 Python astype(int) 行为一致
         int ix = static_cast<int>(std::floor((p.x - origin.x) / resolution + 1e-9));
+        int ix = static_cast<int>(std::floor((p.x - origin.x) / resolution + 1e-9));
         int iy = static_cast<int>(std::floor((p.y - origin.y) / resolution + 1e-9));
         int iz = static_cast<int>(std::floor((p.z - origin.z) / resolution + 1e-9));
         return {clamp_int(ix, 0, nx - 1), clamp_int(iy, 0, ny - 1), clamp_int(iz, 0, nz - 1)};

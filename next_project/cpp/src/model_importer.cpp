@@ -161,6 +161,10 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
     std::string format = "ascii";
     std::vector<std::pair<std::string, std::string>> vertex_props;
     bool in_vertex = false;
+    bool in_face = false;
+    bool has_face_list = false;
+    std::string face_count_type = "uchar";
+    std::string face_index_type = "int";
 
     while (std::getline(hss, hline)) {
         auto parts = split(trim(hline));
@@ -170,13 +174,20 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
         if (parts.size() == 3 && parts[0] == "element" && parts[1] == "vertex") {
             vertex_count = std::stoi(parts[2]);
             in_vertex = true;
+            in_face = false;
         } else if (parts.size() == 3 && parts[0] == "element" && parts[1] == "face") {
             face_count = std::stoi(parts[2]);
             in_vertex = false;
+            in_face = true;
         } else if (parts.size() == 3 && parts[0] == "property" && in_vertex) {
             vertex_props.emplace_back(parts[2], parts[1]);
+        } else if (parts.size() == 5 && parts[0] == "property" && parts[1] == "list" && in_face) {
+            face_count_type = parts[2];
+            face_index_type = parts[3];
+            has_face_list = true;
         } else if (!parts.empty() && parts[0] == "element") {
             in_vertex = false;
+            in_face = false;
         }
     }
 
@@ -223,6 +234,7 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
 
     // 阶段1: 构建解析计划（header 结束后只执行一次，仅 62 次字符串比较）
     {
+    {
         enum class PlyField { X, Y, Z, Unknown };
         auto ply_type_size = [](const std::string& t) -> int {
             if (t == "char" || t == "int8" || t == "uchar" || t == "uint8") return 1;
@@ -234,40 +246,48 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
         auto ply_is_float = [](const std::string& t) -> bool {
             return t == "float" || t == "float32" || t == "double" || t == "float64";
         };
+        auto ply_is_signed = [](const std::string& t) -> bool {
+            return t == "char" || t == "int8" || t == "short" || t == "int16" ||
+                   t == "int" || t == "int32";
+        };
 
         struct FieldPlan {
             PlyField field;
             int byte_size;
             bool is_float;
+            bool is_signed;
         };
         std::vector<FieldPlan> plan;
         int vertex_stride = 0;
         int x_off = -1, y_off = -1, z_off = -1;
         int x_sz = 0, y_sz = 0, z_sz = 0;
         bool x_fl = false, y_fl = false, z_fl = false;
+        bool x_signed = false, y_signed = false, z_signed = false;
 
         for (const auto& [name, typ] : vertex_props) {
             int sz = ply_type_size(typ);
             if (sz == 0) throw std::runtime_error("Unsupported PLY vertex property type: " + typ);
             bool fl = ply_is_float(typ);
+            bool sg = ply_is_signed(typ);
 
             PlyField f = PlyField::Unknown;
-            if (name == "x")      { f = PlyField::X; x_off = vertex_stride; x_sz = sz; x_fl = fl; }
-            else if (name == "y") { f = PlyField::Y; y_off = vertex_stride; y_sz = sz; y_fl = fl; }
-            else if (name == "z") { f = PlyField::Z; z_off = vertex_stride; z_sz = sz; z_fl = fl; }
+            if (name == "x")      { f = PlyField::X; x_off = vertex_stride; x_sz = sz; x_fl = fl; x_signed = sg; }
+            else if (name == "y") { f = PlyField::Y; y_off = vertex_stride; y_sz = sz; y_fl = fl; y_signed = sg; }
+            else if (name == "z") { f = PlyField::Z; z_off = vertex_stride; z_sz = sz; z_fl = fl; z_signed = sg; }
 
-            plan.push_back({f, sz, fl});
+            plan.push_back({f, sz, fl, sg});
             vertex_stride += sz;
         }
 
         // 阶段2: 一次性读取全部顶点数据
+        std::size_t vertex_data_size = static_cast<std::size_t>(vertex_count) * vertex_stride;
         std::size_t vertex_data_size = static_cast<std::size_t>(vertex_count) * vertex_stride;
         if (body_start + vertex_data_size > data.size())
             throw std::runtime_error("Unexpected end of binary PLY vertex data");
         const uint8_t* vbuf = data.data() + body_start;
 
         // 阶段3: 按 offset 直接读取 x/y/z（无字符串比较、无属性循环）
-        auto read_float = [&](const uint8_t* base, int off, int sz, bool fl) -> double {
+        auto read_float = [&](const uint8_t* base, int off, int sz, bool fl, bool sg) -> double {
             const uint8_t* p = base + off;
             if (fl && sz == 4) {
                 float f; std::memcpy(&f, p, 4); return static_cast<double>(f);
@@ -275,9 +295,12 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
             if (fl && sz == 8) {
                 double d; std::memcpy(&d, p, 8); return d;
             }
-            if (sz == 1) return static_cast<double>(*p);
-            if (sz == 2) { int16_t s; std::memcpy(&s, p, 2); return static_cast<double>(s); }
-            if (sz == 4) { int32_t i32; std::memcpy(&i32, p, 4); return static_cast<double>(i32); }
+            if (sz == 1 && sg) { int8_t s; std::memcpy(&s, p, 1); return static_cast<double>(s); }
+            if (sz == 1) { uint8_t u; std::memcpy(&u, p, 1); return static_cast<double>(u); }
+            if (sz == 2 && sg) { int16_t s; std::memcpy(&s, p, 2); return static_cast<double>(s); }
+            if (sz == 2) { uint16_t u; std::memcpy(&u, p, 2); return static_cast<double>(u); }
+            if (sz == 4 && sg) { int32_t i32; std::memcpy(&i32, p, 4); return static_cast<double>(i32); }
+            if (sz == 4) { uint32_t u32; std::memcpy(&u32, p, 4); return static_cast<double>(u32); }
             return 0.0;
         };
 
@@ -285,25 +308,40 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
         vertices.reserve(vertex_count);
         for (int i = 0; i < vertex_count; ++i) {
             const uint8_t* base = vbuf + static_cast<std::size_t>(i) * vertex_stride;
-            double vx = (x_off >= 0) ? read_float(base, x_off, x_sz, x_fl) : 0.0;
-            double vy = (y_off >= 0) ? read_float(base, y_off, y_sz, y_fl) : 0.0;
-            double vz = (z_off >= 0) ? read_float(base, z_off, z_sz, z_fl) : 0.0;
+            double vx = (x_off >= 0) ? read_float(base, x_off, x_sz, x_fl, x_signed) : 0.0;
+            double vy = (y_off >= 0) ? read_float(base, y_off, y_sz, y_fl, y_signed) : 0.0;
+            double vz = (z_off >= 0) ? read_float(base, z_off, z_sz, z_fl, z_signed) : 0.0;
             vertices.push_back({vx, vy, vz});
         }
 
         // 阶段4: 解析面数据（维持原逻辑）
         std::size_t offset = body_start + vertex_data_size;
+        std::size_t offset = body_start + vertex_data_size;
+        int face_count_size = ply_type_size(face_count_type);
+        int face_index_size = ply_type_size(face_index_type);
+        if (face_count > 0 && (!has_face_list || face_count_size == 0 || face_index_size == 0)) {
+            throw std::runtime_error("Unsupported binary PLY face list property");
+        }
+        auto read_uint = [&](std::size_t& off, const std::string& typ) -> uint32_t {
+            int sz = ply_type_size(typ);
+            if (off + static_cast<std::size_t>(sz) > data.size()) {
+                throw std::runtime_error("Unexpected end of binary PLY face data");
+            }
+            const uint8_t* p = data.data() + off;
+            off += static_cast<std::size_t>(sz);
+            if (sz == 1) { uint8_t v; std::memcpy(&v, p, 1); return v; }
+            if (sz == 2 && ply_is_signed(typ)) { int16_t v; std::memcpy(&v, p, 2); return static_cast<uint32_t>(v); }
+            if (sz == 2) { uint16_t v; std::memcpy(&v, p, 2); return v; }
+            if (sz == 4 && ply_is_signed(typ)) { int32_t v; std::memcpy(&v, p, 4); return static_cast<uint32_t>(v); }
+            uint32_t v; std::memcpy(&v, p, 4); return v;
+        };
         std::vector<Triangle> triangles;
         for (int i = 0; i < face_count; ++i) {
             if (offset >= data.size()) break;
-            uint8_t count = data[offset++];
+            uint32_t count = read_uint(offset, face_count_type);
             std::vector<int> refs;
-            for (int j = 0; j < count; ++j) {
-                if (offset + 4 > data.size()) break;
-                int32_t idx;
-                std::memcpy(&idx, data.data() + offset, 4);
-                offset += 4;
-                refs.push_back(idx);
+            for (uint32_t j = 0; j < count; ++j) {
+                refs.push_back(static_cast<int>(read_uint(offset, face_index_type)));
             }
             for (std::size_t j = 1; j + 1 < refs.size(); ++j) {
                 triangles.push_back({refs[0], refs[j], refs[j + 1]});
@@ -370,6 +408,7 @@ std::pair<ObstacleField, std::array<Vec3, 2>> model_to_field(
     // 平移至正象限
     std::vector<Vertex> shifted;
     shifted.reserve(scaled.size());
+    std::set<std::array<int, 3>> occupied;
     for (const auto& v : scaled) {
         shifted.push_back({v.x - min_x + padding, v.y - min_y + padding, v.z - min_z});
     }
@@ -455,6 +494,7 @@ std::pair<ObstacleField, std::array<Vec3, 2>> import_model(
     f.close();
 
     // 根据扩展名分发
+    auto ext_pos = filepath.rfind('.');
     auto ext_pos = filepath.rfind('.');
     std::string ext = (ext_pos != std::string::npos) ? filepath.substr(ext_pos) : "";
     for (auto& c : ext) c = static_cast<char>(std::tolower(c));

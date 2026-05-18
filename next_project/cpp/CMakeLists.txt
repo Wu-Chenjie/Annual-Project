@@ -8,6 +8,7 @@ set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 if(MSVC)
     add_compile_options(/O2 /W4)
+    add_compile_definitions(NOMINMAX WIN32_LEAN_AND_MEAN)
 else()
     add_compile_options(-O3 -Wall -Wextra -Wpedantic)
 endif()
