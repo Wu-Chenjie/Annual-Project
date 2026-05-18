@@ -44,6 +44,15 @@ def test_downwash_zone_detects_vertical_stack():
     )
 
 
+def test_downwash_zone_ignores_tiny_vertical_jitter():
+    zone = downwash_zone(radius=0.5, height=1.0)
+    assert not is_in_downwash_zone(
+        np.array([0.0, 0.0, 2.04], dtype=float),
+        np.array([0.2, 0.1, 2.0], dtype=float),
+        zone,
+    )
+
+
 def test_follower_safety_correction_shrinks_toward_leader_when_target_blocked():
     leader = np.array([0.0, 0.0, 1.0], dtype=float)
     raw_target = np.array([1.0, 0.0, 1.0], dtype=float)

@@ -19,6 +19,7 @@
 #include "json_writer.hpp"
 #include "obstacles.hpp"
 #include "obstacle_scenario.hpp"
+#include "visualization.hpp"
 
 namespace sim {
 
@@ -481,6 +482,7 @@ int main(int argc, char* argv[]) {
 #endif
     using sim::ObstacleConfig;
     using sim::ObstacleScenarioSimulation;
+    using sim::SimulationVisualizer;
     using sim::Vec3;
 
     const CliOptions cli = parse_cli(argc, argv);
@@ -535,6 +537,14 @@ int main(int argc, char* argv[]) {
     const std::filesystem::path output_path =
         std::filesystem::path("outputs") / preset / timestamp_dir_name() / "sim_result.json";
     write_obstacle_result_json(output_path, result, tp, ts, preset, config, report_obstacles, report_bounds);
+    {
+        SimulationVisualizer visualizer(output_path.parent_path().string());
+        const auto figure_paths = visualizer.plot_all(result);
+        const auto error_it = figure_paths.find("error_3d");
+        if (error_it != figure_paths.end()) {
+            std::cout << "Real-time error figure: " << error_it->second << "\n";
+        }
+    }
     std::cout << "结果文件: " << output_path.string() << "\n";
 
     // Auto-generate Chinese report.md via Python report pipeline

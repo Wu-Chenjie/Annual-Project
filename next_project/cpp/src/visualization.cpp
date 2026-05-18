@@ -194,6 +194,83 @@ void draw_rect_filled(RasterImage* image, int x, int y, int w, int h, Color c) {
     }
 }
 
+const std::array<std::string, 7>& glyph_5x7(char ch) {
+    static const std::array<std::string, 7> zero{
+        "01110", "10001", "10011", "10101", "11001", "10001", "01110"};
+    static const std::array<std::string, 7> one{
+        "00100", "01100", "00100", "00100", "00100", "00100", "01110"};
+    static const std::array<std::string, 7> two{
+        "01110", "10001", "00001", "00010", "00100", "01000", "11111"};
+    static const std::array<std::string, 7> three{
+        "11110", "00001", "00001", "01110", "00001", "00001", "11110"};
+    static const std::array<std::string, 7> four{
+        "00010", "00110", "01010", "10010", "11111", "00010", "00010"};
+    static const std::array<std::string, 7> five{
+        "11111", "10000", "10000", "11110", "00001", "00001", "11110"};
+    static const std::array<std::string, 7> six{
+        "01110", "10000", "10000", "11110", "10001", "10001", "01110"};
+    static const std::array<std::string, 7> seven{
+        "11111", "00001", "00010", "00100", "01000", "01000", "01000"};
+    static const std::array<std::string, 7> eight{
+        "01110", "10001", "10001", "01110", "10001", "10001", "01110"};
+    static const std::array<std::string, 7> nine{
+        "01110", "10001", "10001", "01111", "00001", "00001", "01110"};
+    static const std::array<std::string, 7> dot{
+        "00000", "00000", "00000", "00000", "00000", "01100", "01100"};
+    static const std::array<std::string, 7> minus{
+        "00000", "00000", "00000", "11111", "00000", "00000", "00000"};
+    static const std::array<std::string, 7> blank{
+        "00000", "00000", "00000", "00000", "00000", "00000", "00000"};
+
+    switch (ch) {
+        case '0': return zero;
+        case '1': return one;
+        case '2': return two;
+        case '3': return three;
+        case '4': return four;
+        case '5': return five;
+        case '6': return six;
+        case '7': return seven;
+        case '8': return eight;
+        case '9': return nine;
+        case '.': return dot;
+        case '-': return minus;
+        default: return blank;
+    }
+}
+
+int text_width_5x7(const std::string& text, int scale = 2) {
+    if (text.empty()) return 0;
+    const int glyph_w = 5 * scale;
+    const int gap = scale;
+    return static_cast<int>(text.size()) * glyph_w
+        + static_cast<int>(text.size() - 1) * gap;
+}
+
+void draw_text_5x7(RasterImage* image, int x, int y, const std::string& text, Color c, int scale = 2) {
+    const int glyph_w = 5 * scale;
+    const int gap = scale;
+    int cursor = x;
+    for (char ch : text) {
+        const auto& glyph = glyph_5x7(ch);
+        for (int row = 0; row < static_cast<int>(glyph.size()); ++row) {
+            for (int col = 0; col < static_cast<int>(glyph[static_cast<std::size_t>(row)].size()); ++col) {
+                if (glyph[static_cast<std::size_t>(row)][static_cast<std::size_t>(col)] != '1') continue;
+                draw_rect_filled(image, cursor + col * scale, y + row * scale, scale, scale, c);
+            }
+        }
+        cursor += glyph_w + gap;
+    }
+}
+
+void draw_text_centered_5x7(RasterImage* image, int cx, int y, const std::string& text, Color c, int scale = 2) {
+    draw_text_5x7(image, cx - text_width_5x7(text, scale) / 2, y, text, c, scale);
+}
+
+void draw_text_right_5x7(RasterImage* image, int right_x, int y, const std::string& text, Color c, int scale = 2) {
+    draw_text_5x7(image, right_x - text_width_5x7(text, scale), y, text, c, scale);
+}
+
 std::pair<double, double> to_canvas(double x, double y, const Bounds2D& b,
                                     double left, double top, double width, double height) {
     const double nx = (x - b.min_x) / (b.max_x - b.min_x);
@@ -207,6 +284,111 @@ std::string format_double(double v, int precision = 2) {
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(precision) << v;
     return oss.str();
+}
+
+std::vector<double> linear_ticks(double min_v, double max_v, int tick_count = 5) {
+    std::vector<double> ticks;
+    tick_count = std::max(2, tick_count);
+    ticks.reserve(static_cast<std::size_t>(tick_count));
+    if (!std::isfinite(min_v) || !std::isfinite(max_v)) {
+        min_v = 0.0;
+        max_v = 1.0;
+    }
+    if (std::abs(max_v - min_v) < 1e-12) {
+        max_v = min_v + 1.0;
+    }
+    const double step = (max_v - min_v) / static_cast<double>(tick_count - 1);
+    for (int i = 0; i < tick_count; ++i) {
+        ticks.push_back(min_v + step * static_cast<double>(i));
+    }
+    return ticks;
+}
+
+double canvas_x(double x, const Bounds2D& b, double left, double plot_w) {
+    return left + (x - b.min_x) / (b.max_x - b.min_x) * plot_w;
+}
+
+double canvas_y(double y, const Bounds2D& b, double top, double plot_h) {
+    return top + (1.0 - (y - b.min_y) / (b.max_y - b.min_y)) * plot_h;
+}
+
+void draw_error_axes_svg(std::ostringstream& svg, const Bounds2D& bounds,
+                         double left, double y0, double plot_w, double subplot_h) {
+    const double x_axis_y = y0 + subplot_h;
+    const double y_axis_x = left;
+
+    if (bounds.min_y < 0.0 && bounds.max_y > 0.0) {
+        const double zero_y = canvas_y(0.0, bounds, y0, subplot_h);
+        svg << "<line class='error-zero-axis' x1='" << left << "' y1='" << zero_y
+            << "' x2='" << (left + plot_w) << "' y2='" << zero_y
+            << "' stroke='#bbb' stroke-width='1' stroke-dasharray='4 4'/>\n";
+    }
+
+    svg << "<line class='error-axis' x1='" << left << "' y1='" << x_axis_y
+        << "' x2='" << (left + plot_w) << "' y2='" << x_axis_y
+        << "' stroke='#333' stroke-width='1.4'/>\n";
+    svg << "<line class='error-axis' x1='" << y_axis_x << "' y1='" << y0
+        << "' x2='" << y_axis_x << "' y2='" << (y0 + subplot_h)
+        << "' stroke='#333' stroke-width='1.4'/>\n";
+
+    for (double tick : linear_ticks(bounds.min_x, bounds.max_x, 6)) {
+        const double x = canvas_x(tick, bounds, left, plot_w);
+        svg << "<line class='error-tick' x1='" << x << "' y1='" << x_axis_y
+            << "' x2='" << x << "' y2='" << (x_axis_y + 5.0)
+            << "' stroke='#333' stroke-width='1'/>\n";
+        svg << "<text class='error-tick' x='" << x << "' y='" << (x_axis_y + 18.0)
+            << "' text-anchor='middle' font-size='10' fill='#333' font-family='Segoe UI'>"
+            << format_double(tick, 1) << "</text>\n";
+    }
+
+    for (double tick : linear_ticks(bounds.min_y, bounds.max_y, 5)) {
+        const double y = canvas_y(tick, bounds, y0, subplot_h);
+        svg << "<line class='error-tick' x1='" << (y_axis_x - 5.0) << "' y1='" << y
+            << "' x2='" << y_axis_x << "' y2='" << y
+            << "' stroke='#333' stroke-width='1'/>\n";
+        svg << "<text class='error-tick' x='" << (y_axis_x - 8.0) << "' y='" << (y + 3.5)
+            << "' text-anchor='end' font-size='10' fill='#333' font-family='Segoe UI'>"
+            << format_double(tick, 2) << "</text>\n";
+    }
+}
+
+void draw_error_axes_png(RasterImage* image, const Bounds2D& bounds,
+                         double left, double y0, double plot_w, double subplot_h) {
+    const double x_axis_y = y0 + subplot_h;
+    const double y_axis_x = left;
+    const Color axis{51, 51, 51, 255};
+    const Color zero{187, 187, 187, 255};
+
+    if (bounds.min_y < 0.0 && bounds.max_y > 0.0) {
+        const double zero_y = canvas_y(0.0, bounds, y0, subplot_h);
+        draw_line(image, left, zero_y, left + plot_w, zero_y, zero, 1, true);
+    }
+
+    draw_line(image, left, x_axis_y, left + plot_w, x_axis_y, axis, 2, false);
+    draw_line(image, y_axis_x, y0, y_axis_x, y0 + subplot_h, axis, 2, false);
+
+    for (double tick : linear_ticks(bounds.min_x, bounds.max_x, 6)) {
+        const double x = canvas_x(tick, bounds, left, plot_w);
+        draw_line(image, x, x_axis_y, x, x_axis_y + 6.0, axis, 1, false);
+        draw_text_centered_5x7(
+            image,
+            static_cast<int>(std::lround(x)),
+            static_cast<int>(std::lround(x_axis_y + 10.0)),
+            format_double(tick, 1),
+            axis,
+            2);
+    }
+    for (double tick : linear_ticks(bounds.min_y, bounds.max_y, 5)) {
+        const double y = canvas_y(tick, bounds, y0, subplot_h);
+        draw_line(image, y_axis_x - 6.0, y, y_axis_x, y, axis, 1, false);
+        draw_text_right_5x7(
+            image,
+            static_cast<int>(std::lround(y_axis_x - 10.0)),
+            static_cast<int>(std::lround(y - 7.0)),
+            format_double(tick, 2),
+            axis,
+            2);
+    }
 }
 
 void write_text_file(const std::string& path, const std::string& content) {
@@ -429,6 +611,7 @@ void render_error_components_png(const SimulationResult& result,
             color_from_hex("#999999"),
             1
         );
+        draw_error_axes_png(&image, comp_bounds[comp], left, y0, plot_w, subplot_h);
 
         for (std::size_t i = 0; i < result.error_vectors.size(); ++i) {
             std::vector<std::pair<double, double>> poly;
@@ -657,6 +840,7 @@ std::string SimulationVisualizer::plot_error_components_svg(const SimulationResu
 
         svg << "<rect x='" << left << "' y='" << y0 << "' width='" << plot_w << "' height='" << subplot_h
             << "' fill='none' stroke='#999' stroke-width='1.1'/>\n";
+        draw_error_axes_svg(svg, comp_bounds[comp], left, y0, plot_w, subplot_h);
 
         for (std::size_t i = 0; i < result.error_vectors.size(); ++i) {
             svg << "<polyline fill='none' stroke='" << color_for_index(i)

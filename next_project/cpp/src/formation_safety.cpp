@@ -6,13 +6,19 @@
 
 namespace sim {
 
+namespace {
+
+constexpr double kMinEffectiveDownwashDz = 0.10;
+
+}
+
 DownwashZone downwash_zone(double radius, double height) {
     return DownwashZone{std::max(0.0, radius), std::max(0.0, height)};
 }
 
 bool is_in_downwash_zone(const Vec3& upper, const Vec3& lower, const DownwashZone& zone) {
     const double dz = upper.z - lower.z;
-    if (dz <= 0.0 || dz > zone.height) return false;
+    if (dz <= kMinEffectiveDownwashDz || dz > zone.height) return false;
     const double lateral = std::hypot(upper.x - lower.x, upper.y - lower.y);
     return lateral <= zone.radius;
 }

@@ -77,6 +77,7 @@ def generate_result_report(
         encoding="utf-8",
     )
 
+    realtime_error_path = target_dir / "error_realtime_3d.png"
     figures = {
         "route": _plot_route(payload, figure_dir / FIGURE_NAMES["route"]),
         "route_3d": _plot_route_3d(payload, figure_dir / FIGURE_NAMES["route_3d"]),
@@ -85,6 +86,8 @@ def generate_result_report(
         "events": _plot_event_timeline(payload, figure_dir / FIGURE_NAMES["events"]),
         "planning": _plot_planning_times(payload, figure_dir / FIGURE_NAMES["planning"]),
     }
+    if realtime_error_path.exists():
+        figures["realtime_errors"] = realtime_error_path
 
     report_title = title or _default_report_title(payload)
     report_path = target_dir / report_name
@@ -245,6 +248,13 @@ def _render_markdown(
         f"![规划器耗时]({figure_dir_name}/{FIGURE_NAMES['planning']})",
         "",
     ])
+    if figures.get("realtime_errors"):
+        lines.extend([
+            "### Real-time Error Curves",
+            "",
+            "![Real-time error components](error_realtime_3d.png)",
+            "",
+        ])
     if missing_notes:
         lines.extend(["## 数据缺失说明", ""])
         lines.extend(f"- {note}" for note in missing_notes)

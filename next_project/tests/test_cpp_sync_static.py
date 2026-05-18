@@ -42,6 +42,7 @@ def test_cpp_meeting_room_unknown_keeps_reachable_python_waypoint():
 def test_cpp_rrt_dual_channel_unknown_uses_python_online_clearance_profile():
     body = config_body("config_rrt_dual_channel_online_unknown")
 
+    assert "c.max_sim_time = 42.0;" in body
     assert "c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.18;" in body
     assert "c.sensor_enabled = true; c.sensor_max_range = 4.0; c.sensor_noise_std = 0.0;" in body
     assert "c.planner_replan_interval = 0.4; c.planner_horizon = 3.5;" in body
@@ -54,6 +55,27 @@ def test_cpp_warehouse_unknown_uses_python_online_clearance_profile():
     assert "c.planner_use_formation_envelope = false; c.plan_clearance_extra = 0.0;" in body
     assert "c.sensor_enabled = true; c.sensor_max_range = 5.0; c.sensor_noise_std = 0.0;" in body
     assert "c.planner_replan_interval = 0.4; c.planner_horizon = 6.0;" in body
+
+
+def test_cpp_high_risk_unknown_presets_enable_execution_formation_safety():
+    obstacle = config_body("config_obstacle_unknown")
+    assert "c.formation_safety_enabled = true;" in obstacle
+    assert "c.formation_min_inter_drone_distance = 0.25;" in obstacle
+    assert "c.formation_downwash_radius = 0.0;" in obstacle
+
+    school = config_body("config_school_corridor_unknown")
+    assert "c.formation_safety_enabled = true;" in school
+    assert "c.formation_min_inter_drone_distance = 0.25;" in school
+    assert "c.formation_downwash_radius = 0.0;" in school
+
+    for name in (
+        "config_company_cubicles_unknown",
+        "config_laboratory_unknown",
+        "config_meeting_room_unknown",
+    ):
+        body = config_body(name)
+        assert "c.formation_safety_enabled = true;" in body
+        assert "c.formation_min_inter_drone_distance = 0.35;" in body
 
 
 def test_cpp_online_run_tracks_sanitized_waypoints_but_reports_original_tasks():
@@ -76,6 +98,40 @@ def test_cpp_online_target_selection_uses_clear_arc_length_lookahead():
     assert "ObstacleScenarioSimulation::online_lookahead_distance" in source
     assert "ObstacleScenarioSimulation::select_online_target" in source
     assert "target = select_online_target(active_path, ls0.position, execution_tasks[task_wp_idx], local_wp_idx);" in source
+
+
+def test_cpp_unknown_online_keeps_reference_path_until_replan_is_needed():
+    source = read("cpp/src/obstacle_scenario.cpp")
+    header = read("cpp/include/obstacle_scenario.hpp")
+
+    assert "planned_segment_for_task" in header
+    assert "ObstacleScenarioSimulation::planned_segment_for_task" in source
+    assert "int active_path_task_idx = online ? -1 : 0;" in source
+    assert "const bool force_replan = active_path_task_idx != task_wp_idx;" in source
+    assert "const bool periodic_replan = !config_.planner_initial_map_unknown;" in source
+    assert "const bool preserve_unknown_reference =" in source
+    assert "&& config_.planner_horizon > 4.5" in source
+    assert "&& config_.leader_max_vel > 1.0;" in source
+    assert "const bool sensor_replan_allowed =" in source
+    assert "sensor_replan && !preserve_unknown_reference;" in source
+    assert "const bool should_replan = periodic_replan || force_replan || sensor_replan_allowed || path_exhausted;" in source
+    assert "const bool short_horizon_window = config_.planner_horizon <= 4.5;" in source
+    assert "const bool allow_unknown_direct_shortcut = path.size() <= 2 || short_horizon_window;" in source
+    assert "const std::vector<Vec3> direct_task_path{position, task_goal};" in source
+    assert "task_radius = std::max(task_radius, config_.wp_radius * 1.5);" in source
+    assert "reference_used ? \"online_force_replan\" : \"online_replan\"" in source
+
+
+def test_cpp_planned_segment_uses_forward_arc_projection_not_global_nearest_goal():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "std::vector<double> cumulative" in source
+    assert "std::vector<Projection> start_candidates" in source
+    assert "best_forward_goal" in source
+    assert "Projection goal_candidate = best_forward_goal(start_candidate);" in source
+    assert "const double pair_score = start_candidate.distance + goal_candidate.distance + 0.001 * arc_span;" in source
+    assert "goal_i <= start_i" not in source
+    assert "for (int i = start_i + 1; i <= goal_i; ++i)" not in source
 
 
 def test_cpp_online_leader_tracks_with_target_velocity_feedforward():
@@ -204,9 +260,42 @@ def test_cpp_execution_layer_projects_drone_state_like_python():
     header = read("cpp/include/obstacle_scenario.hpp")
 
     assert "bool project_drone_state_to_safe(Drone& drone, double min_clearance);" in header
+    assert (
+        "bool project_drone_state_from_neighbors("
+        "Drone& drone, const std::vector<Vec3>& reserved_positions, double min_distance);"
+        in header
+    )
     assert "ObstacleScenarioSimulation::project_drone_state_to_safe" in source
+    assert "ObstacleScenarioSimulation::project_drone_state_from_neighbors" in source
+    assert "min_distance + 1e-6" in source
+    assert "is_in_downwash_zone(other, pos, downwash_zone_)" in source
+    assert "is_in_downwash_zone(pos, other, downwash_zone_)" in source
+    assert "downwash_zone_.radius + 1e-6" in source
+    assert "velocity -= normal * normal_vel;" in source
     assert "project_drone_state_to_safe(leader, collision_margin_);" in source
     assert "project_drone_state_to_safe(followers[i], collision_margin_);" in source
+    assert "std::vector<Vec3> reserved_actual_positions;" in source
+    assert "reserved_actual_positions.push_back(ls.position);" in source
+    assert (
+        "project_drone_state_from_neighbors("
+        "followers[i], reserved_actual_positions, config_.formation_min_inter_drone_distance)"
+        in source
+    )
+    assert (
+        source.count(
+            "project_drone_state_from_neighbors(followers[i], reserved_actual_positions, "
+            "config_.formation_min_inter_drone_distance);"
+        )
+        >= 2
+    )
+    assert "reserved_actual_positions.push_back(fs.position);" in source
+    assert re.search(
+        r"project_drone_state_from_neighbors\(followers\[i\],\s*reserved_actual_positions,\s*"
+        r"config_\.formation_min_inter_drone_distance\);\s*"
+        r"project_drone_state_to_safe\(followers\[i\],\s*collision_margin_\);",
+        source,
+        flags=re.DOTALL,
+    )
     assert re.search(
         r"leader\.update_state\(.*?\);\s*"
         r"project_drone_state_to_safe\(leader,\s*collision_margin_\);\s*"
@@ -217,10 +306,56 @@ def test_cpp_execution_layer_projects_drone_state_like_python():
     assert re.search(
         r"followers\[i\]\.update_state\(.*?\);\s*"
         r"project_drone_state_to_safe\(followers\[i\],\s*collision_margin_\);\s*"
+        r"if\s*\(\s*config_\.formation_safety_enabled\s*\)\s*\{.*?"
+        r"project_drone_state_from_neighbors\(followers\[i\],\s*reserved_actual_positions,\s*"
+        r"config_\.formation_min_inter_drone_distance\);\s*"
+        r".*?"
+        r"\}\s*"
         r"auto\s+fs\s*=\s*followers\[i\]\.get_state\(\);",
         source,
         flags=re.DOTALL,
     )
+
+
+def test_cpp_report_embeds_realtime_error_curve_from_visualizer():
+    warehouse_main = read("cpp/src/warehouse_main.cpp")
+    reporter = read("experiments/result_reporter.py")
+
+    assert '#include "visualization.hpp"' in warehouse_main
+    assert "SimulationVisualizer visualizer(output_path.parent_path().string());" in warehouse_main
+    assert "visualizer.plot_all(result)" in warehouse_main
+    assert "figure_paths.find(\"error_3d\")" in warehouse_main
+    assert "realtime_error_path = target_dir / \"error_realtime_3d.png\"" in reporter
+    assert "Real-time Error Curves" in reporter
+    assert "![Real-time error components](error_realtime_3d.png)" in reporter
+
+
+def test_cpp_realtime_error_plot_draws_axes_and_ticks():
+    source = read("cpp/src/visualization.cpp")
+
+    assert "draw_error_axes_svg(" in source
+    assert "draw_error_axes_png(" in source
+    assert "draw_text_5x7(" in source
+    assert "draw_text_centered_5x7(" in source
+    assert "draw_text_right_5x7(" in source
+    assert "const double x_axis_y = y0 + subplot_h;" in source
+    assert "const double y_axis_x = left;" in source
+    assert "error-axis" in source
+    assert "error-tick" in source
+    assert "format_double(tick, 1)" in source
+    assert "format_double(tick, 2)" in source
+    assert "draw_error_axes_png(&image, comp_bounds[comp], left, y0, plot_w, subplot_h);" in source
+    assert "draw_error_axes_svg(svg, comp_bounds[comp], left, y0, plot_w, subplot_h);" in source
+
+
+def test_cpp_formation_safety_decouples_leader_from_follower_apf_feedback():
+    source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "leader_other_positions = follower_positions_now;" in source
+    assert "if (config_.formation_safety_enabled) {" in source
+    assert 'config_.initial_formation != "line" || followers.size() >= 3' in source
+    assert "leader_other_positions.clear();" in source
+    assert "Vec3 rep_acc = obstacle_repulsion_acc(ls0.position, target, leader_other_positions);" in source
 
 
 def test_cpp_config_exposes_adaptive_interval_fields():
@@ -347,6 +482,7 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     assert "FormationSafetyMetrics safety_metrics;" in result_header
     assert "DownwashZone downwash_zone(" in safety_source
     assert "bool nominal_target_ready_for_recovery(" in safety_source
+    assert "constexpr double kMinEffectiveDownwashDz = 0.10;" in safety_source
     assert "sim::is_in_downwash_zone(" in safety_probe
     assert "sim::min_inter_drone_distance(" in safety_probe
     assert "sim::nominal_target_ready_for_recovery(" in safety_probe

@@ -25,6 +25,7 @@ ArrayLike = np.ndarray
 SignedDistanceFn = Callable[[ArrayLike], float]
 SegmentSafeFn = Callable[[ArrayLike, float], bool]
 ProjectToFreeFn = Callable[..., ArrayLike]
+MIN_EFFECTIVE_DOWNWASH_DZ = 0.10
 
 
 @dataclass(frozen=True)
@@ -77,7 +78,7 @@ def is_in_downwash_zone(
     upper = np.asarray(upper, dtype=float)
     lower = np.asarray(lower, dtype=float)
     dz = float(upper[2] - lower[2])
-    if dz <= 0.0 or dz > zone.height:
+    if dz <= MIN_EFFECTIVE_DOWNWASH_DZ or dz > zone.height:
         return False
     lateral = float(np.linalg.norm(upper[:2] - lower[:2]))
     return lateral <= zone.radius

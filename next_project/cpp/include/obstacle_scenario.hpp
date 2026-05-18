@@ -127,6 +127,7 @@ public:
     std::unique_ptr<FormationAPF> build_formation_apf() const;
     std::vector<Vec3> enforce_path_clearance(const std::vector<Vec3>& path, double min_clearance);
     bool project_drone_state_to_safe(Drone& drone, double min_clearance);
+    bool project_drone_state_from_neighbors(Drone& drone, const std::vector<Vec3>& reserved_positions, double min_distance);
     // Returns the minimum SDF clearance sampled along every segment of a candidate path.
     // Stops early once the sampled clearance falls below min_clearance.
     double path_segment_clearance(const std::vector<Vec3>& path, double min_clearance) const;
