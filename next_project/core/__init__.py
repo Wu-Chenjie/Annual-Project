@@ -14,6 +14,7 @@ from .topology import FormationTopology
 from .obstacles import AABB, Sphere, Cylinder, ObstacleField, OccupancyGrid
 from .sensors import RangeSensor6
 from .map_loader import load_from_json, load_from_npz
+from .model_importer import import_model, import_model_to_grid
 from .artificial_potential_field import ImprovedArtificialPotentialField
 from .formation_safety import (
     FormationSafetyConfig,
@@ -50,6 +51,8 @@ __all__ = [
     "RangeSensor6",
     "load_from_json",
     "load_from_npz",
+    "import_model",
+    "import_model_to_grid",
     "AStar",
     "TurnConstrainedAStar",
     "HybridAStar",

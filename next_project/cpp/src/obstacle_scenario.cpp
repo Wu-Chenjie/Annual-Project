@@ -138,6 +138,12 @@ void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
 
+    esdf_.build(grid_);  // 构建 ESDF 距离场
+    obstacles_.set_sdf_callback(
+        [](const void* ctx, double x, double y, double z) -> double {
+            return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
+        }, &esdf_);  // 注入 ESDF 回调，所有 signed_distance 自动 O(1)
+
     if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
     } else {
@@ -173,6 +179,12 @@ void ObstacleScenarioSimulation::setup_obstacles() {
     grid_ = OccupancyGrid::from_obstacles(planning_field, bounds[0], extent, config_.planner_resolution);
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
+
+    esdf_.build(grid_);  // 构建 ESDF 距离场
+    obstacles_.set_sdf_callback(
+        [](const void* ctx, double x, double y, double z) -> double {
+            return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
+        }, &esdf_);  // 注入 ESDF 回调
 
     if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
         sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
@@ -996,18 +1008,10 @@ std::vector<Vec3> ObstacleScenarioSimulation::enforce_path_clearance(
 bool ObstacleScenarioSimulation::project_drone_state_to_safe(Drone& drone, double min_clearance) {
     const KinematicState state = drone.get_state();
     const Vec3 pos = state.position;
-    const double sd = obstacles_.signed_distance(pos);
+    const double sd = esdf_.signed_distance(pos);  // ESDF O(1) 查表
     if (sd >= min_clearance) return false;
 
-    const double eps = 0.03;
-    Vec3 grad{
-        (obstacles_.signed_distance(pos + Vec3{eps, 0.0, 0.0})
-         - obstacles_.signed_distance(pos - Vec3{eps, 0.0, 0.0})) / (2.0 * eps),
-        (obstacles_.signed_distance(pos + Vec3{0.0, eps, 0.0})
-         - obstacles_.signed_distance(pos - Vec3{0.0, eps, 0.0})) / (2.0 * eps),
-        (obstacles_.signed_distance(pos + Vec3{0.0, 0.0, eps})
-         - obstacles_.signed_distance(pos - Vec3{0.0, 0.0, eps})) / (2.0 * eps),
-    };
+    Vec3 grad = esdf_.gradient(pos);  // 预计算梯度，替代 6 次 signed_distance 中心差分
 
     Vec3 normal{};
     Vec3 corrected = pos;
@@ -1035,7 +1039,7 @@ bool ObstacleScenarioSimulation::project_drone_state_to_safe(Drone& drone, doubl
                             static_cast<double>(iy) * step,
                             static_cast<double>(iz) * step,
                         };
-                        if (obstacles_.signed_distance(candidate) < min_clearance) continue;
+                        if (esdf_.signed_distance(candidate) < min_clearance) continue;
                         Vec3 delta = candidate - pos;
                         const double score = norm(delta) + 0.05 * std::abs(delta.z);
                         if (score < best_score) {
@@ -1149,7 +1153,7 @@ double ObstacleScenarioSimulation::planning_signed_distance(const Vec3& point) c
             ? -grid_.resolution
             : std::numeric_limits<double>::infinity();
     }
-    return obstacles_.signed_distance(point);
+    return esdf_.signed_distance(point);  // ESDF O(1) 查表
 }
 
 ObstacleField ObstacleScenarioSimulation::build_discovered_obstacle_field() const {

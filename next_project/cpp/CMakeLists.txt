@@ -24,6 +24,7 @@ set(CORE_SOURCES
     src/drone.cpp
     src/occupancy_grid.cpp
     src/map_loader.cpp
+    src/model_importer.cpp
     src/firi.cpp
     src/visibility_graph.cpp
     src/gnn_planner.cpp
@@ -62,3 +63,7 @@ set_target_properties(sim_apf_formation_probe PROPERTIES CXX_SCAN_FOR_MODULES OF
 add_executable(sim_formation_safety_probe src/formation_safety_probe.cpp)
 target_link_libraries(sim_formation_safety_probe PRIVATE sim_core)
 set_target_properties(sim_formation_safety_probe PROPERTIES CXX_SCAN_FOR_MODULES OFF)
+
+add_executable(sim_scene_3dgs src/scene_3dgs_main.cpp)
+target_link_libraries(sim_scene_3dgs PRIVATE sim_core)
+set_target_properties(sim_scene_3dgs PROPERTIES CXX_SCAN_FOR_MODULES OFF)

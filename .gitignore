@@ -54,23 +54,34 @@ reports/
 Thumbs.db
 *.code-workspace
 
-# === AI assistants (generated cache) ===
+# === AI assistants ===
 .claude/
 .spec-workflow/
 
-# === Local settings / secrets ===
+# === Secrets & local config ===
 .env*
 *settings.local*
 *credentials*
 *secret*
 
-# === Large binaries ===
+# === Large data files ===
 *.pdf
 *.pptx
 *.zip
 *.ndb
+*.ply
+*.pth
+*.pcd
+*.las
+*.laz
+*.xyz
+*.pts
+*.ptx
+*.npz
 论文.Attachments/
-references/papers/
+
+# === Generated maps from model import ===
+next_project/maps/scene_3dgs_imported.json
 
 # === Photogrammetry artifacts ===
 experiments/photogrammetry/reconstruction/
@@ -80,9 +91,8 @@ DensifyPointCloud-*.log
 RefineMesh-*.log
 TextureMesh-*.log
 
-# === Temp ===
+# === Temp & log ===
 *.tmp
 *.log
 *.err
-*.out
 *.prof

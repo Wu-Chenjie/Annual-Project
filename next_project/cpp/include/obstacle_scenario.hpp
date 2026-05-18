@@ -6,6 +6,7 @@
 
 #include "artificial_potential_field.hpp"
 #include "astar_planner.hpp"
+#include "esdf_grid.hpp"
 #include "fault_detector.hpp"
 #include "firi.hpp"
 #include "formation_safety.hpp"
@@ -173,6 +174,7 @@ public:
     ObstacleField discovered_obstacles_;  // sensor-discovered only, grows during flight
     std::array<Vec3, 2> map_bounds_{};
     OccupancyGrid grid_;
+    ESDFGrid esdf_;
     std::unique_ptr<SDFAwareGrid> sdf_grid_;
     std::unique_ptr<WindowReplanner> replanner_;
     std::unique_ptr<RangeSensor6> sensor_;

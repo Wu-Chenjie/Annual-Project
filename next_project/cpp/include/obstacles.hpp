@@ -88,7 +88,12 @@ public:
         return ids_.back();
     }
 
+    // 设置外部距离查询回调（如 ESDF），设置后 signed_distance 走 O(1) 回调
+    using SDFCallback = double (*)(const void* ctx, double x, double y, double z);
+    void set_sdf_callback(SDFCallback cb, const void* ctx) { sdf_cb_ = cb; sdf_ctx_ = ctx; }
+
     [[nodiscard]] double signed_distance(const Vec3& p) const {
+        if (sdf_cb_) return sdf_cb_(sdf_ctx_, p.x, p.y, p.z);  // O(1) 回调
         if (obstacles_.empty()) return std::numeric_limits<double>::infinity();
         double min_sd = std::numeric_limits<double>::infinity();
         for (const auto& obs : obstacles_) {
@@ -139,6 +144,8 @@ private:
         return "dyn_" + std::to_string(dyn_counter_++);
     }
 
+    SDFCallback sdf_cb_ = nullptr;
+    const void* sdf_ctx_ = nullptr;
     std::vector<ObstacleVariant> obstacles_;
     std::vector<std::string> ids_;
     int dyn_counter_ = 0;
