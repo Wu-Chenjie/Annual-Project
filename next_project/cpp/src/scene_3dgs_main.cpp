@@ -3,17 +3,14 @@
 #include <ctime>
 #include <cstdlib>
 #include <filesystem>
-#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <variant>
 
 #include "model_importer.hpp"
 #include "obstacle_scenario.hpp"
-#include "obstacles.hpp"
-#include "json_writer.hpp"
+#include "result_writer.hpp"
 #include "visualization.hpp"
 
 namespace {
@@ -96,7 +93,9 @@ int main(int argc, char** argv) {
     auto t4 = now();
     auto result = sim.run();
     auto t5 = now();
-    std::cout << sec(t4,t5) << "s\n";
+    double planning_s = sec(t2, t3);
+    double sim_s = sec(t4, t5);
+    std::cout << sim_s << "s\n";
 
     // 结果
     std::cout << "\n航点: " << result.completed_waypoint_count << "/" << config.waypoints.size() << "\n";
@@ -116,175 +115,19 @@ int main(int argc, char** argv) {
     for (const auto& [k,v] : figs) std::cout << k << ": " << v << "\n";
     std::cout << "output: " << run_dir.string() << "\n";
 
-    // [5] 写 sim_result.json + 调 Python 生成 report.md
-    {
-        namespace fs = std::filesystem;
-        fs::create_directories(run_dir);
-        auto json_path = run_dir / "sim_result.json";
-        std::ofstream out(json_path);
-        if (out) {
-            using sim::JsonWriter;
-            JsonWriter w(out);
-            double overall_mean = 0.0, overall_max = 0.0, overall_final = 0.0;
-            if (!result.metrics.mean.empty()) {
-                for (double v : result.metrics.mean) overall_mean += v;
-                overall_mean /= static_cast<double>(result.metrics.mean.size());
-            }
-            if (!result.metrics.max.empty()) {
-                for (double v : result.metrics.max)
-                    overall_max = std::max(overall_max, v);
-            }
-            if (!result.metrics.final.empty()) {
-                for (double v : result.metrics.final) overall_final += v;
-                overall_final /= static_cast<double>(result.metrics.final.size());
-            }
+    // [5] 写 sim_result.json + 调 Python 生成 report.md (复用 result_writer.hpp)
+    auto json_path = run_dir / "sim_result.json";
+    sim::write_result_json(json_path, result, planning_s, sim_s, "scene_3dgs", config, field, bounds);
+    std::cout << "结果文件: " << json_path.string() << "\n";
 
-            w.begin_object();
-            w.key("schema_version").value("1.0.0");
-            w.key("preset").value("scene_3dgs");
-            w.key("runtime_engine").value("cpp");
-            w.key("completed_waypoint_count").value(result.completed_waypoint_count);
-            w.key("runtime_s").value(sec(t2,t3) + sec(t4,t5));
-
-            w.key("config_snapshot").begin_object();
-            w.key("num_followers").value(config.num_followers);
-            w.key("initial_formation").value(config.initial_formation);
-            w.key("leader_max_vel").value(config.leader_max_vel);
-            w.key("leader_max_acc").value(config.leader_max_acc);
-            w.key("planner_kind").value(config.planner_kind);
-            w.key("planner_mode").value(config.planner_mode);
-            w.key("planner_resolution").value(config.planner_resolution);
-            w.key("planner_replan_interval").value(config.planner_replan_interval);
-            w.key("planner_horizon").value(config.planner_horizon);
-            w.key("safety_margin").value(config.safety_margin);
-            w.key("sensor_enabled").value(config.sensor_enabled);
-            w.key("danger_mode_enabled").value(config.danger_mode_enabled);
-            w.key("apf_paper1_profile").value(config.apf_paper1_profile);
-            w.key("trajectory_optimizer_enabled").value(config.trajectory_optimizer_enabled);
-            w.end_object();
-
-            w.key("task_waypoints").array_vec3(result.task_waypoints);
-            w.key("planned_path").array_vec3(result.planned_path);
-            w.key("executed_path").array_vec3(result.executed_path);
-            w.key("replanned_waypoints").array_vec3(result.replanned_waypoints);
-
-            // planning_events
-            w.key("planning_events").begin_array();
-            for (const auto& e : result.planning_events) {
-                w.begin_object();
-                w.key("t").value(e.t);
-                w.key("phase").value(e.phase);
-                w.key("planner").value(e.planner);
-                w.key("segment_index").value(e.segment_index);
-                w.key("wall_time_s").value(e.wall_time_s);
-                w.key("point_count").value(e.point_count);
-                w.key("accepted").value(e.accepted);
-                w.key("fallback_reason").value(e.fallback_reason);
-                w.end_object();
-            }
-            w.end_array();
-
-            // waypoint_events
-            w.key("waypoint_events").begin_array();
-            for (const auto& e : result.waypoint_events) {
-                w.begin_object();
-                w.key("t").value(e.t);
-                w.key("type").value(e.type);
-                w.key("index").value(e.index);
-                w.key("distance").value(e.distance);
-                w.end_object();
-            }
-            w.end_array();
-
-            // collision_log
-            w.key("collision_log").begin_array();
-            for (const auto& e : result.collision_log) {
-                w.begin_object();
-                w.key("t").value(e.t);
-                w.key("drone").value(e.drone);
-                w.key("pos").vec3(e.pos);
-                w.end_object();
-            }
-            w.end_array();
-
-            w.key("fault_log").array_string(result.fault_log);
-
-            // obstacle_model
-            {
-                const auto& variants = field.obstacles();
-                const auto& ids = field.ids();
-                w.key("obstacle_model").begin_object();
-                w.key("bounds").begin_array();
-                w.vec3(bounds[0]);
-                w.vec3(bounds[1]);
-                w.end_array();
-                w.key("primitives").begin_array();
-                for (std::size_t i = 0; i < variants.size(); ++i) {
-                    const auto& primitive = variants[i];
-                    w.begin_object();
-                    w.key("id").value(i < ids.size() ? ids[i] : ("obs_" + std::to_string(i)));
-                    if (std::holds_alternative<sim::AABB>(primitive)) {
-                        const auto& box = std::get<sim::AABB>(primitive);
-                        w.key("type").value("aabb");
-                        w.key("min").vec3(box.min_corner);
-                        w.key("max").vec3(box.max_corner);
-                    } else if (std::holds_alternative<sim::Sphere>(primitive)) {
-                        const auto& sphere = std::get<sim::Sphere>(primitive);
-                        w.key("type").value("sphere");
-                        w.key("center").vec3(sphere.center);
-                        w.key("radius").value(sphere.radius);
-                    } else if (std::holds_alternative<sim::Cylinder>(primitive)) {
-                        const auto& cylinder = std::get<sim::Cylinder>(primitive);
-                        w.key("type").value("cylinder");
-                        w.key("center").vec3(cylinder.center_xy);
-                        w.key("radius").value(cylinder.radius);
-                        w.key("z_min").value(cylinder.z_min);
-                        w.key("z_max").value(cylinder.z_max);
-                    }
-                    w.end_object();
-                }
-                w.end_array();
-                w.end_object();
-            }
-
-            w.key("metrics").begin_object();
-            w.key("mean").array_double(result.metrics.mean);
-            w.key("max").array_double(result.metrics.max);
-            w.key("final").array_double(result.metrics.final);
-            w.end_object();
-
-            w.key("summary").begin_object();
-            w.key("mean_error_overall").value(overall_mean);
-            w.key("max_error_overall").value(overall_max);
-            w.key("final_error_overall").value(overall_final);
-            w.key("collision_count").value(static_cast<int>(result.collision_log.size()));
-            w.key("replan_count").value(static_cast<int>(result.planning_events.size()));
-            w.key("fault_count").value(static_cast<int>(result.fault_log.size()));
-            w.key("planned_path_length").value(static_cast<int>(result.planned_path.size()));
-            w.key("executed_path_length").value(static_cast<int>(result.executed_path.size()));
-            w.end_object();
-
-            w.key("safety_metrics").begin_object();
-            w.key("min_inter_drone_distance").value(result.safety_metrics.min_inter_drone_distance);
-            w.key("downwash_hits").value(result.safety_metrics.downwash_hits);
-            w.end_object();
-
-            w.end_object();
-            out << "\n";
-            out.close();
-            std::cout << "结果文件: " << json_path.string() << "\n";
-
-            // 调 Python 报告管道
-            std::string rel = json_path.string();
-            std::string cmd = "python \"../experiments/report_cpp_results.py\" \"" + rel + "\"";
-            std::cout << "生成报告: " << std::flush;
-            int ret = std::system(cmd.c_str());
-            if (ret == 0) {
-                std::cout << (run_dir / "cpp_report.md").string() << "\n";
-            } else {
-                std::cout << "跳过 (code=" << ret << ")\n";
-            }
-        }
+    std::string rel = json_path.string();
+    std::string cmd = "python \"../experiments/report_cpp_results.py\" \"" + rel + "\"";
+    std::cout << "生成报告: " << std::flush;
+    int ret = std::system(cmd.c_str());
+    if (ret == 0) {
+        std::cout << (run_dir / "cpp_report.md").string() << "\n";
+    } else {
+        std::cout << "跳过 (code=" << ret << ")\n";
     }
 
     return 0;
