@@ -12,6 +12,58 @@ def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
+def test_cpp_esdf_grid_declares_class_and_methods_outside_comments():
+    source = read("cpp/include/esdf_grid.hpp")
+
+    for pattern in (
+        "\nclass ESDFGrid {",
+        "\n    void build(",
+        "\n    [[nodiscard]] double signed_distance(",
+        "\n        struct Nb {",
+    ):
+        assert pattern in source
+
+
+def test_cpp_model_importer_has_no_code_hidden_in_comment_lines():
+    source = read("cpp/src/model_importer.cpp")
+
+    for pattern in (
+        "\n        std::size_t vertex_data_size",
+        "\n        std::size_t offset",
+        "\n    for (const auto& v : shifted)",
+        "\n    auto ext_pos = filepath.rfind",
+    ):
+        assert pattern in source
+
+
+def test_cpp_obstacles_includes_type_traits_for_bounds_variant_dispatch():
+    source = read("cpp/include/obstacles.hpp")
+
+    assert "#include <type_traits>" in source
+    assert "std::decay_t" in source
+    assert "std::is_same_v" in source
+
+
+def test_cpp_json_writer_escapes_control_characters():
+    source = read("cpp/include/json_writer.hpp")
+
+    for escaped in ("\\\\n", "\\\\r", "\\\\t", "\\\\b", "\\\\f"):
+        assert escaped in source
+    assert "static_cast<unsigned char>" in source
+
+
+def test_cpp_report_pipeline_is_opt_in():
+    result_writer = read("cpp/include/result_writer.hpp")
+    warehouse_main = read("cpp/src/warehouse_main.cpp")
+    scene_main = read("cpp/src/scene_3dgs_main.cpp")
+
+    assert "bool enabled" in result_writer
+    assert "if (!enabled) return false;" in result_writer
+    assert "--report" in warehouse_main
+    assert "run_report_pipeline(output_path, cli.report)" in warehouse_main
+    assert "run_report_pipeline(json_path, report_enabled)" in scene_main
+
+
 def config_body(name: str) -> str:
     match = re.search(
         rf"inline ObstacleConfig {name}\(\) \{{(?P<body>.*?)\n\}}",

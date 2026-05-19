@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
 
     if (argc < 2) {
         std::cerr << "usage: sim_scene_3dgs <model.ply|model.obj|model.stl> "
-                  << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000]\n";
+                  << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000] [--report]\n";
         return 2;
     }
     const std::string model_path = argv[1];
@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
     const double model_scale = (argc > 3) ? std::stod(argv[3]) : 1.0;
     const double padding = (argc > 4) ? std::stod(argv[4]) : 0.5;
     const int max_obstacles = (argc > 5) ? std::stoi(argv[5]) : 10000;
+    const bool report_enabled = argc > 6 && std::string(argv[6]) == "--report";
 
     // [1] import
     std::cout << "[1] import_model... " << std::flush;
@@ -105,7 +106,7 @@ int main(int argc, char** argv) {
     auto json_path = run_dir / "sim_result.json";
     sim::write_result_json(json_path, result, planning_s, sim_s, "scene_3dgs", config, field, bounds);
     std::cout << "结果文件: " << json_path.string() << "\n";
-    run_report_pipeline(json_path);
+    run_report_pipeline(json_path, report_enabled);
 
     return 0;
 }

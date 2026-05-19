@@ -37,9 +37,10 @@ inline std::string timestamp_dir_name() {
     return oss.str();
 }
 
-inline void run_report_pipeline(const std::filesystem::path& json_path) {
+inline bool run_report_pipeline(const std::filesystem::path& json_path, bool enabled) {
+    if (!enabled) return false;
     std::string rel = json_path.string();
-    std::cout << "生成报告: " << std::flush;
+    std::cout << "Generating report: " << std::flush;
     int ret = -1;
     for (const char* script : {"../experiments/report_cpp_results.py",
                                 "../../experiments/report_cpp_results.py"}) {
@@ -50,8 +51,9 @@ inline void run_report_pipeline(const std::filesystem::path& json_path) {
     if (ret == 0) {
         std::cout << (json_path.parent_path() / "cpp_report.md").string() << "\n";
     } else {
-        std::cout << "跳过 (python 不可用, code=" << ret << ")\n";
+        std::cout << "skip report generation (python unavailable or report command failed, code=" << ret << ")\n";
     }
+    return ret == 0;
 }
 
 namespace sim {

@@ -93,6 +93,7 @@ struct CliOptions {
     std::string preset = "warehouse";
     std::string map_file_override;
     double max_sim_time = -1.0;
+    bool report = false;
 };
 
 CliOptions parse_cli(int argc, char* argv[]) {
@@ -105,6 +106,8 @@ CliOptions parse_cli(int argc, char* argv[]) {
             options.map_file_override = argv[++i];
         } else if (arg == "--max-sim-time" && i + 1 < argc) {
             options.max_sim_time = std::stod(argv[++i]);
+        } else if (arg == "--report") {
+            options.report = true;
         } else if (arg.rfind("--", 0) != 0) {
             options.preset = arg;
         }
@@ -186,6 +189,6 @@ int main(int argc, char* argv[]) {
     }
     std::cout << "结果文件: " << output_path.string() << "\n";
 
-    run_report_pipeline(output_path);
+    run_report_pipeline(output_path, cli.report);
     return 0;
 }

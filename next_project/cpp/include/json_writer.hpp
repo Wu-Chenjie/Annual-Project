@@ -222,9 +222,23 @@ public:
 private:
     void dump_string(const std::string& v) {
         os_ << "\"";
-        for (char c : v) {
-            if (c == '"' || c == '\\') os_ << "\\";
-            os_ << c;
+        for (char raw : v) {
+            unsigned char c = static_cast<unsigned char>(raw);
+            switch (c) {
+            case '"': os_ << "\\\""; break;
+            case '\\': os_ << "\\\\"; break;
+            case '\n': os_ << "\\n"; break;
+            case '\r': os_ << "\\r"; break;
+            case '\t': os_ << "\\t"; break;
+            case '\b': os_ << "\\b"; break;
+            case '\f': os_ << "\\f"; break;
+            default:
+                if (c < 0x20) {
+                    os_ << "\\u00" << "0123456789abcdef"[c >> 4] << "0123456789abcdef"[c & 0x0f];
+                } else {
+                    os_ << static_cast<char>(c);
+                }
+            }
         }
         os_ << "\"";
     }
