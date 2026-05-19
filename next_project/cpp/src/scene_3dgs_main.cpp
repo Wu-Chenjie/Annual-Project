@@ -1,7 +1,9 @@
 #include <chrono>
+#include <cmath>
 #include <ctime>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -111,5 +113,95 @@ int main(int argc, char** argv) {
     auto figs = vis.plot_all(result);
     for (const auto& [k,v] : figs) std::cout << k << ": " << v << "\n";
     std::cout << "output: " << run_dir.string() << "\n";
+
+    // [5] 写 sim_result.json + 调 Python 生成 report.md
+    {
+        namespace fs = std::filesystem;
+        fs::create_directories(run_dir);
+        auto json_path = run_dir / "sim_result.json";
+        std::ofstream out(json_path);
+        if (out) {
+            using sim::JsonWriter;
+            JsonWriter w(out);
+            double overall_mean = 0.0, overall_max = 0.0, overall_final = 0.0;
+            if (!result.metrics.mean.empty()) {
+                for (double v : result.metrics.mean) overall_mean += v;
+                overall_mean /= static_cast<double>(result.metrics.mean.size());
+            }
+            if (!result.metrics.max.empty()) {
+                for (double v : result.metrics.max)
+                    overall_max = std::max(overall_max, v);
+            }
+            if (!result.metrics.final.empty()) {
+                for (double v : result.metrics.final) overall_final += v;
+                overall_final /= static_cast<double>(result.metrics.final.size());
+            }
+
+            w.begin_object();
+            w.key("schema_version").value("1.0.0");
+            w.key("preset").value("scene_3dgs");
+            w.key("runtime_engine").value("cpp");
+            w.key("completed_waypoint_count").value(result.completed_waypoint_count);
+            w.key("runtime_s").value(sec(t2,t3) + sec(t4,t5));
+
+            w.key("config_snapshot").begin_object();
+            w.key("num_followers").value(config.num_followers);
+            w.key("initial_formation").value(config.initial_formation);
+            w.key("leader_max_vel").value(config.leader_max_vel);
+            w.key("leader_max_acc").value(config.leader_max_acc);
+            w.key("planner_kind").value(config.planner_kind);
+            w.key("planner_mode").value(config.planner_mode);
+            w.key("planner_resolution").value(config.planner_resolution);
+            w.key("planner_replan_interval").value(config.planner_replan_interval);
+            w.key("planner_horizon").value(config.planner_horizon);
+            w.key("safety_margin").value(config.safety_margin);
+            w.key("sensor_enabled").value(config.sensor_enabled);
+            w.key("danger_mode_enabled").value(config.danger_mode_enabled);
+            w.key("apf_paper1_profile").value(config.apf_paper1_profile);
+            w.key("trajectory_optimizer_enabled").value(config.trajectory_optimizer_enabled);
+            w.end_object();
+
+            w.key("task_waypoints").array_vec3(result.task_waypoints);
+
+            w.key("metrics").begin_object();
+            w.key("mean").array_double(result.metrics.mean);
+            w.key("max").array_double(result.metrics.max);
+            w.key("final").array_double(result.metrics.final);
+            w.end_object();
+
+            w.key("summary").begin_object();
+            w.key("mean_error_overall").value(overall_mean);
+            w.key("max_error_overall").value(overall_max);
+            w.key("final_error_overall").value(overall_final);
+            w.key("collision_count").value(static_cast<int>(result.collision_log.size()));
+            w.key("replan_count").value(static_cast<int>(result.planning_events.size()));
+            w.key("fault_count").value(static_cast<int>(result.fault_log.size()));
+            w.key("planned_path_length").value(static_cast<int>(result.planned_path.size()));
+            w.key("executed_path_length").value(static_cast<int>(result.executed_path.size()));
+            w.end_object();
+
+            w.key("safety_metrics").begin_object();
+            w.key("min_inter_drone_distance").value(result.safety_metrics.min_inter_drone_distance);
+            w.key("downwash_hits").value(result.safety_metrics.downwash_hits);
+            w.end_object();
+
+            w.end_object();
+            out << "\n";
+            out.close();
+            std::cout << "结果文件: " << json_path.string() << "\n";
+
+            // 调 Python 报告管道
+            std::string rel = json_path.string();
+            std::string cmd = "python \"../experiments/report_cpp_results.py\" \"" + rel + "\"";
+            std::cout << "生成报告: " << std::flush;
+            int ret = std::system(cmd.c_str());
+            if (ret == 0) {
+                std::cout << (run_dir / "cpp_report.md").string() << "\n";
+            } else {
+                std::cout << "跳过 (code=" << ret << ")\n";
+            }
+        }
+    }
+
     return 0;
 }
