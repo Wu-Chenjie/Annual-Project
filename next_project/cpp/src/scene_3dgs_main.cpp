@@ -97,7 +97,14 @@ int main(int argc, char** argv) {
     // 结果
     std::cout << "\n航点: " << result.completed_waypoint_count << "/" << config.waypoints.size() << "\n";
     for (size_t i = 0; i < result.metrics.mean.size(); ++i)
-        std::cout << "F" << (i+1) << ": mean=" << result.metrics.mean[i] << " max=" << result.metrics.max[i] << "\n";
+        std::cout << "F" << (i+1) << ": mean=" << result.metrics.mean[i] << " max=" << result.metrics.max[i] << " final=" << result.metrics.final[i] << "\n";
+    std::cout << "碰撞: " << result.collision_log.size()
+              << "  重规划: " << result.planning_events.size()
+              << "  故障: " << result.fault_log.size() << "\n";
+    std::cout << "规划路径: " << result.planned_path.size() << "pts"
+              << "  执行路径: " << result.executed_path.size() << "pts"
+              << "  安全间距: " << result.safety_metrics.min_inter_drone_distance << "m"
+              << "  downwash: " << result.safety_metrics.downwash_hits << "\n";
 
     const auto run_dir = std::filesystem::path("outputs") / "scene_3dgs_cpp" / timestamp_dir_name();
     SimulationVisualizer vis(run_dir.string());
