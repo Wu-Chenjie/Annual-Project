@@ -250,7 +250,7 @@ Expected: tests pass and previous zero-collision scenario remains unchanged.
 - Test: `next_project/tests/test_metrics_extractor.py`
 - Test: `next_project/tests/test_obstacle_scenario.py`
 
-- [ ] **Step 1: Add tests for new metrics**
+- [x] **Step 1: Add tests for new metrics**
 
 Extend metrics tests to expect numeric fields:
 
@@ -266,7 +266,7 @@ def test_metrics_extractor_includes_planning_perf_fields():
     assert metrics["planning_event_count"] == 1
 ```
 
-- [ ] **Step 2: Record planner wall time**
+- [x] **Step 2: Record planner wall time**
 
 Around existing online/offline planning calls, record:
 
@@ -278,7 +278,7 @@ wall_time_ms = (time.perf_counter() - start) * 1000.0
 
 Append planner type, phase, path point count, accepted/rejected status.
 
-- [ ] **Step 3: Record clearance/SDF query counters**
+- [x] **Step 3: Record clearance/SDF query counters**
 
 Add simple counters on `ObstacleScenarioSimulation`:
 
@@ -289,7 +289,7 @@ self._clearance_check_count = 0
 
 Increment them inside `_planning_signed_distance()` and `_path_segment_clearance()`.
 
-- [ ] **Step 4: Include counters in results**
+- [x] **Step 4: Include counters in results**
 
 Add fields to result payload:
 
@@ -300,7 +300,7 @@ Add fields to result payload:
 }
 ```
 
-- [ ] **Step 5: Verify PR 4**
+- [x] **Step 5: Verify PR 4**
 
 Run:
 

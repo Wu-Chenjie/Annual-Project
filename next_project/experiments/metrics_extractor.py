@@ -106,6 +106,16 @@ def extract_metrics(sim_result: Mapping[str, Any]) -> dict[str, float | int | st
     metrics["rrt_escape_attempt_count"] = event_kinds.count("rrt_escape_attempt")
     metrics["rrt_escape_accepted_count"] = event_kinds.count("rrt_escape_accepted")
     metrics["rrt_escape_failed_count"] = event_kinds.count("rrt_escape_failed")
+    planning_events = [
+        event for event in (sim_result.get("planning_events") or [])
+        if isinstance(event, Mapping)
+    ]
+    metrics["planning_event_count"] = len(planning_events)
+    metrics["planning_wall_time_ms_total"] = _planning_wall_time_ms_total(planning_events)
+    metrics["planning_path_points_total"] = sum(_event_path_points(event) for event in planning_events)
+    counters = sim_result.get("performance_counters") or {}
+    metrics["sdf_query_count"] = int(counters.get("sdf_query_count") or 0)
+    metrics["clearance_check_count"] = int(counters.get("clearance_check_count") or 0)
     return metrics
 
 
@@ -261,6 +271,27 @@ def _summary_or_aggregate(summary: Mapping[str, Any], key: str, values: list[flo
     if mode == "max":
         return float(np.max(values))
     return float(np.mean(values))
+
+
+def _planning_wall_time_ms_total(events: list[Mapping[str, Any]]) -> float:
+    total = 0.0
+    for event in events:
+        wall_time_ms = _float_or_none(event.get("wall_time_ms"))
+        if wall_time_ms is not None:
+            total += wall_time_ms
+            continue
+        wall_time_s = _float_or_none(event.get("wall_time_s"))
+        if wall_time_s is not None:
+            total += wall_time_s * 1000.0
+    return float(total)
+
+
+def _event_path_points(event: Mapping[str, Any]) -> int:
+    value = event.get("path_points", event.get("point_count"))
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
 
 
 __all__ = ["extract_metrics", "extract_metrics_file"]

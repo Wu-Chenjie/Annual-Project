@@ -484,6 +484,8 @@ def test_online_mode_preserves_task_waypoint_semantics():
     assert len(result["task_waypoints"]) == 3
     assert result["completed_waypoint_count"] <= 3
     assert len(result["replanned_waypoints"]) >= 2
+    assert result["performance_counters"]["sdf_query_count"] >= 0
+    assert result["performance_counters"]["clearance_check_count"] >= 0
 
 
 def test_named_offline_presets_are_offline():

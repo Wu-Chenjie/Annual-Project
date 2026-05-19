@@ -80,6 +80,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
         first_wp = config.waypoints[0] if config.waypoints else np.zeros(3)
         self.planned_trajectory = None
         self.planning_events: list[dict] = []
+        self._sdf_query_count = 0
+        self._clearance_check_count = 0
         super().__init__(config=config)
         arm_length = float(getattr(self.drone_params, "arm_length", 0.2))
         self._collision_margin = arm_length + config.safety_margin * config.detect_margin_scale
@@ -248,10 +250,20 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
     def _planning_signed_distance(self, point: np.ndarray) -> float:
         """Signed distance visible to the planner, not necessarily the full truth map."""
+        self._sdf_query_count += 1
         if getattr(self, "_planner_initial_map_unknown", False):
             idx = self.grid.world_to_index(np.asarray(point, dtype=float))
             return -float(self.grid.resolution) if self.grid.is_occupied(idx) else float("inf")
         return float(self.obstacles.signed_distance(np.asarray(point, dtype=float)))
+
+    @staticmethod
+    def _planning_event_payload(event: dict) -> dict:
+        payload = dict(event)
+        if "wall_time_ms" not in payload and "wall_time_s" in payload:
+            payload["wall_time_ms"] = float(payload["wall_time_s"]) * 1000.0
+        if "path_points" not in payload and "point_count" in payload:
+            payload["path_points"] = int(payload["point_count"])
+        return payload
 
     # ------------------------------------------------------------------
     # 完全未知模式：从传感器发现的栅格构建动态障碍场
@@ -848,6 +860,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
     def _path_segment_clearance(self, path: np.ndarray, min_clearance: float, spacing: float | None = None) -> float:
         """返回路径线段采样得到的最小 SDF 间隙。"""
+        self._clearance_check_count += 1
         path = np.asarray(path, dtype=float)
         if self._formation_clearance_enabled():
             policy = self._make_formation_clearance_policy(min_clearance)
@@ -2190,7 +2203,11 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "planned_trajectory": None if self.planned_trajectory is None else self.planned_trajectory.to_dict(),
             "executed_path": executed_arr,
             "replan_events": self.replan_events,
-            "planning_events": self.planning_events,
+            "planning_events": [self._planning_event_payload(event) for event in self.planning_events],
+            "performance_counters": {
+                "sdf_query_count": int(self._sdf_query_count),
+                "clearance_check_count": int(self._clearance_check_count),
+            },
             "waypoint_events": waypoint_events,
             "formation_adaptation_events": self.formation_adaptation_events,
             "sensor_logs": np.array(self.sensor_logs, dtype=float) if self.sensor_logs else None,

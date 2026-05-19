@@ -112,6 +112,29 @@ def test_extract_metrics_counts_lookahead_escape_events():
     assert metrics["rrt_escape_failed_count"] == 0
 
 
+def test_metrics_extractor_includes_planning_perf_fields():
+    payload = {
+        "planning_events": [
+            {"wall_time_ms": 12.5, "planner": "astar", "path_points": 8},
+            {"wall_time_s": 0.002, "planner": "rrt_star", "point_count": 3},
+        ],
+        "performance_counters": {
+            "sdf_query_count": 7,
+            "clearance_check_count": 2,
+        },
+        "metrics": {"collision_count": 0},
+        "completed_waypoint_count": 1,
+    }
+
+    metrics = extract_metrics(payload)
+
+    assert metrics["planning_wall_time_ms_total"] == 14.5
+    assert metrics["planning_event_count"] == 2
+    assert metrics["planning_path_points_total"] == 11
+    assert metrics["sdf_query_count"] == 7
+    assert metrics["clearance_check_count"] == 2
+
+
 def test_extract_metrics_derives_trajectory_fields_without_planned_trajectory():
     payload = {
         "planned_path": [[0, 0, 0], [0, 7.5, 0]],
