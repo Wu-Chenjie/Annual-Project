@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import json
 import os
-import os
 import re
 import shutil
 import struct
@@ -36,9 +35,12 @@ import sys
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 try:
+    from config import AVAILABLE_PRESETS, load_preset_metadata
     from core.result_schema import build_web_sim_result_payload
     from core.model_importer import model_to_map_json, parse_model_bytes
 except ImportError:  # pragma: no cover
+    AVAILABLE_PRESETS = []  # type: ignore[assignment]
+    load_preset_metadata = None  # type: ignore[assignment]
     build_web_sim_result_payload = None  # type: ignore[assignment]
     model_to_map_json = None  # type: ignore[assignment]
     parse_model_bytes = None  # type: ignore[assignment]
@@ -77,28 +79,17 @@ def _resolve_executable() -> Path:
     )
 
 
-PRESETS: dict[str, str] = {
-    "basic": "基础编队验证",
-    "obstacle": "简单障碍物避障",
-    "warehouse": "工业仓库在线A*",
-    "warehouse_a": "仓库A*+ESDF+Danger",
-    "warehouse_online": "仓库在线简化版",
-    "warehouse_danger": "仓库GNN双模式",
-    "fault_tolerance": "容错测试",
-    "fault_tolerance_online": "容错在线测试",
-    "school_corridor": "学校走廊离线",
-    "school_corridor_online": "学校走廊在线",
-    "company_cubicles": "公司格子间离线",
-    "company_cubicles_online": "公司格子间在线",
-    "meeting_room": "会议室离线",
-    "meeting_room_online": "会议室在线",
-    "rrt_dual_channel_online": "RRT双通道绕行压力测试",
-    "formation_maze_stress_online": "编队迷宫压力测试",
-    "unknown_map_online": "完全未知地图在线测试",
-    "laboratory": "实验室离线",
-    "laboratory_online": "实验室在线",
-    "custom": "自定义",
-}
+def _load_web_presets() -> dict[str, str]:
+    if load_preset_metadata is None:
+        return {}
+    metadata = load_preset_metadata()
+    return {
+        preset: metadata[preset]["label"]
+        for preset in AVAILABLE_PRESETS
+    }
+
+
+PRESETS: dict[str, str] = _load_web_presets()
 
 
 def _safe_map_path(name: str) -> Path:

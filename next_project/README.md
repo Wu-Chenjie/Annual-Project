@@ -72,7 +72,8 @@ python main.py --preset meeting_room --output-dir outputs/meeting_room
 python main.py --preset warehouse_danger --max-sim-time 10 --no-plot
 ```
 
-Available presets are defined in `config.py`. 每次运行结果默认落到
+Available preset builders are defined in `config.py`; shared preset labels and
+Web metadata live in `preset_metadata.json`. 每次运行结果默认落到
 `outputs/<preset>/<timestamp>/`，可用 `--run-name` 覆盖时间戳子目录以获得稳定路径。
 
 ## Web Safety

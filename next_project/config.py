@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Callable
 
@@ -18,6 +19,7 @@ from simulations.formation_simulation import SimulationConfig
 # ============================================================
 
 PKG = Path(__file__).resolve().parent
+PRESET_METADATA_PATH = PKG / "preset_metadata.json"
 
 # 完全未知地图模式的公共参数块（所有 *_unknown 预设共享，避免逐函数复制粘贴）
 _UNKNOWN_MAP_DEFAULTS = dict(
@@ -72,6 +74,19 @@ AVAILABLE_PRESETS = [
     "laboratory_online_unknown",
     "custom",
 ]
+
+
+def load_preset_metadata() -> dict[str, dict[str, str]]:
+    """Load machine-readable preset metadata shared by CLI docs and Web."""
+    raw = json.loads(PRESET_METADATA_PATH.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError("preset metadata must be a JSON object")
+    metadata: dict[str, dict[str, str]] = {}
+    for preset, fields in raw.items():
+        if not isinstance(fields, dict):
+            raise ValueError(f"preset metadata entry {preset!r} must be an object")
+        metadata[str(preset)] = {str(key): str(value) for key, value in fields.items()}
+    return metadata
 
 
 # ============================================================

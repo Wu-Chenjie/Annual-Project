@@ -1,0 +1,187 @@
+{
+  "basic": {
+    "label": "Basic formation",
+    "mode": "offline",
+    "description": "Baseline formation tracking preset without obstacle-map stress."
+  },
+  "obstacle": {
+    "label": "Obstacle avoidance",
+    "mode": "offline",
+    "description": "Simple obstacle-avoidance scenario for offline planning checks."
+  },
+  "obstacle_unknown": {
+    "label": "Obstacle avoidance unknown map",
+    "mode": "online",
+    "description": "Simple obstacle-avoidance scenario with initially unknown map sensing."
+  },
+  "warehouse": {
+    "label": "Warehouse offline",
+    "mode": "offline",
+    "description": "Warehouse scenario using the configured offline planner stack."
+  },
+  "warehouse_a": {
+    "label": "Warehouse A offline",
+    "mode": "offline",
+    "description": "Warehouse variant with the A scenario layout and offline planning."
+  },
+  "warehouse_online": {
+    "label": "Warehouse online",
+    "mode": "online",
+    "description": "Warehouse scenario with online replanning enabled."
+  },
+  "warehouse_danger": {
+    "label": "Warehouse danger",
+    "mode": "online",
+    "description": "Warehouse scenario with danger-aware online planning behavior."
+  },
+  "warehouse_unknown": {
+    "label": "Warehouse unknown map",
+    "mode": "online",
+    "description": "Warehouse scenario with initially unknown map sensing."
+  },
+  "warehouse_a_unknown": {
+    "label": "Warehouse A unknown map",
+    "mode": "online",
+    "description": "Warehouse A variant with initially unknown map sensing."
+  },
+  "warehouse_online_unknown": {
+    "label": "Warehouse online unknown map",
+    "mode": "online",
+    "description": "Warehouse online replanning with initially unknown map sensing."
+  },
+  "warehouse_danger_unknown": {
+    "label": "Warehouse danger unknown map",
+    "mode": "online",
+    "description": "Danger-aware warehouse online planning with initially unknown map sensing."
+  },
+  "fault_tolerance": {
+    "label": "Fault tolerance offline",
+    "mode": "offline",
+    "description": "Fault-tolerance scenario for offline planning and controller checks."
+  },
+  "fault_tolerance_online": {
+    "label": "Fault tolerance online",
+    "mode": "online",
+    "description": "Fault-tolerance scenario with online replanning enabled."
+  },
+  "fault_tolerance_unknown": {
+    "label": "Fault tolerance unknown map",
+    "mode": "online",
+    "description": "Fault-tolerance scenario with initially unknown map sensing."
+  },
+  "fault_tolerance_online_unknown": {
+    "label": "Fault tolerance online unknown map",
+    "mode": "online",
+    "description": "Fault-tolerance online replanning with initially unknown map sensing."
+  },
+  "school_corridor": {
+    "label": "School corridor offline",
+    "mode": "offline",
+    "description": "School corridor layout for offline planning."
+  },
+  "school_corridor_online": {
+    "label": "School corridor online",
+    "mode": "online",
+    "description": "School corridor layout with online replanning enabled."
+  },
+  "school_corridor_unknown": {
+    "label": "School corridor unknown map",
+    "mode": "online",
+    "description": "School corridor layout with initially unknown map sensing."
+  },
+  "school_corridor_online_unknown": {
+    "label": "School corridor online unknown map",
+    "mode": "online",
+    "description": "School corridor online replanning with initially unknown map sensing."
+  },
+  "company_cubicles": {
+    "label": "Company cubicles offline",
+    "mode": "offline",
+    "description": "Company cubicles layout for offline planning."
+  },
+  "company_cubicles_online": {
+    "label": "Company cubicles online",
+    "mode": "online",
+    "description": "Company cubicles layout with online replanning enabled."
+  },
+  "company_cubicles_unknown": {
+    "label": "Company cubicles unknown map",
+    "mode": "online",
+    "description": "Company cubicles layout with initially unknown map sensing."
+  },
+  "company_cubicles_online_unknown": {
+    "label": "Company cubicles online unknown map",
+    "mode": "online",
+    "description": "Company cubicles online replanning with initially unknown map sensing."
+  },
+  "meeting_room": {
+    "label": "Meeting room offline",
+    "mode": "offline",
+    "description": "Meeting room layout for offline planning."
+  },
+  "meeting_room_online": {
+    "label": "Meeting room online",
+    "mode": "online",
+    "description": "Meeting room layout with online replanning enabled."
+  },
+  "meeting_room_unknown": {
+    "label": "Meeting room unknown map",
+    "mode": "online",
+    "description": "Meeting room layout with initially unknown map sensing."
+  },
+  "meeting_room_online_unknown": {
+    "label": "Meeting room online unknown map",
+    "mode": "online",
+    "description": "Meeting room online replanning with initially unknown map sensing."
+  },
+  "rrt_dual_channel_online": {
+    "label": "RRT dual channel online",
+    "mode": "online",
+    "description": "Dual-channel RRT online stress scenario."
+  },
+  "rrt_dual_channel_online_unknown": {
+    "label": "RRT dual channel online unknown map",
+    "mode": "online",
+    "description": "Dual-channel RRT online stress scenario with initially unknown map sensing."
+  },
+  "formation_maze_stress_online": {
+    "label": "Formation maze stress online",
+    "mode": "online",
+    "description": "Formation maze stress scenario with online replanning enabled."
+  },
+  "formation_maze_stress_online_unknown": {
+    "label": "Formation maze stress online unknown map",
+    "mode": "online",
+    "description": "Formation maze stress scenario with initially unknown map sensing."
+  },
+  "unknown_map_online": {
+    "label": "Unknown map online",
+    "mode": "online",
+    "description": "Fully unknown map scenario for online sensing and replanning."
+  },
+  "laboratory": {
+    "label": "Laboratory offline",
+    "mode": "offline",
+    "description": "Laboratory layout for offline planning."
+  },
+  "laboratory_online": {
+    "label": "Laboratory online",
+    "mode": "online",
+    "description": "Laboratory layout with online replanning enabled."
+  },
+  "laboratory_unknown": {
+    "label": "Laboratory unknown map",
+    "mode": "online",
+    "description": "Laboratory layout with initially unknown map sensing."
+  },
+  "laboratory_online_unknown": {
+    "label": "Laboratory online unknown map",
+    "mode": "online",
+    "description": "Laboratory online replanning with initially unknown map sensing."
+  },
+  "custom": {
+    "label": "Custom",
+    "mode": "custom",
+    "description": "Custom scenario supplied by caller or Web configuration."
+  }
+}

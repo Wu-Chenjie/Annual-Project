@@ -369,7 +369,7 @@ Expected: importer tests pass and Web-facing payload shape is unchanged.
 - Modify: docs that list presets
 - Test: `next_project/tests/test_preset_metadata.py`
 
-- [ ] **Step 1: Add metadata consistency test**
+- [x] **Step 1: Add metadata consistency test**
 
 Test that all available presets appear in metadata and Web list:
 
@@ -383,7 +383,7 @@ def test_web_preset_list_covers_config_presets():
     assert not missing
 ```
 
-- [ ] **Step 2: Add preset metadata file**
+- [x] **Step 2: Add preset metadata file**
 
 Create a metadata file with fields:
 
@@ -399,11 +399,11 @@ Create a metadata file with fields:
 
 Include every preset currently listed by `AVAILABLE_PRESETS`.
 
-- [ ] **Step 3: Load Web preset list from metadata**
+- [x] **Step 3: Load Web preset list from metadata**
 
 Replace Web-local manual preset labels with metadata loading. Keep existing API response shape stable.
 
-- [ ] **Step 4: Verify PR 6**
+- [x] **Step 4: Verify PR 6**
 
 Run:
 
