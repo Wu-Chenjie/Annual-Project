@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 
     // [2] 配置
     ObstacleConfig config;
-    config.max_sim_time = 40.0;
+    config.max_sim_time = 20.0;
     config.use_smc = true;
     config.use_backstepping = true;
     config.num_followers = 2;
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     config.planner_mode = "online";
     config.planner_resolution = 0.3;
     config.safety_margin = 0.3;
-    config.sensor_enabled = false;  // 暂时禁用传感器隔离性能测试
+    config.sensor_enabled = true;
     config.planner_replan_interval = 2.0;
     config.planner_horizon = 5.0;
     config.danger_mode_enabled = true;
