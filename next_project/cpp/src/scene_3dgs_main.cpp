@@ -162,6 +162,50 @@ int main(int argc, char** argv) {
             w.end_object();
 
             w.key("task_waypoints").array_vec3(result.task_waypoints);
+            w.key("planned_path").array_vec3(result.planned_path);
+            w.key("executed_path").array_vec3(result.executed_path);
+            w.key("replanned_waypoints").array_vec3(result.replanned_waypoints);
+
+            // planning_events
+            w.key("planning_events").begin_array();
+            for (const auto& e : result.planning_events) {
+                w.begin_object();
+                w.key("t").value(e.t);
+                w.key("phase").value(e.phase);
+                w.key("planner").value(e.planner);
+                w.key("segment_index").value(e.segment_index);
+                w.key("wall_time_s").value(e.wall_time_s);
+                w.key("point_count").value(e.point_count);
+                w.key("accepted").value(e.accepted);
+                w.key("fallback_reason").value(e.fallback_reason);
+                w.end_object();
+            }
+            w.end_array();
+
+            // waypoint_events
+            w.key("waypoint_events").begin_array();
+            for (const auto& e : result.waypoint_events) {
+                w.begin_object();
+                w.key("t").value(e.t);
+                w.key("type").value(e.type);
+                w.key("index").value(e.index);
+                w.key("distance").value(e.distance);
+                w.end_object();
+            }
+            w.end_array();
+
+            // collision_log
+            w.key("collision_log").begin_array();
+            for (const auto& e : result.collision_log) {
+                w.begin_object();
+                w.key("t").value(e.t);
+                w.key("drone").value(e.drone);
+                w.key("pos").vec3(e.pos);
+                w.end_object();
+            }
+            w.end_array();
+
+            w.key("fault_log").array_string(result.fault_log);
 
             w.key("metrics").begin_object();
             w.key("mean").array_double(result.metrics.mean);
