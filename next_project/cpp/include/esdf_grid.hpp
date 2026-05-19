@@ -15,12 +15,10 @@ namespace sim {
 
 // 三维欧几里得有符号距离场：O(1) 查表替代 O(N) 障碍物遍历
 class ESDFGrid {
-class ESDFGrid {
 public:
     ESDFGrid() = default;
 
     // 从 OccupancyGrid 构建（occupied>=1 的体素作为障碍物源点）
-    void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
     void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
         origin_ = grid.origin;
         resolution_ = grid.resolution;
@@ -49,8 +47,6 @@ public:
         bfs_expand(q, outside_, truncation_distance);
 
         // 构建 inside distance（obstacle→free）：从 free cell 反向 BFS
-        bfs_expand(q, outside_, truncation_distance);
-
         std::queue<std::array<int, 3>> q_in;
         for (int iz = 0; iz < nz_; ++iz)
             for (int iy = 0; iy < ny_; ++iy)
@@ -63,14 +59,11 @@ public:
                 }
         bfs_expand(q_in, inside_, truncation_distance);
 
-        build_gradient();
-
         // 预计算梯度
         build_gradient();
     }
 
     // O(1) 有符号距离查询
-    [[nodiscard]] double signed_distance(const Vec3& p) const {
     [[nodiscard]] double signed_distance(const Vec3& p) const {
         auto [ix, iy, iz, fx, fy, fz] = world_to_frac(p);
         if (!inside_bounds(ix, iy, iz)) {
@@ -151,10 +144,9 @@ private:
         return {ix, iy, iz, gx - ix, gy - iy, gz - iz};
     }
 
-    // 26 邻域 BFS 扩散
+    // 26 邻域 BFS 扩散 (使用 priority_queue Dijkstra)
     void bfs_expand(std::queue<std::array<int, 3>>& q, std::vector<float>& dist, double trunc) {
-        // 预计算 26 邻域偏移及步长（一次，非 static 避免成员捕获问题）
-        struct Nb { int dx, dy, dz; double step; };
+        // 预计算 26 邻域偏移及步长
         struct Nb { int dx, dy, dz; double step; };
         std::array<Nb, 26> nb;
         int ni = 0;
@@ -205,8 +197,7 @@ private:
         }
     }
 
-    // 三线性插值
-    [[nodiscard]] double trilinear_sample(const std::vector<float>& data,
+    // 三线性插值 (标量)
     [[nodiscard]] double trilinear_sample(const std::vector<float>& data,
                                            int ix, int iy, int iz,
                                            double fx, double fy, double fz) const {
@@ -232,9 +223,18 @@ private:
         double c11 = c011 + (c111 - c011) * fx;
         double c0 = c00 + (c10 - c00) * fy;
         double c1 = c01 + (c11 - c01) * fy;
-        return c0 + (c1 - c0) * fz;
+        double result = c0 + (c1 - c0) * fz;
+        // 当网格边缘未到达区域全为 INF 时，INF-INF=NaN，回退到最近邻
+        if (std::isnan(result)) {
+            int bix = (fx < 0.5) ? ix : ix1;
+            int biy = (fy < 0.5) ? iy : iy1;
+            int biz = (fz < 0.5) ? iz : iz1;
+            return data[idx(bix, biy, biz)];
+        }
+        return result;
     }
 
+    // 三线性插值 (向量)
     Vec3 trilinear_sample_vec(const std::vector<Vec3>& data,
                                int ix, int iy, int iz,
                                double fx, double fy, double fz) const {
@@ -263,7 +263,7 @@ private:
         return c0 + (c1 - c0) * fz;
     }
 
-    // 中心差分梯度
+    // 中心差分梯度 (基于 signed distance)
     void build_gradient() {
         grad_.resize(outside_.size(), Vec3{});
         double step = resolution_ * 2.0;
@@ -271,8 +271,6 @@ private:
             for (int iy = 0; iy < ny_; ++iy)
                 for (int ix = 0; ix < nx_; ++ix) {
                     size_t i = idx(ix, iy, iz);
-                    // 用 outside 距离场计算梯度
-                    double dx = (outside_[idx(ix+1, iy, iz)] - outside_[idx(ix-1, iy, iz)]) / step;
                     double dx = (signed_distance_cell(ix+1, iy, iz) - signed_distance_cell(ix-1, iy, iz)) / step;
                     double dy = (signed_distance_cell(ix, iy+1, iz) - signed_distance_cell(ix, iy-1, iz)) / step;
                     double dz = (signed_distance_cell(ix, iy, iz+1) - signed_distance_cell(ix, iy, iz-1)) / step;

@@ -33,7 +33,6 @@ namespace sim {
 
 /// 把 seconds-since-epoch 转为 ISO-8601 UTC 时间戳字符串（秒级）。
 inline std::string iso8601_utc(const std::chrono::system_clock::time_point& tp) {
-inline std::string iso8601_utc(const std::chrono::system_clock::time_point& tp) {
     std::time_t t = std::chrono::system_clock::to_time_t(tp);
     std::tm* gm = std::gmtime(&t);
     if (gm == nullptr) {
@@ -54,7 +53,6 @@ inline std::string engine_version() {
 }
 
 /// 轻量 JSON 写入器，保证缩进和逗号正确。
-class JsonWriter {
 class JsonWriter {
 public:
     explicit JsonWriter(std::ostream& os) : os_(os) {}
