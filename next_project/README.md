@@ -75,6 +75,12 @@ python main.py --preset warehouse_danger --max-sim-time 10 --no-plot
 Available presets are defined in `config.py`. 每次运行结果默认落到
 `outputs/<preset>/<timestamp>/`，可用 `--run-name` 覆盖时间戳子目录以获得稳定路径。
 
+## Web Safety
+
+The Web replay server is a local development tool by default. Bind it to
+`127.0.0.1` unless you add authentication, upload limits, rate limiting, and
+network isolation appropriate for an exposed service.
+
 ## Test
 
 ```bash

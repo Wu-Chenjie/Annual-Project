@@ -1,7 +1,7 @@
 """Dynamic replay verification server.
 
 Run from this directory:
-    uvicorn server:app --host 0.0.0.0 --port 8765
+    uvicorn server:app --host 127.0.0.1 --port 8765
 """
 
 from __future__ import annotations
@@ -26,6 +26,11 @@ from fastapi.responses import HTMLResponse, Response
 
 app = FastAPI(title="Dynamic Replay Server")
 
+DEFAULT_HOST = "127.0.0.1"
+DEFAULT_PORT = 8765
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+SIMULATE_CONCURRENCY_LIMIT = 1
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 import sys
 if str(PROJECT_ROOT) not in sys.path:
@@ -43,6 +48,7 @@ COLMAP_BIN = Path(os.environ.get("UAV_COLMAP_BIN", r"D:\tools\photogrammetry\col
 OPENMVS_DIR = Path(os.environ.get("UAV_OPENMVS_DIR", r"D:\tools\photogrammetry\openmvs-2.4.0\vc17\x64\Release"))
 RECON_JOBS: dict[str, dict[str, Any]] = {}
 RECON_LOCK = threading.Lock()
+_simulate_semaphore = threading.Semaphore(SIMULATE_CONCURRENCY_LIMIT)
 
 
 def _candidate_executables() -> list[Path]:
@@ -125,6 +131,18 @@ def _safe_upload_filename(filename: str, index: int) -> str:
         raise HTTPException(400, f"Unsupported image format: {suffix or '(none)'}")
     stem = re.sub(r"[^A-Za-z0-9_-]+", "_", Path(raw).stem).strip("_") or f"image_{index:03d}"
     return f"{index:03d}_{stem[:48]}{suffix}"
+
+
+async def _read_upload_limited(upload: UploadFile, label: str) -> bytes:
+    data = bytearray()
+    while True:
+        chunk = await upload.read(1024 * 1024)
+        if not chunk:
+            break
+        data.extend(chunk)
+        if len(data) > MAX_UPLOAD_BYTES:
+            raise HTTPException(413, f"{label} exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)} MiB upload limit")
+    return bytes(data)
 
 
 def _require_reconstruction_image_count(count: int) -> None:
@@ -660,7 +678,7 @@ async def import_model_map(
     padding: float = Form(1.0),
     max_obstacles: int = Form(4000),
 ) -> dict[str, Any]:
-    data = await file.read()
+    data = await _read_upload_limited(file, "Model file")
     if not data:
         raise HTTPException(400, "Empty model file")
     name = _safe_new_map_name(map_name)
@@ -706,7 +724,7 @@ async def upload_reconstruction_photo_set(
     total_bytes = 0
     for index, upload in enumerate(files, start=1):
         filename = _safe_upload_filename(upload.filename or "", index)
-        data = await upload.read()
+        data = await _read_upload_limited(upload, f"Image file {upload.filename or filename}")
         if not data:
             raise HTTPException(400, f"Empty image file: {upload.filename or filename}")
         total_bytes += len(data)
@@ -763,50 +781,55 @@ async def get_reconstruction_job(job_id: str) -> dict[str, Any]:
 
 @app.post("/api/simulate")
 async def simulate(request: Request) -> dict[str, Any]:
-    body = await request.json()
-    exe = _resolve_executable()
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp = Path(tmpdir)
-        input_path = tmp / "input.json"
-        output_path = tmp / "output.json"
-        sim_input = dict(body)
-        map_name = sim_input.get("map_file") or sim_input.get("base_config", {}).get("map_file")
-        if isinstance(map_name, str) and map_name:
-            if "/" not in map_name and "\\" not in map_name and ".." not in map_name:
-                source_map = _safe_map_path(Path(map_name).stem)
-                if source_map.exists():
-                    tmp_map = tmp / source_map.name
-                    shutil.copyfile(source_map, tmp_map)
-                    sim_input["map_file"] = str(tmp_map)
-                    base_config = dict(sim_input.get("base_config") or {})
-                    try:
-                        source_map_json = json.loads(source_map.read_text(encoding="utf-8"))
-                    except Exception:
-                        source_map_json = {}
-                    if "waypoints" not in base_config and isinstance(source_map_json.get("waypoints"), list):
-                        base_config["waypoints"] = source_map_json["waypoints"]
-                    base_config["map_file"] = str(tmp_map)
-                    sim_input["base_config"] = base_config
-        input_path.write_text(json.dumps(sim_input, indent=2, ensure_ascii=False), encoding="utf-8")
-        ts_start = time.perf_counter()
-        result = subprocess.run(
-            [str(exe), str(input_path), "-o", str(output_path)],
-            cwd=str(PROJECT_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-        ts_elapsed = time.perf_counter() - ts_start
-        if result.returncode != 0:
-            detail = result.stderr.strip() or result.stdout.strip() or f"unknown C++ error (exit {result.returncode})"
-            raise HTTPException(500, f"C++ simulation failed: {detail}")
-        if not output_path.exists():
-            raise HTTPException(500, "C++ simulation did not produce output.json")
-        raw = json.loads(output_path.read_text(encoding="utf-8"))
-        preset = body.get("preset") or body.get("base_config", {}).get("preset", "custom")
-        if build_web_sim_result_payload is not None:
-            return build_web_sim_result_payload(preset=preset, web_results=raw, runtime_s=ts_elapsed)
-        return {"results": raw}
+    if not _simulate_semaphore.acquire(blocking=False):
+        raise HTTPException(429, "Another simulation is already running; try again after it finishes")
+    try:
+        body = await request.json()
+        exe = _resolve_executable()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            input_path = tmp / "input.json"
+            output_path = tmp / "output.json"
+            sim_input = dict(body)
+            map_name = sim_input.get("map_file") or sim_input.get("base_config", {}).get("map_file")
+            if isinstance(map_name, str) and map_name:
+                if "/" not in map_name and "\\" not in map_name and ".." not in map_name:
+                    source_map = _safe_map_path(Path(map_name).stem)
+                    if source_map.exists():
+                        tmp_map = tmp / source_map.name
+                        shutil.copyfile(source_map, tmp_map)
+                        sim_input["map_file"] = str(tmp_map)
+                        base_config = dict(sim_input.get("base_config") or {})
+                        try:
+                            source_map_json = json.loads(source_map.read_text(encoding="utf-8"))
+                        except Exception:
+                            source_map_json = {}
+                        if "waypoints" not in base_config and isinstance(source_map_json.get("waypoints"), list):
+                            base_config["waypoints"] = source_map_json["waypoints"]
+                        base_config["map_file"] = str(tmp_map)
+                        sim_input["base_config"] = base_config
+            input_path.write_text(json.dumps(sim_input, indent=2, ensure_ascii=False), encoding="utf-8")
+            ts_start = time.perf_counter()
+            result = subprocess.run(
+                [str(exe), str(input_path), "-o", str(output_path)],
+                cwd=str(PROJECT_ROOT),
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+            ts_elapsed = time.perf_counter() - ts_start
+            if result.returncode != 0:
+                detail = result.stderr.strip() or result.stdout.strip() or f"unknown C++ error (exit {result.returncode})"
+                raise HTTPException(500, f"C++ simulation failed: {detail}")
+            if not output_path.exists():
+                raise HTTPException(500, "C++ simulation did not produce output.json")
+            raw = json.loads(output_path.read_text(encoding="utf-8"))
+            preset = body.get("preset") or body.get("base_config", {}).get("preset", "custom")
+            if build_web_sim_result_payload is not None:
+                return build_web_sim_result_payload(preset=preset, web_results=raw, runtime_s=ts_elapsed)
+            return {"results": raw}
+    finally:
+        _simulate_semaphore.release()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -815,3 +838,9 @@ async def index() -> HTMLResponse:
         (WEB_DIR / "dynamic_replay.html").read_text(encoding="utf-8"),
         headers={"Cache-Control": "no-store, max-age=0"},
     )
+
+
+if __name__ == "__main__":  # pragma: no cover
+    import uvicorn
+
+    uvicorn.run(app, host=DEFAULT_HOST, port=DEFAULT_PORT)

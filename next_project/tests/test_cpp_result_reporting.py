@@ -124,6 +124,7 @@ def test_cpp_sources_expose_formation_adaptation_presets_and_fields():
     config_h = Path("cpp/include/config.hpp").read_text(encoding="utf-8")
     dynamic_main = Path("cpp/src/dynamic_main.cpp").read_text(encoding="utf-8")
     warehouse_main = Path("cpp/src/warehouse_main.cpp").read_text(encoding="utf-8")
+    result_writer = Path("cpp/include/result_writer.hpp").read_text(encoding="utf-8")
 
     assert "config_rrt_dual_channel_online" in config_h
     assert "config_formation_maze_stress_online" in config_h
@@ -135,8 +136,8 @@ def test_cpp_sources_expose_formation_adaptation_presets_and_fields():
     assert "formation_adaptation_enabled" in dynamic_main
     assert "formation_lookahead_enabled" in dynamic_main
     assert "formation_lookahead_rrt_enabled" in dynamic_main
-    assert "formation_adaptation_events" in warehouse_main
-    assert "map_knowledge" in warehouse_main
+    assert "formation_adaptation_events" in result_writer
+    assert "map_knowledge" in result_writer
 
 
 def test_find_sim_result_path_from_cpp_stdout(tmp_path: Path):

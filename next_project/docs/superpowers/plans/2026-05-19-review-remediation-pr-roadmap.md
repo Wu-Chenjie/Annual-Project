@@ -81,7 +81,7 @@ Expected:
 - Modify: `next_project/README.md` or Web usage docs if present
 - Test: `next_project/tests/test_web_server_safety.py`
 
-- [ ] **Step 1: Add failing tests for safety defaults**
+- [x] **Step 1: Add failing tests for safety defaults**
 
 Create `next_project/tests/test_web_server_safety.py` with tests that import Web configuration helpers and assert:
 
@@ -107,7 +107,7 @@ pytest next_project/tests/test_web_server_safety.py -q
 
 Expected before implementation: import or assertion failure.
 
-- [ ] **Step 2: Add explicit Web constants**
+- [x] **Step 2: Add explicit Web constants**
 
 In `next_project/web/server.py`, define:
 
@@ -119,7 +119,7 @@ SIMULATE_CONCURRENCY_LIMIT = 1
 
 Use `DEFAULT_HOST` in the CLI/server startup path instead of `0.0.0.0`.
 
-- [ ] **Step 3: Enforce upload size before parsing**
+- [x] **Step 3: Enforce upload size before parsing**
 
 In upload endpoints, reject requests whose file bytes exceed `MAX_UPLOAD_BYTES` before model parsing.
 
@@ -127,7 +127,7 @@ Expected behavior:
 - Oversized uploads return HTTP 413 or a structured JSON error.
 - Existing small model tests still pass.
 
-- [ ] **Step 4: Guard `/api/simulate` concurrency**
+- [x] **Step 4: Guard `/api/simulate` concurrency**
 
 Add a process-local semaphore around simulation execution:
 
@@ -137,11 +137,11 @@ _simulate_semaphore = threading.Semaphore(SIMULATE_CONCURRENCY_LIMIT)
 
 If the semaphore cannot be acquired immediately, return HTTP 429 or an equivalent JSON error.
 
-- [ ] **Step 5: Document safe deployment boundary**
+- [x] **Step 5: Document safe deployment boundary**
 
 Update the Web docs to say the server is intended for local use by default and should not be exposed publicly without auth and rate limiting.
 
-- [ ] **Step 6: Verify PR 2**
+- [x] **Step 6: Verify PR 2**
 
 Run:
 
