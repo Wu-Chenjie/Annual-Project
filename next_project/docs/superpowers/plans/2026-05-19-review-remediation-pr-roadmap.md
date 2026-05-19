@@ -166,7 +166,7 @@ Expected: all selected tests pass.
 - Test: `next_project/tests/test_planner_bounds.py`
 - Test: `next_project/tests/test_obstacle_scenario.py`
 
-- [ ] **Step 1: Add `contains_world` tests**
+- [x] **Step 1: Add `contains_world` tests**
 
 Create `next_project/tests/test_planner_bounds.py`:
 
@@ -194,7 +194,7 @@ def test_astar_rejects_out_of_bounds_start_or_goal():
         planner.plan(np.array([1.0, 1.0, 1.0]), np.array([9.0, 2.0, 2.0]), grid)
 ```
 
-- [ ] **Step 2: Implement `OccupancyGrid.contains_world`**
+- [x] **Step 2: Implement `OccupancyGrid.contains_world`**
 
 Add:
 
@@ -205,15 +205,15 @@ def contains_world(self, p: np.ndarray) -> bool:
     return bool(np.all(idx_float >= 0.0) and np.all(idx_float < np.asarray(self.shape, dtype=float)))
 ```
 
-- [ ] **Step 3: Reject out-of-bounds planner endpoints**
+- [x] **Step 3: Reject out-of-bounds planner endpoints**
 
 In planners that convert endpoints to grid indices, check `contains_world(start)` and `contains_world(goal)` before clipping. Raise `PlannerError` with a message that names the offending endpoint.
 
-- [ ] **Step 4: Add drone arm-length regression**
+- [x] **Step 4: Add drone arm-length regression**
 
 In `next_project/tests/test_obstacle_scenario.py`, add a test that sets a non-default drone profile or monkeypatches loaded drone params and asserts `_collision_margin` reflects the configured arm length.
 
-- [ ] **Step 5: Replace hard-coded arm length**
+- [x] **Step 5: Replace hard-coded arm length**
 
 In `ObstacleScenarioSimulation.__init__`, replace:
 
@@ -227,7 +227,7 @@ with:
 arm_length = float(getattr(self.drone_params, "arm_length", 0.2))
 ```
 
-- [ ] **Step 6: Verify PR 3**
+- [x] **Step 6: Verify PR 3**
 
 Run:
 

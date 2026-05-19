@@ -320,6 +320,12 @@ class OccupancyGrid:
         idx = np.floor((p - self.origin) / self.resolution + 1e-9).astype(int)
         return tuple(np.clip(idx, 0, np.array(self.shape) - 1))
 
+    def contains_world(self, p: np.ndarray) -> bool:
+        p = np.asarray(p, dtype=float)
+        idx_float = (p - self.origin) / self.resolution
+        upper = np.asarray(self.shape, dtype=float) - 1.0
+        return bool(np.all(idx_float >= 0.0) and np.all(idx_float <= upper + 1e-9))
+
     def index_to_world(self, idx: tuple[int, int, int]) -> np.ndarray:
         return self.origin + np.array(idx, dtype=float) * self.resolution
 
@@ -425,6 +431,9 @@ class SDFAwareGrid:
 
     def world_to_index(self, p: np.ndarray) -> tuple[int, int, int]:
         return self._base.world_to_index(p)
+
+    def contains_world(self, p: np.ndarray) -> bool:
+        return self._base.contains_world(p)
 
     def index_to_world(self, idx: tuple[int, int, int]) -> np.ndarray:
         return self._base.index_to_world(idx)

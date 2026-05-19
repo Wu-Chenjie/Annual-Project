@@ -23,6 +23,12 @@ class PlannerError(Exception):
     pass
 
 
+def validate_grid_endpoint(grid, point: np.ndarray, label: str) -> None:
+    contains_world = getattr(grid, "contains_world", None)
+    if contains_world is not None and not contains_world(point):
+        raise PlannerError(f"{label} is outside map bounds")
+
+
 class Planner(ABC):
     """路径规划器抽象基类。"""
 

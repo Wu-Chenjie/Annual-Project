@@ -23,6 +23,7 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 # 确保 next_project 在路径中。
 _here = Path(__file__).resolve().parent
@@ -383,6 +384,29 @@ def test_obstacle_simulation_zero_collision():
     for i in range(len(means)):
         assert means[i] < 0.015, f"F{i+1} 均值={means[i]:.4f}m > 1.5cm"
         assert maxs[i] < 0.06, f"F{i+1} 最大={maxs[i]:.4f}m > 6cm"
+
+
+def test_collision_margin_uses_configured_drone_arm_length():
+    config = SimulationConfig(
+        max_sim_time=0.012,
+        num_followers=1,
+        drone_profile="indoor_micro",
+        enable_obstacles=True,
+        map_file=str(_project / "maps" / "sample_simple.json"),
+        planner_kind="astar",
+        planner_mode="offline",
+        planner_resolution=0.5,
+        safety_margin=0.2,
+        detect_margin_scale=0.25,
+        waypoints=[
+            np.array([2.0, 10.0, 2.0], dtype=float),
+            np.array([3.0, 10.0, 2.0], dtype=float),
+        ],
+    )
+
+    sim = ObstacleScenarioSimulation(config=config)
+
+    assert sim._collision_margin == pytest.approx(0.046 + 0.2 * 0.25)
 
 
 def test_terminal_hold_reduces_end_jitter():

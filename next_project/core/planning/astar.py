@@ -22,7 +22,7 @@ import heapq
 
 import numpy as np
 
-from .base import Planner, PlannerError
+from .base import Planner, PlannerError, validate_grid_endpoint
 
 
 class AStar(Planner):
@@ -39,6 +39,8 @@ class AStar(Planner):
     def plan(self, start: np.ndarray, goal: np.ndarray, grid, **kw) -> np.ndarray:
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        validate_grid_endpoint(grid, start, "start")
+        validate_grid_endpoint(grid, goal, "goal")
         start_idx = grid.world_to_index(start)
         goal_idx = grid.world_to_index(goal)
 
@@ -118,6 +120,8 @@ class HeadingConstrainedAStar(AStar):
     def plan(self, start: np.ndarray, goal: np.ndarray, grid, **kw) -> np.ndarray:
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        validate_grid_endpoint(grid, start, "start")
+        validate_grid_endpoint(grid, goal, "goal")
         start_idx = grid.world_to_index(start)
         goal_idx = grid.world_to_index(goal)
 

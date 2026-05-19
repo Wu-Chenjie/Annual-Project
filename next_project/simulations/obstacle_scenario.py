@@ -81,7 +81,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.planned_trajectory = None
         self.planning_events: list[dict] = []
         super().__init__(config=config)
-        arm_length = 0.2  # Drone 默认臂长
+        arm_length = float(getattr(self.drone_params, "arm_length", 0.2))
         self._collision_margin = arm_length + config.safety_margin * config.detect_margin_scale
         self._setup_obstacles()
         self.formation_clearance_policy = self._make_formation_clearance_policy()

@@ -33,7 +33,7 @@ from math import pi as PI
 
 import numpy as np
 
-from .base import Planner, PlannerError
+from .base import Planner, PlannerError, validate_grid_endpoint
 
 
 class HybridAStar(Planner):
@@ -105,6 +105,8 @@ class HybridAStar(Planner):
         """
         start = np.asarray(start, dtype=float)
         goal_arr = np.asarray(goal, dtype=float)
+        validate_grid_endpoint(grid, start, "start")
+        validate_grid_endpoint(grid, goal_arr, "goal")
         self._grid = grid
         self._goal_pos = goal_arr
 

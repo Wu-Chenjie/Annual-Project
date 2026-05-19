@@ -124,6 +124,12 @@ class CostAwareGrid:
     def world_to_index(self, p: np.ndarray) -> tuple[int, int, int]:
         return self._base.world_to_index(p)
 
+    def contains_world(self, p: np.ndarray) -> bool:
+        contains_world = getattr(self._base, "contains_world", None)
+        if contains_world is None:
+            return True
+        return contains_world(p)
+
     def index_to_world(self, idx: tuple[int, int, int]) -> np.ndarray:
         return self._base.index_to_world(idx)
 

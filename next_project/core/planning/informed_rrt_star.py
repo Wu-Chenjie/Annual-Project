@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import numpy as np
 
+from .base import validate_grid_endpoint
 from .rrt_star import RRTStar
 
 
@@ -68,6 +69,8 @@ class InformedRRTStar(RRTStar):
 
         start = np.asarray(start, dtype=float)
         goal = np.asarray(goal, dtype=float)
+        validate_grid_endpoint(grid, start, "start")
+        validate_grid_endpoint(grid, goal, "goal")
         bounds = np.array([
             grid.origin,
             grid.origin + np.array(grid.shape) * grid.resolution,

@@ -22,6 +22,8 @@ from collections import defaultdict
 
 import numpy as np
 
+from .base import validate_grid_endpoint
+
 
 class DStarLite:
     """增量式 D* Lite 路径规划器。
@@ -37,6 +39,8 @@ class DStarLite:
         self.grid = grid
         self._start = np.asarray(start, dtype=float)
         self._goal = np.asarray(goal, dtype=float)
+        validate_grid_endpoint(grid, self._start, "start")
+        validate_grid_endpoint(grid, self._goal, "goal")
 
         # 代价与前瞻
         self.g: dict[tuple, float] = defaultdict(lambda: float("inf"))
