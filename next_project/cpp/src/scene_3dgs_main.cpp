@@ -8,9 +8,11 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <variant>
 
 #include "model_importer.hpp"
 #include "obstacle_scenario.hpp"
+#include "obstacles.hpp"
 #include "json_writer.hpp"
 #include "visualization.hpp"
 
@@ -206,6 +208,44 @@ int main(int argc, char** argv) {
             w.end_array();
 
             w.key("fault_log").array_string(result.fault_log);
+
+            // obstacle_model
+            {
+                const auto& variants = field.obstacles();
+                const auto& ids = field.ids();
+                w.key("obstacle_model").begin_object();
+                w.key("bounds").begin_array();
+                w.vec3(bounds[0]);
+                w.vec3(bounds[1]);
+                w.end_array();
+                w.key("primitives").begin_array();
+                for (std::size_t i = 0; i < variants.size(); ++i) {
+                    const auto& primitive = variants[i];
+                    w.begin_object();
+                    w.key("id").value(i < ids.size() ? ids[i] : ("obs_" + std::to_string(i)));
+                    if (std::holds_alternative<sim::AABB>(primitive)) {
+                        const auto& box = std::get<sim::AABB>(primitive);
+                        w.key("type").value("aabb");
+                        w.key("min").vec3(box.min_corner);
+                        w.key("max").vec3(box.max_corner);
+                    } else if (std::holds_alternative<sim::Sphere>(primitive)) {
+                        const auto& sphere = std::get<sim::Sphere>(primitive);
+                        w.key("type").value("sphere");
+                        w.key("center").vec3(sphere.center);
+                        w.key("radius").value(sphere.radius);
+                    } else if (std::holds_alternative<sim::Cylinder>(primitive)) {
+                        const auto& cylinder = std::get<sim::Cylinder>(primitive);
+                        w.key("type").value("cylinder");
+                        w.key("center").vec3(cylinder.center_xy);
+                        w.key("radius").value(cylinder.radius);
+                        w.key("z_min").value(cylinder.z_min);
+                        w.key("z_max").value(cylinder.z_max);
+                    }
+                    w.end_object();
+                }
+                w.end_array();
+                w.end_object();
+            }
 
             w.key("metrics").begin_object();
             w.key("mean").array_double(result.metrics.mean);
