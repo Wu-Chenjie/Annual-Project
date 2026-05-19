@@ -1,11 +1,8 @@
 #include <chrono>
 #include <cmath>
-#include <ctime>
 #include <cstdlib>
 #include <filesystem>
-#include <iomanip>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "model_importer.hpp"
@@ -16,15 +13,6 @@
 namespace {
 auto now() { return std::chrono::high_resolution_clock::now(); }
 double sec(auto start, auto end) { return std::chrono::duration<double>(end - start).count(); }
-std::string timestamp_dir_name() {
-    auto n = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(n);
-    std::tm* local = std::localtime(&t);
-    std::ostringstream oss;
-    if (local) oss << std::put_time(local, "%Y%m%d-%H%M%S");
-    else oss << "unknown";
-    return oss.str();
-}
 }
 
 int main(int argc, char** argv) {
@@ -45,14 +33,14 @@ int main(int argc, char** argv) {
     const double padding = (argc > 4) ? std::stod(argv[4]) : 0.5;
     const int max_obstacles = (argc > 5) ? std::stoi(argv[5]) : 10000;
 
-    // [1] 导入 PLY
+    // [1] import
     std::cout << "[1] import_model... " << std::flush;
     auto t0 = now();
     auto [field, bounds] = import_model(model_path, voxel_size, model_scale, padding, max_obstacles);
     auto t1 = now();
     std::cout << field.size() << " obstacles, " << sec(t0,t1) << "s\n";
 
-    // [2] 配置
+    // [2] config
     ObstacleConfig config;
     config.max_sim_time = 20.0;
     config.use_smc = true;
@@ -80,24 +68,23 @@ int main(int argc, char** argv) {
         Vec3{bounds[1].x - 0.5, bounds[1].y - 0.5, 4.0},
     };
 
-    // [3] set_obstacles
+    // [3] set obstacles
     std::cout << "[2] set_obstacles... " << std::flush;
     auto t2 = now();
     ObstacleScenarioSimulation sim(config);
     sim.set_obstacles(field, bounds);
     auto t3 = now();
-    std::cout << sec(t2,t3) << "s\n";
+    double planning_s = sec(t2, t3);
+    std::cout << planning_s << "s\n";
 
     // [4] run
     std::cout << "[3] sim.run (max " << config.max_sim_time << "s)... " << std::flush;
     auto t4 = now();
     auto result = sim.run();
     auto t5 = now();
-    double planning_s = sec(t2, t3);
     double sim_s = sec(t4, t5);
     std::cout << sim_s << "s\n";
 
-    // 结果
     std::cout << "\n航点: " << result.completed_waypoint_count << "/" << config.waypoints.size() << "\n";
     for (size_t i = 0; i < result.metrics.mean.size(); ++i)
         std::cout << "F" << (i+1) << ": mean=" << result.metrics.mean[i] << " max=" << result.metrics.max[i] << " final=" << result.metrics.final[i] << "\n";
@@ -115,20 +102,10 @@ int main(int argc, char** argv) {
     for (const auto& [k,v] : figs) std::cout << k << ": " << v << "\n";
     std::cout << "output: " << run_dir.string() << "\n";
 
-    // [5] 写 sim_result.json + 调 Python 生成 report.md (复用 result_writer.hpp)
     auto json_path = run_dir / "sim_result.json";
     sim::write_result_json(json_path, result, planning_s, sim_s, "scene_3dgs", config, field, bounds);
     std::cout << "结果文件: " << json_path.string() << "\n";
-
-    std::string rel = json_path.string();
-    std::string cmd = "python \"../experiments/report_cpp_results.py\" \"" + rel + "\"";
-    std::cout << "生成报告: " << std::flush;
-    int ret = std::system(cmd.c_str());
-    if (ret == 0) {
-        std::cout << (run_dir / "cpp_report.md").string() << "\n";
-    } else {
-        std::cout << "跳过 (code=" << ret << ")\n";
-    }
+    run_report_pipeline(json_path);
 
     return 0;
 }

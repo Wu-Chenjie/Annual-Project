@@ -9,22 +9,10 @@
 
 #include "formation_simulation.hpp"
 #include "json_writer.hpp"
+#include "result_writer.hpp"
 #include "visualization.hpp"
 
 namespace {
-
-std::string timestamp_dir_name() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm* local = std::localtime(&t);
-    std::ostringstream oss;
-    if (local != nullptr) {
-        oss << std::put_time(local, "%Y%m%d-%H%M%S");
-    } else {
-        oss << "unknown";
-    }
-    return oss.str();
-}
 
 void write_sim_result_json(
     const std::filesystem::path& output_path,

@@ -67,19 +67,6 @@ ObstacleField make_warehouse() {
 
 namespace {
 
-std::string timestamp_dir_name() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t t = std::chrono::system_clock::to_time_t(now);
-    std::tm* local = std::localtime(&t);
-    std::ostringstream oss;
-    if (local != nullptr) {
-        oss << std::put_time(local, "%Y%m%d-%H%M%S");
-    } else {
-        oss << "unknown";
-    }
-    return oss.str();
-}
-
 bool path_exists(const std::filesystem::path& path) {
     std::error_code ec;
     return std::filesystem::exists(path, ec);
@@ -199,27 +186,6 @@ int main(int argc, char* argv[]) {
     }
     std::cout << "结果文件: " << output_path.string() << "\n";
 
-    // Auto-generate Chinese report.md via Python report pipeline
-    {
-        // 使用相对路径避免中文绝对路径的 _wsystem 编码问题
-        std::string rel_output = output_path.string();
-        std::cout << "生成报告: " << std::flush;
-        int ret = -1;
-#ifdef _WIN32
-        std::string cmd = "python \"..\\..\\experiments\\report_cpp_results.py\" \""
-                        + rel_output + "\"";
-        ret = std::system(cmd.c_str());
-#else
-        std::string cmd = "python \"../../experiments/report_cpp_results.py\" \""
-                        + rel_output + "\"";
-        ret = std::system(cmd.c_str());
-#endif
-        if (ret == 0) {
-            std::filesystem::path report_path = output_path.parent_path() / "cpp_report.md";
-            std::cout << report_path.string() << "\n";
-        } else {
-            std::cout << "跳过 (python 不可用或脚本执行失败, code=" << ret << ")\n";
-        }
-    }
+    run_report_pipeline(output_path);
     return 0;
 }

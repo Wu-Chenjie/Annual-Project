@@ -1,17 +1,17 @@
 #pragma once
-/// result_writer.hpp — 仿真结果 JSON 序列化 + 障碍物模型导出。
-///
-/// 供 warehouse_main / scene_3dgs_main 等入口复用,避免重复代码。
-/// 用法: write_result_json(json_path, result, planning_s, sim_s, preset, config, field, bounds);
-
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cmath>
 #include <cstddef>
+#include <cstdlib>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <variant>
@@ -23,6 +23,37 @@
 #include "math_utils.hpp"
 #include "obstacles.hpp"
 
+// ============================================================
+// 公共工具
+// ============================================================
+
+inline std::string timestamp_dir_name() {
+    auto n = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(n);
+    std::tm* local = std::localtime(&t);
+    std::ostringstream oss;
+    if (local) oss << std::put_time(local, "%Y%m%d-%H%M%S");
+    else oss << "unknown";
+    return oss.str();
+}
+
+inline void run_report_pipeline(const std::filesystem::path& json_path) {
+    std::string rel = json_path.string();
+    std::cout << "生成报告: " << std::flush;
+    int ret = -1;
+    for (const char* script : {"../experiments/report_cpp_results.py",
+                                "../../experiments/report_cpp_results.py"}) {
+        std::string cmd = std::string("python \"") + script + "\" \"" + rel + "\"";
+        ret = std::system(cmd.c_str());
+        if (ret == 0) break;
+    }
+    if (ret == 0) {
+        std::cout << (json_path.parent_path() / "cpp_report.md").string() << "\n";
+    } else {
+        std::cout << "跳过 (python 不可用, code=" << ret << ")\n";
+    }
+}
+
 namespace sim {
 
 // ============================================================
@@ -31,9 +62,8 @@ namespace sim {
 
 inline int accepted_replan_count(const SimulationResult& result) {
     int count = 0;
-    for (const auto& event : result.planning_events) {
+    for (const auto& event : result.planning_events)
         if (event.phase == "online_replan" && event.accepted) ++count;
-    }
     return count;
 }
 
@@ -60,33 +90,26 @@ inline int collision_interval_count(const std::vector<CollisionEvent>& events, d
 
 inline int hard_collision_step_count(const std::vector<CollisionEvent>& events, const ObstacleField& obstacles) {
     int count = 0;
-    for (const auto& event : events) {
+    for (const auto& event : events)
         if (obstacles.signed_distance(event.pos) < 0.0) ++count;
-    }
     return count;
 }
 
 inline int hard_collision_interval_count(const std::vector<CollisionEvent>& events,
                                           const ObstacleField& obstacles, double dt) {
-    std::vector<CollisionEvent> hard_events;
-    hard_events.reserve(events.size());
-    for (const auto& event : events) {
-        if (obstacles.signed_distance(event.pos) < 0.0) hard_events.push_back(event);
-    }
-    return collision_interval_count(hard_events, dt);
+    std::vector<CollisionEvent> hard;
+    hard.reserve(events.size());
+    for (const auto& e : events)
+        if (obstacles.signed_distance(e.pos) < 0.0) hard.push_back(e);
+    return collision_interval_count(hard, dt);
 }
 
 inline double min_airframe_signed_distance(const SimulationResult& result, const ObstacleField& obstacles) {
     if (obstacles.size() == 0) return 0.0;
     double best = std::numeric_limits<double>::infinity();
-    for (const auto& point : result.executed_path) {
-        best = std::min(best, obstacles.signed_distance(point));
-    }
-    for (const auto& follower_path : result.followers) {
-        for (const auto& point : follower_path) {
-            best = std::min(best, obstacles.signed_distance(point));
-        }
-    }
+    for (const auto& p : result.executed_path) best = std::min(best, obstacles.signed_distance(p));
+    for (const auto& fp : result.followers)
+        for (const auto& p : fp) best = std::min(best, obstacles.signed_distance(p));
     return std::isfinite(best) ? best : 0.0;
 }
 
@@ -96,16 +119,12 @@ inline double min_airframe_signed_distance(const SimulationResult& result, const
 
 inline void write_planning_events(JsonWriter& w, const std::vector<PlanningEvent>& events) {
     w.key("planning_events").begin_array();
-    for (const auto& event : events) {
+    for (const auto& e : events) {
         w.begin_object();
-        w.key("t").value(event.t);
-        w.key("phase").value(event.phase);
-        w.key("planner").value(event.planner);
-        w.key("segment_index").value(event.segment_index);
-        w.key("wall_time_s").value(event.wall_time_s);
-        w.key("point_count").value(event.point_count);
-        w.key("accepted").value(event.accepted);
-        w.key("fallback_reason").value(event.fallback_reason);
+        w.key("t").value(e.t); w.key("phase").value(e.phase);
+        w.key("planner").value(e.planner); w.key("segment_index").value(e.segment_index);
+        w.key("wall_time_s").value(e.wall_time_s); w.key("point_count").value(e.point_count);
+        w.key("accepted").value(e.accepted); w.key("fallback_reason").value(e.fallback_reason);
         w.end_object();
     }
     w.end_array();
@@ -113,12 +132,10 @@ inline void write_planning_events(JsonWriter& w, const std::vector<PlanningEvent
 
 inline void write_waypoint_events(JsonWriter& w, const std::vector<WaypointEvent>& events) {
     w.key("waypoint_events").begin_array();
-    for (const auto& event : events) {
+    for (const auto& e : events) {
         w.begin_object();
-        w.key("t").value(event.t);
-        w.key("type").value(event.type);
-        w.key("index").value(event.index);
-        w.key("distance").value(event.distance);
+        w.key("t").value(e.t); w.key("type").value(e.type);
+        w.key("index").value(e.index); w.key("distance").value(e.distance);
         w.end_object();
     }
     w.end_array();
@@ -126,11 +143,9 @@ inline void write_waypoint_events(JsonWriter& w, const std::vector<WaypointEvent
 
 inline void write_collision_log(JsonWriter& w, const std::vector<CollisionEvent>& events) {
     w.key("collision_log").begin_array();
-    for (const auto& event : events) {
+    for (const auto& e : events) {
         w.begin_object();
-        w.key("t").value(event.t);
-        w.key("drone").value(event.drone);
-        w.key("pos").vec3(event.pos);
+        w.key("t").value(e.t); w.key("drone").value(e.drone); w.key("pos").vec3(e.pos);
         w.end_object();
     }
     w.end_array();
@@ -139,34 +154,28 @@ inline void write_collision_log(JsonWriter& w, const std::vector<CollisionEvent>
 inline void write_formation_adaptation_events(JsonWriter& w,
                                                const std::vector<FormationAdaptationEvent>& events) {
     w.key("formation_adaptation_events").begin_array();
-    for (const auto& event : events) {
+    for (const auto& e : events) {
         w.begin_object();
-        w.key("t").value(event.t);
-        if (!event.kind.empty()) w.key("kind").value(event.kind);
-        w.key("from").value(event.from);
-        w.key("to").value(event.to);
-        w.key("reason").value(event.reason);
-        if (event.has_channel_width) {
+        w.key("t").value(e.t);
+        if (!e.kind.empty()) w.key("kind").value(e.kind);
+        w.key("from").value(e.from); w.key("to").value(e.to); w.key("reason").value(e.reason);
+        if (e.has_channel_width) {
             w.key("channel_width").begin_array();
-            w.value(event.channel_width[0]);
-            w.value(event.channel_width[1]);
-            w.value(event.channel_width[2]);
+            w.value(e.channel_width[0]); w.value(e.channel_width[1]); w.value(e.channel_width[2]);
             w.end_array();
         }
-        if (event.has_selected_envelope) {
+        if (e.has_selected_envelope) {
             w.key("selected_envelope").begin_array();
-            w.value(event.selected_envelope[0]);
-            w.value(event.selected_envelope[1]);
-            w.value(event.selected_envelope[2]);
+            w.value(e.selected_envelope[0]); w.value(e.selected_envelope[1]); w.value(e.selected_envelope[2]);
             w.end_array();
         }
-        if (event.has_clearance_margin) w.key("clearance_margin").value(event.clearance_margin);
-        if (event.has_max_turn_angle) w.key("max_turn_angle_rad").value(event.max_turn_angle_rad);
-        if (!event.planner.empty()) w.key("planner").value(event.planner);
-        if (!event.goal_kind.empty()) w.key("goal_kind").value(event.goal_kind);
-        if (event.goal_count > 0) w.key("goal_count").value(event.goal_count);
-        if (event.point_count > 0) w.key("point_count").value(event.point_count);
-        w.key("blocked_by_hold_time").value(event.blocked_by_hold_time);
+        if (e.has_clearance_margin) w.key("clearance_margin").value(e.clearance_margin);
+        if (e.has_max_turn_angle) w.key("max_turn_angle_rad").value(e.max_turn_angle_rad);
+        if (!e.planner.empty()) w.key("planner").value(e.planner);
+        if (!e.goal_kind.empty()) w.key("goal_kind").value(e.goal_kind);
+        if (e.goal_count > 0) w.key("goal_count").value(e.goal_count);
+        if (e.point_count > 0) w.key("point_count").value(e.point_count);
+        w.key("blocked_by_hold_time").value(e.blocked_by_hold_time);
         w.end_object();
     }
     w.end_array();
@@ -177,32 +186,22 @@ inline void write_obstacle_model(JsonWriter& w, const ObstacleField& obstacles,
     const auto& variants = obstacles.obstacles();
     const auto& ids = obstacles.ids();
     w.key("obstacle_model").begin_object();
-    w.key("bounds").begin_array();
-    w.vec3(bounds[0]);
-    w.vec3(bounds[1]);
-    w.end_array();
+    w.key("bounds").begin_array(); w.vec3(bounds[0]); w.vec3(bounds[1]); w.end_array();
     w.key("primitives").begin_array();
     for (std::size_t i = 0; i < variants.size(); ++i) {
-        const auto& primitive = variants[i];
+        const auto& p = variants[i];
         w.begin_object();
         w.key("id").value(i < ids.size() ? ids[i] : ("obs_" + std::to_string(i)));
-        if (std::holds_alternative<AABB>(primitive)) {
-            const auto& box = std::get<AABB>(primitive);
-            w.key("type").value("aabb");
-            w.key("min").vec3(box.min_corner);
-            w.key("max").vec3(box.max_corner);
-        } else if (std::holds_alternative<Sphere>(primitive)) {
-            const auto& sphere = std::get<Sphere>(primitive);
-            w.key("type").value("sphere");
-            w.key("center").vec3(sphere.center);
-            w.key("radius").value(sphere.radius);
-        } else if (std::holds_alternative<Cylinder>(primitive)) {
-            const auto& cylinder = std::get<Cylinder>(primitive);
-            w.key("type").value("cylinder");
-            w.key("center").vec3(cylinder.center_xy);
-            w.key("radius").value(cylinder.radius);
-            w.key("z_min").value(cylinder.z_min);
-            w.key("z_max").value(cylinder.z_max);
+        if (std::holds_alternative<AABB>(p)) {
+            const auto& b = std::get<AABB>(p);
+            w.key("type").value("aabb"); w.key("min").vec3(b.min_corner); w.key("max").vec3(b.max_corner);
+        } else if (std::holds_alternative<Sphere>(p)) {
+            const auto& s = std::get<Sphere>(p);
+            w.key("type").value("sphere"); w.key("center").vec3(s.center); w.key("radius").value(s.radius);
+        } else if (std::holds_alternative<Cylinder>(p)) {
+            const auto& c = std::get<Cylinder>(p);
+            w.key("type").value("cylinder"); w.key("center").vec3(c.center_xy);
+            w.key("radius").value(c.radius); w.key("z_min").value(c.z_min); w.key("z_max").value(c.z_max);
         }
         w.end_object();
     }
@@ -211,7 +210,7 @@ inline void write_obstacle_model(JsonWriter& w, const ObstacleField& obstacles,
 }
 
 // ============================================================
-// 主入口: 写完整 sim_result.json
+// 主入口
 // ============================================================
 
 inline void write_result_json(
@@ -234,24 +233,24 @@ inline void write_result_json(
         for (double v : result.metrics.mean) overall_mean += v;
         overall_mean /= static_cast<double>(result.metrics.mean.size());
     }
-    if (!result.metrics.max.empty()) {
-        for (double v : result.metrics.max) overall_max = std::max(overall_max, v);
-    }
+    for (double v : result.metrics.max) overall_max = std::max(overall_max, v);
     if (!result.metrics.final.empty()) {
         for (double v : result.metrics.final) overall_final += v;
         overall_final /= static_cast<double>(result.metrics.final.size());
     }
+
     const int collision_steps = static_cast<int>(result.collision_log.size());
     const int collision_intervals = collision_interval_count(result.collision_log, config.dt);
-    const int hard_collision_steps_val = hard_collision_step_count(result.collision_log, obstacles);
-    const int hard_collision_intervals_val = hard_collision_interval_count(result.collision_log, obstacles, config.dt);
-    const double min_obstacle_sd = min_airframe_signed_distance(result, obstacles);
+    const int hcs = hard_collision_step_count(result.collision_log, obstacles);
+    const int hci = hard_collision_interval_count(result.collision_log, obstacles, config.dt);
+    const double min_obs_sd = min_airframe_signed_distance(result, obstacles);
+
     int lookahead_blocked = 0, rrt_attempt = 0, rrt_accepted = 0, rrt_failed = 0;
-    for (const auto& event : result.formation_adaptation_events) {
-        if (event.kind == "lookahead_reference_blocked") ++lookahead_blocked;
-        else if (event.kind == "rrt_escape_attempt") ++rrt_attempt;
-        else if (event.kind == "rrt_escape_accepted") ++rrt_accepted;
-        else if (event.kind == "rrt_escape_failed") ++rrt_failed;
+    for (const auto& e : result.formation_adaptation_events) {
+        if (e.kind == "lookahead_reference_blocked") ++lookahead_blocked;
+        else if (e.kind == "rrt_escape_attempt") ++rrt_attempt;
+        else if (e.kind == "rrt_escape_accepted") ++rrt_accepted;
+        else if (e.kind == "rrt_escape_failed") ++rrt_failed;
     }
 
     JsonWriter w(out);
@@ -304,13 +303,13 @@ inline void write_result_json(
     w.key("mean_error_overall").value(overall_mean);
     w.key("max_error_overall").value(overall_max);
     w.key("final_error_overall").value(overall_final);
-    w.key("collision_count").value(hard_collision_intervals_val);
-    w.key("collision_step_count").value(hard_collision_steps_val);
-    w.key("hard_collision_count").value(hard_collision_intervals_val);
-    w.key("hard_collision_step_count").value(hard_collision_steps_val);
+    w.key("collision_count").value(hci);
+    w.key("collision_step_count").value(hcs);
+    w.key("hard_collision_count").value(hci);
+    w.key("hard_collision_step_count").value(hcs);
     w.key("clearance_warning_count").value(collision_intervals);
     w.key("clearance_warning_step_count").value(collision_steps);
-    w.key("min_obstacle_signed_distance").value(min_obstacle_sd);
+    w.key("min_obstacle_signed_distance").value(min_obs_sd);
     w.key("replan_count").value(accepted_replan_count(result));
     w.key("fault_count").value(static_cast<int>(result.fault_log.size()));
     w.key("formation_adaptation_count").value(static_cast<int>(result.formation_adaptation_events.size()));
