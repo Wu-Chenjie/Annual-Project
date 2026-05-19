@@ -37,8 +37,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 try:
     from core.result_schema import build_web_sim_result_payload
+    from core.model_importer import model_to_map_json, parse_model_bytes
 except ImportError:  # pragma: no cover
     build_web_sim_result_payload = None  # type: ignore[assignment]
+    model_to_map_json = None  # type: ignore[assignment]
+    parse_model_bytes = None  # type: ignore[assignment]
 MAPS_DIR = PROJECT_ROOT / "maps"
 WEB_DIR = PROJECT_ROOT / "web"
 REPO_ROOT = PROJECT_ROOT.parent
@@ -298,15 +301,15 @@ def _run_reconstruction_job(job_id: str) -> None:
 
         model_path = _pick_model_file(openmvs_root)
         _set_job_state(job_id, status="running", step="import_model_map", model_path=str(model_path), message="Importing mesh into maps")
-        vertices, triangles = _parse_model(model_path.name, model_path.read_bytes())
-        map_json = _model_to_map(
-            vertices,
-            triangles,
+        if parse_model_bytes is None or model_to_map_json is None:
+            raise RuntimeError("core.model_importer is unavailable")
+        mesh = parse_model_bytes(model_path.read_bytes(), filename=model_path.name)
+        map_json = model_to_map_json(
+            mesh,
             voxel_size=0.5,
             scale=1.0,
             padding=1.0,
             max_obstacles=4000,
-            source_name=model_path.name,
         )
         map_path = _safe_map_path(map_name)
         map_path.write_text(json.dumps(map_json, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -682,16 +685,23 @@ async def import_model_map(
     if not data:
         raise HTTPException(400, "Empty model file")
     name = _safe_new_map_name(map_name)
-    vertices, triangles = _parse_model(file.filename or name, data)
-    map_json = _model_to_map(
-        vertices,
-        triangles,
-        voxel_size=voxel_size,
-        scale=scale,
-        padding=max(0.0, padding),
-        max_obstacles=max(1, max_obstacles),
-        source_name=file.filename or name,
-    )
+    if parse_model_bytes is None or model_to_map_json is None:
+        raise HTTPException(500, "core.model_importer is unavailable")
+    try:
+        mesh = parse_model_bytes(data, filename=file.filename or name)
+        map_json = model_to_map_json(
+            mesh,
+            voxel_size=voxel_size,
+            scale=scale,
+            padding=max(0.0, padding),
+            max_obstacles=max(1, max_obstacles),
+        )
+    except ValueError as exc:
+        message = str(exc)
+        status = 413 if "max_obstacles" in message or "produced" in message else 400
+        raise HTTPException(status, message) from exc
+    vertices = mesh.vertices
+    triangles = mesh.faces
     path = _safe_map_path(name)
     path.write_text(json.dumps(map_json, indent=2, ensure_ascii=False), encoding="utf-8")
     return {

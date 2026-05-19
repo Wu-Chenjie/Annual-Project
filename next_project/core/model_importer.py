@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import struct
 from pathlib import Path
 from typing import Any
@@ -35,6 +36,13 @@ PLY_SCALARS: dict[str, tuple[str, int]] = {
 
 Vec3 = tuple[float, float, float]
 Triangle = tuple[int, int, int]
+
+
+@dataclass(frozen=True)
+class ImportedMesh:
+    vertices: list[Vec3]
+    faces: list[Triangle]
+    source_name: str
 
 
 def _vec_cell(point: Vec3, voxel: float) -> tuple[int, int, int]:
@@ -224,6 +232,20 @@ def _parse_model(filepath: str) -> tuple[list[Vec3], list[Triangle]]:
 # ============================================================
 
 
+def parse_model_bytes(data: bytes, *, filename: str) -> ImportedMesh:
+    """Parse OBJ/STL/PLY bytes into an ImportedMesh."""
+    ext = Path(filename or "").suffix.lower()
+    if ext == ".obj":
+        vertices, faces = _parse_obj(data.decode("utf-8", errors="ignore"))
+    elif ext == ".stl":
+        vertices, faces = _parse_stl(data)
+    elif ext == ".ply":
+        vertices, faces = _parse_ply(data)
+    else:
+        raise ValueError(f"Unsupported model format: {ext}. Supported: .obj / .stl / .ply")
+    return ImportedMesh(vertices=vertices, faces=faces, source_name=filename)
+
+
 def _sample_triangle(a: Vec3, b: Vec3, c: Vec3, voxel: float) -> list[Vec3]:
     """对三角面进行重心坐标采样，保证体素化不遗漏薄面。"""
     edge = max(
@@ -315,6 +337,44 @@ def _model_to_obstacle_field(
     return field, bounds
 
 
+def model_to_map_json(
+    mesh: ImportedMesh,
+    *,
+    voxel_size: float = 0.4,
+    scale: float = 1.0,
+    padding: float = 0.5,
+    max_obstacles: int = 500,
+    resolution: float | None = None,
+) -> dict[str, Any]:
+    """Convert an ImportedMesh to the Web/map-loader JSON obstacle format."""
+    voxel = float(resolution if resolution is not None else voxel_size)
+    field, bounds = _model_to_obstacle_field(
+        mesh.vertices,
+        mesh.faces,
+        voxel_size=voxel,
+        scale=scale,
+        padding=padding,
+        max_obstacles=max_obstacles,
+    )
+    obstacles = []
+    for obs in field:
+        if not isinstance(obs, AABB):
+            continue
+        obstacles.append({
+            "type": "aabb",
+            "min": [round(float(value), 4) for value in obs.min_corner.tolist()],
+            "max": [round(float(value), 4) for value in obs.max_corner.tolist()],
+        })
+    return {
+        "bounds": [
+            [round(float(value), 4) for value in bounds[0].tolist()],
+            [round(float(value), 4) for value in bounds[1].tolist()],
+        ],
+        "description": f"Imported from 3D model {mesh.source_name}; voxel_size={voxel}, scale={scale}",
+        "obstacles": obstacles,
+    }
+
+
 # ============================================================
 # 公共接口
 # ============================================================
@@ -348,10 +408,10 @@ def import_model(
     if not path.exists():
         raise FileNotFoundError(f"模型文件不存在: {filepath}")
 
-    vertices, triangles = _parse_model(str(path))
+    mesh = parse_model_bytes(path.read_bytes(), filename=path.name)
     return _model_to_obstacle_field(
-        vertices,
-        triangles,
+        mesh.vertices,
+        mesh.faces,
         voxel_size=voxel_size,
         scale=scale,
         padding=padding,

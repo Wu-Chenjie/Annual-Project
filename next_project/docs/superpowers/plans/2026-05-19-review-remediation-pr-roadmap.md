@@ -321,7 +321,7 @@ Expected: tests pass and no path/physics assertions change.
 - Modify: `next_project/web/server.py`
 - Test: existing model importer/Web tests or create `next_project/tests/test_model_importer_web_reuse.py`
 
-- [ ] **Step 1: Add a core importer bytes API test**
+- [x] **Step 1: Add a core importer bytes API test**
 
 Test:
 
@@ -333,7 +333,7 @@ def test_parse_model_bytes_obj_minimal_triangle():
     assert len(mesh.faces) == 1
 ```
 
-- [ ] **Step 2: Add core API wrappers**
+- [x] **Step 2: Add core API wrappers**
 
 Expose functions from `core/model_importer.py`:
 
@@ -342,11 +342,11 @@ def parse_model_bytes(data: bytes, filename: str) -> ImportedMesh: ...
 def model_to_map_json(mesh: ImportedMesh, *, max_obstacles: int, resolution: float) -> dict: ...
 ```
 
-- [ ] **Step 3: Replace Web duplicate parser calls**
+- [x] **Step 3: Replace Web duplicate parser calls**
 
 In `web/server.py`, delete or deprecate private `_parse_obj`, `_parse_stl`, `_parse_ply`, and `_model_to_map` call sites. Use `core.model_importer` wrappers instead.
 
-- [ ] **Step 4: Verify PR 5**
+- [x] **Step 4: Verify PR 5**
 
 Run:
 
