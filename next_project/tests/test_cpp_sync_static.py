@@ -1,8 +1,11 @@
 from pathlib import Path
 import re
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
+pytestmark = [pytest.mark.cpp, pytest.mark.static_sync]
 
 
 def read(rel: str) -> str:

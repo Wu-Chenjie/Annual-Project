@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from core import result_schema
 from core.result_schema import (
     SCHEMA_VERSION,
     build_benchmark_payload,
@@ -162,6 +163,23 @@ def test_runtime_engine_enum_rejects_unknown_value():
     payload["runtime_engine"] = "matlab"
     errs = validate(payload, "sim_result", strict=False)
     assert errs, "应当因为 enum 不匹配而失败"
+
+
+def test_missing_schema_file_raises_clear_error():
+    with pytest.raises(FileNotFoundError):
+        load_schema("__missing_schema__")
+
+
+def test_invalid_schema_raises_instead_of_falling_back(monkeypatch):
+    jsonschema = pytest.importorskip("jsonschema")
+    monkeypatch.setattr(
+        result_schema,
+        "load_schema",
+        lambda _name: {"type": 123},
+    )
+
+    with pytest.raises(jsonschema.exceptions.SchemaError):
+        result_schema.validate({}, "sim_result", strict=False)
 
 
 def test_run_with_config_writes_standard_layout(tmp_path: Path):

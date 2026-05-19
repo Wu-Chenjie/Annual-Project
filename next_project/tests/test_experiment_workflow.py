@@ -114,6 +114,8 @@ def test_rrt_dual_channel_online_scenario_is_registered():
     assert cfg.planner_horizon <= 3.0
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 def test_rrt_dual_channel_quick_run_records_rrt_escape():
     cfg = get_scenario_config("rrt_dual_channel_online", quick=True)
     apply_variant(cfg, "formation_aware_lookahead_adaptive")
@@ -142,6 +144,8 @@ def test_formation_maze_stress_online_scenario_is_registered():
     assert cfg.map_file.endswith("formation_maze_stress.json")
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 def test_unknown_map_online_scenario_starts_with_empty_planner_map():
     scenarios = list_scenarios("online")
     assert any(spec.name == "unknown_map_online" for spec in scenarios)

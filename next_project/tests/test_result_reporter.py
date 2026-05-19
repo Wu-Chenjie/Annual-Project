@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from experiments.result_reporter import FIGURE_NAMES, generate_result_report
 
 
@@ -181,6 +183,8 @@ def test_generate_result_report_compacts_dense_planning_events(tmp_path: Path):
     assert (tmp_path / "report_figures" / FIGURE_NAMES["planning"]).is_file()
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 def test_run_with_config_generates_report_by_default(tmp_path: Path):
     from config import get_config
     from main import run_with_config
@@ -204,6 +208,8 @@ def test_run_with_config_generates_report_by_default(tmp_path: Path):
     assert "## 预设场景" in (run_dir / "report.md").read_text(encoding="utf-8")
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 def test_obstacle_simulation_emits_planning_and_waypoint_events():
     from config import get_config
     from simulations.obstacle_scenario import ObstacleScenarioSimulation

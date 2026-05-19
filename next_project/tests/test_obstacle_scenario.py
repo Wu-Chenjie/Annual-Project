@@ -25,6 +25,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+pytestmark = [pytest.mark.integration, pytest.mark.slow]
+
 # 确保 next_project 在路径中。
 _here = Path(__file__).resolve().parent
 _project = _here.parent

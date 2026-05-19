@@ -425,7 +425,7 @@ Expected: no preset drift between CLI and Web metadata.
 - Create or modify: `pytest.ini`
 - Test: `next_project/tests/test_result_schema.py`
 
-- [ ] **Step 1: Add pytest markers**
+- [x] **Step 1: Add pytest markers**
 
 Add marker declarations:
 
@@ -439,7 +439,7 @@ markers =
     static_sync: source-level synchronization checks
 ```
 
-- [ ] **Step 2: Mark slow and C++ tests**
+- [x] **Step 2: Mark slow and C++ tests**
 
 Add decorators to long simulation and C++ tests:
 
@@ -452,15 +452,15 @@ def test_obstacle_simulation_zero_collision():
     ...
 ```
 
-- [ ] **Step 3: Package schemas**
+- [x] **Step 3: Package schemas**
 
 Update `pyproject.toml` package-data settings so schema JSON files are included in built packages.
 
-- [ ] **Step 4: Tighten schema fallback**
+- [x] **Step 4: Tighten schema fallback**
 
 In `result_schema.py`, only fall back to lightweight validation on `ImportError` for optional dependencies. Missing schema files or invalid schema should raise a clear exception.
 
-- [ ] **Step 5: Verify PR 7**
+- [x] **Step 5: Verify PR 7**
 
 Run:
 

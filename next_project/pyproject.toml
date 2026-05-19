@@ -31,8 +31,11 @@ web = [
 ]
 
 [tool.setuptools]
-packages = ["core", "core.planning", "simulations", "experiments", "experiments.calibration"]
+packages = ["core", "core.planning", "simulations", "experiments", "experiments.calibration", "schemas"]
 py-modules = ["config", "main"]
+
+[tool.setuptools.package-data]
+schemas = ["*.json"]
 
 [tool.pytest.ini_options]
 # 唯一权威 pytest 配置；pytest.ini 已删除。
@@ -40,3 +43,10 @@ py-modules = ["config", "main"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
+markers = [
+    "unit: fast unit tests",
+    "integration: simulation integration tests",
+    "slow: long-running tests",
+    "cpp: C++ build or executable tests",
+    "static_sync: source-level synchronization checks",
+]

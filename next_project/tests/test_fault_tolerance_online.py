@@ -3,10 +3,14 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from config import get_config
 from simulations.obstacle_scenario import ObstacleScenarioSimulation
+
+pytestmark = [pytest.mark.integration, pytest.mark.slow]
 
 
 def test_fault_tolerance_online_runs_and_logs_fault_events():

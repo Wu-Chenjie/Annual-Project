@@ -141,12 +141,13 @@ def validate(payload: Mapping[str, Any], schema_name: str, *, strict: bool = Tru
     try:
         import jsonschema  # type: ignore
 
+        jsonschema.Draft7Validator.check_schema(schema)
         validator = jsonschema.Draft7Validator(schema)
         errors = [
             f"{'/'.join(str(p) for p in err.absolute_path) or '/'}: {err.message}"
             for err in validator.iter_errors(payload)
         ]
-    except Exception:  # pragma: no cover - 依赖缺失或异常时回退
+    except ImportError:  # pragma: no cover - jsonschema is optional
         errors = _fallback_validate(payload, schema)
 
     if strict and errors:

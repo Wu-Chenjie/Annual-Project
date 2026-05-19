@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 _here = Path(__file__).resolve().parent
 _project = _here.parent
@@ -62,6 +63,8 @@ def test_trajectory_optimizer_falls_back_when_clearance_gate_rejects_smoothed_pa
     assert np.allclose(result.positions[-1], path[-1])
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 def test_obstacle_scenario_emits_planned_trajectory_when_enabled():
     config = SimulationConfig(
         max_sim_time=0.5,

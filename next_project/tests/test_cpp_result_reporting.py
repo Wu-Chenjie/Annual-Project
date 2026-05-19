@@ -8,6 +8,9 @@ from pathlib import Path
 from experiments.report_cpp_results import generate_cpp_result_report
 from experiments.run_cpp_report import find_sim_result_path, run_cpp_and_report
 
+_PROJECT = Path(__file__).resolve().parents[1]
+pytestmark = pytest.mark.cpp
+
 
 def _cpp_payload() -> dict:
     return {
@@ -121,10 +124,10 @@ def test_generate_cpp_result_report_uses_cpp_output_names(tmp_path: Path):
 
 
 def test_cpp_sources_expose_formation_adaptation_presets_and_fields():
-    config_h = Path("cpp/include/config.hpp").read_text(encoding="utf-8")
-    dynamic_main = Path("cpp/src/dynamic_main.cpp").read_text(encoding="utf-8")
-    warehouse_main = Path("cpp/src/warehouse_main.cpp").read_text(encoding="utf-8")
-    result_writer = Path("cpp/include/result_writer.hpp").read_text(encoding="utf-8")
+    config_h = (_PROJECT / "cpp/include/config.hpp").read_text(encoding="utf-8")
+    dynamic_main = (_PROJECT / "cpp/src/dynamic_main.cpp").read_text(encoding="utf-8")
+    warehouse_main = (_PROJECT / "cpp/src/warehouse_main.cpp").read_text(encoding="utf-8")
+    result_writer = (_PROJECT / "cpp/include/result_writer.hpp").read_text(encoding="utf-8")
 
     assert "config_rrt_dual_channel_online" in config_h
     assert "config_formation_maze_stress_online" in config_h
@@ -151,14 +154,15 @@ def test_find_sim_result_path_from_cpp_stdout(tmp_path: Path):
     assert found == result_path
 
 
+@pytest.mark.slow
 def test_cpp_warehouse_output_contains_observer_and_obstacle_model(tmp_path: Path):
-    exe = Path("cpp/build/sim_warehouse.exe")
+    exe = _PROJECT / "cpp/build/sim_warehouse.exe"
     if not exe.is_file():
         pytest.skip("C++ warehouse executable is not built")
 
     sim_result, report_path = run_cpp_and_report(
         exe,
-        cwd=Path.cwd(),
+        cwd=_PROJECT,
         output_dir=tmp_path / "cpp_report",
         title="C++仓库观察器报告",
     )
@@ -191,8 +195,9 @@ def test_cpp_warehouse_output_contains_observer_and_obstacle_model(tmp_path: Pat
     assert (tmp_path / "cpp_report" / "cpp_report_figures" / "场景与路线.png").is_file()
 
 
+@pytest.mark.slow
 def test_cpp_dynamic_replay_outputs_formation_metadata_for_new_presets(tmp_path: Path):
-    exe = Path("cpp/build/sim_dynamic_replay.exe")
+    exe = _PROJECT / "cpp/build/sim_dynamic_replay.exe"
     if not exe.is_file():
         pytest.skip("C++ dynamic replay executable is not built")
 
@@ -218,7 +223,7 @@ def test_cpp_dynamic_replay_outputs_formation_metadata_for_new_presets(tmp_path:
 
     completed = subprocess.run(
         [str(exe), str(input_path), "-o", str(output_path)],
-        cwd=Path.cwd(),
+        cwd=_PROJECT,
         text=True,
         encoding="utf-8",
         errors="replace",
@@ -238,14 +243,15 @@ def test_cpp_dynamic_replay_outputs_formation_metadata_for_new_presets(tmp_path:
     assert isinstance(replay["formation_adaptation_events"], list)
 
 
+@pytest.mark.slow
 def test_cpp_standard_sim_accepts_new_formation_preset(tmp_path: Path):
-    exe = Path("cpp/build/sim_warehouse.exe")
+    exe = _PROJECT / "cpp/build/sim_warehouse.exe"
     if not exe.is_file():
         pytest.skip("C++ warehouse executable is not built")
 
     sim_result, report_path = run_cpp_and_report(
         exe,
-        cwd=Path.cwd(),
+        cwd=_PROJECT,
         output_dir=tmp_path / "cpp_report",
         title="C++ 编队调控预设报告",
         extra_args=["--preset", "rrt_dual_channel_online", "--max-sim-time", "0.5"],
