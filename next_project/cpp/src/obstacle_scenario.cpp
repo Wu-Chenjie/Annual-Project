@@ -114,6 +114,7 @@ ImprovedArtificialPotentialField ObstacleScenarioSimulation::build_apf() const {
 
     // 未知地图: APF 同样工作，排斥力来自传感器动态发现的障碍场
     return ImprovedArtificialPotentialField(
+    return ImprovedArtificialPotentialField(
         k_rep, r_rep, n_decay, k_inter, s_inter, mu_escape, max_acc,
         k_comm, comm_range, adaptive_n_decay);
 }
@@ -139,6 +140,7 @@ void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const
     apply_planning_z_bounds();
 
     esdf_.build(grid_);  // 构建 ESDF 距离场
+    obstacles_.set_sdf_callback(
     obstacles_.set_sdf_callback(
         [](const void* ctx, double x, double y, double z) -> double {
             return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
@@ -181,6 +183,7 @@ void ObstacleScenarioSimulation::setup_obstacles() {
     apply_planning_z_bounds();
 
     esdf_.build(grid_);  // 构建 ESDF 距离场
+    obstacles_.set_sdf_callback(
     obstacles_.set_sdf_callback(
         [](const void* ctx, double x, double y, double z) -> double {
             return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});

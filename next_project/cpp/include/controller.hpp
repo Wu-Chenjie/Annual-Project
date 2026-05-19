@@ -112,6 +112,7 @@ public:
     std::array<double, 3> K2;  // 速度误差增益
 
     // 误差饱和限幅
+    std::array<double, 3> K0;  // Integral error gain
     double z0_limit = 3.0;
     double z1_limit = 5.0;
     double z2_limit = 10.0;
