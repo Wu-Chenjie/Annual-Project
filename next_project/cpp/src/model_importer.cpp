@@ -234,7 +234,6 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
 
     // 阶段1: 构建解析计划（header 结束后只执行一次，仅 62 次字符串比较）
     {
-        {
         enum class PlyField { X, Y, Z, Unknown };
         auto ply_type_size = [](const std::string& t) -> int {
             if (t == "char" || t == "int8" || t == "uchar" || t == "uint8") return 1;
@@ -281,7 +280,6 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
 
         // 阶段2: 一次性读取全部顶点数据
         std::size_t vertex_data_size = static_cast<std::size_t>(vertex_count) * vertex_stride;
-        std::size_t vertex_data_size = static_cast<std::size_t>(vertex_count) * vertex_stride;
         if (body_start + vertex_data_size > data.size())
             throw std::runtime_error("Unexpected end of binary PLY vertex data");
         const uint8_t* vbuf = data.data() + body_start;
@@ -315,7 +313,6 @@ std::pair<std::vector<Vertex>, std::vector<Triangle>> parse_ply(const std::vecto
         }
 
         // 阶段4: 解析面数据（维持原逻辑）
-        std::size_t offset = body_start + vertex_data_size;
         std::size_t offset = body_start + vertex_data_size;
         int face_count_size = ply_type_size(face_count_type);
         int face_index_size = ply_type_size(face_index_type);
@@ -415,7 +412,6 @@ std::pair<ObstacleField, std::array<Vec3, 2>> model_to_field(
 
     // 体素化顶点
     for (const auto& v : shifted) {
-    for (const auto& v : shifted) {
         occupied.insert(vec_cell(v.x, v.y, v.z, voxel_size));
     }
 
@@ -494,7 +490,6 @@ std::pair<ObstacleField, std::array<Vec3, 2>> import_model(
     f.close();
 
     // 根据扩展名分发
-    auto ext_pos = filepath.rfind('.');
     auto ext_pos = filepath.rfind('.');
     std::string ext = (ext_pos != std::string::npos) ? filepath.substr(ext_pos) : "";
     for (auto& c : ext) c = static_cast<char>(std::tolower(c));

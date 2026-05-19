@@ -15,12 +15,10 @@ namespace sim {
 
 // 三维欧几里得有符号距离场：O(1) 查表替代 O(N) 障碍物遍历
 class ESDFGrid {
-class ESDFGrid {
 public:
     ESDFGrid() = default;
 
     // 从 OccupancyGrid 构建（occupied>=1 的体素作为障碍物源点）
-    void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
     void build(const OccupancyGrid& grid, double truncation_distance = -1.0) {
         origin_ = grid.origin;
         resolution_ = grid.resolution;
@@ -60,14 +58,11 @@ public:
                     }
                 }
         bfs_expand(q_in, inside_, truncation_distance);
-        build_gradient();
-
         // 预计算梯度
         build_gradient();
     }
 
     // O(1) 有符号距离查询
-    [[nodiscard]] double signed_distance(const Vec3& p) const {
     [[nodiscard]] double signed_distance(const Vec3& p) const {
         auto [ix, iy, iz, fx, fy, fz] = world_to_frac(p);
         if (!inside_bounds(ix, iy, iz)) {
@@ -151,7 +146,6 @@ private:
     // 26 邻域 BFS 扩散 (使用 priority_queue Dijkstra)
     void bfs_expand(std::queue<std::array<int, 3>>& q, std::vector<float>& dist, double trunc) {
         // 预计算 26 邻域偏移及步长
-        struct Nb { int dx, dy, dz; double step; };
         struct Nb { int dx, dy, dz; double step; };
         std::array<Nb, 26> nb;
         int ni = 0;
