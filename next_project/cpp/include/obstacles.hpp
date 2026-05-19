@@ -8,6 +8,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <type_traits>
 #include <variant>
 #include <vector>
 

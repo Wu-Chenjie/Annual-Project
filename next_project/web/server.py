@@ -103,7 +103,10 @@ def _safe_map_path(name: str) -> Path:
 
 
 def _safe_name(name: str, default: str, label: str) -> str:
-    stem = Path(name or default).stem
+    raw = str(name or default)
+    if "/" in raw or "\\" in raw or ".." in raw:
+        raise HTTPException(400, f"Invalid {label.lower()}")
+    stem = Path(raw).stem
     stem = re.sub(r"[^A-Za-z0-9_-]+", "_", stem).strip("_")
     if not stem:
         raise HTTPException(400, f"{label} must contain letters, numbers, _ or -")
@@ -147,6 +150,43 @@ def _require_reconstruction_image_count(count: int) -> None:
         )
     if count < 2:
         raise HTTPException(400, "Reconstruction needs at least 2 photos; 10+ overlapping indoor photos is more realistic.")
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _is_vec(value: Any, length: int) -> bool:
+    return isinstance(value, list) and len(value) == length and all(_is_number(item) for item in value)
+
+
+def _validate_map_json(map_json: dict[str, Any]) -> None:
+    bounds = map_json.get("bounds")
+    if not isinstance(bounds, list) or len(bounds) != 2 or not all(_is_vec(point, 3) for point in bounds):
+        raise HTTPException(400, "bounds must be [[x,y,z], [x,y,z]]")
+    obstacles = map_json.get("obstacles")
+    if not isinstance(obstacles, list):
+        raise HTTPException(400, "obstacles must be an array")
+    for index, obstacle in enumerate(obstacles):
+        if not isinstance(obstacle, dict):
+            raise HTTPException(400, f"obstacle {index} must be an object")
+        kind = obstacle.get("type")
+        if kind == "aabb":
+            if not _is_vec(obstacle.get("min"), 3) or not _is_vec(obstacle.get("max"), 3):
+                raise HTTPException(400, f"obstacle {index} aabb requires min and max 3D vectors")
+        elif kind == "sphere":
+            if not _is_vec(obstacle.get("center"), 3) or not _is_number(obstacle.get("radius")) or obstacle["radius"] <= 0:
+                raise HTTPException(400, f"obstacle {index} sphere requires center and positive radius")
+        elif kind == "cylinder":
+            if (
+                not _is_vec(obstacle.get("center_xy"), 2)
+                or not _is_vec(obstacle.get("z_range"), 2)
+                or not _is_number(obstacle.get("radius"))
+                or obstacle["radius"] <= 0
+            ):
+                raise HTTPException(400, f"obstacle {index} cylinder requires center_xy, z_range, and positive radius")
+        else:
+            raise HTTPException(400, f"obstacle {index} has unsupported type: {kind!r}")
 
 
 def _reconstruction_commands(scene: str) -> dict[str, list[str]]:
@@ -636,8 +676,9 @@ async def plotly_js() -> Response:
 @app.post("/api/maps/validate")
 async def validate_map(request: Request) -> dict[str, Any]:
     body = await request.json()
-    if not isinstance(body.get("bounds"), list) or not isinstance(body.get("obstacles"), list):
-        raise HTTPException(400, "Map JSON must contain bounds and obstacles arrays")
+    if not isinstance(body, dict):
+        raise HTTPException(400, "Map JSON must be an object")
+    _validate_map_json(body)
     return {"ok": True, "obstacle_count": len(body["obstacles"])}
 
 
@@ -648,8 +689,7 @@ async def save_map(request: Request) -> dict[str, Any]:
     map_json = body.get("map")
     if not isinstance(map_json, dict):
         raise HTTPException(400, "Request must contain a map object")
-    if not isinstance(map_json.get("bounds"), list) or not isinstance(map_json.get("obstacles"), list):
-        raise HTTPException(400, "Map JSON must contain bounds and obstacles arrays")
+    _validate_map_json(map_json)
     if "waypoints" in map_json and not isinstance(map_json["waypoints"], list):
         raise HTTPException(400, "waypoints must be an array")
     path = _safe_map_path(name)
@@ -786,29 +826,30 @@ async def simulate(request: Request) -> dict[str, Any]:
         raise HTTPException(429, "Another simulation is already running; try again after it finishes")
     try:
         body = await request.json()
+        map_name = body.get("map_file") or body.get("base_config", {}).get("map_file")
+        if isinstance(map_name, str) and map_name and ("/" in map_name or "\\" in map_name or ".." in map_name):
+            raise HTTPException(400, "map_file must be a map name in the server maps directory")
         exe = _resolve_executable()
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             input_path = tmp / "input.json"
             output_path = tmp / "output.json"
             sim_input = dict(body)
-            map_name = sim_input.get("map_file") or sim_input.get("base_config", {}).get("map_file")
             if isinstance(map_name, str) and map_name:
-                if "/" not in map_name and "\\" not in map_name and ".." not in map_name:
-                    source_map = _safe_map_path(Path(map_name).stem)
-                    if source_map.exists():
-                        tmp_map = tmp / source_map.name
-                        shutil.copyfile(source_map, tmp_map)
-                        sim_input["map_file"] = str(tmp_map)
-                        base_config = dict(sim_input.get("base_config") or {})
-                        try:
-                            source_map_json = json.loads(source_map.read_text(encoding="utf-8"))
-                        except Exception:
-                            source_map_json = {}
-                        if "waypoints" not in base_config and isinstance(source_map_json.get("waypoints"), list):
-                            base_config["waypoints"] = source_map_json["waypoints"]
-                        base_config["map_file"] = str(tmp_map)
-                        sim_input["base_config"] = base_config
+                source_map = _safe_map_path(Path(map_name).stem)
+                if source_map.exists():
+                    tmp_map = tmp / source_map.name
+                    shutil.copyfile(source_map, tmp_map)
+                    sim_input["map_file"] = str(tmp_map)
+                    base_config = dict(sim_input.get("base_config") or {})
+                    try:
+                        source_map_json = json.loads(source_map.read_text(encoding="utf-8"))
+                    except Exception:
+                        source_map_json = {}
+                    if "waypoints" not in base_config and isinstance(source_map_json.get("waypoints"), list):
+                        base_config["waypoints"] = source_map_json["waypoints"]
+                    base_config["map_file"] = str(tmp_map)
+                    sim_input["base_config"] = base_config
             input_path.write_text(json.dumps(sim_input, indent=2, ensure_ascii=False), encoding="utf-8")
             ts_start = time.perf_counter()
             result = subprocess.run(
