@@ -172,7 +172,7 @@ SCENARIOS: dict[str, ScenarioSpec] = {
     ),
     "unknown_map_online": ScenarioSpec(
         name="unknown_map_online",
-        category="unknown",
+        category="online",
         description="Unknown-map online exploration with an empty initial planner map and sensor-discovered obstacles.",
     ),
     "laboratory": ScenarioSpec(

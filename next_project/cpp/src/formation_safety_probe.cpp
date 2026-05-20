@@ -70,7 +70,7 @@ int main() {
     };
 
     ObstacleField field;
-    field.add_sphere(Vec3{0.05, 0.00, 1.55}, 0.18);
+    field.add_sphere(Vec3{0.05, 0.00, 1.55}, 0.30);
 
     ObstacleScenarioSimulation scenario(cfg);
     scenario.set_obstacles(
