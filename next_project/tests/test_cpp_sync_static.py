@@ -61,7 +61,17 @@ def test_cpp_report_pipeline_is_opt_in():
     assert "if (!enabled) return false;" in result_writer
     assert "--report" in warehouse_main
     assert "run_report_pipeline(output_path, cli.report)" in warehouse_main
-    assert "run_report_pipeline(json_path, report_enabled)" in scene_main
+    assert "run_report_pipeline(json_path, cli.report_enabled)" in scene_main
+
+
+def test_cpp_scene_3dgs_cli_parses_report_flag_separately_from_positionals():
+    scene_main = read("cpp/src/scene_3dgs_main.cpp")
+
+    assert "struct CliOptions" in scene_main
+    assert 'if (arg == "--report")' in scene_main
+    assert "positional.push_back(arg)" in scene_main
+    assert "std::stod(argv[2])" not in scene_main
+    assert "std::stoi(argv[5])" not in scene_main
 
 
 def config_body(name: str) -> str:

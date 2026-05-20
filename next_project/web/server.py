@@ -7,6 +7,7 @@ Run from this directory:
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import shutil
@@ -29,6 +30,12 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8765
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 SIMULATE_CONCURRENCY_LIMIT = 1
+MIN_MODEL_VOXEL_SIZE = 0.02
+MAX_MODEL_VOXEL_SIZE = 5.0
+MIN_MODEL_SCALE = 0.001
+MAX_MODEL_SCALE = 1000.0
+MAX_MODEL_PADDING = 100.0
+MAX_MODEL_OBSTACLES = 100_000
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 import sys
@@ -153,7 +160,7 @@ def _require_reconstruction_image_count(count: int) -> None:
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
 
 
 def _is_vec(value: Any, length: int) -> bool:
@@ -187,6 +194,66 @@ def _validate_map_json(map_json: dict[str, Any]) -> None:
                 raise HTTPException(400, f"obstacle {index} cylinder requires center_xy, z_range, and positive radius")
         else:
             raise HTTPException(400, f"obstacle {index} has unsupported type: {kind!r}")
+
+
+def _require_json_object(body: Any, label: str = "Request JSON") -> dict[str, Any]:
+    if not isinstance(body, dict):
+        raise HTTPException(400, f"{label} must be an object")
+    return body
+
+
+def _optional_json_object(value: Any, label: str) -> dict[str, Any]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise HTTPException(400, f"{label} must be an object")
+    return value
+
+
+def _unwrap_fastapi_default(value: Any) -> Any:
+    return getattr(value, "default", value)
+
+
+def _coerce_finite_float(value: Any, name: str) -> float:
+    raw = _unwrap_fastapi_default(value)
+    if isinstance(raw, bool):
+        raise HTTPException(400, f"{name} must be a finite number")
+    try:
+        parsed = float(raw)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(400, f"{name} must be a finite number") from exc
+    if not math.isfinite(parsed):
+        raise HTTPException(400, f"{name} must be a finite number")
+    return parsed
+
+
+def _coerce_positive_int(value: Any, name: str) -> int:
+    raw = _unwrap_fastapi_default(value)
+    if isinstance(raw, bool):
+        raise HTTPException(400, f"{name} must be an integer")
+    try:
+        parsed = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise HTTPException(400, f"{name} must be an integer") from exc
+    if parsed != float(raw):
+        raise HTTPException(400, f"{name} must be an integer")
+    return parsed
+
+
+def _validate_model_import_params(voxel_size: float, scale: float, padding: float, max_obstacles: int) -> tuple[float, float, float, int]:
+    voxel_size = _coerce_finite_float(voxel_size, "voxel_size")
+    scale = _coerce_finite_float(scale, "scale")
+    padding = _coerce_finite_float(padding, "padding")
+    max_obstacles = _coerce_positive_int(max_obstacles, "max_obstacles")
+    if not (MIN_MODEL_VOXEL_SIZE <= voxel_size <= MAX_MODEL_VOXEL_SIZE):
+        raise HTTPException(400, f"voxel_size must be between {MIN_MODEL_VOXEL_SIZE} and {MAX_MODEL_VOXEL_SIZE}")
+    if not (MIN_MODEL_SCALE <= scale <= MAX_MODEL_SCALE):
+        raise HTTPException(400, f"scale must be between {MIN_MODEL_SCALE} and {MAX_MODEL_SCALE}")
+    if not (0.0 <= padding <= MAX_MODEL_PADDING):
+        raise HTTPException(400, f"padding must be between 0 and {MAX_MODEL_PADDING}")
+    if not (1 <= max_obstacles <= MAX_MODEL_OBSTACLES):
+        raise HTTPException(400, f"max_obstacles must be between 1 and {MAX_MODEL_OBSTACLES}")
+    return voxel_size, scale, padding, max_obstacles
 
 
 def _reconstruction_commands(scene: str) -> dict[str, list[str]]:
@@ -675,16 +742,14 @@ async def plotly_js() -> Response:
 
 @app.post("/api/maps/validate")
 async def validate_map(request: Request) -> dict[str, Any]:
-    body = await request.json()
-    if not isinstance(body, dict):
-        raise HTTPException(400, "Map JSON must be an object")
+    body = _require_json_object(await request.json(), "Map JSON")
     _validate_map_json(body)
     return {"ok": True, "obstacle_count": len(body["obstacles"])}
 
 
 @app.post("/api/maps/save")
 async def save_map(request: Request) -> dict[str, Any]:
-    body = await request.json()
+    body = _require_json_object(await request.json())
     name = _safe_new_map_name(str(body.get("name") or "custom_map"))
     map_json = body.get("map")
     if not isinstance(map_json, dict):
@@ -712,6 +777,7 @@ async def import_model_map(
     padding: float = Form(1.0),
     max_obstacles: int = Form(4000),
 ) -> dict[str, Any]:
+    voxel_size, scale, padding, max_obstacles = _validate_model_import_params(voxel_size, scale, padding, max_obstacles)
     data = await _read_upload_limited(file, "Model file")
     if not data:
         raise HTTPException(400, "Empty model file")
@@ -825,8 +891,9 @@ async def simulate(request: Request) -> dict[str, Any]:
     if not _simulate_semaphore.acquire(blocking=False):
         raise HTTPException(429, "Another simulation is already running; try again after it finishes")
     try:
-        body = await request.json()
-        map_name = body.get("map_file") or body.get("base_config", {}).get("map_file")
+        body = _require_json_object(await request.json())
+        request_base_config = _optional_json_object(body.get("base_config"), "base_config")
+        map_name = body.get("map_file") or request_base_config.get("map_file")
         if isinstance(map_name, str) and map_name and ("/" in map_name or "\\" in map_name or ".." in map_name):
             raise HTTPException(400, "map_file must be a map name in the server maps directory")
         exe = _resolve_executable()
@@ -841,7 +908,7 @@ async def simulate(request: Request) -> dict[str, Any]:
                     tmp_map = tmp / source_map.name
                     shutil.copyfile(source_map, tmp_map)
                     sim_input["map_file"] = str(tmp_map)
-                    base_config = dict(sim_input.get("base_config") or {})
+                    base_config = dict(_optional_json_object(sim_input.get("base_config"), "base_config"))
                     try:
                         source_map_json = json.loads(source_map.read_text(encoding="utf-8"))
                     except Exception:
@@ -866,7 +933,7 @@ async def simulate(request: Request) -> dict[str, Any]:
             if not output_path.exists():
                 raise HTTPException(500, "C++ simulation did not produce output.json")
             raw = json.loads(output_path.read_text(encoding="utf-8"))
-            preset = body.get("preset") or body.get("base_config", {}).get("preset", "custom")
+            preset = body.get("preset") or request_base_config.get("preset", "custom")
             if build_web_sim_result_payload is not None:
                 return build_web_sim_result_payload(preset=preset, web_results=raw, runtime_s=ts_elapsed)
             return {"results": raw}

@@ -3,7 +3,10 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <limits>
+#include <stdexcept>
 #include <string>
+#include <vector>
 
 #include "model_importer.hpp"
 #include "obstacle_scenario.hpp"
@@ -13,6 +16,101 @@
 namespace {
 auto now() { return std::chrono::high_resolution_clock::now(); }
 double sec(auto start, auto end) { return std::chrono::duration<double>(end - start).count(); }
+
+struct CliOptions {
+    std::string model_path;
+    double voxel_size = 0.3;
+    double model_scale = 1.0;
+    double padding = 0.5;
+    int max_obstacles = 10000;
+    bool report_enabled = false;
+};
+
+void print_usage() {
+    std::cerr << "usage: sim_scene_3dgs <model.ply|model.obj|model.stl> "
+              << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000] [--report]\n"
+              << "       sim_scene_3dgs --report <model.ply|model.obj|model.stl> [voxel_size] [scale] [padding] [max_obstacles]\n";
+}
+
+bool parse_double_arg(const std::string& raw, const char* name, double& value) {
+    try {
+        std::size_t consumed = 0;
+        value = std::stod(raw, &consumed);
+        if (consumed != raw.size() || !std::isfinite(value)) {
+            throw std::invalid_argument("not a finite number");
+        }
+    } catch (const std::exception&) {
+        std::cerr << "invalid " << name << ": " << raw << "\n";
+        return false;
+    }
+    return true;
+}
+
+bool parse_int_arg(const std::string& raw, const char* name, int& value) {
+    try {
+        std::size_t consumed = 0;
+        long parsed = std::stol(raw, &consumed);
+        if (consumed != raw.size()
+            || parsed < std::numeric_limits<int>::min()
+            || parsed > std::numeric_limits<int>::max()) {
+            throw std::invalid_argument("not an int");
+        }
+        value = static_cast<int>(parsed);
+    } catch (const std::exception&) {
+        std::cerr << "invalid " << name << ": " << raw << "\n";
+        return false;
+    }
+    return true;
+}
+
+bool starts_with_dash_number(const std::string& raw) {
+    return raw.size() > 1
+        && raw[0] == '-'
+        && ((raw[1] >= '0' && raw[1] <= '9') || raw[1] == '.');
+}
+
+int parse_cli(int argc, char** argv, CliOptions& options) {
+    if (argc < 2) {
+        print_usage();
+        return 2;
+    }
+
+    std::vector<std::string> positional;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--help" || arg == "-h") {
+            print_usage();
+            return 0;
+        }
+        if (arg == "--report") {
+            options.report_enabled = true;
+            continue;
+        }
+        if (!arg.empty() && arg[0] == '-' && !starts_with_dash_number(arg)) {
+            std::cerr << "unknown option: " << arg << "\n";
+            print_usage();
+            return 2;
+        }
+        positional.push_back(arg);
+    }
+
+    if (positional.empty() || positional.size() > 5) {
+        print_usage();
+        return 2;
+    }
+
+    options.model_path = positional[0];
+    if (positional.size() > 1 && !parse_double_arg(positional[1], "voxel_size", options.voxel_size)) return 2;
+    if (positional.size() > 2 && !parse_double_arg(positional[2], "scale", options.model_scale)) return 2;
+    if (positional.size() > 3 && !parse_double_arg(positional[3], "padding", options.padding)) return 2;
+    if (positional.size() > 4 && !parse_int_arg(positional[4], "max_obstacles", options.max_obstacles)) return 2;
+
+    if (options.voxel_size <= 0.0 || options.model_scale <= 0.0 || options.padding < 0.0 || options.max_obstacles <= 0) {
+        std::cerr << "voxel_size, scale, and max_obstacles must be positive; padding must be non-negative\n";
+        return 2;
+    }
+    return -1;
+}
 }
 
 int main(int argc, char** argv) {
@@ -22,22 +120,14 @@ int main(int argc, char** argv) {
     using sim::SimulationVisualizer;
     using sim::import_model;
 
-    if (argc < 2) {
-        std::cerr << "usage: sim_scene_3dgs <model.ply|model.obj|model.stl> "
-                  << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000] [--report]\n";
-        return 2;
-    }
-    const std::string model_path = argv[1];
-    const double voxel_size = (argc > 2) ? std::stod(argv[2]) : 0.3;
-    const double model_scale = (argc > 3) ? std::stod(argv[3]) : 1.0;
-    const double padding = (argc > 4) ? std::stod(argv[4]) : 0.5;
-    const int max_obstacles = (argc > 5) ? std::stoi(argv[5]) : 10000;
-    const bool report_enabled = argc > 6 && std::string(argv[6]) == "--report";
+    CliOptions cli;
+    const int parse_status = parse_cli(argc, argv, cli);
+    if (parse_status >= 0) return parse_status;
 
     // [1] import
     std::cout << "[1] import_model... " << std::flush;
     auto t0 = now();
-    auto [field, bounds] = import_model(model_path, voxel_size, model_scale, padding, max_obstacles);
+    auto [field, bounds] = import_model(cli.model_path, cli.voxel_size, cli.model_scale, cli.padding, cli.max_obstacles);
     auto t1 = now();
     std::cout << field.size() << " obstacles, " << sec(t0,t1) << "s\n";
 
@@ -106,7 +196,7 @@ int main(int argc, char** argv) {
     auto json_path = run_dir / "sim_result.json";
     sim::write_result_json(json_path, result, planning_s, sim_s, "scene_3dgs", config, field, bounds);
     std::cout << "结果文件: " << json_path.string() << "\n";
-    run_report_pipeline(json_path, report_enabled);
+    run_report_pipeline(json_path, cli.report_enabled);
 
     return 0;
 }
