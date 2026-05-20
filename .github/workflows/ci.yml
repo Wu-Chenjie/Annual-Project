@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  python-and-cpp:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next_project
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: next_project/requirements-dev.lock.txt
+
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements-dev.lock.txt
+
+      - name: Configure CMake
+        run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build C++ targets
+        run: cmake --build cpp/build --config Release --parallel 2
+
+      - name: Run pytest
+        run: python -m pytest
