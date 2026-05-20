@@ -13,7 +13,8 @@
 
 namespace sim {
 
-// 三维欧几里得有符号距离场：O(1) 查表替代 O(N) 障碍物遍历
+// 三维网格近似有符号距离场：O(1) 查表替代 O(N) 障碍物遍历。
+// 距离由占据栅格上的 26 邻域 Dijkstra 近似得到，不声明为精确欧几里得 SDF。
 class ESDFGrid {
 public:
     ESDFGrid() = default;
