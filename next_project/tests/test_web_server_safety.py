@@ -113,6 +113,16 @@ def test_save_map_rejects_malformed_obstacle():
     assert not (server.MAPS_DIR / "bad_map.json").exists()
 
 
+def test_save_map_rejects_non_object_json_body():
+    from fastapi import HTTPException
+    from web import server
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(server.save_map(JsonRequest([])))
+
+    assert exc.value.status_code == 400
+
+
 def test_import_model_rejects_unsupported_extension():
     from fastapi import HTTPException, UploadFile
     from web import server
@@ -121,6 +131,21 @@ def test_import_model_rejects_unsupported_extension():
 
     async def run_request() -> None:
         await server.import_model_map(file=upload, map_name="mesh")
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(run_request())
+
+    assert exc.value.status_code == 400
+
+
+def test_import_model_rejects_unsafe_numeric_params():
+    from fastapi import HTTPException, UploadFile
+    from web import server
+
+    upload = UploadFile(filename="mesh.obj", file=BytesIO(b"v 0 0 0\n"))
+
+    async def run_request() -> None:
+        await server.import_model_map(file=upload, map_name="mesh", voxel_size=0.0)
 
     with pytest.raises(HTTPException) as exc:
         asyncio.run(run_request())
@@ -163,6 +188,30 @@ def test_simulate_rejects_path_traversal_map_before_running(monkeypatch):
 
     with pytest.raises(HTTPException) as exc:
         asyncio.run(server.simulate(request))
+
+    assert exc.value.status_code == 400
+
+
+def test_simulate_rejects_non_object_json_before_running(monkeypatch):
+    from fastapi import HTTPException
+    from web import server
+
+    monkeypatch.setattr(server, "_resolve_executable", lambda: (_ for _ in ()).throw(AssertionError("should not run")))
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(server.simulate(JsonRequest([])))
+
+    assert exc.value.status_code == 400
+
+
+def test_simulate_rejects_non_object_base_config_before_running(monkeypatch):
+    from fastapi import HTTPException
+    from web import server
+
+    monkeypatch.setattr(server, "_resolve_executable", lambda: (_ for _ in ()).throw(AssertionError("should not run")))
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(server.simulate(JsonRequest({"base_config": []})))
 
     assert exc.value.status_code == 400
 

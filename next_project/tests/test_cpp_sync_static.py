@@ -61,7 +61,17 @@ def test_cpp_report_pipeline_is_opt_in():
     assert "if (!enabled) return false;" in result_writer
     assert "--report" in warehouse_main
     assert "run_report_pipeline(output_path, cli.report)" in warehouse_main
-    assert "run_report_pipeline(json_path, report_enabled)" in scene_main
+    assert "run_report_pipeline(json_path, cli.report_enabled)" in scene_main
+
+
+def test_cpp_scene_3dgs_cli_parses_report_flag_separately_from_positionals():
+    scene_main = read("cpp/src/scene_3dgs_main.cpp")
+
+    assert "struct CliOptions" in scene_main
+    assert 'if (arg == "--report")' in scene_main
+    assert "positional.push_back(arg)" in scene_main
+    assert "std::stod(argv[2])" not in scene_main
+    assert "std::stoi(argv[5])" not in scene_main
 
 
 def test_cpp_msvc_build_reads_sources_as_utf8():
@@ -86,9 +96,10 @@ def test_cpp_dstar_lite_path_extraction_initializes_best_successor():
 def test_scene_3dgs_cli_scans_flags_before_positional_numbers():
     scene_main = read("cpp/src/scene_3dgs_main.cpp")
 
-    assert "std::vector<std::string> positional_args" in scene_main
+    assert "int parse_cli(int argc, char** argv, CliOptions& options)" in scene_main
+    assert "std::vector<std::string> positional" in scene_main
     assert "arg == \"--report\"" in scene_main
-    assert "positional_args.push_back(arg)" in scene_main
+    assert "positional.push_back(arg)" in scene_main
     assert "std::stod(argv[2])" not in scene_main
     assert "std::stoi(argv[5])" not in scene_main
 
