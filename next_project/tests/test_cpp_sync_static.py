@@ -64,6 +64,35 @@ def test_cpp_report_pipeline_is_opt_in():
     assert "run_report_pipeline(json_path, report_enabled)" in scene_main
 
 
+def test_cpp_msvc_build_reads_sources_as_utf8():
+    cmake = read("cpp/CMakeLists.txt")
+
+    assert "/utf-8" in cmake
+
+
+def test_cpp_msvc_crt_warning_is_suppressed_for_portable_std_calls():
+    cmake = read("cpp/CMakeLists.txt")
+
+    assert "_CRT_SECURE_NO_WARNINGS" in cmake
+
+
+def test_cpp_dstar_lite_path_extraction_initializes_best_successor():
+    source = read("cpp/include/dstar_lite.hpp")
+
+    assert "Idx best = cur;" in source
+    assert "cur = best;" in source
+
+
+def test_scene_3dgs_cli_scans_flags_before_positional_numbers():
+    scene_main = read("cpp/src/scene_3dgs_main.cpp")
+
+    assert "std::vector<std::string> positional_args" in scene_main
+    assert "arg == \"--report\"" in scene_main
+    assert "positional_args.push_back(arg)" in scene_main
+    assert "std::stod(argv[2])" not in scene_main
+    assert "std::stoi(argv[5])" not in scene_main
+
+
 def config_body(name: str) -> str:
     match = re.search(
         rf"inline ObstacleConfig {name}\(\) \{{(?P<body>.*?)\n\}}",

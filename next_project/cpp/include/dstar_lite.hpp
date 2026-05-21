@@ -194,7 +194,7 @@ inline std::vector<Vec3> DStarLite::extract_path() const {
         if (cur == goal_idx_) break;
         if (visited[cur]) break;
         visited[cur] = true;
-        Idx best; double bc = std::numeric_limits<double>::infinity();
+        Idx best = cur; double bc = std::numeric_limits<double>::infinity();
         for (const auto& s : successors(cur)) {
             double cc = cost(cur, s) + (g_.count(s) ? g_.at(s) : std::numeric_limits<double>::infinity());
             if (cc < bc) { bc = cc; best = s; }

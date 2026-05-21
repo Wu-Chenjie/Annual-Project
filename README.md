@@ -20,7 +20,7 @@ graph TD
     PLAN --> P1["A* / Hybrid A*"]
     PLAN --> P2["Dijkstra / D* Lite"]
     PLAN --> P3["RRT* / Informed RRT*"]
-    PLAN --> P4["ESDF / FIRI"]
+    PLAN --> P4["ESDF-like / FIRI"]
     PLAN --> P5["GNN 可见图 / 双模式"]
     PLAN --> P6["在线重规划器"]
 ```
@@ -50,7 +50,7 @@ graph TD
 │   │       ├── dstar_lite.py    # D* Lite 增量重规划
 │   │       ├── rrt_star.py      # RRT* 渐近最优
 │   │       ├── informed_rrt_star.py  # Informed RRT* 椭圆采样
-│   │       ├── esdf.py          # 欧几里得符号距离场
+│   │       ├── esdf.py          # 栅格欧氏距离场 / ESDF-like 软代价
 │   │       ├── firi.py          # 快速迭代区域膨胀
 │   │       ├── visibility_graph.py   # 障碍物顶点可见图
 │   │       ├── gnn_planner.py   # GNN 可见图变体规划器
@@ -80,7 +80,7 @@ graph TD
 | ---- | -------- |
 | **动力学** | 四旋翼刚体模型 + 旋翼推力分配 + 欧拉积分 |
 | **控制** | PID + 前馈 + Backstepping + SMC 滑模混合控制 |
-| **路径规划** | A\* / Hybrid A\* / D\* Lite / RRT\* / Informed RRT\* / ESDF / FIRI |
+| **路径规划** | A\* / Hybrid A\* / D\* Lite / RRT\* / Informed RRT\* / ESDF-like 软代价 / FIRI |
 | **避障** | 改进 APF（Rodrigues 旋转力场 + n_decay 自适应） + GNN 可见图 + 双模式调度 |
 | **编队** | 虚拟领航者 + 固定偏差 + 拓扑图（Laplacian λ₂） + 自适应收缩 |
 | **容错** | 三规则在线故障检测 + 拓扑自动重构 |
@@ -108,7 +108,10 @@ python simulations/benchmark.py
 
 ```bash
 python -m pytest
+python -m pytest -m "not slow"  # GitHub Actions 默认入口
 ```
+
+仓库已包含 `.github/workflows/ci.yml`，在 PR/push 时运行非 slow pytest 与 C++ CMake 全目标构建。
 
 ### C++ 重构
 
@@ -118,6 +121,8 @@ cmake --build cpp/build --config Release
 ./cpp/build/sim_main.exe          # 编队飞行
 ./cpp/build/sim_warehouse.exe     # 仓库避障
 ./cpp/build/sim_benchmark.exe     # 批量评测
+./cpp/build/sim_dynamic_replay.exe # Web 动态回放后端
+./cpp/build/sim_scene_3dgs.exe model.ply --report
 ```
 
 ### Web 3D 回放
@@ -133,7 +138,7 @@ cd web && python server.py
 | `basic` | 基础编队验证（方形航线） | PID+SMC |
 | `obstacle` | 简单障碍物避障（三柱） | APF |
 | `warehouse` | 工业仓库复杂场景 | A\* + D\* Lite + Backstepping+SMC |
-| `warehouse_a` | 仓库 A\* 版 | GNN Danger + ESDF 软代价 |
+| `warehouse_a` | 仓库 A\* 版 | GNN Danger + ESDF-like 软代价 |
 | `warehouse_online` | 仓库在线简化版 | A\* + 传感器 + D\* Lite + WindowReplanner |
 | `warehouse_danger` | 仓库在线 + GNN 双模式 | 改进 APF 保守档 |
 | `fault_tolerance` | 容错测试 | 故障注入 + 拓扑重构 |
@@ -156,8 +161,9 @@ cd web && python server.py
 | 文档 | 说明 |
 | ---- | ---- |
 | [技术文档](next_project/docs/技术文档.md) | 算法原理与公式推导 |
-| [避碰与控制技术文档](next_project/docs/避碰与控制技术文档.md) | 避碰系统详解 |
 | [GNN 分层双模式架构设计](next_project/docs/GNN分层双模式架构设计.md) | GNN 规划器架构 |
+| [能力对齐矩阵](next_project/docs/capability-matrix.md) | Python / C++ / Web 能力边界 |
+| [中期验收记录](next_project/docs/中期验收记录.md) | pytest、C++ build、CI 和答辩证据 |
 | [使用说明](next_project/docs/使用说明.md) | 详细使用教程 |
 | [答辩准备索引](next_project/docs/答辩准备索引.md) | 答辩要点汇总 |
 | [项目零基础讲解](next_project/docs/项目零基础讲解.md) | 入门引导 |

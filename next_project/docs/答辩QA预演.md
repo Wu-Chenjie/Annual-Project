@@ -361,9 +361,9 @@ Python 适合快速实现算法、测试和可视化。C++ 适合后续性能验
 
 **答：**
 
-当前机器没有安装 `cmake`、`g++`、`clang++` 或 MSVC `cl`，所以没有完成真实 C++ 编译验证。
+有。当前已经用 MSVC / CMake 完成 C++ 全目标构建，生成 `sim_main`、`sim_benchmark`、`sim_warehouse`、`sim_dynamic_replay`、`sim_apf_formation_probe`、`sim_formation_safety_probe` 和 `sim_scene_3dgs`。同时 `.github/workflows/ci.yml` 会在 PR/push 中执行非 slow pytest 和 C++ 构建。
 
-但是已经补充了 C++ 静态同步测试，检查关键模块、接口和调用链是否存在。后续安装工具链后，应立即执行 CMake 构建和 C++ 场景运行验证。
+需要注意：构建通过证明工程能编译，不等于 C++ 完整复现 Python 主线全部能力。行为一致性仍以能力矩阵、schema、报告测试和显式开启的跨线 runtime parity 为准。
 
 ## 十、质疑与防守
 
@@ -542,7 +542,7 @@ FIRI 在项目中用于路径安全走廊精修，目前实现的是工程化版
 
 ### Q1：你现在的中期目标到底达标了吗？
 
-达标。我的判断依据不是主观完成度，而是四类证据：第一，全量测试当前为 `170 passed, 3 skipped`，跳过项都是构建或环境开关型；第二，C++ 关键目标可以构建；第三，C++ 报告测试 `6 passed`，跨线回归开启后 `3 passed`；第四，中期要求的轨迹指标、编队安全、消融报告和中文报告都有产物路径。
+达标。我的判断依据不是主观完成度，而是四类证据：第一，当前 CI 快速回归为 `163 passed, 3 skipped, 75 deselected`，Web/C++/CI 静态守门为 `57 passed`；第二，C++ 全目标 CMake 构建通过，包含 `sim_dynamic_replay` 和 `sim_scene_3dgs`；第三，跨线 runtime parity 保留为显式开关测试，不和普通 CI 混淆；第四，中期要求的轨迹指标、编队安全、消融报告和中文报告都有产物路径。
 
 ### Q2：中期最能体现创新的点是什么？
 

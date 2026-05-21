@@ -1,4 +1,4 @@
-"""ESDF（欧氏符号距离场）+ CostAwareGrid 软代价包装。
+"""ESDF-like occupancy distance field + CostAwareGrid 软代价包装。
 
 用途
 ----
@@ -8,8 +8,8 @@
 
 原理
 ----
-1) compute_esdf：基于 scipy.ndimage.distance_transform_edt 计算占据栅格到
-   最近占据体素的欧氏距离（单位 m）。无 scipy 时退化为 6 邻域 BFS。
+1) compute_esdf：基于 scipy.ndimage.distance_transform_edt 计算自由体素到
+   最近占据体素的欧氏距离（单位 m）。无 scipy 时退化为 6 邻域 BFS 近似。
 2) CostAwareGrid：包装 OccupancyGrid/SDFAwareGrid，通过 duck-typing 暴露
    extra_cost(idx)，规划器自动检测并叠加到边代价上。
 

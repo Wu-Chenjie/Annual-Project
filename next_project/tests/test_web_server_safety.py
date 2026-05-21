@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import math
 from io import BytesIO
 from pathlib import Path
 
@@ -67,6 +68,28 @@ def test_simulate_rejects_when_concurrency_slot_is_busy(monkeypatch):
         server._simulate_semaphore.release()
 
     assert exc.value.status_code == 429
+
+
+@pytest.mark.parametrize("payload", [None, [], "not an object"])
+def test_simulate_rejects_non_object_json_body_before_running(monkeypatch, payload):
+    from fastapi import HTTPException
+    from web import server
+
+    monkeypatch.setattr(server, "_resolve_executable", lambda: (_ for _ in ()).throw(AssertionError("should not run")))
+    request = JsonRequest(payload)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(server.simulate(request))
+
+    assert exc.value.status_code == 400
+    assert exc.value.detail == "Request JSON must be an object"
+
+
+@pytest.mark.parametrize("value", [math.nan, math.inf, -math.inf])
+def test_map_number_validation_rejects_non_finite_values(value):
+    from web import server
+
+    assert server._is_number(value) is False
 
 
 def test_save_map_rejects_malformed_obstacle():

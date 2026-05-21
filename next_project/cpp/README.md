@@ -23,6 +23,10 @@ Required toolchain:
 - A C++20 compiler (GCC 11+, Clang 14+, MSVC 2022, or MinGW-w64 with C++20)
 - Ninja is recommended for Docker/Conda builds but not required
 
+MSVC builds are configured with `/utf-8` and `_CRT_SECURE_NO_WARNINGS` through
+`CMakeLists.txt`; this keeps UTF-8 source comments readable and avoids noisy CRT
+warnings for portable standard-library time/environment calls.
+
 From the project root:
 
 ```bash
@@ -42,6 +46,24 @@ cmake --build build --config Release
 - `sim_main`: basic formation simulation.
 - `sim_benchmark`: benchmark runner.
 - `sim_warehouse`: warehouse obstacle scenario.
+- `sim_dynamic_replay`: dynamic obstacle replay backend used by the Web server.
+- `sim_apf_formation_probe`: APF/formation probe executable for focused checks.
+- `sim_formation_safety_probe`: formation safety probe executable.
+- `sim_scene_3dgs`: imported `.ply` / `.obj` / `.stl` scene runner. Optional
+  `--report` may appear before or after positional numeric arguments.
+
+## CI / Build Verification
+
+The repository-level `.github/workflows/ci.yml` configures and builds all C++
+targets with:
+
+```bash
+cmake -S next_project/cpp -B next_project/cpp/build_ci -DCMAKE_BUILD_TYPE=Release
+cmake --build next_project/cpp/build_ci --config Release --parallel
+```
+
+The same command was run locally on Windows/MSVC on 2026-05-21 and produced all
+listed executables without compiler warnings.
 
 ## Manual g++ Build
 
@@ -65,6 +87,8 @@ g++ -O3 -std=c++20 -Iinclude \
 ./build/sim_main
 ./build/sim_benchmark
 ./build/sim_warehouse
+./build/sim_dynamic_replay input.json -o output.json
+./build/sim_scene_3dgs model.ply --report
 ```
 
 On Windows/MSYS2, the executable names may end with `.exe`.

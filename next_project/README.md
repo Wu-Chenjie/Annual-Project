@@ -82,12 +82,21 @@ The Web replay server is a local development tool by default. Bind it to
 `127.0.0.1` unless you add authentication, upload limits, rate limiting, and
 network isolation appropriate for an exposed service.
 
+`/api/simulate` accepts only a JSON object body. Non-object payloads return
+HTTP 400 before the C++ replay executable is resolved, map names are constrained
+to the server maps directory, and map numeric fields reject `NaN` / `Infinity`
+instead of forwarding non-finite values into C++ simulation input.
+
 ## Test
 
 ```bash
 python -m pytest          # 串行
+python -m pytest -m "not slow"  # CI 默认快速回归
 python -m pytest -n auto  # 需要先 pip install pytest-xdist
 ```
+
+GitHub Actions workflow: `.github/workflows/ci.yml` runs the non-slow pytest
+suite and a CMake C++ build on PR/push.
 
 ## Generated Files
 
@@ -222,8 +231,8 @@ python scripts/compare_results.py \
 ## C++ Build
 
 ```bash
-cmake -S cpp -B cpp/build
-cmake --build cpp/build
+cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
+cmake --build cpp/build --config Release --parallel
 ```
 
 The C++ targets currently include:
@@ -231,4 +240,13 @@ The C++ targets currently include:
 - `sim_main`
 - `sim_benchmark`
 - `sim_warehouse`
+- `sim_dynamic_replay`
+- `sim_apf_formation_probe`
+- `sim_formation_safety_probe`
+- `sim_scene_3dgs`
+
+On MSVC, CMake compiles sources as UTF-8 and suppresses portable CRT warnings so
+Chinese comments do not corrupt parsing. `sim_scene_3dgs` scans flags before
+positional numeric arguments, so `sim_scene_3dgs model.ply --report` is valid
+and no longer tries to parse `--report` as `voxel_size`.
 - `sim_dynamic_replay`

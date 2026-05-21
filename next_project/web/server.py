@@ -7,6 +7,7 @@ Run from this directory:
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import shutil
@@ -153,7 +154,7 @@ def _require_reconstruction_image_count(count: int) -> None:
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
 def _is_vec(value: Any, length: int) -> bool:
@@ -826,7 +827,11 @@ async def simulate(request: Request) -> dict[str, Any]:
         raise HTTPException(429, "Another simulation is already running; try again after it finishes")
     try:
         body = await request.json()
-        map_name = body.get("map_file") or body.get("base_config", {}).get("map_file")
+        if not isinstance(body, dict):
+            raise HTTPException(400, "Request JSON must be an object")
+        body_base_config = body.get("base_config")
+        base_config_body = body_base_config if isinstance(body_base_config, dict) else {}
+        map_name = body.get("map_file") or base_config_body.get("map_file")
         if isinstance(map_name, str) and map_name and ("/" in map_name or "\\" in map_name or ".." in map_name):
             raise HTTPException(400, "map_file must be a map name in the server maps directory")
         exe = _resolve_executable()
@@ -866,7 +871,7 @@ async def simulate(request: Request) -> dict[str, Any]:
             if not output_path.exists():
                 raise HTTPException(500, "C++ simulation did not produce output.json")
             raw = json.loads(output_path.read_text(encoding="utf-8"))
-            preset = body.get("preset") or body.get("base_config", {}).get("preset", "custom")
+            preset = body.get("preset") or base_config_body.get("preset", "custom")
             if build_web_sim_result_payload is not None:
                 return build_web_sim_result_payload(preset=preset, web_results=raw, runtime_s=ts_elapsed)
             return {"results": raw}

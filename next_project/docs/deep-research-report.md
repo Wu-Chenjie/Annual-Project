@@ -1,6 +1,6 @@
 # Annual-Project 仓库深度研究与答辩材料
 
-> `urlAnnual-Project 仓库https://github.com/Wu-Chenjie/Annual-Project` 已经从“单一编队仿真脚本”演化为一个以 `next_project` 为核心的多无人机研究型平台：Python 主线覆盖动力学、规划、安全链路、容错重构与风险报告，C++ 与 Web 提供性能验证和动态回放子集。仓库文档给出了默认场景约 2.3 s、5 组随机种子 benchmark 约 2.591 s，以及多个在线场景零碰撞的结果；但连续轨迹优化、依赖锁定、Python/C++ 对齐、真实数据/CI/许可证等仍未闭环或未说明。 
+> `urlAnnual-Project 仓库https://github.com/Wu-Chenjie/Annual-Project` 已经从“单一编队仿真脚本”演化为一个以 `next_project` 为核心的多无人机研究型平台：Python 主线覆盖动力学、规划、安全链路、容错重构与风险报告，C++ 与 Web 提供性能验证和动态回放子集。仓库文档给出了默认场景约 2.3 s、5 组随机种子 benchmark 约 2.591 s，以及多个在线场景零碰撞的结果；短期工程化已补齐依赖锁定、Python/C++/Web 对齐矩阵、GitHub Actions CI 和本地 C++ 全目标构建记录，剩余公开化风险主要集中在真实数据、许可证和长期治理材料。
 
 ## 仓库分析与关键判断
 
@@ -25,7 +25,7 @@ flowchart LR
 
 上图对应的主链路来自仓库文档：`config.py` 通过预设驱动场景，`main.py` 进入普通编队仿真或障碍场景，规划与控制在循环中协同，最终汇总到可视化、benchmark、风险报告与 Web 回放。文档还说明了结果结构中存在 `time`、`leader`、`followers`、`errors`、`metrics`，以及障碍物场景中的 `planned_path`、`executed_path`、`replan_events`、`sensor_logs`、`collision_log`、`fault_log` 等字段，这为后续答辩与论文写作提供了非常好的证据链基础。
 
-仓库依赖本身并不重，但存在典型“研究代码可跑、工程交付未锁定”的问题：`pyproject.toml` 只要求 Python ≥ 3.10，运行依赖为 `numpy`、`matplotlib`、`scipy`、`plotly`、`cvxpy>=1.4`、`osqp>=0.6`，开发依赖只有 `pytest`；测试入口既写在 `pyproject.toml`，也单独放在 `pytest.ini`。这说明作者已经有包化意识，但仍缺少 lockfile、容器化和跨平台一键环境说明。尤其 `cvxpy`/`osqp` 这种求解器组合，一旦平台差异或底层数值后端不同，就很容易带来“别人能装但跑不一致”的复现实验风险。 
+仓库依赖本身并不重：`pyproject.toml` 要求 Python ≥ 3.10，运行依赖为 `numpy`、`matplotlib`、`scipy`、`plotly`、`cvxpy>=1.4`、`osqp>=0.6`，开发依赖集中在 `dev` optional dependency 中。短期工程化已把 pytest 配置统一到 `pyproject.toml`，并补齐 `requirements.lock.txt`、`requirements-dev.lock.txt`、`environment.yml`、`Dockerfile` 和 `.dockerignore`。仍需注意的是，`cvxpy`/`osqp` 这种求解器组合在不同平台或底层数值后端下可能产生小差异，因此跨平台报告应优先引用 lockfile/Docker/Conda 约束下的结果。
 
 下面这张表可以作为答辩时的“仓库体检表”直接使用：
 
@@ -33,13 +33,13 @@ flowchart LR
 |---|---|---|
 | 主研究目录 | `next_project` 下含 `core / simulations / tests / cpp / web / docs / maps` | 主线清晰，可作为论文/答辩主体 |
 | 运行分层 | Python 主线最完整；C++ 为性能/部署子集；Web 为动态回放子集 | 架构合理，但跨语言对齐压力较大 |
-| 包依赖 | Python≥3.10；`numpy/scipy/plotly/cvxpy/osqp`；dev 仅 `pytest` | 能跑，但环境锁定不足 |
+| 包依赖 | Python≥3.10；`numpy/scipy/plotly/cvxpy/osqp`；dev 依赖、lockfile、Conda 和 Docker 均已补齐 | 可复现性明显增强，仍需关注求解器跨平台数值差异 |
 | 数据来源 | 地图与障碍参数在 `maps/*.json`；公开文档未说明真实飞行数据集 | 当前更像“高质量仿真平台”，不是“数据驱动项目” |
 | GNN 模块 | `GNNPlanner` 被明确定义为**神经动力学活动扩散**，不是离线训练深度网络 | 这有利于复现，且避免了训练数据与模型版权问题 |
 | 结果导出 | 文档说明 benchmark 输出 `outputs/benchmark_results.json`，场景结果可导出 JSON/CSV 字段 | 证据链不错，但公开页面未完整展示所有原始结果文件 |
 | 测试 | 覆盖 ESDF、GNN、在线语义、终端保持、风险报告、障碍场景、C++ 静态同步等 | 已超过一般课程作业水准，接近研究工程代码习惯 |
 | 许可证 | 未说明 | 对外复用和二次分发存在合规不确定性 |
-| CI/CD | 未说明；文档展示的是本地 `pytest` 命令 | 自动回归与协作流程仍需补齐 |
+| CI/CD | 已新增 `.github/workflows/ci.yml`，PR/push 运行非 slow pytest 与 C++ CMake 全目标构建 | 自动回归已具备基础守门；跨线 runtime parity 仍需显式环境开关 |
 | 隐私/数据治理 | 若扩展到图片建模与照片采集，数据保留、脱敏、授权策略未说明 | 当前阶段问题不大，但若走向实采/展示必须补文档 |
 
 从算法侧看，这个仓库的“系统性”明显强于“单点最优”：一方面，控制器被统一到 `controller_kind` profile，下层有 PID+SMC、反步+SMC 和实验性 `se3_geometric`；另一方面，参数被逐渐抽象到 `DroneParams`，支持 `default_1kg`、`indoor_micro` 和 `light_uav_regulatory` 三类 profile，并显式检查质量、惯量、推力系数与悬停转速的物理可行性。这个设计非常适合作为答辩亮点，因为它说明作者不是“参数堆出来”，而是在逐步把研究变量显式化、可切换化。
@@ -69,7 +69,7 @@ flowchart LR
 | P1 | **补 `DroneParams` 标定链路**：电机时滞、阻力系数、推力曲线、BEM/简化模型切换验证 | 让动力学参数“有出处”，而不是“能跑即可” | 中 | 1–3 周 | 文档已承认主流程仍以简化 rotor 为主，系统辨识流程待补齐 |
 | P2 | **故障诊断做抗误报增强**：将风扰、瞬态跟踪误差与真正故障进一步区分 | 降低误检，提高容错场景可信度 | 中 | 1–2 周 | 规划文档已明确指出风扰或跟踪误差可能误判为故障 |
 | P2 | **多障碍局部通道稳定策略**：Voronoi/侧向稳定选择/局部区域化 | 减少最近障碍频繁切换引起的振荡 | 中 | 1–2 周 | 项目总改进规划已把该问题列为长期增强项 |
-| P2 | **治理层补齐**：LICENSE、CHANGELOG、Issue 模板、Security Policy | 使仓库具备公开协作条件 | 低 | 1–3 天 | 许可证、CI/CD、数据治理在公开页面与文档中均未说明或未形成制度化材料 |
+| P2 | **治理层补齐**：LICENSE、CHANGELOG、Issue 模板、Security Policy | 使仓库具备公开协作条件 | 低 | 1–3 天 | CI 已有基础 workflow；许可证、数据治理与协作模板仍需制度化材料 |
 
 如果要在答辩中解释“为什么这么排序”，逻辑很简单：**P0 解决“别人能不能稳定复现和理解你的项目”；P1 解决“论文层面最硬的技术短板”；P2 解决“系统成熟以后才值得投入的升级项”。** 这与仓库现状高度匹配，也最容易获得老师认可。 
 
@@ -128,7 +128,7 @@ gantt
 
 ## 未明确事项与报告边界
 
-本报告尽量优先使用了仓库 README、技术文档、改进规划、需求检查、配置文件与官方相关论文/实现；但仍有几项信息在公开页面上**未说明**或无法逐条独立复算，因此已显式保留边界：**开源许可证未说明、CI/CD 未说明、真实飞行数据集未说明、图片建模支线与 UAV 主线的正式关系未说明、公开页面无法逐一核验所有原始 benchmark 产物。** 这并不影响答辩材料组织，但会影响仓库作为“长期公开研究平台”的成熟度判断。
+本报告尽量优先使用了仓库 README、技术文档、改进规划、需求检查、配置文件与官方相关论文/实现；截至 2026-05-21，CI/CD 已有 GitHub Actions 基础守门，但仍有几项信息在公开页面上**未说明**或无法逐条独立复算，因此保留边界：**开源许可证未说明、真实飞行数据集未说明、图片建模支线与 UAV 主线的长期治理关系仍需继续固化、公开页面无法逐一核验所有原始 benchmark 产物。** 这不影响答辩材料组织，但会影响仓库作为“长期公开研究平台”的成熟度判断。
 https://github.com/ZJU-FAST-Lab/ego-planner
 
 https://github.com/uzh-rpg/flightmare

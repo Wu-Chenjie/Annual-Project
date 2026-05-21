@@ -9,7 +9,7 @@
 
 - **Python 主线**：功能最完整，负责算法实验、场景仿真、风险报告、可视化和 benchmark。
 - **C++ 部署/回放线**：覆盖核心动力学、控制、规划、在线重规划、动态回放和部分安全报告字段，是可运行子集。
-- **Web 展示线**：调用 C++ `sim_dynamic_replay` 做动态回放，前端 follower 为示意代理，不等价于完整 Python 多机闭环。
+- **Web 展示线**：调用 C++ `sim_dynamic_replay` 做动态回放，前端 follower 为示意代理，不等价于完整 Python 多机闭环；`/api/simulate` 仅接受 JSON object，并在进入 C++ 前拒绝路径穿越地图名和非有限数值。
 
 重要边界：
 
@@ -27,7 +27,7 @@
 | A* / Hybrid A* / Dijkstra | 完整 | 部分到完整 | 通过 C++ 回放 | C++ 主要服务障碍场景和动态回放 |
 | RRT* / Informed RRT* | 完整 | 缺失/不作为当前子集 | 不适用 | 当前 C++ 未声明完整 RRT* 对齐 |
 | D* Lite / WindowReplanner | 完整 | 完整子集 | 通过 C++ 回放 | C++ 保留任务航点层和局部重规划层 |
-| ESDF/SDF-aware 规划 | 完整 | 部分 | 通过 C++ 回放 | C++ 有 occupancy/grid 与 ESDF 相关子集 |
+| ESDF/SDF-aware 规划 | 完整 | 部分 | 通过 C++ 回放 | Python 为 scipy EDT 欧氏距离；C++ 为 26 邻域 ESDF-like 栅格距离近似 |
 | FIRI 走廊优化 | 工程化完整 | 工程化子集 | 通过 C++ 回放 | 两侧均为工程 FIRI-style，不是完整论文 MVIE 实现 |
 | GNN Danger / 双模式调度 | 完整 | 可运行子集 | 通过 C++ 回放 | C++ 有 `GNNPlanner`、`DualModeScheduler`、visible graph |
 | APF 避障 / 编队 APF | 完整 | 可运行子集 | 通过 C++ 回放 | C++ 明确 runtime fields 与 python-only fields |
@@ -36,7 +36,7 @@
 | formation_safety | 完整 | 可运行子集 | 普通报告链路可展示 | C++ 输出 `min_inter_drone_distance`、`downwash_hits` |
 | risk_report | 完整 | 输出兼容字段 | 不等价 | 普通 C++ obstacle scenario 可由 Python `core/risk_report.py` 处理 |
 | benchmark_result schema | 完整 | 完整 | 不适用 | Python/C++ benchmark 均输出统一 JSON |
-| sim_result schema | 完整 | 完整 | 最小合法包装 | Web 包装 C++ replay 结果，顶层字段符合 schema |
+| sim_result schema | 完整 | 完整 | 最小合法包装 | Web 包装 C++ replay 结果，顶层字段符合 schema，输入 body 必须是 JSON object |
 | Plotly/PNG 可视化 | 完整 | PNG/SVG 子集 | Web 交互展示 | 展示能力不是算法能力 |
 | 照片重建 COLMAP/OpenMVS | Web 支线工具 | 不适用 | 实验性支线 | 只转换成静态地图 |
 
@@ -70,9 +70,11 @@
 
 短期 P0-3 的回归分两层：
 
-1. 默认 CI 运行：
-   - `python -m pytest tests/test_cpp_sync_static.py tests/test_result_schema.py tests/test_cross_line_regression.py`
-   - 验证 C++ 关键语义仍在、schema 工具可用、本文档和测试契约存在。
+1. 默认 GitHub Actions / 本地快速 CI 运行：
+   - `python -m pytest -m "not slow"`
+   - `cmake -S next_project/cpp -B next_project/cpp/build_ci -DCMAKE_BUILD_TYPE=Release`
+   - `cmake --build next_project/cpp/build_ci --config Release --parallel`
+   - 验证 C++ 关键语义、schema 工具、Web 输入防线、本文档契约和 C++ 全目标构建。
 2. 已构建 C++ 可执行文件时运行：
    - Windows PowerShell：`$env:RUN_CROSS_LINE_REGRESSION='1'; python -m pytest tests/test_cross_line_regression.py`
    - Linux/macOS：`RUN_CROSS_LINE_REGRESSION=1 python -m pytest tests/test_cross_line_regression.py`
@@ -103,17 +105,18 @@
 最新验证命令：
 
 ```powershell
-python -m pytest -q
-cmake --build cpp/build --target sim_main sim_benchmark sim_warehouse sim_dynamic_replay --config Release
-python -m pytest tests/test_cpp_result_reporting.py -q
-$env:RUN_CROSS_LINE_REGRESSION='1'; python -m pytest tests/test_cross_line_regression.py -q
+python -m pytest -m "not slow" -q
+python -m pytest tests/test_web_server_safety.py tests/test_cpp_sync_static.py tests/test_ci_workflow_static.py -q
+cmake -S cpp -B cpp/build_ci -DCMAKE_BUILD_TYPE=Release
+cmake --build cpp/build_ci --config Release --parallel
 ```
 
 最新结果：
 
-- 全量测试：`170 passed, 3 skipped`，其中 3 个 skipped 均为构建/环境开关型跳过。
-- C++ 报告测试：`6 passed`。
-- C++ 跨线回归：`3 passed`。
+- CI 快速测试：`163 passed, 3 skipped, 75 deselected`。
+- Web/C++/CI 静态守门：`57 passed`。
+- C++ 全目标构建：通过，生成 `sim_main`、`sim_benchmark`、`sim_warehouse`、`sim_dynamic_replay`、`sim_apf_formation_probe`、`sim_formation_safety_probe`、`sim_scene_3dgs`。
+- C++ 跨线 runtime parity 仍保留为显式开关测试：`RUN_CROSS_LINE_REGRESSION=1`。
 
 答辩边界口径：
 

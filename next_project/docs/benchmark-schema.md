@@ -140,6 +140,10 @@ python scripts/compare_results.py \
 - 计数字段（`collision_count` 等）：必须严格相等；
 - 任一不通过：脚本以非零状态码退出，便于 CI 集成。
 
+当前 GitHub Actions 基础守门见仓库根目录 `.github/workflows/ci.yml`：默认执行
+`python -m pytest -m "not slow"` 与 C++ CMake 全目标构建。跨线 runtime parity 仍由
+`RUN_CROSS_LINE_REGRESSION=1` 显式开启，避免在未构建 C++ 可执行文件的环境中误报失败。
+
 ## 版本演进规则
 
 - 1.0.x：仅做向后兼容的字段新增/文档修订，不改类型；

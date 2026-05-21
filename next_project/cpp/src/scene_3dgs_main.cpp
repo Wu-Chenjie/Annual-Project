@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "model_importer.hpp"
 #include "obstacle_scenario.hpp"
@@ -22,17 +23,39 @@ int main(int argc, char** argv) {
     using sim::SimulationVisualizer;
     using sim::import_model;
 
-    if (argc < 2) {
+    std::vector<std::string> positional_args;
+    bool report_enabled = false;
+    for (int i = 1; i < argc; ++i) {
+        const std::string arg = argv[i];
+        if (arg == "--report") {
+            report_enabled = true;
+        } else if (arg.rfind("--", 0) == 0) {
+            std::cerr << "unknown option: " << arg << "\n";
+            return 2;
+        } else {
+            positional_args.push_back(arg);
+        }
+    }
+
+    if (positional_args.empty() || positional_args.size() > 5) {
         std::cerr << "usage: sim_scene_3dgs <model.ply|model.obj|model.stl> "
                   << "[voxel_size=0.3] [scale=1.0] [padding=0.5] [max_obstacles=10000] [--report]\n";
         return 2;
     }
-    const std::string model_path = argv[1];
-    const double voxel_size = (argc > 2) ? std::stod(argv[2]) : 0.3;
-    const double model_scale = (argc > 3) ? std::stod(argv[3]) : 1.0;
-    const double padding = (argc > 4) ? std::stod(argv[4]) : 0.5;
-    const int max_obstacles = (argc > 5) ? std::stoi(argv[5]) : 10000;
-    const bool report_enabled = argc > 6 && std::string(argv[6]) == "--report";
+    const std::string model_path = positional_args[0];
+    double voxel_size = 0.3;
+    double model_scale = 1.0;
+    double padding = 0.5;
+    int max_obstacles = 10000;
+    try {
+        if (positional_args.size() > 1) voxel_size = std::stod(positional_args[1]);
+        if (positional_args.size() > 2) model_scale = std::stod(positional_args[2]);
+        if (positional_args.size() > 3) padding = std::stod(positional_args[3]);
+        if (positional_args.size() > 4) max_obstacles = std::stoi(positional_args[4]);
+    } catch (const std::exception& exc) {
+        std::cerr << "invalid numeric argument: " << exc.what() << "\n";
+        return 2;
+    }
 
     // [1] import
     std::cout << "[1] import_model... " << std::flush;
