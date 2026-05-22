@@ -51,7 +51,9 @@ VoronoiRegionScore VoronoiRegionSelector::score(
     std::iota(order.begin(), order.end(), std::size_t{0});
     std::partial_sort(order.begin(), order.begin() + 2, order.end(),
                       [&](std::size_t lhs, std::size_t rhs) {
-                          return distances[lhs] < distances[rhs];
+                          if (distances[lhs] != distances[rhs])
+                              return distances[lhs] < distances[rhs];
+                          return lhs < rhs;  // deterministic tie-breaker
                       });
     const int first = static_cast<int>(std::min(order[0], order[1]));
     const int second = static_cast<int>(std::max(order[0], order[1]));

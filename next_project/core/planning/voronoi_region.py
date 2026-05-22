@@ -56,7 +56,7 @@ class VoronoiRegionSelector:
             cross_z = axis[0] * rel[1] - axis[1] * rel[0]
             side = 1 if cross_z > 1e-9 else -1 if cross_z < -1e-9 else 0
 
-        nearest = np.argsort(distances)[:2]
+        nearest = np.lexsort((np.arange(len(distances)), distances))[:2]
         pair = tuple(sorted(int(i) for i in nearest))
         region_id = f"{pair[0]}:{pair[1]}"
 

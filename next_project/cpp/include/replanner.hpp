@@ -249,14 +249,21 @@ inline std::vector<Vec3> WindowReplanner::local_obstacle_centers(const Vec3& pos
     std::vector<Vec3> centers;
     if (!voronoi_region_enabled_) return centers;
     const double limit = horizon_ + mutable_grid_.resolution;
-    for (int iz = 0; iz < mutable_grid_.nz; ++iz) {
-        for (int iy = 0; iy < mutable_grid_.ny; ++iy) {
-            for (int ix = 0; ix < mutable_grid_.nx; ++ix) {
+    // Index-space bounding box around pose±limit
+    const auto lo = mutable_grid_.world_to_index(Vec3{pose.x - limit, pose.y - limit, pose.z - limit});
+    const auto hi = mutable_grid_.world_to_index(Vec3{pose.x + limit, pose.y + limit, pose.z + limit});
+    const double limit_sq = limit * limit;
+    for (int iz = lo[2]; iz <= hi[2]; ++iz) {
+        for (int iy = lo[1]; iy <= hi[1]; ++iy) {
+            for (int ix = lo[0]; ix <= hi[0]; ++ix) {
                 const std::size_t flat = (static_cast<std::size_t>(iz) * mutable_grid_.ny + iy)
                                        * mutable_grid_.nx + ix;
                 if (flat >= mutable_grid_.data.size() || mutable_grid_.data[flat] < 1) continue;
                 Vec3 center = mutable_grid_.index_to_world(ix, iy, iz);
-                if (norm(center - pose) <= limit) centers.push_back(center);
+                const double dx = center.x - pose.x;
+                const double dy = center.y - pose.y;
+                const double dz = center.z - pose.z;
+                if (dx * dx + dy * dy + dz * dz <= limit_sq) centers.push_back(center);
             }
         }
     }

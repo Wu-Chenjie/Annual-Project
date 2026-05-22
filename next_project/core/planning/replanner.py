@@ -501,20 +501,26 @@ class WindowReplanner:
         return progress + 0.35 * clearance + path_bonus + region_score.stability_bonus - distance_penalty
 
     def _local_obstacle_centers(self, pose: np.ndarray) -> np.ndarray:
-        occupied = np.argwhere(np.asarray(self.grid.data) >= 1)
-        if occupied.size == 0:
+        if not self.voronoi_region_enabled:
             return np.empty((0, 3), dtype=float)
         pose_arr = np.asarray(pose, dtype=float)
         limit = self.horizon + float(getattr(self.grid, "resolution", 0.0))
-        centers: list[np.ndarray] = []
-        for idx_arr in occupied:
-            idx = tuple(int(v) for v in idx_arr)
-            center = np.asarray(self.grid.index_to_world(idx), dtype=float)
-            if float(np.linalg.norm(center - pose_arr)) <= limit:
-                centers.append(center)
-        if not centers:
+        grid = self.grid
+        shape = np.asarray(grid.shape, dtype=int)
+        # Index-space bounding box around pose±limit
+        lo = np.clip(np.asarray(grid.world_to_index(pose_arr - limit)), 0, shape - 1)
+        hi = np.clip(np.asarray(grid.world_to_index(pose_arr + limit)), 0, shape - 1)
+        sub_data = np.asarray(grid.data)[lo[0]:hi[0] + 1, lo[1]:hi[1] + 1, lo[2]:hi[2] + 1]
+        sub_occupied = np.argwhere(sub_data >= 1)
+        if sub_occupied.size == 0:
             return np.empty((0, 3), dtype=float)
-        return np.vstack(centers)
+        # Convert from sub-indices to world coordinates (vectorized)
+        full_indices = sub_occupied + lo.astype(sub_occupied.dtype)
+        centers = grid.origin.astype(float) + full_indices * float(grid.resolution)
+        # Squared distance filter — avoids per-voxel sqrt
+        sq_dist = np.sum((centers - pose_arr) ** 2, axis=1)
+        within = sq_dist <= limit ** 2
+        return centers[within]
 
     def _voronoi_region_score(
         self,
