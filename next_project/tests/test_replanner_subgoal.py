@@ -80,3 +80,32 @@ def test_subgoal_avoids_blocked_straight_segment():
     assert not np.allclose(subgoal, np.array([5.0, 0.0, 0.0], dtype=float))
     assert replanner._segment_is_safe(pose, subgoal)
 
+
+def test_voronoi_region_score_biases_replanner_toward_previous_side():
+    grid = OccupancyGrid(origin=np.zeros(3), resolution=1.0, shape=(12, 12, 4))
+    grid.data[3, 1, 0] = 1
+    grid.data[3, 3, 0] = 1
+    replanner = WindowReplanner(
+        planner=DummyPlanner(),
+        grid=grid,
+        horizon=6.0,
+        voronoi_region_enabled=True,
+        voronoi_region_weight=0.5,
+    )
+    replanner._last_voronoi_side = 1
+    pose = np.array([0.0, 2.0, 0.0], dtype=float)
+    goal = np.array([8.0, 2.0, 0.0], dtype=float)
+    upper = np.array([4.0, 3.0, 0.0], dtype=float)
+    lower = np.array([4.0, 1.0, 0.0], dtype=float)
+
+    assert replanner._score_subgoal(pose, goal, upper) > replanner._score_subgoal(pose, goal, lower)
+
+
+def test_voronoi_region_disabled_keeps_existing_score_shape():
+    grid = OccupancyGrid(origin=np.zeros(3), resolution=1.0, shape=(12, 12, 4))
+    replanner = WindowReplanner(planner=DummyPlanner(), grid=grid, horizon=6.0)
+    pose = np.array([0.0, 2.0, 0.0], dtype=float)
+    goal = np.array([8.0, 2.0, 0.0], dtype=float)
+    candidate = np.array([4.0, 3.0, 0.0], dtype=float)
+
+    assert isinstance(replanner._score_subgoal(pose, goal, candidate), float)
