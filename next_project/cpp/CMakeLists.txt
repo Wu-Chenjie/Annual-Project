@@ -27,6 +27,7 @@ set(CORE_SOURCES
     src/map_loader.cpp
     src/model_importer.cpp
     src/firi.cpp
+    src/voronoi_region.cpp
     src/trajectory_metrics.cpp
     src/mpc_tracker.cpp
     src/visibility_graph.cpp

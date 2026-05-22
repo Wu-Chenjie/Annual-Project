@@ -737,6 +737,9 @@ void ObstacleScenarioSimulation::rebuild_planning_grid() {
         if (config_.replan_adaptive_interval) {
             replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
         }
+        if (config_.voronoi_region_enabled) {
+            replanner_->enable_voronoi_region(config_.voronoi_region_weight);
+        }
         if (config_.danger_mode_enabled) {
             replanner_->set_dual_mode(std::make_unique<DualModeScheduler>(
                 config_.danger_sensor_threshold,
@@ -1272,6 +1275,9 @@ void ObstacleScenarioSimulation::setup_online() {
     replanner_->set_obstacle_field(config_.planner_initial_map_unknown ? &discovered_obstacles_ : &obstacles_);
     if (config_.replan_adaptive_interval) {
         replanner_->enable_adaptive_interval(config_.replan_interval_min, config_.replan_interval_max);
+    }
+    if (config_.voronoi_region_enabled) {
+        replanner_->enable_voronoi_region(config_.voronoi_region_weight);
     }
     if (config_.danger_mode_enabled) {
         replanner_->set_dual_mode(std::make_unique<DualModeScheduler>(

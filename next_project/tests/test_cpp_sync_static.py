@@ -504,6 +504,31 @@ def test_cpp_a1_a2_trajectory_mpc_sync_fields_exist():
     assert "recommendation" in result_writer
 
 
+def test_cpp_voronoi_region_selector_is_wired_into_replanner():
+    header = read("cpp/include/voronoi_region.hpp")
+    source = read("cpp/src/voronoi_region.cpp")
+    replanner = read("cpp/include/replanner.hpp")
+    scenario_header = read("cpp/include/obstacle_scenario.hpp")
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
+    cmake = read("cpp/CMakeLists.txt")
+
+    assert "struct VoronoiRegionScore" in header
+    assert "class VoronoiRegionSelector" in header
+    assert "VoronoiRegionSelector::score" in source
+    assert "std::abs(center_s - cand_s)" in source
+    assert "previous_region_id" in source
+    assert "src/voronoi_region.cpp" in cmake
+    assert '#include "voronoi_region.hpp"' in replanner
+    assert "enable_voronoi_region" in replanner
+    assert "local_obstacle_centers" in replanner
+    assert "voronoi_region_score" in replanner
+    assert "update_voronoi_region_state" in replanner
+    assert "last_voronoi_region_id_" in replanner
+    assert "bool voronoi_region_enabled = false;" in scenario_header
+    assert "double voronoi_region_weight = 0.25;" in scenario_header
+    assert "replanner_->enable_voronoi_region(config_.voronoi_region_weight)" in scenario_source
+
+
 def test_cpp_gnn_danger_mode_is_wired_into_replanner():
     visibility_header = read("cpp/include/visibility_graph.hpp")
     visibility_source = read("cpp/src/visibility_graph.cpp")
