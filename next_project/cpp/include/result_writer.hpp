@@ -38,7 +38,7 @@ inline std::string timestamp_dir_name() {
     else
         oss << "unknown";
 #else
-    if (std::localtime_r(&t, &local))
+    if (localtime_r(&t, &local))
         oss << std::put_time(&local, "%Y%m%d-%H%M%S");
     else
         oss << "unknown";
