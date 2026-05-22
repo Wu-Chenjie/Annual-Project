@@ -482,6 +482,28 @@ def test_cpp_firi_refiner_is_wired_into_planning_paths():
     assert "config_.firi_enabled" in scenario
 
 
+def test_cpp_a1_a2_trajectory_mpc_sync_fields_exist():
+    cmake = read("cpp/CMakeLists.txt")
+    scenario_header = read("cpp/include/obstacle_scenario.hpp")
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
+    formation_header = read("cpp/include/formation_simulation.hpp")
+    result_writer = read("cpp/include/result_writer.hpp")
+
+    assert "src/trajectory_metrics.cpp" in cmake
+    assert "src/mpc_tracker.cpp" in cmake
+    assert "trajectory_metrics.hpp" in scenario_source
+    assert "mpc_tracker.hpp" in scenario_source
+    assert "struct TrajectoryMetrics" in read("cpp/include/trajectory_metrics.hpp")
+    assert "struct MPCFeasibilityResult" in read("cpp/include/mpc_tracker.hpp")
+    assert "mpc_feasibility_enabled" in scenario_header or "mpc_feasibility_enabled" in formation_header
+    assert "planned_trajectory" in result_writer
+    assert "mpc_feasibility" in result_writer
+    assert "mean_curvature" in result_writer
+    assert "curvature_squared_integral" in result_writer
+    assert "tracking_rms_proxy" in result_writer
+    assert "recommendation" in result_writer
+
+
 def test_cpp_gnn_danger_mode_is_wired_into_replanner():
     visibility_header = read("cpp/include/visibility_graph.hpp")
     visibility_source = read("cpp/src/visibility_graph.cpp")

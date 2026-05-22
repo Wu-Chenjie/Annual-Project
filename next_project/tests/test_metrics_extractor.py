@@ -27,6 +27,18 @@ def test_extract_metrics_from_standard_sim_result():
             "max_jerk": 0.9,
             "jerk_squared_integral": 1.7,
             "snap_squared_integral": 2.3,
+            "mean_curvature": 0.11,
+            "max_curvature": 0.22,
+            "curvature_squared_integral": 0.33,
+        },
+        "mpc_feasibility": {
+            "evaluated": True,
+            "feasible": False,
+            "tracking_rms_proxy": 0.8,
+            "max_velocity_violation": 0.2,
+            "max_acceleration_violation": 0.1,
+            "saturation_ratio": 0.25,
+            "recommendation": "defer_online_mpc",
         },
         "safety_metrics": {
             "min_inter_drone_distance": 0.7,
@@ -61,6 +73,13 @@ def test_extract_metrics_from_standard_sim_result():
     assert metrics["trajectory_max_jerk"] == 0.9
     assert metrics["trajectory_jerk_squared_integral"] == 1.7
     assert metrics["trajectory_snap_squared_integral"] == 2.3
+    assert metrics["trajectory_mean_curvature"] == 0.11
+    assert metrics["trajectory_max_curvature"] == 0.22
+    assert metrics["trajectory_curvature_squared_integral"] == 0.33
+    assert metrics["mpc_feasible"] == 0
+    assert metrics["mpc_tracking_rms_proxy"] == 0.8
+    assert metrics["mpc_saturation_ratio"] == 0.25
+    assert metrics["mpc_recommendation"] == "defer_online_mpc"
     assert metrics["min_inter_drone_distance"] == 0.7
     assert metrics["downwash_hits"] == 2
     assert metrics["formation_clearance_required"] == 0.45

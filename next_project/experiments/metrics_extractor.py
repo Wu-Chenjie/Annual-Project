@@ -75,6 +75,16 @@ def extract_metrics(sim_result: Mapping[str, Any]) -> dict[str, float | int | st
             planned_trajectory.get("snap_squared_integral"),
             derived_trajectory.get("snap_squared_integral"),
         ),
+        "trajectory_mean_curvature": _first_float(
+            planned_trajectory.get("mean_curvature"), derived_trajectory.get("mean_curvature")
+        ),
+        "trajectory_max_curvature": _first_float(
+            planned_trajectory.get("max_curvature"), derived_trajectory.get("max_curvature")
+        ),
+        "trajectory_curvature_squared_integral": _first_float(
+            planned_trajectory.get("curvature_squared_integral"),
+            derived_trajectory.get("curvature_squared_integral"),
+        ),
     }
 
     safety = sim_result.get("safety_metrics") or {}
@@ -116,6 +126,13 @@ def extract_metrics(sim_result: Mapping[str, Any]) -> dict[str, float | int | st
     counters = sim_result.get("performance_counters") or {}
     metrics["sdf_query_count"] = int(counters.get("sdf_query_count") or 0)
     metrics["clearance_check_count"] = int(counters.get("clearance_check_count") or 0)
+    mpc = sim_result.get("mpc_feasibility") or {}
+    metrics["mpc_feasible"] = int(bool(mpc.get("feasible"))) if mpc.get("evaluated") is not None else 0
+    metrics["mpc_tracking_rms_proxy"] = _first_float(mpc.get("tracking_rms_proxy"))
+    metrics["mpc_max_velocity_violation"] = _first_float(mpc.get("max_velocity_violation"))
+    metrics["mpc_max_acceleration_violation"] = _first_float(mpc.get("max_acceleration_violation"))
+    metrics["mpc_saturation_ratio"] = _first_float(mpc.get("saturation_ratio"))
+    metrics["mpc_recommendation"] = str(mpc.get("recommendation", "not_evaluated"))
     return metrics
 
 
@@ -156,6 +173,9 @@ def _derive_trajectory_metrics(
             "max_jerk": 0.0,
             "jerk_squared_integral": 0.0,
             "snap_squared_integral": 0.0,
+            "mean_curvature": 0.0,
+            "max_curvature": 0.0,
+            "curvature_squared_integral": 0.0,
         }
 
     timestamps = _time_array(sim_result.get("time"), len(motion_source))
@@ -167,6 +187,7 @@ def _derive_trajectory_metrics(
     jerks = _differentiate(accelerations, timestamps)
     snaps = _differentiate(jerks, timestamps)
     jerk_norms = np.linalg.norm(jerks, axis=1) if len(jerks) else np.zeros(0, dtype=float)
+    mean_curvature, max_curvature, curvature_squared_integral = _curvature_metrics(path_source, timestamps)
 
     return {
         "path_length": path_length,
@@ -176,6 +197,9 @@ def _derive_trajectory_metrics(
         "max_jerk": _max_norm(jerks),
         "jerk_squared_integral": _squared_integral(jerks, timestamps),
         "snap_squared_integral": _squared_integral(snaps, timestamps),
+        "mean_curvature": mean_curvature,
+        "max_curvature": max_curvature,
+        "curvature_squared_integral": curvature_squared_integral,
     }
 
 
@@ -234,6 +258,31 @@ def _squared_integral(values: np.ndarray, timestamps: np.ndarray) -> float:
         dt = max(float(timestamps[idx] - timestamps[idx - 1]), 1e-6)
         integral += float(np.dot(values[idx], values[idx])) * dt
     return float(integral)
+
+
+def _curvature_metrics(points: np.ndarray, timestamps: np.ndarray) -> tuple[float, float, float]:
+    if len(points) < 3:
+        return 0.0, 0.0, 0.0
+    if len(timestamps) != len(points):
+        timestamps = np.arange(len(points), dtype=float)
+    curvatures: list[float] = []
+    integral = 0.0
+    for idx in range(1, len(points) - 1):
+        a = points[idx] - points[idx - 1]
+        b = points[idx + 1] - points[idx]
+        la = float(np.linalg.norm(a))
+        lb = float(np.linalg.norm(b))
+        chord = float(np.linalg.norm(points[idx + 1] - points[idx - 1]))
+        if la <= 1e-9 or lb <= 1e-9 or chord <= 1e-9:
+            curvature = 0.0
+        else:
+            curvature = 2.0 * float(np.linalg.norm(np.cross(a, b))) / max(la * lb * chord, 1e-9)
+        curvatures.append(curvature)
+        dt = max(float(timestamps[min(idx + 1, len(timestamps) - 1)] - timestamps[idx]), 1e-6)
+        integral += curvature * curvature * dt
+    if not curvatures:
+        return 0.0, 0.0, 0.0
+    return float(np.mean(curvatures)), float(np.max(curvatures)), float(integral)
 
 
 def _first_float(*values: Any) -> float | None:

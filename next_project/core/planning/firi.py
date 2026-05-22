@@ -110,6 +110,16 @@ class FIRIRefiner:
             corridors.append(corridor)
         return corridors
 
+    def build_corridors_for_path(self, seeds: np.ndarray) -> list[FIRICorridor]:
+        """Return the same safe segment corridors used by ``refine()``."""
+        seeds = np.asarray(seeds, dtype=float)
+        if len(seeds) < 2:
+            return []
+        safe_seeds = self._prepare_seeds(seeds)
+        if len(safe_seeds) < 2:
+            return []
+        return self._build_corridors(safe_seeds)
+
     def _build_segment_corridor(self, start: np.ndarray, goal: np.ndarray) -> FIRICorridor:
         """为路径段构造半空间凸走廊。"""
         A_rows: list[np.ndarray] = []

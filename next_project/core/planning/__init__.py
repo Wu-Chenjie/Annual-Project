@@ -29,6 +29,7 @@ from .gnn_planner import GNNPlanner
 from .dual_mode import DualModeScheduler, FormationAPF
 from .firi import FIRIRefiner, FIRICorridor
 from .trajectory_optimizer import TrajectoryOptimizer, TrajectoryResult, TrajectorySample
+from .mpc_tracker import MPCFeasibilityEvaluator, MPCFeasibilityResult
 
 __all__ = [
     "Planner",
@@ -53,4 +54,6 @@ __all__ = [
     "TrajectoryOptimizer",
     "TrajectoryResult",
     "TrajectorySample",
+    "MPCFeasibilityEvaluator",
+    "MPCFeasibilityResult",
 ]

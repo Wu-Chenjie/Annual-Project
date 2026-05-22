@@ -39,6 +39,7 @@ from core.planning import (
     TrajectoryOptimizer,
 )
 from core.planning.firi import FIRIRefiner
+from core.planning.mpc_tracker import MPCFeasibilityEvaluator
 
 
 def make_planner(kind: str, **kw) -> Planner:
@@ -637,6 +638,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         self.config.waypoints = [wp.copy() for wp in self._planning_waypoints]
         self.waypoints = self.config.waypoints
         self.planned_path: np.ndarray | None = None
+        self.mpc_feasibility = None
         self._maybe_preplan_formation_adaptation()
 
         if cfg.planner_mode == "offline":
@@ -1112,15 +1114,31 @@ class ObstacleScenarioSimulation(FormationSimulation):
         if len(planned) == 0:
             return planned
         if getattr(self.config, "trajectory_optimizer_enabled", False):
+            corridors = None
+            if getattr(self.config, "firi_enabled", False) and hasattr(self, "firi_refiner"):
+                corridors = self.firi_refiner.build_corridors_for_path(planned)
             self.planned_trajectory = self.trajectory_optimizer.optimize(
                 planned,
                 method=getattr(self.config, "trajectory_optimizer_method", "moving_average"),
                 clearance_checker=lambda candidate: self._segment_is_safe(candidate, min_clearance),
+                corridors=corridors,
                 fallback_to_raw=True,
             )
+            self.mpc_feasibility = self._evaluate_mpc_feasibility()
             return np.asarray(self.planned_trajectory.positions, dtype=float)
         self.planned_trajectory = None
+        self.mpc_feasibility = None
         return planned
+
+    def _evaluate_mpc_feasibility(self):
+        if self.planned_trajectory is None or not getattr(self.config, "mpc_feasibility_enabled", True):
+            return None
+        evaluator = MPCFeasibilityEvaluator(
+            max_speed=getattr(self.config, "leader_max_vel", 4.0),
+            max_acceleration=getattr(self.config, "leader_max_acc", 5.0),
+            rms_limit=getattr(self.config, "mpc_feasibility_rms_limit", 0.75),
+        )
+        return evaluator.evaluate_trajectory(self.planned_trajectory)
 
     def _plan_segment_fallback(self, start: np.ndarray, goal: np.ndarray, min_clearance: float) -> np.ndarray | None:
         """段规划失败时使用低约束 A* 重试，禁止直接用直线穿障碍兜底。"""
@@ -2273,6 +2291,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "obstacles": self.obstacles,
             "planned_path": self.planned_path if self.planned_path is not None else executed_arr[:0],
             "planned_trajectory": None if self.planned_trajectory is None else self.planned_trajectory.to_dict(),
+            "mpc_feasibility": None if self.mpc_feasibility is None else self.mpc_feasibility.to_dict(),
             "executed_path": executed_arr,
             "replan_events": self.replan_events,
             "planning_events": [self._planning_event_payload(event) for event in self.planning_events],

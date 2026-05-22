@@ -8,6 +8,8 @@
 
 #include "controller.hpp"
 #include "drone.hpp"
+#include "mpc_tracker.hpp"
+#include "trajectory_metrics.hpp"
 #include "topology.hpp"
 #include "wind_field.hpp"
 
@@ -138,6 +140,8 @@ struct SimulationResult {
     std::vector<Vec3> waypoints;
     std::vector<Vec3> task_waypoints;
     std::vector<Vec3> planned_path;
+    TrajectoryMetrics planned_trajectory;
+    MPCFeasibilityResult mpc_feasibility;
     std::vector<Vec3> replanned_waypoints;
     std::vector<Vec3> executed_path;
     std::vector<PlanningEvent> planning_events;
