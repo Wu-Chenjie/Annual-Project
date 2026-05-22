@@ -30,6 +30,7 @@ from .dual_mode import DualModeScheduler, FormationAPF
 from .firi import FIRIRefiner, FIRICorridor
 from .trajectory_optimizer import TrajectoryOptimizer, TrajectoryResult, TrajectorySample
 from .mpc_tracker import MPCFeasibilityEvaluator, MPCFeasibilityResult
+from .voronoi_region import VoronoiRegionScore, VoronoiRegionSelector
 
 __all__ = [
     "Planner",
@@ -56,4 +57,6 @@ __all__ = [
     "TrajectorySample",
     "MPCFeasibilityEvaluator",
     "MPCFeasibilityResult",
+    "VoronoiRegionScore",
+    "VoronoiRegionSelector",
 ]

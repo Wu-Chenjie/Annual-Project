@@ -31,6 +31,7 @@ import numpy as np
 from collections import deque
 
 from .base import Planner
+from .voronoi_region import VoronoiRegionScore, VoronoiRegionSelector
 
 
 # 调度阶段枚举
@@ -109,6 +110,8 @@ class WindowReplanner:
         sensor_obstacle_ttl_steps: int = 3,
         sensor_clear_confirm_steps: int = 1,
         gnn_path_ratio_limit: float = 1.2,
+        voronoi_region_enabled: bool = False,
+        voronoi_region_weight: float = 0.25,
     ):
         self.planner = planner
         self.grid = grid
@@ -123,6 +126,8 @@ class WindowReplanner:
         self.sensor_obstacle_ttl_steps = max(1, int(sensor_obstacle_ttl_steps))
         self.sensor_clear_confirm_steps = max(1, int(sensor_clear_confirm_steps))
         self.gnn_path_ratio_limit = max(1.0, float(gnn_path_ratio_limit))
+        self.voronoi_region_enabled = bool(voronoi_region_enabled)
+        self.voronoi_region_selector = VoronoiRegionSelector(weight=voronoi_region_weight)
 
         # 分层规划器
         self.global_planner = global_planner          # InformedRRTStar
@@ -153,6 +158,8 @@ class WindowReplanner:
         self.path_refiner = None
         self._last_fallback_reason: str | None = None
         self._last_path_quality: dict | None = None
+        self._last_voronoi_region_id: str | None = None
+        self._last_voronoi_side: int = 0
 
     # ------------------------------------------------------------------
     # 公共接口
@@ -388,6 +395,7 @@ class WindowReplanner:
         candidates = self._candidate_subgoals(pose, goal)
         if candidates:
             best = max(candidates, key=lambda item: item[0])
+            self._update_voronoi_region_state(pose, goal, best[1])
             return best[1]
 
         if dist_to_goal > self.horizon:
@@ -489,7 +497,50 @@ class WindowReplanner:
             min_ref_dist = min(float(np.linalg.norm(candidate - ref_pt)) for ref_pt in self._global_ref_path)
             path_bonus = -0.15 * min_ref_dist
         distance_penalty = 0.05 * float(np.linalg.norm(candidate - pose))
-        return progress + 0.35 * clearance + path_bonus - distance_penalty
+        region_score = self._voronoi_region_score(pose, goal, candidate)
+        return progress + 0.35 * clearance + path_bonus + region_score.stability_bonus - distance_penalty
+
+    def _local_obstacle_centers(self, pose: np.ndarray) -> np.ndarray:
+        occupied = np.argwhere(np.asarray(self.grid.data) >= 1)
+        if occupied.size == 0:
+            return np.empty((0, 3), dtype=float)
+        pose_arr = np.asarray(pose, dtype=float)
+        limit = self.horizon + float(getattr(self.grid, "resolution", 0.0))
+        centers: list[np.ndarray] = []
+        for idx_arr in occupied:
+            idx = tuple(int(v) for v in idx_arr)
+            center = np.asarray(self.grid.index_to_world(idx), dtype=float)
+            if float(np.linalg.norm(center - pose_arr)) <= limit:
+                centers.append(center)
+        if not centers:
+            return np.empty((0, 3), dtype=float)
+        return np.vstack(centers)
+
+    def _voronoi_region_score(
+        self,
+        pose: np.ndarray,
+        goal: np.ndarray,
+        candidate: np.ndarray,
+    ) -> VoronoiRegionScore:
+        if not self.voronoi_region_enabled:
+            return VoronoiRegionScore(False, "", 0, 0.0, 0)
+        try:
+            return self.voronoi_region_selector.score(
+                pose,
+                goal,
+                candidate,
+                self._local_obstacle_centers(pose),
+                previous_region_id=self._last_voronoi_region_id,
+                previous_side=self._last_voronoi_side,
+            )
+        except Exception:
+            return VoronoiRegionScore(False, "", 0, 0.0, 0)
+
+    def _update_voronoi_region_state(self, pose: np.ndarray, goal: np.ndarray, candidate: np.ndarray) -> None:
+        region_score = self._voronoi_region_score(pose, goal, candidate)
+        if region_score.enabled:
+            self._last_voronoi_region_id = region_score.region_id
+            self._last_voronoi_side = region_score.side
 
     def _point_is_free(self, point: np.ndarray) -> bool:
         idx = self.grid.world_to_index(point)
