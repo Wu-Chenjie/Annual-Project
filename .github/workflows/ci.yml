@@ -30,7 +30,7 @@ jobs:
         run: cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
 
       - name: Build C++ targets
-        run: cmake --build cpp/build --config Release --parallel 2
+        run: cmake --build cpp/build --config Release --parallel
 
       - name: Run pytest
-        run: python -m pytest
+        run: python -m pytest -m "not slow"

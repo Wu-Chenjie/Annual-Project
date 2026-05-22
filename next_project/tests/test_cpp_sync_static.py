@@ -87,10 +87,12 @@ def test_cpp_msvc_crt_warning_is_suppressed_for_portable_std_calls():
 
 
 def test_cpp_dstar_lite_path_extraction_initializes_best_successor():
+    import re
     source = read("cpp/include/dstar_lite.hpp")
 
-    assert "Idx best = cur;" in source
-    assert "cur = best;" in source
+    # 容忍空白差异（如 Idx best = cur; 或 Idx best{cur};）
+    assert re.search(r"Idx\s+best\s*=\s*cur\s*;", source) or re.search(r"Idx\s+best\s*\{\s*cur\s*\}\s*;", source)
+    assert re.search(r"cur\s*=\s*best\s*;", source)
 
 
 def test_scene_3dgs_cli_scans_flags_before_positional_numbers():

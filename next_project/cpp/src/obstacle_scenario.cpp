@@ -138,17 +138,7 @@ void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
 
-    esdf_.build(grid_);  // 构建 ESDF 距离场
-    obstacles_.set_sdf_callback(
-        [](const void* ctx, double x, double y, double z) -> double {
-            return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
-        }, &esdf_);  // 注入 ESDF 回调，所有 signed_distance 自动 O(1)
-
-    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
-        sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
-    } else {
-        sdf_grid_.reset();
-    }
+    setup_esdf_and_sdf_callback();
 
     waypoints_ = sanitize_waypoints(config_.waypoints);
     observer_.clear_all();
@@ -168,6 +158,20 @@ void ObstacleScenarioSimulation::set_obstacles(const ObstacleField& field, const
     }
 }
 
+void ObstacleScenarioSimulation::setup_esdf_and_sdf_callback() {
+    esdf_.build(grid_);  // 构建 ESDF 距离场
+    obstacles_.set_sdf_callback(
+        [](const void* ctx, double x, double y, double z) -> double {
+            return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
+        }, &esdf_);  // 注入 ESDF 回调，所有 signed_distance 自动 O(1)
+
+    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
+        sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
+    } else {
+        sdf_grid_.reset();
+    }
+}
+
 void ObstacleScenarioSimulation::setup_obstacles() {
     auto [field, bounds] = load_from_json(config_.map_file);
     obstacles_ = std::move(field);
@@ -180,17 +184,7 @@ void ObstacleScenarioSimulation::setup_obstacles() {
     grid_ = grid_.inflate(inflate_margin_xyz());
     apply_planning_z_bounds();
 
-    esdf_.build(grid_);  // 构建 ESDF 距离场
-    obstacles_.set_sdf_callback(
-        [](const void* ctx, double x, double y, double z) -> double {
-            return static_cast<const ESDFGrid*>(ctx)->signed_distance(Vec3{x, y, z});
-        }, &esdf_);  // 注入 ESDF 回调
-
-    if (config_.planner_sdf_aware && !config_.planner_initial_map_unknown) {
-        sdf_grid_ = std::make_unique<SDFAwareGrid>(grid_, obstacles_, compute_clearance());
-    } else {
-        sdf_grid_.reset();
-    }
+    setup_esdf_and_sdf_callback();
 }
 
 double ObstacleScenarioSimulation::inflate_r() const {

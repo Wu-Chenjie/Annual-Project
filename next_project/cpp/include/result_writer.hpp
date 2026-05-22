@@ -30,21 +30,36 @@
 inline std::string timestamp_dir_name() {
     auto n = std::chrono::system_clock::now();
     std::time_t t = std::chrono::system_clock::to_time_t(n);
-    std::tm* local = std::localtime(&t);
+    std::tm local{};
     std::ostringstream oss;
-    if (local) oss << std::put_time(local, "%Y%m%d-%H%M%S");
-    else oss << "unknown";
+#ifdef _WIN32
+    if (localtime_s(&local, &t) == 0)
+        oss << std::put_time(&local, "%Y%m%d-%H%M%S");
+    else
+        oss << "unknown";
+#else
+    if (std::localtime_r(&t, &local))
+        oss << std::put_time(&local, "%Y%m%d-%H%M%S");
+    else
+        oss << "unknown";
+#endif
     return oss.str();
 }
 
 inline bool run_report_pipeline(const std::filesystem::path& json_path, bool enabled) {
     if (!enabled) return false;
     std::string rel = json_path.string();
+    // 转义双引号，避免命令注入
+    std::string escaped_rel;
+    for (char c : rel) {
+        if (c == '"') escaped_rel += "\\\"";
+        else escaped_rel += c;
+    }
     std::cout << "Generating report: " << std::flush;
     int ret = -1;
     for (const char* script : {"../experiments/report_cpp_results.py",
                                 "../../experiments/report_cpp_results.py"}) {
-        std::string cmd = std::string("python \"") + script + "\" \"" + rel + "\"";
+        std::string cmd = std::string("python \"") + script + "\" \"" + escaped_rel + "\"";
         ret = std::system(cmd.c_str());
         if (ret == 0) break;
     }

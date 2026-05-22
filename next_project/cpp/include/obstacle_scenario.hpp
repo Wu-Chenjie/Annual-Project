@@ -167,6 +167,7 @@ public:
                               const Vec3& position,
                               const Vec3& task_goal,
                               int& previous_idx) const;
+    void setup_esdf_and_sdf_callback();
 
     ObstacleConfig config_;
     FormationSimulation formation_;

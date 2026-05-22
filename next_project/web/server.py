@@ -104,7 +104,7 @@ def _safe_map_path(name: str) -> Path:
         raise HTTPException(400, "Invalid map name")
     path = (MAPS_DIR / f"{name}.json").resolve()
     maps_root = MAPS_DIR.resolve()
-    if maps_root not in path.parents and path != maps_root:
+    if maps_root not in path.parents:
         raise HTTPException(400, "Invalid map path")
     return path
 
@@ -171,6 +171,11 @@ def _validate_map_json(map_json: dict[str, Any]) -> None:
     bounds = map_json.get("bounds")
     if not isinstance(bounds, list) or len(bounds) != 2 or not all(_is_vec(point, 3) for point in bounds):
         raise HTTPException(400, "bounds must be [[x,y,z], [x,y,z]]")
+    if bounds[0] == bounds[1]:
+        raise HTTPException(400, "bounds must define a non-zero volume")
+    for i, axis in enumerate(("x", "y", "z")):
+        if bounds[1][i] <= bounds[0][i]:
+            raise HTTPException(400, f"bounds max.{axis} must be greater than min.{axis}")
     obstacles = map_json.get("obstacles")
     if not isinstance(obstacles, list):
         raise HTTPException(400, "obstacles must be an array")
@@ -903,7 +908,10 @@ async def simulate(request: Request) -> dict[str, Any]:
             output_path = tmp / "output.json"
             sim_input = dict(body)
             if isinstance(map_name, str) and map_name:
-                source_map = _safe_map_path(Path(map_name).stem)
+                map_name_stripped = map_name.strip()
+                if map_name_stripped.lower().endswith('.json'):
+                    map_name_stripped = map_name_stripped[:-5]
+                source_map = _safe_map_path(map_name_stripped)
                 if source_map.exists():
                     tmp_map = tmp / source_map.name
                     shutil.copyfile(source_map, tmp_map)

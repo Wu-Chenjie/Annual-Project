@@ -101,6 +101,8 @@ public:
     }
 
     // 设置外部距离查询回调（如 ESDF），设置后 signed_distance 走 O(1) 回调
+    // 注意：ctx 指向的对象必须保证在 ObstacleField 被销毁前一直存活；
+    //       禁止传入临时对象或栈对象地址，否则可能导致悬垂指针。
     using SDFCallback = double (*)(const void* ctx, double x, double y, double z);
     void set_sdf_callback(SDFCallback cb, const void* ctx) { sdf_cb_ = cb; sdf_ctx_ = ctx; }
 
