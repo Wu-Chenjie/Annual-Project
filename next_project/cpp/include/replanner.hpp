@@ -16,6 +16,7 @@
 #include "dstar_lite.hpp"
 #include "gnn_planner.hpp"
 #include "sensor.hpp"
+#include "voronoi_region.hpp"
 
 namespace sim {
 
@@ -36,6 +37,7 @@ public:
     void set_danger_planner(std::unique_ptr<GNNPlanner> dp) { danger_planner_ = std::move(dp); }
     void set_dual_mode(std::unique_ptr<DualModeScheduler> dm) { dual_mode_ = std::move(dm); }
     void enable_adaptive_interval(double min_interval, double max_interval);
+    void enable_voronoi_region(double weight = 0.25);
 
     [[nodiscard]] const std::vector<ReplanEvent>& events() const { return events_; }
     [[nodiscard]] const OccupancyGrid& current_grid() const { return mutable_grid_; }
@@ -56,12 +58,16 @@ private:
     Phase classify_phase(const Vec3& pose);
     [[nodiscard]] const char* phase_name() const;
     bool ref_path_feasible_in_horizon(const Vec3& pose) const;
-    Vec3 compute_subgoal(const Vec3& pose, const Vec3& goal) const;
+    Vec3 compute_subgoal(const Vec3& pose, const Vec3& goal);
     std::vector<Vec3> publish_path(double t, std::vector<Vec3> new_path);
     bool decay_sensor_obstacles();
     std::vector<std::pair<std::array<int,3>, bool>> update_grid_from_sensor(
         const Vec3& pose, const std::array<double, 6>& readings);
     void update_risk(const Vec3& pose, const std::array<double, 6>* readings);
+    [[nodiscard]] std::vector<Vec3> local_obstacle_centers(const Vec3& pose) const;
+    [[nodiscard]] VoronoiRegionScore voronoi_region_score(
+        const Vec3& pose, const Vec3& goal, const Vec3& candidate) const;
+    void update_voronoi_region_state(const Vec3& pose, const Vec3& goal, const Vec3& candidate);
     double path_deviation(const std::vector<Vec3>& old_p, const std::vector<Vec3>& new_p) const;
     [[nodiscard]] int flat_index(const std::array<int,3>& idx) const;
 
@@ -92,6 +98,10 @@ private:
     int sensor_obstacle_ttl_steps_ = 3;
     int sensor_clear_confirm_steps_ = 1;
     bool sensor_grid_dirty_ = false;
+    bool voronoi_region_enabled_ = false;
+    VoronoiRegionSelector voronoi_region_selector_{0.25};
+    std::string last_voronoi_region_id_;
+    int last_voronoi_side_ = 0;
 };
 
 // ====================================================================
@@ -115,6 +125,11 @@ inline void WindowReplanner::enable_adaptive_interval(double min_interval, doubl
     adaptive_interval_enabled_ = true;
     adaptive_min_interval_ = std::max(1e-6, std::min(min_interval, max_interval));
     adaptive_max_interval_ = std::max(adaptive_min_interval_, max_interval);
+}
+
+inline void WindowReplanner::enable_voronoi_region(double weight) {
+    voronoi_region_enabled_ = true;
+    voronoi_region_selector_ = VoronoiRegionSelector(weight);
 }
 
 inline double WindowReplanner::current_interval() const {
@@ -222,10 +237,46 @@ inline bool WindowReplanner::ref_path_feasible_in_horizon(const Vec3& pose) cons
     return true;
 }
 
-inline Vec3 WindowReplanner::compute_subgoal(const Vec3& pose, const Vec3& goal) const {
+inline Vec3 WindowReplanner::compute_subgoal(const Vec3& pose, const Vec3& goal) {
     double d = norm(goal - pose);
-    if (d > horizon_) return pose + (goal - pose) / d * horizon_;
-    return goal;
+    Vec3 subgoal = goal;
+    if (d > horizon_) subgoal = pose + (goal - pose) / d * horizon_;
+    update_voronoi_region_state(pose, goal, subgoal);
+    return subgoal;
+}
+
+inline std::vector<Vec3> WindowReplanner::local_obstacle_centers(const Vec3& pose) const {
+    std::vector<Vec3> centers;
+    if (!voronoi_region_enabled_) return centers;
+    const double limit = horizon_ + mutable_grid_.resolution;
+    for (int iz = 0; iz < mutable_grid_.nz; ++iz) {
+        for (int iy = 0; iy < mutable_grid_.ny; ++iy) {
+            for (int ix = 0; ix < mutable_grid_.nx; ++ix) {
+                const std::size_t flat = (static_cast<std::size_t>(iz) * mutable_grid_.ny + iy)
+                                       * mutable_grid_.nx + ix;
+                if (flat >= mutable_grid_.data.size() || mutable_grid_.data[flat] < 1) continue;
+                Vec3 center = mutable_grid_.index_to_world(ix, iy, iz);
+                if (norm(center - pose) <= limit) centers.push_back(center);
+            }
+        }
+    }
+    return centers;
+}
+
+inline VoronoiRegionScore WindowReplanner::voronoi_region_score(
+    const Vec3& pose, const Vec3& goal, const Vec3& candidate) const {
+    if (!voronoi_region_enabled_) return {};
+    return voronoi_region_selector_.score(
+        pose, goal, candidate, local_obstacle_centers(pose),
+        last_voronoi_region_id_, last_voronoi_side_);
+}
+
+inline void WindowReplanner::update_voronoi_region_state(
+    const Vec3& pose, const Vec3& goal, const Vec3& candidate) {
+    const auto score = voronoi_region_score(pose, goal, candidate);
+    if (!score.enabled) return;
+    last_voronoi_region_id_ = score.region_id;
+    last_voronoi_side_ = score.side;
 }
 
 inline std::vector<Vec3> WindowReplanner::replan_local(const Vec3& pose, const Vec3& goal) {

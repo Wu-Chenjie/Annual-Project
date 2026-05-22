@@ -62,6 +62,8 @@ struct ObstacleConfig : SimulationConfig {
     bool firi_enabled = true;
     double firi_sample_step = 0.2;
     int firi_max_projection_iter = 10;
+    bool voronoi_region_enabled = false;
+    double voronoi_region_weight = 0.25;
     double trajectory_optimizer_sample_dt = 0.2;
     bool mpc_feasibility_enabled = true;
     double mpc_feasibility_rms_limit = 0.75;
