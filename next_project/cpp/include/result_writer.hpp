@@ -305,6 +305,9 @@ inline void write_result_json(
     w.key("formation_lookahead_turn_threshold_rad").value(config.formation_lookahead_turn_threshold_rad);
     w.key("trajectory_optimizer_enabled").value(config.trajectory_optimizer_enabled);
     w.key("trajectory_optimizer_method").value(config.trajectory_optimizer_method);
+    w.key("trajectory_optimizer_sample_dt").value(config.trajectory_optimizer_sample_dt);
+    w.key("mpc_feasibility_enabled").value(config.mpc_feasibility_enabled);
+    w.key("mpc_feasibility_rms_limit").value(config.mpc_feasibility_rms_limit);
     w.end_object();
 
     w.key("metrics").begin_object();
@@ -353,6 +356,25 @@ inline void write_result_json(
 
     w.key("time").array_double(result.time);
     w.key("planned_path").array_vec3(result.planned_path);
+    w.key("planned_trajectory").begin_object();
+    w.key("path_length").value(result.planned_trajectory.path_length);
+    w.key("mean_curvature").value(result.planned_trajectory.mean_curvature);
+    w.key("max_curvature").value(result.planned_trajectory.max_curvature);
+    w.key("curvature_squared_integral").value(result.planned_trajectory.curvature_squared_integral);
+    w.key("mean_jerk").value(result.planned_trajectory.mean_jerk);
+    w.key("max_jerk").value(result.planned_trajectory.max_jerk);
+    w.key("jerk_squared_integral").value(result.planned_trajectory.jerk_squared_integral);
+    w.key("snap_squared_integral").value(result.planned_trajectory.snap_squared_integral);
+    w.end_object();
+    w.key("mpc_feasibility").begin_object();
+    w.key("evaluated").value(result.mpc_feasibility.evaluated);
+    w.key("feasible").value(result.mpc_feasibility.feasible);
+    w.key("tracking_rms_proxy").value(result.mpc_feasibility.tracking_rms_proxy);
+    w.key("max_velocity_violation").value(result.mpc_feasibility.max_velocity_violation);
+    w.key("max_acceleration_violation").value(result.mpc_feasibility.max_acceleration_violation);
+    w.key("saturation_ratio").value(result.mpc_feasibility.saturation_ratio);
+    w.key("recommendation").value(result.mpc_feasibility.recommendation);
+    w.end_object();
     w.key("task_waypoints").array_vec3(result.task_waypoints);
     w.key("replanned_waypoints").array_vec3(result.replanned_waypoints);
     w.key("executed_path").array_vec3(result.executed_path);

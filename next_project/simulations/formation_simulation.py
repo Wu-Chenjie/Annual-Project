@@ -196,6 +196,8 @@ class SimulationConfig:
     trajectory_optimizer_method: str = "moving_average"
     trajectory_optimizer_nominal_speed: float = 1.0
     trajectory_optimizer_sample_dt: float = 0.2
+    mpc_feasibility_enabled: bool = True
+    mpc_feasibility_rms_limit: float = 0.75
 
     # ---- S3: Controller profile ----
     controller_kind: str = "pid_smc"

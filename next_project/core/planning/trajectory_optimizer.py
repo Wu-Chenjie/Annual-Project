@@ -31,6 +31,9 @@ class TrajectoryResult:
     max_jerk: float
     jerk_squared_integral: float
     snap_squared_integral: float
+    mean_curvature: float
+    max_curvature: float
+    curvature_squared_integral: float
     clearance_checked: bool
     accepted: bool
     fallback_reason: str | None = None
@@ -50,6 +53,9 @@ class TrajectoryResult:
             "max_jerk": self.max_jerk,
             "jerk_squared_integral": self.jerk_squared_integral,
             "snap_squared_integral": self.snap_squared_integral,
+            "mean_curvature": self.mean_curvature,
+            "max_curvature": self.max_curvature,
+            "curvature_squared_integral": self.curvature_squared_integral,
             "clearance_checked": self.clearance_checked,
             "accepted": self.accepted,
             "fallback_reason": self.fallback_reason,
@@ -75,6 +81,7 @@ class TrajectoryOptimizer:
         path: np.ndarray,
         *,
         clearance_checker=None,
+        corridors=None,
         method: str = "moving_average",
         fallback_to_raw: bool = True,
     ) -> TrajectoryResult:
@@ -97,6 +104,9 @@ class TrajectoryOptimizer:
                 max_jerk=0.0,
                 jerk_squared_integral=0.0,
                 snap_squared_integral=0.0,
+                mean_curvature=0.0,
+                max_curvature=0.0,
+                curvature_squared_integral=0.0,
                 clearance_checked=clearance_checker is not None,
                 accepted=True,
             )
@@ -104,6 +114,7 @@ class TrajectoryOptimizer:
             return self._select_by_smoothness_cost(
                 raw,
                 clearance_checker=clearance_checker,
+                corridors=corridors,
                 fallback_to_raw=fallback_to_raw,
                 selector=method,
             )
@@ -119,7 +130,20 @@ class TrajectoryOptimizer:
         fallback_reason = None
         clearance_checked = clearance_checker is not None
 
-        if clearance_checker is not None and len(optimized) > 1 and not bool(clearance_checker(optimized)):
+        if corridors and len(optimized) > 1 and not self._passes_corridor_gate(optimized, corridors):
+            if fallback_to_raw:
+                optimized = resampled
+                accepted = False
+                fallback_reason = "optimized_path_failed_corridor_gate"
+            else:
+                raise ValueError("optimized path failed corridor gate")
+
+        if (
+            fallback_reason is None
+            and clearance_checker is not None
+            and len(optimized) > 1
+            and not bool(clearance_checker(optimized))
+        ):
             if fallback_to_raw:
                 optimized = resampled
                 accepted = False
@@ -131,6 +155,10 @@ class TrajectoryOptimizer:
         velocities, accelerations = self._differentiate(optimized, timestamps)
         mean_jerk, max_jerk, jerk_squared_integral = self._jerk_metrics(accelerations, timestamps)
         snap_squared_integral = self._snap_squared_integral(accelerations, timestamps)
+        mean_curvature, max_curvature, curvature_squared_integral = self._curvature_metrics(
+            optimized,
+            timestamps,
+        )
         samples = [
             TrajectorySample(
                 t=float(t),
@@ -154,6 +182,9 @@ class TrajectoryOptimizer:
             max_jerk=max_jerk,
             jerk_squared_integral=jerk_squared_integral,
             snap_squared_integral=snap_squared_integral,
+            mean_curvature=mean_curvature,
+            max_curvature=max_curvature,
+            curvature_squared_integral=curvature_squared_integral,
             clearance_checked=clearance_checked,
             accepted=accepted,
             fallback_reason=fallback_reason,
@@ -164,6 +195,7 @@ class TrajectoryOptimizer:
         raw: np.ndarray,
         *,
         clearance_checker=None,
+        corridors=None,
         fallback_to_raw: bool,
         selector: str,
     ) -> TrajectoryResult:
@@ -171,12 +203,14 @@ class TrajectoryOptimizer:
             self.optimize(
                 raw,
                 clearance_checker=clearance_checker,
+                corridors=corridors,
                 method="moving_average",
                 fallback_to_raw=fallback_to_raw,
             ),
             self.optimize(
                 raw,
                 clearance_checker=clearance_checker,
+                corridors=corridors,
                 method="minimum_jerk",
                 fallback_to_raw=fallback_to_raw,
             ),
@@ -205,6 +239,9 @@ class TrajectoryOptimizer:
             max_jerk=best.max_jerk,
             jerk_squared_integral=best.jerk_squared_integral,
             snap_squared_integral=best.snap_squared_integral,
+            mean_curvature=best.mean_curvature,
+            max_curvature=best.max_curvature,
+            curvature_squared_integral=best.curvature_squared_integral,
             clearance_checked=best.clearance_checked,
             accepted=best.accepted,
             fallback_reason=best.fallback_reason,
@@ -241,6 +278,15 @@ class TrajectoryOptimizer:
         smoothed[0] = path[0]
         smoothed[-1] = path[-1]
         return smoothed
+
+    @staticmethod
+    def _passes_corridor_gate(positions: np.ndarray, corridors) -> bool:
+        if not corridors:
+            return True
+        for point in positions:
+            if not any(corridor.contains(point, tol=1e-6) for corridor in corridors):
+                return False
+        return True
 
     def _minimum_jerk_positions(self, path: np.ndarray) -> np.ndarray:
         if len(path) < 2:
@@ -337,3 +383,31 @@ class TrajectoryOptimizer:
             snap = (jerk_values[i] - jerk_values[i - 1]) / dt
             snap_integral += float(np.dot(snap, snap)) * dt
         return float(snap_integral)
+
+    @staticmethod
+    def _curvature_metrics(positions: np.ndarray, timestamps: np.ndarray) -> tuple[float, float, float]:
+        if len(positions) < 3:
+            return 0.0, 0.0, 0.0
+        curvatures: list[float] = []
+        curvature_squared_integral = 0.0
+        for i in range(1, len(positions) - 1):
+            a = positions[i] - positions[i - 1]
+            b = positions[i + 1] - positions[i]
+            la = float(np.linalg.norm(a))
+            lb = float(np.linalg.norm(b))
+            chord = float(np.linalg.norm(positions[i + 1] - positions[i - 1]))
+            if la <= 1e-9 or lb <= 1e-9 or chord <= 1e-9:
+                curvature = 0.0
+            else:
+                cross_norm = float(np.linalg.norm(np.cross(a, b)))
+                curvature = 2.0 * cross_norm / max(la * lb * chord, 1e-9)
+            curvatures.append(curvature)
+            dt = max(float(timestamps[min(i + 1, len(timestamps) - 1)] - timestamps[i]), 1e-6)
+            curvature_squared_integral += curvature * curvature * dt
+        if not curvatures:
+            return 0.0, 0.0, 0.0
+        return (
+            float(np.mean(curvatures)),
+            float(np.max(curvatures)),
+            float(curvature_squared_integral),
+        )

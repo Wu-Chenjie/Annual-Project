@@ -1,5 +1,8 @@
 #include "obstacle_scenario.hpp"
 
+#include "mpc_tracker.hpp"
+#include "trajectory_metrics.hpp"
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -1808,6 +1811,21 @@ SimulationResult ObstacleScenarioSimulation::run() {
     result.waypoints = waypoints_;
     result.task_waypoints = reported_tasks;
     result.planned_path = planned_path_;
+    if (!planned_path_.empty() && config_.trajectory_optimizer_enabled) {
+        result.planned_trajectory = compute_trajectory_metrics(
+            planned_path_,
+            config_.trajectory_optimizer_sample_dt
+        );
+    }
+    if (!planned_path_.empty() && config_.mpc_feasibility_enabled) {
+        result.mpc_feasibility = evaluate_mpc_feasibility(
+            planned_path_,
+            config_.trajectory_optimizer_sample_dt,
+            config_.leader_max_vel,
+            config_.leader_max_acc,
+            config_.mpc_feasibility_rms_limit
+        );
+    }
     result.replanned_waypoints = replanned_waypoints_;
     result.executed_path = executed_path_;
     result.planning_events = observer_.planning_events();
