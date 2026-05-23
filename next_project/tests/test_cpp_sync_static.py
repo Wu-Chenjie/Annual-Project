@@ -678,6 +678,26 @@ def test_cpp_topology_and_obstacle_scenario_use_axis_envelopes_and_true_lambda2(
     assert "if (nx2 + ny2 + nz2 > 1.0 + 1e-9) continue;" in grid_source
 
 
+def test_cpp_topology_runtime_metrics_are_reported_like_python():
+    result_header = read("cpp/include/formation_simulation.hpp")
+    result_writer = read("cpp/include/result_writer.hpp")
+    formation_source = read("cpp/src/formation_simulation.cpp")
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
+
+    assert "struct TopologyRuntimeMetrics" in result_header
+    assert "TopologyRuntimeMetrics topology_metrics;" in result_header
+    assert "mean_algebraic_connectivity" in result_header
+    assert "leader_control_energy_proxy" in result_header
+    assert "follower_control_energy_proxy" in result_header
+    assert 'w.key("topology_metrics").begin_object();' in result_writer
+    assert 'w.key("sample_count").value(result.topology_metrics.sample_count);' in result_writer
+    assert 'w.key("mean_algebraic_connectivity").value(result.topology_metrics.mean_algebraic_connectivity);' in result_writer
+    assert "TopologyGraph(offsets).algebraic_connectivity()" in formation_source
+    assert "result.topology_metrics = topology_metrics;" in formation_source
+    assert "result.topology_metrics = topology_metrics;" in scenario_source
+    assert "set_fault_counts_from_log(fault_log_)" in scenario_source
+
+
 def test_cpp_sensor_and_dynamic_replay_use_analytic_ranges():
     sensor_header = read("cpp/include/sensor.hpp")
     dynamic_header = read("cpp/include/dynamic_scenario.hpp")

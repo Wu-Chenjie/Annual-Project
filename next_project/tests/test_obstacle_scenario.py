@@ -725,6 +725,11 @@ def test_formation_safety_metrics_are_reported_when_enabled():
     assert "min_inter_drone_distance" in result["safety_metrics"]
     assert "downwash_hits" in result["safety_metrics"]
     assert result["safety_metrics"]["min_inter_drone_distance"] > 0.0
+    assert "topology_metrics" in result
+    assert result["topology_metrics"]["available"] is True
+    assert result["topology_metrics"]["sample_count"] > 0
+    assert "mean_algebraic_connectivity" in result["topology_metrics"]
+    assert "leader_control_energy_proxy" in result["topology_metrics"]
 
 
 def test_formation_safety_deconflicts_follower_targets():

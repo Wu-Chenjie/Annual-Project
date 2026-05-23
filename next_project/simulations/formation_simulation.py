@@ -38,6 +38,7 @@ from core.drone_params import get_drone_params
 from core.controller import Controller, HybridAttitudeController, BacksteppingController, GeometricSE3Controller
 from core.wind_field import WindField
 from core.topology import FormationTopology
+from core.topology_metrics import TopologyMetricAccumulator
 
 
 @dataclass
@@ -371,6 +372,7 @@ class FormationSimulation:
         terminal_hold_pose: np.ndarray | None = None
         terminal_hold_steps = 0
         terminal_hold_required = max(8, int(round(0.15 / max(self.dt, 1e-6))))
+        topology_metrics = TopologyMetricAccumulator(self.dt)
 
         wp_radius = self.config.wp_radius
         wp_radius_final = self.config.wp_radius_final
@@ -439,6 +441,7 @@ class FormationSimulation:
             leader_acc = (leader_vel_new - leader_vel) / dt
             leader_acc_filt = alpha * leader_acc + (1.0 - alpha) * leader_acc_filt
             offsets = topology.get_current_offsets(time_now)
+            follower_controls = []
 
             for i, follower in enumerate(followers):
                 wind_follower = winds[i].sample(dt)
@@ -449,6 +452,7 @@ class FormationSimulation:
                     target_vel=leader_vel_new,
                     target_acc=leader_acc_filt,
                 )
+                follower_controls.append(follower_u)
                 follower.update_state(follower_u, wind=wind_follower)
                 follower_pos = follower.get_state()[0]
                 error_vec = follower_pos - target_pos
@@ -456,6 +460,12 @@ class FormationSimulation:
                 error_vectors[i, step_idx, :] = error_vec
                 formation_errors[i, step_idx] = np.linalg.norm(error_vec)
                 history_followers[i, step_idx, :] = follower_pos
+
+            topology_metrics.add_sample(
+                offsets,
+                leader_control=leader_u,
+                follower_controls=follower_controls,
+            )
 
             history_time[step_idx] = time_now
             history_leader[step_idx, :] = leader_pos_new
@@ -482,4 +492,5 @@ class FormationSimulation:
             "completed_waypoint_count": len(self.waypoints) if finished else current_wp_idx,
             "waypoints": np.array(self.waypoints, dtype=float),
             "waypoint_events": waypoint_events,
+            "topology_metrics": topology_metrics.to_dict(),
         }

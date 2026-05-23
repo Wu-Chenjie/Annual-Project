@@ -31,6 +31,7 @@ from core.formation_safety import (
 from core.formation_clearance import FormationClearancePolicy
 from core.formation_adaptation import FormationAdaptationPolicy
 from core.topology import FormationTopology
+from core.topology_metrics import TopologyMetricAccumulator
 from core.planning import (
     AStar, TurnConstrainedAStar, HybridAStar, Dijkstra, RRTStar,
     InformedRRTStar, DStarLite, WindowReplanner, RiskAdaptiveReplanInterval,
@@ -1777,6 +1778,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
         terminal_hold_pose: np.ndarray | None = None
         terminal_hold_steps = 0
         terminal_hold_required = max(8, int(round(0.15 / max(dt, 1e-6))))
+        topology_metrics = TopologyMetricAccumulator(dt)
         local_path: np.ndarray = np.array([self._planning_waypoints[0]], dtype=float)
         local_path_idx = 0
         local_path_task_idx = -1
@@ -2123,6 +2125,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
 
             reserved_targets: list[np.ndarray] = [leader_pos_new.copy()]
             reserved_actual_positions: list[np.ndarray] = [leader_pos_new.copy()]
+            follower_controls = []
             for i, follower in enumerate(followers):
                 wind_follower = winds[i].sample(dt)
                 follower_current_pos = follower.get_state()[0]
@@ -2163,6 +2166,7 @@ class ObstacleScenarioSimulation(FormationSimulation):
                     target_vel=leader_vel_new,
                     target_acc=leader_acc_filt + repulsion_acc,
                 )
+                follower_controls.append(follower_u)
                 if self.fault_detector is not None and i not in self._faulted_followers:
                     desired_state = np.zeros(6, dtype=float)
                     desired_state[0:3] = target_pos
@@ -2206,6 +2210,12 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 error_vectors[i, step_idx, :] = error_vec
                 formation_errors[i, step_idx] = np.linalg.norm(error_vec)
                 history_followers[i, step_idx, :] = follower_pos
+
+            topology_metrics.add_sample(
+                offsets,
+                leader_control=leader_u,
+                follower_controls=follower_controls,
+            )
 
             history_time[step_idx] = time_now
             history_leader[step_idx, :] = leader_pos_new
@@ -2312,4 +2322,5 @@ class ObstacleScenarioSimulation(FormationSimulation):
             "fault_log": self.fault_log,
             "safety_metrics": safety_metrics,
             "collision_summary": collision_summary,
+            "topology_metrics": topology_metrics.to_dict(fault_log=self.fault_log),
         }

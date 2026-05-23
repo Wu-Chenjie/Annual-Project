@@ -231,6 +231,7 @@ def build_sim_result_payload(
         "sensor_logs",
         "map_knowledge",
         "safety_metrics",
+        "topology_metrics",
     )
     for key in optional_passthrough:
         if key in sim_result:

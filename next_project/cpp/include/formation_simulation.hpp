@@ -83,6 +83,24 @@ struct FormationSafetyMetrics {
     int downwash_hits = 0;
 };
 
+struct TopologyRuntimeMetrics {
+    bool available = false;
+    int sample_count = 0;
+    double mean_algebraic_connectivity = 0.0;
+    double min_algebraic_connectivity = 0.0;
+    double final_algebraic_connectivity = 0.0;
+    double leader_control_energy_proxy = 0.0;
+    double follower_control_energy_proxy = 0.0;
+    int fault_event_count = 0;
+    int reconfiguration_event_count = 0;
+
+    void add_sample(const std::vector<Vec3>& offsets,
+                    const std::array<double, 4>& leader_control,
+                    const std::vector<std::array<double, 4>>& follower_controls,
+                    double dt);
+    void set_fault_counts_from_log(const std::vector<std::string>& fault_log);
+};
+
 struct PlanningEvent {
     double t = 0.0;
     std::string phase;
@@ -150,6 +168,7 @@ struct SimulationResult {
     std::vector<FormationAdaptationEvent> formation_adaptation_events;
     std::vector<std::string> fault_log;
     FormationSafetyMetrics safety_metrics;
+    TopologyRuntimeMetrics topology_metrics;
 };
 
 class FormationSimulation {

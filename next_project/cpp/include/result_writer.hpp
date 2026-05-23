@@ -390,6 +390,18 @@ inline void write_result_json(
     w.key("downwash_hits").value(result.safety_metrics.downwash_hits);
     w.end_object();
 
+    w.key("topology_metrics").begin_object();
+    w.key("available").value(result.topology_metrics.available);
+    w.key("sample_count").value(result.topology_metrics.sample_count);
+    w.key("mean_algebraic_connectivity").value(result.topology_metrics.mean_algebraic_connectivity);
+    w.key("min_algebraic_connectivity").value(result.topology_metrics.min_algebraic_connectivity);
+    w.key("final_algebraic_connectivity").value(result.topology_metrics.final_algebraic_connectivity);
+    w.key("leader_control_energy_proxy").value(result.topology_metrics.leader_control_energy_proxy);
+    w.key("follower_control_energy_proxy").value(result.topology_metrics.follower_control_energy_proxy);
+    w.key("fault_event_count").value(result.topology_metrics.fault_event_count);
+    w.key("reconfiguration_event_count").value(result.topology_metrics.reconfiguration_event_count);
+    w.end_object();
+
     w.end_object();
     out << "\n";
 }

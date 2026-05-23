@@ -1470,6 +1470,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
     double dt = config_.dt;
     bool fault_injected = false;
     std::set<int> faulted_followers;
+    TopologyRuntimeMetrics topology_metrics;
     std::unique_ptr<FaultDetector> fault_detector;
     if (config_.fault_detection_enabled) {
         fault_detector = std::make_unique<FaultDetector>(
@@ -1756,6 +1757,8 @@ SimulationResult ObstacleScenarioSimulation::run() {
         std::vector<Vec3> reserved_actual_positions;
         reserved_actual_positions.reserve(static_cast<std::size_t>(follower_count) + 1);
         reserved_actual_positions.push_back(ls.position);
+        std::vector<std::array<double, 4>> follower_controls;
+        follower_controls.reserve(static_cast<std::size_t>(follower_count));
         for (int i = 0; i < follower_count; ++i) {
             Vec3 follower_pos = followers[i].get_state().position;
             Vec3 nominal_target = ls.position + offsets[i];
@@ -1782,6 +1785,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
             auto u_f = follower_ctrls[i]->compute_control(
                 followers[i].state(), target_pos, ls.velocity,
                 leader_acc_filt + rep_acc_f);
+            follower_controls.push_back(u_f);
 
             if (fault_detector && faulted_followers.count(i) == 0) {
                 if (fault_detector->check(i, followers[i].state(), target_pos, ls.velocity, u_f, 20.0)) {
@@ -1817,6 +1821,7 @@ SimulationResult ObstacleScenarioSimulation::run() {
                 observer_.record_collision(event);
             }
         }
+        topology_metrics.add_sample(offsets, u, follower_controls, dt);
 
         result.time[step_idx] = t;
         ++step_idx;
@@ -1849,6 +1854,8 @@ SimulationResult ObstacleScenarioSimulation::run() {
     result.collision_log = observer_.collision_events();
     result.formation_adaptation_events = formation_adaptation_events_;
     result.fault_log = fault_log_;
+    topology_metrics.set_fault_counts_from_log(fault_log_);
+    result.topology_metrics = topology_metrics;
     int valid = step_idx;
 
     if (follower_count > 0 && valid > 0) {

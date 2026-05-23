@@ -79,6 +79,17 @@ def test_build_sim_result_payload_passes_reporting_fields():
                 "planner_static_occupied_count": 0,
                 "planner_sensor_occupied_count": 12,
             },
+            "topology_metrics": {
+                "available": True,
+                "sample_count": 2,
+                "mean_algebraic_connectivity": 0.4,
+                "min_algebraic_connectivity": 0.3,
+                "final_algebraic_connectivity": 0.5,
+                "leader_control_energy_proxy": 1.0,
+                "follower_control_energy_proxy": 2.0,
+                "fault_event_count": 0,
+                "reconfiguration_event_count": 0,
+            },
         },
         runtime_s=0.3,
         config_snapshot={"planner_kind": "astar"},
@@ -91,6 +102,7 @@ def test_build_sim_result_payload_passes_reporting_fields():
     assert payload["replanned_waypoints"][1] == [0.5, 0, 0]
     assert payload["map_knowledge"]["initial_map_unknown"] is True
     assert payload["map_knowledge"]["planner_static_occupied_count"] == 0
+    assert payload["topology_metrics"]["sample_count"] == 2
 
 
 def test_build_benchmark_payload_validates():

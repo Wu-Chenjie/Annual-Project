@@ -7,6 +7,62 @@
 
 namespace sim {
 
+namespace {
+
+double control_energy(const std::array<double, 4>& control, double dt) {
+    double sum = 0.0;
+    for (double value : control) {
+        if (std::isfinite(value)) {
+            sum += value * value;
+        }
+    }
+    return sum * std::max(0.0, dt);
+}
+
+bool starts_with(const std::string& value, const std::string& prefix) {
+    return value.rfind(prefix, 0) == 0;
+}
+
+}  // namespace
+
+void TopologyRuntimeMetrics::add_sample(
+    const std::vector<Vec3>& offsets,
+    const std::array<double, 4>& leader_control,
+    const std::vector<std::array<double, 4>>& follower_controls,
+    double dt) {
+    const double lambda2 = TopologyGraph(offsets).algebraic_connectivity();
+    if (std::isfinite(lambda2)) {
+        ++sample_count;
+        final_algebraic_connectivity = lambda2;
+        if (!available) {
+            available = true;
+            mean_algebraic_connectivity = lambda2;
+            min_algebraic_connectivity = lambda2;
+        } else {
+            min_algebraic_connectivity = std::min(min_algebraic_connectivity, lambda2);
+            mean_algebraic_connectivity +=
+                (lambda2 - mean_algebraic_connectivity) / static_cast<double>(sample_count);
+        }
+    }
+
+    leader_control_energy_proxy += control_energy(leader_control, dt);
+    for (const auto& follower_control : follower_controls) {
+        follower_control_energy_proxy += control_energy(follower_control, dt);
+    }
+}
+
+void TopologyRuntimeMetrics::set_fault_counts_from_log(const std::vector<std::string>& fault_log) {
+    fault_event_count = 0;
+    reconfiguration_event_count = 0;
+    for (const std::string& event : fault_log) {
+        if (starts_with(event, "inject:") || starts_with(event, "detect:")) {
+            ++fault_event_count;
+        } else if (starts_with(event, "reconfigure:")) {
+            ++reconfiguration_event_count;
+        }
+    }
+}
+
 FormationSimulation::FormationSimulation(const SimulationConfig& config)
     : config_(config),
       dt_(config.dt),
@@ -139,6 +195,7 @@ SimulationResult FormationSimulation::run() {
     std::size_t step_idx = 0;
 
     Vec3 leader_acc_filt{0.0, 0.0, 0.0};
+    TopologyRuntimeMetrics topology_metrics;
 
     while (time_now < max_sim_time_ && step_idx < steps) {
         maybe_switch_formation(time_now);
@@ -166,6 +223,8 @@ SimulationResult FormationSimulation::run() {
         leader_acc_filt = config_.leader_acc_alpha * leader_acc + (1.0 - config_.leader_acc_alpha) * leader_acc_filt;
 
         const std::vector<Vec3> offsets = topology_.get_current_offsets(time_now);
+        std::vector<std::array<double, 4>> follower_controls;
+        follower_controls.reserve(follower_count);
 
         for (std::size_t i = 0; i < follower_count; ++i) {
             const Vec3 wind_follower = winds_[i].sample(dt_);
@@ -177,6 +236,7 @@ SimulationResult FormationSimulation::run() {
                 leader_state_after.velocity,
                 leader_acc_filt
             );
+            follower_controls.push_back(follower_u);
 
             followers_[i].update_state(follower_u, wind_follower);
             const Vec3 follower_pos = followers_[i].get_state().position;
@@ -187,6 +247,7 @@ SimulationResult FormationSimulation::run() {
             result.errors[i][step_idx] = norm(error_vec);
             result.followers[i][step_idx] = follower_pos;
         }
+        topology_metrics.add_sample(offsets, leader_u, follower_controls, dt_);
 
         result.time[step_idx] = time_now;
         result.leader[step_idx] = leader_state_after.position;
@@ -227,6 +288,7 @@ SimulationResult FormationSimulation::run() {
 
     result.completed_waypoint_count = finished ? static_cast<int>(config_.waypoints.size()) : static_cast<int>(current_wp_idx);
     result.waypoints = config_.waypoints;
+    result.topology_metrics = topology_metrics;
     return result;
 }
 
