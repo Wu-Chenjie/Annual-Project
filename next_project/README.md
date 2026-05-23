@@ -106,6 +106,18 @@ Each run writes a schema-validated `sim_result.json` (and benchmark scripts writ
 
 The repository-level `.gitignore` excludes fresh outputs, Python caches, pytest caches, and C++ build products.
 
+## A 线技术改进状态
+
+截至 2026-05-23，A 线仿真系统技术改进已完成一轮工程闭环：
+
+- A1/A2：FIRI-style 轨迹平滑、轨迹质量指标和轻量 MPC 可行性评估已接入结果输出；定位为可解释后处理与评估层，不替换现有控制器。
+- A3：Voronoi region scoring 已接入 Python/C++ 在线重规划，用于降低多障碍环境中的避障侧切换抖动。
+- A4：MADDPG 暂时挂起。当前仅作为未来学习型多智能体协同策略候选方向，不进入短期主线。
+- A5：传感器发现障碍支持 transient / persistent 分类和差异化 TTL 衰减。
+- A6：`topology_metrics` 输出代数连通度 λ₂、控制能耗代理、故障事件计数和拓扑重构计数。
+
+对应设计与实施记录位于 `docs/superpowers/specs/` 和 `docs/superpowers/plans/`。
+
 ## 中期实验与计划
 
 中期计划和验收记录：

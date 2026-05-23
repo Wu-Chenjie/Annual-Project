@@ -52,6 +52,17 @@
 | DroneParams 标定骨架 | 完整原型 | 待同步 | 不适用 | `experiments/calibration/drone_params_calibration.py` 从预处理 CSV 输出候选 profile JSON |
 | DroneParams profile 文档 | 完整 | 子集说明 | 不适用 | `docs/drone-params-profile.md` 明确 profile 边界，不宣称实测标定 |
 
+## 2.2 A 线技术改进能力矩阵（2026-05-23）
+
+| A 线任务 | Python | C++ | Web | 当前口径 |
+| --- | --- | --- | --- | --- |
+| A1 FIRI 多段走廊轨迹优化 | 工程化完整 | 工程化子集 | 通过 C++ 报告字段展示 | FIRI-style corridor refinement、路径曲率/jerk/snap 代理指标已落地；不宣称完整 MVIE / GCOPTER 复现 |
+| A2 MPC 跟踪可行性评估 | 完整评估层 | 结果字段同步 | 不适用 | 输出 `mpc_feasibility`，包含 RMS 代理、速度/加速度违反量、饱和比例和建议；不替换控制器 |
+| A3 Voronoi 分区策略 | 完整原型 | 可运行子集 | 通过 C++ 回放间接体现 | `VoronoiRegionSelector` 为候选路径提供稳定区域评分，降低重规划侧向切换抖动 |
+| A4 MADDPG | 挂起 | 挂起 | 不适用 | 仅保留为未来学习型多智能体协同策略候选方向；资料不可复现前不进入主线 |
+| A5 动态障碍类别与衰减 | 完整 | 可运行子集 | 通过 C++ 回放间接体现 | 传感器障碍 transient / persistent 分类、命中计数和差异化 TTL 已同步 |
+| A6 容错拓扑细指标 | 完整 | 完整字段同步 | 报告字段可展示 | `topology_metrics` 输出 λ₂ 均值/最小/最终值、leader/follower 控制能耗代理、故障/重构计数 |
+
 ## 3. 场景覆盖矩阵
 
 | 预设/场景 | Python | C++ | Web | 回归用途 |

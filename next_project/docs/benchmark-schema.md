@@ -64,10 +64,31 @@
 | `config_snapshot` | `SimulationConfig` 字典快照 |
 | `trajectories` | `time` / `leader` / `followers` 时序数组（默认不输出，文件较大） |
 | `planned_path` / `executed_path` | 规划与执行轨迹 [N×3] |
-| `replan_events` / `collision_log` / `fault_log` | 事件日志 |
+| `planned_trajectory` | 轨迹质量指标：path length、曲率、jerk、snap 代理等 |
+| `mpc_feasibility` | 轻量 MPC 跟踪可行性评估：RMS 代理、约束违反量、饱和比例和建议 |
+| `replan_events` / `planning_events` / `waypoint_events` | 重规划、规划阶段和航点事件日志 |
+| `collision_log` / `fault_log` | 碰撞、故障注入/检测/重构事件日志 |
 | `sensor_logs` | 距离传感器日志 |
+| `map_knowledge` | 未知地图运行时的真值障碍数、规划器静态/传感器占用统计 |
 | `safety_metrics` | `min_inter_drone_distance` / `downwash_hits` |
+| `topology_metrics` | 拓扑运行指标：λ₂、控制能耗代理、故障和重构计数 |
 | `risk_report` | `core.risk_report.build_risk_report` 输出 |
+
+### `topology_metrics`
+
+A6 后新增的运行时拓扑观测字段。该字段为可选字段，旧结果文件不包含时仍合法。
+
+| 字段 | 单位 | 说明 |
+| --- | --- | --- |
+| `available` | - | 是否至少成功采样一次拓扑连通性 |
+| `sample_count` | - | 有效 λ₂ 样本数 |
+| `mean_algebraic_connectivity` | - | 运行期间代数连通度 λ₂ 均值 |
+| `min_algebraic_connectivity` | - | 运行期间最小 λ₂ |
+| `final_algebraic_connectivity` | - | 最后一个有效 λ₂ |
+| `leader_control_energy_proxy` | 控制量平方·s | leader 控制输入平方积分代理 |
+| `follower_control_energy_proxy` | 控制量平方·s | followers 控制输入平方积分代理 |
+| `fault_event_count` | - | 故障注入/检测事件计数 |
+| `reconfiguration_event_count` | - | 拓扑重构事件计数 |
 
 ## benchmark_result.json
 
