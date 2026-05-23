@@ -92,6 +92,10 @@ class WindowReplanner:
     local_fail_threshold: 局部修正连续失败触发增量层的阈值。
     """
 
+    SENSOR_OBSTACLE_NONE = 0
+    SENSOR_OBSTACLE_TRANSIENT = 1
+    SENSOR_OBSTACLE_PERSISTENT = 2
+
     def __init__(
         self,
         planner: Planner,
@@ -109,6 +113,9 @@ class WindowReplanner:
         local_fail_threshold: int = 3,
         sensor_obstacle_ttl_steps: int = 3,
         sensor_clear_confirm_steps: int = 1,
+        sensor_obstacle_classification_enabled: bool = False,
+        sensor_obstacle_persistent_hits: int = 2,
+        sensor_obstacle_persistent_ttl_steps: int = 6,
         gnn_path_ratio_limit: float = 1.2,
         voronoi_region_enabled: bool = False,
         voronoi_region_weight: float = 0.25,
@@ -119,12 +126,20 @@ class WindowReplanner:
         self._sensor_occupied = np.zeros_like(grid.data, dtype=bool)
         self._sensor_ttl = np.zeros_like(grid.data, dtype=np.int16)
         self._sensor_clear_hits = np.zeros_like(grid.data, dtype=np.int16)
+        self._sensor_hit_count = np.zeros_like(grid.data, dtype=np.int16)
+        self._sensor_obstacle_class = np.zeros_like(grid.data, dtype=np.int8)
         self.base_interval = float(interval)
         self.horizon = float(horizon)
         self.epsilon = float(epsilon)
         self.deviation_metric = deviation_metric
         self.sensor_obstacle_ttl_steps = max(1, int(sensor_obstacle_ttl_steps))
         self.sensor_clear_confirm_steps = max(1, int(sensor_clear_confirm_steps))
+        self.sensor_obstacle_classification_enabled = bool(sensor_obstacle_classification_enabled)
+        self.sensor_obstacle_persistent_hits = max(1, int(sensor_obstacle_persistent_hits))
+        self.sensor_obstacle_persistent_ttl_steps = max(
+            self.sensor_obstacle_ttl_steps,
+            int(sensor_obstacle_persistent_ttl_steps),
+        )
         self.gnn_path_ratio_limit = max(1.0, float(gnn_path_ratio_limit))
         self.voronoi_region_enabled = bool(voronoi_region_enabled)
         self.voronoi_region_selector = VoronoiRegionSelector(weight=voronoi_region_weight)
@@ -631,7 +646,7 @@ class WindowReplanner:
                 if self._static_occupied[idx]:
                     continue
                 if hit_cell:
-                    self._sensor_ttl[idx] = self.sensor_obstacle_ttl_steps
+                    self._sensor_ttl[idx] = self._sensor_ttl_for_hit(idx)
                     self._sensor_clear_hits[idx] = 0
                     if old_val != 1 or not self._sensor_occupied[idx]:
                         self.grid.data[idx] = 1
@@ -646,10 +661,30 @@ class WindowReplanner:
                         self._sensor_ttl[idx] = max(0, int(self._sensor_ttl[idx]) - 1)
                         if self._sensor_ttl[idx] <= 0:
                             self.grid.data[idx] = 0
-                            self._sensor_occupied[idx] = False
-                            self._sensor_clear_hits[idx] = 0
+                            self._reset_sensor_cell(idx)
                             changed.append((idx, False))
         return changed
+
+    def _sensor_ttl_for_hit(self, idx: tuple[int, int, int]) -> int:
+        if not self.sensor_obstacle_classification_enabled:
+            return self.sensor_obstacle_ttl_steps
+        hit_count = min(
+            self.sensor_obstacle_persistent_hits,
+            int(self._sensor_hit_count[idx]) + 1,
+        )
+        self._sensor_hit_count[idx] = hit_count
+        if hit_count >= self.sensor_obstacle_persistent_hits:
+            self._sensor_obstacle_class[idx] = self.SENSOR_OBSTACLE_PERSISTENT
+            return self.sensor_obstacle_persistent_ttl_steps
+        self._sensor_obstacle_class[idx] = self.SENSOR_OBSTACLE_TRANSIENT
+        return self.sensor_obstacle_ttl_steps
+
+    def _reset_sensor_cell(self, idx: tuple[int, int, int]) -> None:
+        self._sensor_occupied[idx] = False
+        self._sensor_ttl[idx] = 0
+        self._sensor_clear_hits[idx] = 0
+        self._sensor_hit_count[idx] = 0
+        self._sensor_obstacle_class[idx] = self.SENSOR_OBSTACLE_NONE
 
     def _decay_sensor_obstacles(self) -> bool:
         changed = False
@@ -657,16 +692,13 @@ class WindowReplanner:
         for idx_arr in sensor_indices:
             idx = tuple(int(v) for v in idx_arr)
             if self._static_occupied[idx]:
-                self._sensor_occupied[idx] = False
-                self._sensor_ttl[idx] = 0
-                self._sensor_clear_hits[idx] = 0
+                self._reset_sensor_cell(idx)
                 changed = True
                 continue
             self._sensor_ttl[idx] = max(0, int(self._sensor_ttl[idx]) - 1)
             if self._sensor_ttl[idx] <= 0:
                 self.grid.data[idx] = 0
-                self._sensor_occupied[idx] = False
-                self._sensor_clear_hits[idx] = 0
+                self._reset_sensor_cell(idx)
                 self._changed_cells_since_last.append((idx, False))
                 changed = True
         return changed

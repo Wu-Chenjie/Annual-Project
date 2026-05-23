@@ -610,6 +610,8 @@ class ObstacleScenarioSimulation(FormationSimulation):
             self.replanner._sensor_occupied = np.zeros_like(self.grid.data, dtype=bool)
             self.replanner._sensor_ttl = np.zeros_like(self.grid.data, dtype=np.int16)
             self.replanner._sensor_clear_hits = np.zeros_like(self.grid.data, dtype=np.int16)
+            self.replanner._sensor_hit_count = np.zeros_like(self.grid.data, dtype=np.int16)
+            self.replanner._sensor_obstacle_class = np.zeros_like(self.grid.data, dtype=np.int8)
             self.replanner._changed_cells_since_last = []
             self.replanner._sensor_grid_dirty = False
             self.replanner._current_path = None
@@ -716,6 +718,9 @@ class ObstacleScenarioSimulation(FormationSimulation):
                 dual_mode=dual_mode,
                 adaptive_interval=adaptive_interval,
                 obstacle_field=self._discovered_obstacles if getattr(cfg, "planner_initial_map_unknown", False) else self.obstacles,
+                sensor_obstacle_classification_enabled=getattr(cfg, "sensor_obstacle_classification_enabled", False),
+                sensor_obstacle_persistent_hits=getattr(cfg, "sensor_obstacle_persistent_hits", 2),
+                sensor_obstacle_persistent_ttl_steps=getattr(cfg, "sensor_obstacle_persistent_ttl_steps", 6),
             )
             self.replanner.path_refiner = self.firi_refiner
 

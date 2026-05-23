@@ -285,6 +285,8 @@ def test_cpp_online_replanner_has_path_acceptance_clearance_gate():
 
 def test_cpp_replanner_has_risk_adaptive_interval_and_sensor_ttl():
     source = read("cpp/include/replanner.hpp")
+    scenario_header = read("cpp/include/obstacle_scenario.hpp")
+    scenario_source = read("cpp/src/obstacle_scenario.cpp")
 
     assert "enable_adaptive_interval" in source
     assert "current_interval()" in source
@@ -293,6 +295,15 @@ def test_cpp_replanner_has_risk_adaptive_interval_and_sensor_ttl():
     assert "sensor_ttl_" in source
     assert "static_occupied_" in source
     assert "decay_sensor_obstacles()" in source
+    assert "enable_sensor_obstacle_classification" in source
+    assert "sensor_hit_count_" in source
+    assert "sensor_obstacle_class_" in source
+    assert "sensor_ttl_for_hit" in source
+    assert "reset_sensor_cell" in source
+    assert "bool sensor_obstacle_classification_enabled = false;" in scenario_header
+    assert "int sensor_obstacle_persistent_hits = 2;" in scenario_header
+    assert "int sensor_obstacle_persistent_ttl_steps = 6;" in scenario_header
+    assert "enable_sensor_obstacle_classification(" in scenario_source
 
 
 def test_cpp_obstacle_entry_accepts_direct_map_file_for_all_map_sweeps():

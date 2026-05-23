@@ -50,3 +50,48 @@ def test_static_obstacle_is_never_cleared_by_sensor_decay():
     replanner._decay_sensor_obstacles()
     assert grid.data[static_idx] == 1
     assert not replanner._sensor_occupied[static_idx]
+
+
+def test_classified_sensor_obstacle_promotes_to_persistent_ttl():
+    grid = OccupancyGrid(origin=np.zeros(3), resolution=1.0, shape=(16, 16, 4))
+    replanner = WindowReplanner(
+        planner=DummyPlanner(),
+        grid=grid,
+        horizon=4.0,
+        sensor_obstacle_ttl_steps=1,
+        sensor_obstacle_classification_enabled=True,
+        sensor_obstacle_persistent_hits=2,
+        sensor_obstacle_persistent_ttl_steps=4,
+    )
+    pose = np.array([2.0, 2.0, 1.0], dtype=float)
+    readings = np.array([2.0, 4.0, 4.0, 4.0, 4.0, 4.0], dtype=float)
+    hit_idx = grid.world_to_index(np.array([4.0, 2.0, 1.0], dtype=float))
+
+    replanner._update_grid_from_sensor(pose, readings)
+    assert replanner._sensor_obstacle_class[hit_idx] == replanner.SENSOR_OBSTACLE_TRANSIENT
+    assert replanner._sensor_ttl[hit_idx] == 1
+
+    replanner._update_grid_from_sensor(pose, readings)
+    assert replanner._sensor_obstacle_class[hit_idx] == replanner.SENSOR_OBSTACLE_PERSISTENT
+    assert replanner._sensor_ttl[hit_idx] == 4
+
+
+def test_classified_sensor_obstacle_single_hit_expires_as_transient():
+    grid = OccupancyGrid(origin=np.zeros(3), resolution=1.0, shape=(16, 16, 4))
+    replanner = WindowReplanner(
+        planner=DummyPlanner(),
+        grid=grid,
+        horizon=4.0,
+        sensor_obstacle_ttl_steps=1,
+        sensor_obstacle_classification_enabled=True,
+        sensor_obstacle_persistent_ttl_steps=4,
+    )
+    pose = np.array([2.0, 2.0, 1.0], dtype=float)
+    readings = np.array([2.0, 4.0, 4.0, 4.0, 4.0, 4.0], dtype=float)
+    hit_idx = grid.world_to_index(np.array([4.0, 2.0, 1.0], dtype=float))
+
+    replanner._update_grid_from_sensor(pose, readings)
+    replanner._decay_sensor_obstacles()
+
+    assert not replanner._sensor_occupied[hit_idx]
+    assert replanner._sensor_obstacle_class[hit_idx] == replanner.SENSOR_OBSTACLE_NONE

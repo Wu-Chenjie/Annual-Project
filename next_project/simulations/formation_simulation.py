@@ -125,6 +125,9 @@ class SimulationConfig:
     sensor_max_range: float = 8.0
     sensor_noise_std: float = 0.02
     sensor_directions: int = 6            # ±x, ±y, ±z
+    sensor_obstacle_classification_enabled: bool = False
+    sensor_obstacle_persistent_hits: int = 2
+    sensor_obstacle_persistent_ttl_steps: int = 6
 
     # ---- 论文2: 双模式 GNN ----
     danger_mode_enabled: bool = False

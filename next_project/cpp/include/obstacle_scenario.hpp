@@ -47,6 +47,9 @@ struct ObstacleConfig : SimulationConfig {
     bool sensor_enabled = false;
     double sensor_max_range = 8.0;
     double sensor_noise_std = 0.02;
+    bool sensor_obstacle_classification_enabled = false;
+    int sensor_obstacle_persistent_hits = 2;
+    int sensor_obstacle_persistent_ttl_steps = 6;
     std::string apf_paper1_profile = "off";  // "off" | "conservative" | "aggressive"
     double apf_comm_range = 10.0;
     double apf_centroid_alpha = 0.4;

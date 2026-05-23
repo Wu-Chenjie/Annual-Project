@@ -38,6 +38,7 @@ public:
     void set_dual_mode(std::unique_ptr<DualModeScheduler> dm) { dual_mode_ = std::move(dm); }
     void enable_adaptive_interval(double min_interval, double max_interval);
     void enable_voronoi_region(double weight = 0.25);
+    void enable_sensor_obstacle_classification(int persistent_hits = 2, int persistent_ttl_steps = 6);
 
     [[nodiscard]] const std::vector<ReplanEvent>& events() const { return events_; }
     [[nodiscard]] const OccupancyGrid& current_grid() const { return mutable_grid_; }
@@ -61,6 +62,8 @@ private:
     Vec3 compute_subgoal(const Vec3& pose, const Vec3& goal);
     std::vector<Vec3> publish_path(double t, std::vector<Vec3> new_path);
     bool decay_sensor_obstacles();
+    int sensor_ttl_for_hit(int flat);
+    void reset_sensor_cell(int flat);
     std::vector<std::pair<std::array<int,3>, bool>> update_grid_from_sensor(
         const Vec3& pose, const std::array<double, 6>& readings);
     void update_risk(const Vec3& pose, const std::array<double, 6>* readings);
@@ -95,8 +98,16 @@ private:
     std::vector<std::uint8_t> sensor_occupied_;
     std::vector<int> sensor_ttl_;
     std::vector<int> sensor_clear_hits_;
+    std::vector<int> sensor_hit_count_;
+    std::vector<std::uint8_t> sensor_obstacle_class_;
     int sensor_obstacle_ttl_steps_ = 3;
     int sensor_clear_confirm_steps_ = 1;
+    bool sensor_obstacle_classification_enabled_ = false;
+    int sensor_obstacle_persistent_hits_ = 2;
+    int sensor_obstacle_persistent_ttl_steps_ = 6;
+    static constexpr std::uint8_t SENSOR_OBSTACLE_NONE = 0;
+    static constexpr std::uint8_t SENSOR_OBSTACLE_TRANSIENT = 1;
+    static constexpr std::uint8_t SENSOR_OBSTACLE_PERSISTENT = 2;
     bool sensor_grid_dirty_ = false;
     bool voronoi_region_enabled_ = false;
     VoronoiRegionSelector voronoi_region_selector_{0.25};
@@ -116,6 +127,8 @@ inline WindowReplanner::WindowReplanner(const OccupancyGrid& grid, double interv
     sensor_occupied_.resize(mutable_grid_.data.size(), 0);
     sensor_ttl_.resize(mutable_grid_.data.size(), 0);
     sensor_clear_hits_.resize(mutable_grid_.data.size(), 0);
+    sensor_hit_count_.resize(mutable_grid_.data.size(), 0);
+    sensor_obstacle_class_.resize(mutable_grid_.data.size(), SENSOR_OBSTACLE_NONE);
     for (std::size_t i = 0; i < mutable_grid_.data.size(); ++i) {
         static_occupied_[i] = mutable_grid_.data[i] >= 1 ? 1 : 0;
     }
@@ -130,6 +143,13 @@ inline void WindowReplanner::enable_adaptive_interval(double min_interval, doubl
 inline void WindowReplanner::enable_voronoi_region(double weight) {
     voronoi_region_enabled_ = true;
     voronoi_region_selector_ = VoronoiRegionSelector(weight);
+}
+
+inline void WindowReplanner::enable_sensor_obstacle_classification(
+    int persistent_hits, int persistent_ttl_steps) {
+    sensor_obstacle_classification_enabled_ = true;
+    sensor_obstacle_persistent_hits_ = std::max(1, persistent_hits);
+    sensor_obstacle_persistent_ttl_steps_ = std::max(sensor_obstacle_ttl_steps_, persistent_ttl_steps);
 }
 
 inline double WindowReplanner::current_interval() const {
@@ -359,7 +379,7 @@ inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::update_g
             bool hit_cell = ts >= r - mutable_grid_.resolution;
             auto& cell = mutable_grid_.data[flat];
             if (hit_cell) {
-                sensor_ttl_[flat] = sensor_obstacle_ttl_steps_;
+                sensor_ttl_[flat] = sensor_ttl_for_hit(flat);
                 sensor_clear_hits_[flat] = 0;
                 if (cell != 1 || !sensor_occupied_[flat]) {
                     cell = 1;
@@ -372,8 +392,7 @@ inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::update_g
                     sensor_ttl_[flat] = std::max(0, sensor_ttl_[flat] - 1);
                     if (sensor_ttl_[flat] <= 0) {
                         cell = 0;
-                        sensor_occupied_[flat] = 0;
-                        sensor_clear_hits_[flat] = 0;
+                        reset_sensor_cell(flat);
                         changed.push_back({idx, false});
                     }
                 }
@@ -383,22 +402,39 @@ inline std::vector<std::pair<std::array<int,3>, bool>> WindowReplanner::update_g
     return changed;
 }
 
+inline int WindowReplanner::sensor_ttl_for_hit(int flat) {
+    if (!sensor_obstacle_classification_enabled_) return sensor_obstacle_ttl_steps_;
+    const int hit_count = std::min(sensor_obstacle_persistent_hits_, sensor_hit_count_[flat] + 1);
+    sensor_hit_count_[flat] = hit_count;
+    if (hit_count >= sensor_obstacle_persistent_hits_) {
+        sensor_obstacle_class_[flat] = SENSOR_OBSTACLE_PERSISTENT;
+        return sensor_obstacle_persistent_ttl_steps_;
+    }
+    sensor_obstacle_class_[flat] = SENSOR_OBSTACLE_TRANSIENT;
+    return sensor_obstacle_ttl_steps_;
+}
+
+inline void WindowReplanner::reset_sensor_cell(int flat) {
+    sensor_occupied_[flat] = 0;
+    sensor_ttl_[flat] = 0;
+    sensor_clear_hits_[flat] = 0;
+    sensor_hit_count_[flat] = 0;
+    sensor_obstacle_class_[flat] = SENSOR_OBSTACLE_NONE;
+}
+
 inline bool WindowReplanner::decay_sensor_obstacles() {
     bool changed = false;
     for (std::size_t flat = 0; flat < sensor_occupied_.size(); ++flat) {
         if (!sensor_occupied_[flat]) continue;
         if (static_occupied_[flat]) {
-            sensor_occupied_[flat] = 0;
-            sensor_ttl_[flat] = 0;
-            sensor_clear_hits_[flat] = 0;
+            reset_sensor_cell(static_cast<int>(flat));
             changed = true;
             continue;
         }
         sensor_ttl_[flat] = std::max(0, sensor_ttl_[flat] - 1);
         if (sensor_ttl_[flat] <= 0) {
             mutable_grid_.data[flat] = 0;
-            sensor_occupied_[flat] = 0;
-            sensor_clear_hits_[flat] = 0;
+            reset_sensor_cell(static_cast<int>(flat));
             changed = true;
         }
     }
