@@ -96,3 +96,7 @@ TextureMesh-*.log
 *.log
 *.err
 *.prof
+
+论文/
+experiments/
+tmp/
