@@ -845,7 +845,10 @@ def test_web_dynamic_replay_labels_leader_centric_scope_and_proxy_followers():
 
 
 def test_python_obstacle_scenario_wires_formation_apf_switch():
-    scenario = read("simulations/obstacle_scenario.py")
+    scenario = "\n".join([
+        read("simulations/obstacle_scenario.py"),
+        read("simulations/runtime/planning_runtime.py"),
+    ])
 
     assert "FormationAPF" in scenario
     assert "self.formation_apf = self._build_formation_apf()" in scenario
