@@ -1,3 +1,7 @@
+# 当前运行架构（ROS 2 迁移）
+
+主入口为 `ros2_ws/src/annual_swarm/launch/swarm.launch.py`，平台为 ROS 2 Jazzy + Gazebo Harmonic。构建、节点、测试和功能边界以 `ros2_ws/README.md` 为准。Gazebo 集成刚体状态；C++ 算法库不在 ROS 运行链路中独立积分。网页服务与 HTML 导出已移除。下文为迁移前的算法索引，供离线基线参考。
+
 # 年度项目 - AI 上下文索引
 
 ## 项目愿景

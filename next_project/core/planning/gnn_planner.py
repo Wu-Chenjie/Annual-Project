@@ -214,8 +214,8 @@ class GNNPlanner(Planner):
             path.append(verts[current].copy())
 
         if current != goal_idx:
-            if len(path) == 1 or np.linalg.norm(path[-1] - goal) > 1e-9:
-                path.append(goal.copy())
+            from .base import PlannerError
+            raise PlannerError("GNN visibility graph has no route to the goal")
         return np.array(path, dtype=float)
 
     @staticmethod

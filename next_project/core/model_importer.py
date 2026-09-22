@@ -1,6 +1,6 @@
 """3D 模型文件导入：PLY / OBJ / STL → 障碍物场。
 
-将 web/server.py 的模型解析与体素化逻辑移植到 Python 仿真端，
+提供模型解析与体素化逻辑，供 Python 离线仿真与地图生成复用，
 对外暴露 import_model() 作为主入口，返回 ObstacleField + bounds。
 """
 

@@ -19,7 +19,6 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 import sys
 import os
-import plotly.graph_objects as go
 class Drone:
     def __init__(self, dt=0.01):
         self.position = np.zeros(3)
@@ -88,39 +87,10 @@ if __name__ == "__main__":
         stage += 1
     history = np.array(history)
     
-    # 尝试使用 Plotly 绘制交互式图表
-    try:
-        print("正在生成交互式三维轨迹图...")
-        fig = go.Figure(data=[go.Scatter3d(x=history[:,0], y=history[:,1], z=history[:,2],
-                                           mode='lines+markers',
-                                           line=dict(color='blue', width=2),
-                                           marker=dict(size=3))])
-        fig.update_layout(title='无人机三维轨迹', scene=dict(
-            xaxis_title='X (m)',
-            yaxis_title='Y (m)',
-            zaxis_title='Z (m)'))
-        
-        # 保存为 HTML 文件（最稳妥的方式）
-        output_file = "drone_trajectory_3d.html"
-        fig.write_html(output_file)
-        print(f"图表已保存至: {os.path.abspath(output_file)}")
-        print("如果浏览器没有自动弹出，请手动打开上述 HTML 文件。")
-        
-        # 尝试自动显示
-        fig.show()
-        
-    except Exception as e:
-        print(f"Plotly 绘图遇到问题: {e}")
-        print("正在切换使用 Matplotlib 绘制静态图...")
-        
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot(history[:,0], history[:,1], history[:,2], label='Trajectory', marker='.')
-        ax.set_xlabel('X [m]')
-        ax.set_ylabel('Y [m]')
-        ax.set_zlabel('Z [m]')
-        ax.legend()
-        plt.title("Drone 3D Path Simulation (Matplotlib)")
-        plt.show()
-
-
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(*history.T, label='Trajectory', marker='.')
+    ax.set(xlabel='X (m)', ylabel='Y (m)', zlabel='Z (m)')
+    ax.legend()
+    fig.savefig('drone_trajectory_3d.png', dpi=150)
+    plt.show()

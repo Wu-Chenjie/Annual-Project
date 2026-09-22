@@ -19,7 +19,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import plotly.graph_objects as go
 
 from core.obstacles import AABB, Sphere, Cylinder, ObstacleField
 
@@ -35,7 +34,6 @@ class SimulationVisualizer:
     def plot_all(self, result: dict, show: bool = False) -> dict:
         """生成全部图表并保存为 PNG 文件。"""
         saved = {
-            "trajectory_html": self._plot_trajectory_html(result),
             "trajectory": self._plot_trajectory(result),
             "error_3d": self._plot_realtime_error_3d(result),
             "error_stats": self._plot_error_stats(result),
@@ -160,145 +158,6 @@ class SimulationVisualizer:
         file_path = self.output_dir / "trajectory_3d.png"
         fig.tight_layout()
         fig.savefig(file_path, dpi=self.dpi)
-        return str(file_path)
-
-    def _plot_trajectory_html(self, result: dict) -> str:
-        """生成基于 Plotly 的交互式三维轨迹 HTML 文件。"""
-        leader = result["leader"]
-        followers = result["followers"]
-        task_waypoints = result.get("task_waypoints", None)
-        replanned_waypoints = result.get("replanned_waypoints", None)
-        planned_path = result.get("planned_path", None)
-        obstacles = result.get("obstacles", None)
-
-        fig = go.Figure()
-
-        # 绘制障碍物
-        if obstacles is not None and len(obstacles) > 0:
-            for obs in obstacles:
-                if isinstance(obs, AABB):
-                    mn, mx = obs.min_corner, obs.max_corner
-                    x_box = [mn[0], mx[0], mx[0], mn[0], mn[0], mx[0], mx[0], mn[0]]
-                    y_box = [mn[1], mn[1], mx[1], mx[1], mn[1], mn[1], mx[1], mx[1]]
-                    z_box = [mn[2], mn[2], mn[2], mn[2], mx[2], mx[2], mx[2], mx[2]]
-                    fig.add_trace(go.Mesh3d(
-                        x=x_box, y=y_box, z=z_box, alphahull=0,
-                        color='gray', opacity=0.2, showlegend=False, hoverinfo='skip'
-                    ))
-                elif isinstance(obs, Sphere):
-                    u = np.linspace(0, 2 * np.pi, 20)
-                    v = np.linspace(0, np.pi, 20)
-                    u_grid, v_grid = np.meshgrid(u, v)
-                    cx, cy, cz = obs.center
-                    r = obs.radius
-                    x_sph = cx + r * np.cos(u_grid) * np.sin(v_grid)
-                    y_sph = cy + r * np.sin(u_grid) * np.sin(v_grid)
-                    z_sph = cz + r * np.cos(v_grid)
-                    fig.add_trace(go.Surface(
-                        x=x_sph, y=y_sph, z=z_sph,
-                        colorscale=[[0, 'gray'], [1, 'gray']], showscale=False, opacity=0.2, hoverinfo='skip'
-                    ))
-                elif isinstance(obs, Cylinder):
-                    th = np.linspace(0, 2 * np.pi, 20)
-                    z_vals = np.linspace(obs.z_range[0], obs.z_range[1], 2)
-                    th_grid, z_grid = np.meshgrid(th, z_vals)
-                    cx, cy = obs.center_xy
-                    x_cyl = cx + obs.radius * np.cos(th_grid)
-                    y_cyl = cy + obs.radius * np.sin(th_grid)
-                    fig.add_trace(go.Surface(
-                        x=x_cyl, y=y_cyl, z=z_grid,
-                        colorscale=[[0, 'gray'], [1, 'gray']], showscale=False, opacity=0.2, hoverinfo='skip'
-                    ))
-
-        # 领航机轨迹
-        fig.add_trace(go.Scatter3d(
-            x=leader[:, 0], y=leader[:, 1], z=leader[:, 2],
-            mode='lines', name='Leader Path',
-            line=dict(color='#2563eb', width=6)
-        ))
-        # 领航机起终点
-        fig.add_trace(go.Scatter3d(
-            x=[leader[0, 0]], y=[leader[0, 1]], z=[leader[0, 2]],
-            mode='markers', name='Leader Start',
-            marker=dict(size=8, color='#22c55e', symbol='circle', line=dict(color='white', width=1))
-        ))
-        fig.add_trace(go.Scatter3d(
-            x=[leader[-1, 0]], y=[leader[-1, 1]], z=[leader[-1, 2]],
-            mode='markers', name='Leader End',
-            marker=dict(size=10, color='#ef4444', symbol='diamond', line=dict(color='white', width=1))
-        ))
-
-        # 从机轨迹
-        follower_colors = ["#10b981", "#f59e0b", "#6366f1", "#ec4899", "#8b5cf6"]
-        for i, f in enumerate(followers):
-            fig.add_trace(go.Scatter3d(
-                x=f[:, 0], y=f[:, 1], z=f[:, 2],
-                mode='lines', name=f'Follower {i + 1} Path',
-                line=dict(color=follower_colors[i % len(follower_colors)], width=4, dash='dash')
-            ))
-
-        # 原始任务航点
-        if task_waypoints is not None and len(task_waypoints) > 0:
-            fig.add_trace(go.Scatter3d(
-                x=task_waypoints[:, 0], y=task_waypoints[:, 1], z=task_waypoints[:, 2],
-                mode='markers+text', name='Task Waypoints',
-                marker=dict(
-                    size=8, 
-                    color='#34d399', 
-                    symbol='circle', 
-                    line=dict(color='white', width=1.5),
-                    opacity=0.9
-                ),
-                text=[f"W{i}" for i in range(len(task_waypoints))],
-                textposition="top center",
-                textfont=dict(color='#059669', size=11, family="Arial Black")
-            ))
-
-        # 规划路径
-        if planned_path is not None and len(planned_path) > 0:
-            fig.add_trace(go.Scatter3d(
-                x=planned_path[:, 0], y=planned_path[:, 1], z=planned_path[:, 2],
-                mode='lines', name='Offline Planned Path',
-                line=dict(color='#6b7280', width=3, dash='dot')
-            ))
-
-        # 重规划点
-        if replanned_waypoints is not None and len(replanned_waypoints) > 0:
-            fig.add_trace(go.Scatter3d(
-                x=replanned_waypoints[:, 0], y=replanned_waypoints[:, 1], z=replanned_waypoints[:, 2],
-                mode='lines+markers', name='Replanned Path',
-                line=dict(color='#8b5cf6', width=3, dash='dashdot'),
-                marker=dict(size=3, color='#8b5cf6')
-            ))
-
-        # 动态提取场景名称
-        scene_name = result.get("scene", result.get("scene_name", result.get("name", "")))
-        title_text = f"<b>UAV Formation 3D Trajectory</b> — {scene_name}" if scene_name else "<b>UAV Formation 3D Trajectory</b>"
-
-        # 布局设置：优化背景、光源和视角比例
-        fig.update_layout(
-            title=dict(text=title_text, font=dict(size=20, color='#1f2937', family="Arial, sans-serif")),
-            template="plotly_white",
-            scene=dict(
-                xaxis=dict(title="X Position (m)", gridcolor="#e5e7eb", showbackground=True, backgroundcolor="white"),
-                yaxis=dict(title="Y Position (m)", gridcolor="#e5e7eb", showbackground=True, backgroundcolor="white"),
-                zaxis=dict(title="Z Position (m)", gridcolor="#e5e7eb", showbackground=True, backgroundcolor="#f9fafb"),
-                aspectmode='data',
-                camera=dict(
-                    eye=dict(x=-1.5, y=-1.5, z=0.8) # 默认的斜侧俯视视角
-                )
-            ),
-            margin=dict(r=20, l=20, b=20, t=60),
-            legend=dict(
-                yanchor="top", y=0.98, xanchor="left", x=0.02,
-                bgcolor="rgba(255, 255, 255, 0.8)",
-                bordercolor="#e5e7eb", borderwidth=1,
-                font=dict(family="Arial, sans-serif", size=12)
-            )
-        )
-
-        file_path = self.output_dir / "trajectory_3d_interactive.html"
-        fig.write_html(str(file_path))
         return str(file_path)
 
     def _plot_realtime_error_3d(self, result: dict) -> str:

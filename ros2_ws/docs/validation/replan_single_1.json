@@ -1,0 +1,203 @@
+{
+  "state_transitions": [
+    {
+      "status": "TAKEOFF",
+      "simulation_time": 12.084000000000001
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 13.920000000000002
+    },
+    {
+      "status": "PAUSED",
+      "simulation_time": 17.502000000000002
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 18.044
+    },
+    {
+      "status": "HOLDING",
+      "simulation_time": 72.26100000000001
+    }
+  ],
+  "dynamic_obstacles": {
+    "frame_id": "world",
+    "version": 1,
+    "stamp": 17.5,
+    "source": "Gazebo SetEntityPose success",
+    "trigger_leader_position": [
+      3.0460383304796625,
+      3.310938026599334,
+      1.4993569437608856
+    ],
+    "obstacles": [
+      {
+        "id": "dynamic_obstacle",
+        "center_xy": [
+          9.5,
+          5.0
+        ],
+        "radius": 0.55,
+        "z_range": [
+          0.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "formation": {
+    "apf": false,
+    "formation_apf": false,
+    "velocity_feedforward": false,
+    "apf_active_samples": 0,
+    "max_apf_acceleration": 0.0,
+    "max_reference_velocity": 0.0
+  },
+  "planner": {
+    "algorithm": "portfolio",
+    "recovery_policy": "replan_single",
+    "goal": [
+      18.0,
+      16.0,
+      1.5
+    ],
+    "plan_count": 2,
+    "map_version": 1,
+    "goal_revision": 0,
+    "active": {
+      "id": "m1:g2:astar:0",
+      "planner": "astar",
+      "variant": 0,
+      "quality": {
+        "length_m": 21.983023078560908,
+        "min_clearance_m": 2.1145238706987346,
+        "turning_rad": 28.767458313024953,
+        "duration_s": 43.80000000000008,
+        "max_acceleration_m_s2": 1.8068300789361489,
+        "mean_jerk_m_s3": 1.7686527779739796,
+        "max_curvature": 7.840046422902815,
+        "score_terms": {
+          "length": 1.1292129357714986,
+          "clearance": 2.1527418999927916,
+          "turning": 9.156966381415916,
+          "acceleration": 0.6022766929787163,
+          "jerk": 0.17686527779739797
+        },
+        "score": 4.324136180814797,
+        "kinematic_feasibility": {
+          "evaluated": true,
+          "feasible": true,
+          "tracking_rms_proxy": 0.16763736889659145,
+          "max_velocity_violation": 0.0,
+          "max_acceleration_violation": 0.0,
+          "saturation_ratio": 0.0,
+          "recommendation": "continue_mpc_prototype"
+        }
+      },
+      "map_version": 1
+    },
+    "backups": [],
+    "backup_count": 0,
+    "peak_backup_count": 5,
+    "initial_backup_count": 5,
+    "switch_count": 0,
+    "events": [
+      {
+        "type": "pool_generated",
+        "map_version": 0,
+        "accepted": 9,
+        "failed": [
+          {
+            "planner": "astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "hybrid_astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "rrt_star",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          }
+        ]
+      },
+      {
+        "type": "baseline_replan",
+        "policy": "replan_single",
+        "map_version": 1
+      },
+      {
+        "type": "recovery_ready",
+        "policy": "replan_single",
+        "map_version": 1,
+        "received_sim": 17.5,
+        "ready_sim": 17.900000000000002,
+        "latency_wall_s": 0.54694540402852
+      },
+      {
+        "type": "pool_generated",
+        "map_version": 1,
+        "accepted": 1,
+        "failed": []
+      }
+    ],
+    "weights": {
+      "length": 1.0,
+      "clearance": 0.8,
+      "turning": 0.15,
+      "acceleration": 0.15,
+      "jerk": 0.05
+    },
+    "requested_planners": [
+      "astar",
+      "hybrid_astar",
+      "rrt_star"
+    ],
+    "variants_per_planner": 4,
+    "status": "READY",
+    "obstacle_source": "Gazebo scene command acknowledgments; not a perception estimator"
+  },
+  "controllers": {
+    "1": "pid (Gazebo actuator control)",
+    "0": "pid (Gazebo actuator control)",
+    "2": "pid (Gazebo actuator control)"
+  },
+  "simulation_time": 76.191,
+  "mission_status": "HOLDING",
+  "samples": 19236,
+  "odometry_samples": {
+    "0": 7620,
+    "1": 7620,
+    "2": 7620
+  },
+  "imu_samples": {
+    "0": 7620,
+    "1": 7620,
+    "2": 7620
+  },
+  "tracking_rmse_m": 0.36525633035738503,
+  "max_tracking_error_m": 1.420000898565166,
+  "min_pairwise_distance_m": 0.9954769173773743,
+  "contact_samples_after_takeoff": 0,
+  "positions": {
+    "0": [
+      17.999138201947055,
+      15.999236028371524,
+      1.5000028306378783
+    ],
+    "1": [
+      17.999136912595457,
+      14.999235167680895,
+      1.5000028255629927
+    ],
+    "2": [
+      17.999137417981377,
+      16.999235735786932,
+      1.5000028277260873
+    ]
+  }
+}

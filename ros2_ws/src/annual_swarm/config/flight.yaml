@@ -1,0 +1,17 @@
+/**/controller:
+  ros__parameters:
+    kp_pos: [1.2, 1.2, 1.5]
+    ki_pos: [0.0, 0.0, 0.0]
+    kp_vel: [2.0, 2.0, 3.0]
+    ki_vel: [0.0, 0.0, 0.0]
+    kd_vel: [0.0, 0.0, 0.0]
+    kp_att: [6.0, 6.0, 3.0]
+    kp_rate: [12.0, 12.0, 6.0]
+    ki_rate: [0.0, 0.0, 0.0]
+    kd_rate: [0.0, 0.0, 0.0]
+/formation:
+  ros__parameters:
+    speed: 0.5
+/planner:
+  ros__parameters:
+    clearance: 1.9

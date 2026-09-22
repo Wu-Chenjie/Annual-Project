@@ -96,3 +96,10 @@ TextureMesh-*.log
 *.log
 *.err
 *.prof
+
+# ROS 2 / Gazebo
+ros2_ws/install/
+ros2_ws/log/
+annual_swarm_results/
+*.db3
+*.mcap

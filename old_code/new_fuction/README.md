@@ -14,7 +14,7 @@
 - Formation_Flight.py：多无人机编队飞行仿真示例。
 
 ## 运行方法
-1. 安装依赖：`numpy, matplotlib, plotly`
+1. 安装依赖：`numpy, matplotlib`
 2. 执行 `python Formation_Flight.py` 运行编队仿真。
 
 ## 规划

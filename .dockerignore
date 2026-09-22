@@ -1,0 +1,11 @@
+.git
+**/build
+**/install
+**/log
+**/__pycache__
+**/outputs
+old_code
+references
+experiments/legacy_outputs
+artifacts
+**/.pytest_cache

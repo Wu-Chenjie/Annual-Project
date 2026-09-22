@@ -4,7 +4,7 @@
 import numpy as np
 from Packaged_Drone_Dynamics_Model import Drone
 from Controller import Controller
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 def run_formation_simulation():
     dt = 0.01
     max_sim_time = 150.0
@@ -123,49 +123,23 @@ def run_formation_simulation():
     history_followers_np = []
     for hf in history_followers:
         history_followers_np.append(np.array(hf))
-    fig = go.Figure()
-    fig.add_trace(go.Scatter3d(x=history_leader[:,0],y=history_leader[:,1],z=history_leader[:,2],mode='lines+markers',marker=dict(size=2,color='red'),line=dict(color='red',width=2),name='Leader'))
-    num_followers = len(history_followers_np)
-    for i, hf in enumerate(history_followers_np):    
-        # 使用 HSL 颜色空间自动分配颜色，色相均匀分布
-        hue = int(360 * i / num_followers)
-        color = f'hsl({hue}, 100%, 50%)'
-        fig.add_trace(go.Scatter3d(x=hf[:,0],y=hf[:,1],z=hf[:,2],mode='lines+markers',marker=dict(size=2,color=color),line=dict(color=color,width=2),name=f'Follower {i+1}'))
-    # 绘制航点
-    waypoints_np = np.array(waypoints)
-    fig.add_trace(go.Scatter3d(
-        x=waypoints_np[:, 0],
-        y=waypoints_np[:, 1],
-        z=waypoints_np[:, 2],
-        mode='lines+markers+text',
-        marker=dict(size=5, color='purple', symbol='diamond'),
-        text=[f'WP{i}' for i in range(len(waypoints))],
-        textposition="top center",
-        name='Waypoints'
-    ))
-
-    fig.update_layout(title="无人机编队飞行仿真",scene=dict(xaxis_title='X (m)',yaxis_title='Y (m)',zaxis_title='Z (m)'))
-    fig.show()
-
-    # 绘制编队误差图
-    fig_error = go.Figure()
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(*history_leader.T, label='Leader', color='red')
+    for i, hf in enumerate(history_followers_np):
+        ax.plot(*hf.T, label=f'Follower {i+1}')
+    ax.plot(*np.asarray(waypoints).T, 'd--', label='Waypoints')
+    ax.set(xlabel='X (m)', ylabel='Y (m)', zlabel='Z (m)')
+    ax.legend()
+    fig.savefig('formation_trajectory.png', dpi=150)
+    fig_error, ax_error = plt.subplots()
     for i, errors in enumerate(formation_errors):
-        hue = int(360 * i / num_followers)
-        color = f'hsl({hue}, 100%, 50%)'
-        fig_error.add_trace(go.Scatter(
-            x=time_stamps, 
-            y=errors, 
-            mode='lines', 
-            name=f'Follower {i+1} Error',
-            line=dict(color=color)
-        ))
-    
-    fig_error.update_layout(
-        title="编队位置误差随时间变化",
-        xaxis_title="Time (s)",
-        yaxis_title="Position Error (m)"
-    )
-    fig_error.show()
+        ax_error.plot(time_stamps, errors, label=f'Follower {i+1}')
+    ax_error.set(xlabel='Time (s)', ylabel='Position error (m)')
+    ax_error.legend()
+    fig_error.savefig('formation_error.png', dpi=150)
+    plt.show()
+
 if __name__ == "__main__":
     run_formation_simulation()
                 

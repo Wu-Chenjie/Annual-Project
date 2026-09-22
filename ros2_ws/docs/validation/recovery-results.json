@@ -1,0 +1,224 @@
+[
+  {
+    "policy": "cache",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 18.0,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.053804221775745,
+        3.3132565317226446,
+        1.4993925320960526
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 0.16509329690597951,
+    "pause_sim_s": 0.1579999999999977,
+    "flight_sim_s": 60.54,
+    "leader_distance_xy_m": 23.38990401851839,
+    "contacts": 0,
+    "min_separation_m": 0.9949034715519345,
+    "repeat": 1,
+    "summary": "cache_1.json"
+  },
+  {
+    "policy": "replan_single",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 17.5,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.0460383304796625,
+        3.310938026599334,
+        1.4993569437608856
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 0.54694540402852,
+    "pause_sim_s": 0.541999999999998,
+    "flight_sim_s": 58.34100000000001,
+    "leader_distance_xy_m": 22.432301860698793,
+    "contacts": 0,
+    "min_separation_m": 0.9954769173773743,
+    "repeat": 1,
+    "summary": "replan_single_1.json"
+  },
+  {
+    "policy": "replan_pool",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 18.1,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.061232119542009,
+        3.315475648820413,
+        1.4994070418739778
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 15.947451311862096,
+    "pause_sim_s": 15.680000000000003,
+    "flight_sim_s": 75.81400000000001,
+    "leader_distance_xy_m": 23.587653327521398,
+    "contacts": 0,
+    "min_separation_m": 0.9946163154204487,
+    "repeat": 1,
+    "summary": "replan_pool_1.json"
+  },
+  {
+    "policy": "replan_pool",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 18.3,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.0400141202534026,
+        3.30913861757469,
+        1.499338406222392
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 18.37979248003103,
+    "pause_sim_s": 17.881,
+    "flight_sim_s": 76.21900000000001,
+    "leader_distance_xy_m": 22.885112317526758,
+    "contacts": 0,
+    "min_separation_m": 0.9949864815405842,
+    "repeat": 2,
+    "summary": "replan_pool_2.json"
+  },
+  {
+    "policy": "replan_single",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 18.6,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.0465244962319242,
+        3.3110818342216173,
+        1.4993711610099567
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 0.7470612730830908,
+    "pause_sim_s": 0.6989999999999981,
+    "flight_sim_s": 58.382,
+    "leader_distance_xy_m": 22.439484718285783,
+    "contacts": 0,
+    "min_separation_m": 0.9954371764459722,
+    "repeat": 2,
+    "summary": "replan_single_2.json"
+  },
+  {
+    "policy": "cache",
+    "initial_path_sha256": "b50489338096608bb2caa854c86806bb609f1223ac2ca6aa1aba21e26e365765",
+    "obstacle": {
+      "frame_id": "world",
+      "version": 1,
+      "stamp": 17.900000000000002,
+      "source": "Gazebo SetEntityPose success",
+      "trigger_leader_position": [
+        3.0668778292989964,
+        3.3171635321663637,
+        1.4994282348072676
+      ],
+      "obstacles": [
+        {
+          "id": "dynamic_obstacle",
+          "center_xy": [
+            9.5,
+            5.0
+          ],
+          "radius": 0.55,
+          "z_range": [
+            0.0,
+            3.0
+          ]
+        }
+      ]
+    },
+    "recovery_wall_s": 0.20740160485729575,
+    "pause_sim_s": 0.1980000000000004,
+    "flight_sim_s": 60.620000000000005,
+    "leader_distance_xy_m": 23.43968727078627,
+    "contacts": 0,
+    "min_separation_m": 0.9946754412035976,
+    "repeat": 2,
+    "summary": "cache_2.json"
+  }
+]

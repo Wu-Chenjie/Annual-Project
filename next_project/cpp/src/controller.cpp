@@ -259,12 +259,12 @@ Controller::PositionLoopOutput BacksteppingController::compute_position_loop(
 
     // ---- Step 2: 速度误差 → 期望推力向量 ----
     const Vec3 z2 = clip_vec_symmetric(vel - alpha1, z2_limit);
-    const Vec3 alpha1_dot = -mul(K1, vel - target_vel) + target_acc;
+    const Vec3 alpha1_dot = -mul(K1, vel - target_vel) - mul(K0, z1) + target_acc;
 
     const Vec3 f_des = {
-        m_ * (-K2[0] * z2.x - z1.x - K0[0] * z0.x + alpha1_dot.x),
-        m_ * (-K2[1] * z2.y - z1.y - K0[1] * z0.y + alpha1_dot.y),
-        m_ * (-K2[2] * z2.z - z1.z - K0[2] * z0.z + g_ + alpha1_dot.z),
+        m_ * (-K2[0] * z2.x - z1.x + alpha1_dot.x),
+        m_ * (-K2[1] * z2.y - z1.y + alpha1_dot.y),
+        m_ * (-K2[2] * z2.z - z1.z + g_ + alpha1_dot.z),
     };
 
     const double thrust_mag = norm(f_des);

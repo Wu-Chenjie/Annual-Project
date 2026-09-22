@@ -5,7 +5,7 @@ import time
 import numpy as np
 from Packaged_Drone_Dynamics_Model import Drone
 import os
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 
 class Controller:
@@ -80,6 +80,9 @@ if __name__ == "__main__":
                 print(f"  已到达航点 {i+1}，耗时: {current_time - start_time:.2f}s")
                 break
     history = np.array(history)
-    fig = go.Figure(data=[go.Scatter3d(x=history[:,0],y=history[:,1],z=history[:,2],mode='lines+markers',marker=dict(size=2,color='blue'),line=dict(color='blue',width=2))])
-    fig .update_layout(title='无人机三维轨迹',scene=dict(xaxis_title='X (m)',yaxis_title='Y (m)',zaxis_title='Z (m)'))
-    fig.show()           
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(*history.T)
+    ax.set(xlabel='X (m)', ylabel='Y (m)', zlabel='Z (m)')
+    fig.savefig('controller_trajectory.png', dpi=150)
+    plt.show()
