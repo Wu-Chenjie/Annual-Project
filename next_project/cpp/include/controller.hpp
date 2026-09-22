@@ -23,6 +23,7 @@ public:
     );
 
     virtual void reset();
+    virtual void set_dt(double dt) { dt_ = dt; }
     virtual void apply_profile(double gain_scale, double max_vel, double max_acc);
 
     std::array<double, 3> kp_pos;
@@ -48,7 +49,7 @@ protected:
         Vec3 des_att{};
     };
 
-    PositionLoopOutput compute_position_loop(
+    virtual PositionLoopOutput compute_position_loop(
         const std::array<double, 12>& state,
         const Vec3& target_pos,
         const Vec3& target_vel,
@@ -86,6 +87,7 @@ public:
     ) override;
 
     void reset() override;
+    void set_dt(double dt) override { Controller::set_dt(dt); smc_.set_dt(dt); }
 
     void set_use_smc(bool value) { use_smc_ = value; }
     [[nodiscard]] bool use_smc() const { return use_smc_; }
@@ -124,7 +126,7 @@ private:
         const Vec3& target_vel,
         const Vec3& target_acc,
         double target_yaw
-    );
+    ) override;
 
     Vec3 integral_z0_{};
 };

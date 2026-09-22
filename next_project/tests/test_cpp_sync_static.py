@@ -831,19 +831,6 @@ def test_cpp_apf_profile_config_surface_and_subset_runtime_are_explicit():
     assert "rep_acc_f += formation_follower_accs" in obstacle_source
 
 
-def test_web_dynamic_replay_labels_leader_centric_scope_and_proxy_followers():
-    web = read("web/dynamic_replay.html")
-
-    assert "leader_centric" in web
-    assert "Follower示意" in web
-    assert "Follower示意当前" in web
-    assert "Follower proxies" in web
-    assert "共享 Leader 轨迹逐帧评估" in web
-    assert "证据摘要：" in web
-    assert "replan_events" in web
-    assert "sensor_logs" in web
-
-
 def test_python_obstacle_scenario_wires_formation_apf_switch():
     scenario = "\n".join([
         read("simulations/obstacle_scenario.py"),

@@ -1,8 +1,10 @@
-# UAV Formation Simulation Platform
+# 离线算法基线
+
+实时仿真入口已迁移到 [ROS 2 / Gazebo](../ros2_ws/README.md)。本目录保留算法源码、地图与离线回归；网页服务和 HTML 导出已移除。
 
 室内多无人机编队、避障、在线重规划和容错控制实验项目。
 
-项目主线在 `next_project/`：Python/C++/Web 三条运行线共享 `maps/`、`schemas/` 和 `outputs/` 约定。早期独立脚本保留在仓库外层 `old_code/`，论文和历史 PDF 归档在 `references/papers/`，照片重建工件归档在 `experiments/photogrammetry/`。
+项目主线在 `next_project/`：Python/C++ 离线算法基线共享 `maps/`、`schemas/` 和 `outputs/` 约定。早期独立脚本保留在仓库外层 `old_code/`，论文和历史 PDF 归档在 `references/papers/`，照片重建工件归档在 `experiments/photogrammetry/`。
 
 ## Project Layout
 
@@ -73,19 +75,8 @@ python main.py --preset warehouse_danger --max-sim-time 10 --no-plot
 ```
 
 Available preset builders are defined in `config.py`; shared preset labels and
-Web metadata live in `preset_metadata.json`. 每次运行结果默认落到
+Preset metadata live in `preset_metadata.json`. 每次运行结果默认落到
 `outputs/<preset>/<timestamp>/`，可用 `--run-name` 覆盖时间戳子目录以获得稳定路径。
-
-## Web Safety
-
-The Web replay server is a local development tool by default. Bind it to
-`127.0.0.1` unless you add authentication, upload limits, rate limiting, and
-network isolation appropriate for an exposed service.
-
-`/api/simulate` accepts only a JSON object body. Non-object payloads return
-HTTP 400 before the C++ replay executable is resolved, map names are constrained
-to the server maps directory, and map numeric fields reject `NaN` / `Infinity`
-instead of forwarding non-finite values into C++ simulation input.
 
 ## Test
 
@@ -213,10 +204,6 @@ python -m experiments.run_cpp_report `
 ```
 
 相关报告会记录队形自适应、前瞻窗口、RRT escape attempt/accepted/failed、规划器耗时、路径参数、飞行参数、飞行事件和未知地图场景的地图知识状态。
-
-## Experimental Branches
-
-照片重建是实验性支线：Web 端点 `EXPERIMENTAL /api/reconstruction/*` 只把 COLMAP/OpenMVS 输出转换成静态 `maps/*.json` 障碍物地图，不生成 `task_waypoints`，也不代表完整数字孪生。默认关闭；需要时先设置 `UAV_ENABLE_PHOTO_RECONSTRUCTION=1`，工具路径可用 `UAV_COLMAP_BIN` 和 `UAV_OPENMVS_DIR` 覆盖。
 
 ## 跨线结果对比
 

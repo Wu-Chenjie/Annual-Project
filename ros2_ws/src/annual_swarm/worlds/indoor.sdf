@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<sdf version="1.9"><world name="indoor">
+  <gravity>0 0 -9.81</gravity>
+  <physics name="physics" type="ignored"><max_step_size>0.001</max_step_size><real_time_factor>1</real_time_factor></physics>
+  <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+  <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+  <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+  <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+  <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"/>
+  <scene><ambient>0.6 0.6 0.6 1</ambient><background>0.85 0.88 0.92 1</background><shadows>true</shadows></scene>
+  <light name="sun" type="directional"><pose>0 0 12 0 0 0</pose><diffuse>0.8 0.8 0.8 1</diffuse><direction>-0.4 -0.4 -1</direction><cast_shadows>true</cast_shadows></light>
+  <model name="ground"><static>true</static><link name="ground_link">
+    <collision name="ground_collision"><geometry><plane><normal>0 0 1</normal><size>80 80</size></plane></geometry></collision>
+    <visual name="ground_visual"><geometry><plane><normal>0 0 1</normal><size>80 80</size></plane></geometry><material><diffuse>0.65 0.68 0.7 1</diffuse></material></visual>
+  </link></model>
+</world></sdf>

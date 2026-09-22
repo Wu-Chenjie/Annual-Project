@@ -1,0 +1,364 @@
+{
+  "state_transitions": [
+    {
+      "status": "TAKEOFF",
+      "simulation_time": 12.646
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 14.486
+    },
+    {
+      "status": "PAUSED",
+      "simulation_time": 18.102
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 33.782000000000004
+    },
+    {
+      "status": "HOLDING",
+      "simulation_time": 90.30000000000001
+    }
+  ],
+  "dynamic_obstacles": {
+    "frame_id": "world",
+    "version": 1,
+    "stamp": 18.1,
+    "source": "Gazebo SetEntityPose success",
+    "trigger_leader_position": [
+      3.061232119542009,
+      3.315475648820413,
+      1.4994070418739778
+    ],
+    "obstacles": [
+      {
+        "id": "dynamic_obstacle",
+        "center_xy": [
+          9.5,
+          5.0
+        ],
+        "radius": 0.55,
+        "z_range": [
+          0.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "formation": {
+    "apf": false,
+    "formation_apf": false,
+    "velocity_feedforward": false,
+    "apf_active_samples": 0,
+    "max_apf_acceleration": 0.0,
+    "max_reference_velocity": 0.0
+  },
+  "planner": {
+    "algorithm": "portfolio",
+    "recovery_policy": "replan_pool",
+    "goal": [
+      18.0,
+      16.0,
+      1.5
+    ],
+    "plan_count": 2,
+    "map_version": 1,
+    "goal_revision": 0,
+    "active": {
+      "id": "m1:g2:hybrid_astar:0",
+      "planner": "hybrid_astar",
+      "variant": 0,
+      "quality": {
+        "length_m": 22.388840224414807,
+        "min_clearance_m": 2.3305079366340906,
+        "turning_rad": 6.72675767725756,
+        "duration_s": 44.8000000000001,
+        "max_acceleration_m_s2": 3.1656815015169544,
+        "mean_jerk_m_s3": 0.450966818410867,
+        "max_curvature": 13.77045896992302,
+        "score_terms": {
+          "length": 1.161703919641658,
+          "clearance": 1.4694905763276942,
+          "turning": 2.141193470633794,
+          "acceleration": 1.0552271671723181,
+          "jerk": 0.0450966818410867
+        },
+        "score": 2.8190143104667844,
+        "kinematic_feasibility": {
+          "evaluated": true,
+          "feasible": false,
+          "tracking_rms_proxy": 0.09368104692706022,
+          "max_velocity_violation": 0.0,
+          "max_acceleration_violation": 0.16568150151695438,
+          "saturation_ratio": 0.0044444444444444444,
+          "recommendation": "defer_online_mpc"
+        }
+      },
+      "map_version": 1
+    },
+    "backups": [
+      {
+        "id": "m1:g2:rrt_star:2",
+        "planner": "rrt_star",
+        "variant": 2,
+        "quality": {
+          "length_m": 21.74607553037974,
+          "min_clearance_m": 2.287960028802849,
+          "turning_rad": 5.215657360614642,
+          "duration_s": 43.60000000000008,
+          "max_acceleration_m_s2": 2.028549351664043,
+          "mean_jerk_m_s3": 0.3401146655480507,
+          "max_curvature": 8.882499973109683,
+          "score_terms": {
+            "length": 1.1283523812420255,
+            "clearance": 1.5674963239884006,
+            "turning": 1.660195300830897,
+            "acceleration": 0.6761831172213477,
+            "jerk": 0.03401146655480507
+          },
+          "score": 2.734506776468323,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": true,
+            "tracking_rms_proxy": 0.07694271433971986,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.0,
+            "saturation_ratio": 0.0,
+            "recommendation": "continue_mpc_prototype"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:1",
+        "planner": "rrt_star",
+        "variant": 1,
+        "quality": {
+          "length_m": 26.040793571251903,
+          "min_clearance_m": 2.303527716054177,
+          "turning_rad": 9.316729249116559,
+          "duration_s": 52.0000000000002,
+          "max_acceleration_m_s2": 3.227021445188101,
+          "mean_jerk_m_s3": 0.5363660108110939,
+          "max_curvature": 19.497236194752585,
+          "score_terms": {
+            "length": 1.3511951337842618,
+            "clearance": 1.530156985594625,
+            "turning": 2.9656070268914854,
+            "acceleration": 1.0756738150627003,
+            "jerk": 0.05363660108110939
+          },
+          "score": 3.1841946786071453,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.11064711300654577,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.2270214451881012,
+            "saturation_ratio": 0.0038314176245210726,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:0",
+        "planner": "rrt_star",
+        "variant": 0,
+        "quality": {
+          "length_m": 21.5804121744511,
+          "min_clearance_m": 2.1211211181003597,
+          "turning_rad": 4.400590961346112,
+          "duration_s": 43.200000000000074,
+          "max_acceleration_m_s2": 3.1635318252685574,
+          "mean_jerk_m_s3": 0.38582653401434386,
+          "max_curvature": 13.76397266729562,
+          "score_terms": {
+            "length": 1.1197565018666649,
+            "clearance": 2.1225964228310747,
+            "turning": 1.400751608047499,
+            "acceleration": 1.0545106084228524,
+            "jerk": 0.03858265340143439
+          },
+          "score": 3.188052105272149,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.08458840623498869,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.16353182526855736,
+            "saturation_ratio": 0.004608294930875576,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:3",
+        "planner": "rrt_star",
+        "variant": 3,
+        "quality": {
+          "length_m": 27.67671869779919,
+          "min_clearance_m": 2.171052340233628,
+          "turning_rad": 7.505009001688946,
+          "duration_s": 55.40000000000025,
+          "max_acceleration_m_s2": 3.2000644929633344,
+          "mean_jerk_m_s3": 0.43801385349680955,
+          "max_curvature": 13.812710439249631,
+          "score_terms": {
+            "length": 1.4360794159847226,
+            "clearance": 1.9191929923040414,
+            "turning": 2.388918561135933,
+            "acceleration": 1.0666881643211115,
+            "jerk": 0.043801385349680956
+          },
+          "score": 3.4919648879139964,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.08605539898864026,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.2000644929633344,
+            "saturation_ratio": 0.0035971223021582736,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:hybrid_astar:2",
+        "planner": "hybrid_astar",
+        "variant": 2,
+        "quality": {
+          "length_m": 22.01238750490529,
+          "min_clearance_m": 2.095475018446934,
+          "turning_rad": 11.934364250753081,
+          "duration_s": 43.80000000000008,
+          "max_acceleration_m_s2": 4.0739255679579545,
+          "mean_jerk_m_s3": 0.7020248642696811,
+          "max_curvature": 19.63873365291808,
+          "score_terms": {
+            "length": 1.1421706791776403,
+            "clearance": 2.2447947889116517,
+            "turning": 3.798826126333114,
+            "acceleration": 1.3579751893193182,
+            "jerk": 0.07020248642696811
+          },
+          "score": 3.715036831976175,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.15062578668112958,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 1.0739255679579545,
+            "saturation_ratio": 0.004545454545454545,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      }
+    ],
+    "backup_count": 5,
+    "peak_backup_count": 5,
+    "initial_backup_count": 5,
+    "switch_count": 0,
+    "events": [
+      {
+        "type": "pool_generated",
+        "map_version": 0,
+        "accepted": 9,
+        "failed": [
+          {
+            "planner": "astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "hybrid_astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "rrt_star",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          }
+        ]
+      },
+      {
+        "type": "baseline_replan",
+        "policy": "replan_pool",
+        "map_version": 1
+      },
+      {
+        "type": "recovery_ready",
+        "policy": "replan_pool",
+        "map_version": 1,
+        "received_sim": 18.1,
+        "ready_sim": 33.1,
+        "latency_wall_s": 15.947451311862096
+      },
+      {
+        "type": "pool_generated",
+        "map_version": 1,
+        "accepted": 12,
+        "failed": []
+      }
+    ],
+    "weights": {
+      "length": 1.0,
+      "clearance": 0.8,
+      "turning": 0.15,
+      "acceleration": 0.15,
+      "jerk": 0.05
+    },
+    "requested_planners": [
+      "astar",
+      "hybrid_astar",
+      "rrt_star"
+    ],
+    "variants_per_planner": 4,
+    "status": "READY",
+    "obstacle_source": "Gazebo scene command acknowledgments; not a perception estimator"
+  },
+  "controllers": {
+    "2": "pid (Gazebo actuator control)",
+    "0": "pid (Gazebo actuator control)",
+    "1": "pid (Gazebo actuator control)"
+  },
+  "simulation_time": 94.531,
+  "mission_status": "HOLDING",
+  "samples": 24568,
+  "odometry_samples": {
+    "0": 9454,
+    "1": 9454,
+    "2": 9454
+  },
+  "imu_samples": {
+    "0": 9454,
+    "1": 9453,
+    "2": 9452
+  },
+  "tracking_rmse_m": 0.32865373129748937,
+  "max_tracking_error_m": 1.420000898565166,
+  "min_pairwise_distance_m": 0.9946163154204487,
+  "contact_samples_after_takeoff": 0,
+  "positions": {
+    "2": [
+      17.999405134873566,
+      16.999804472172393,
+      1.5000018221265574
+    ],
+    "0": [
+      17.999408477515143,
+      15.99980564782872,
+      1.5000018183278674
+    ],
+    "1": [
+      17.999404385392456,
+      14.99980425556925,
+      1.5000018206915384
+    ]
+  }
+}

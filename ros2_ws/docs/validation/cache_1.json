@@ -1,0 +1,374 @@
+{
+  "state_transitions": [
+    {
+      "status": "TAKEOFF",
+      "simulation_time": 12.561
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 14.4
+    },
+    {
+      "status": "PAUSED",
+      "simulation_time": 18.002000000000002
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 18.16
+    },
+    {
+      "status": "HOLDING",
+      "simulation_time": 74.94
+    }
+  ],
+  "dynamic_obstacles": {
+    "frame_id": "world",
+    "version": 1,
+    "stamp": 18.0,
+    "source": "Gazebo SetEntityPose success",
+    "trigger_leader_position": [
+      3.053804221775745,
+      3.3132565317226446,
+      1.4993925320960526
+    ],
+    "obstacles": [
+      {
+        "id": "dynamic_obstacle",
+        "center_xy": [
+          9.5,
+          5.0
+        ],
+        "radius": 0.55,
+        "z_range": [
+          0.0,
+          3.0
+        ]
+      }
+    ]
+  },
+  "formation": {
+    "apf": false,
+    "formation_apf": false,
+    "velocity_feedforward": false,
+    "apf_active_samples": 0,
+    "max_apf_acceleration": 0.0,
+    "max_reference_velocity": 0.0
+  },
+  "planner": {
+    "algorithm": "portfolio",
+    "recovery_policy": "cache",
+    "goal": [
+      18.0,
+      16.0,
+      1.5
+    ],
+    "plan_count": 2,
+    "map_version": 1,
+    "goal_revision": 0,
+    "active": {
+      "id": "m0:g1:hybrid_astar:0",
+      "planner": "hybrid_astar",
+      "variant": 0,
+      "quality": {
+        "length_m": 16.110024809702857,
+        "min_clearance_m": 2.089076397764843,
+        "turning_rad": 5.082506242355957,
+        "duration_s": 32.19999999999992,
+        "max_acceleration_m_s2": 1.1066270567838596,
+        "mean_jerk_m_s3": 0.3957110117670169,
+        "max_curvature": 4.463120836817809,
+        "score_terms": {
+          "length": 1.0639293103482657,
+          "clearance": 2.2775079805942364,
+          "turning": 1.6178119835327303,
+          "acceleration": 0.36887568559461986,
+          "jerk": 0.03957110117670169
+        },
+        "score": 3.1859174002515926,
+        "kinematic_feasibility": {
+          "evaluated": true,
+          "feasible": true,
+          "tracking_rms_proxy": 0.08017292615682321,
+          "max_velocity_violation": 0.0,
+          "max_acceleration_violation": 0.0,
+          "saturation_ratio": 0.0,
+          "recommendation": "continue_mpc_prototype"
+        }
+      },
+      "map_version": 1
+    },
+    "backups": [
+      {
+        "id": "m1:g2:rrt_star:2",
+        "planner": "rrt_star",
+        "variant": 2,
+        "quality": {
+          "length_m": 16.28318238997017,
+          "min_clearance_m": 2.340535155219019,
+          "turning_rad": 5.164774422533972,
+          "duration_s": 32.59999999999992,
+          "max_acceleration_m_s2": 3.2444763373484986,
+          "mean_jerk_m_s3": 0.5001647599089524,
+          "max_curvature": 14.354101075777926,
+          "score_terms": {
+            "length": 1.0753648870858272,
+            "clearance": 1.4481521939065174,
+            "turning": 1.6439987586017417,
+            "acceleration": 1.0814921124494996,
+            "jerk": 0.05001647599089524
+          },
+          "score": 2.6452110966682723,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.10729988405165013,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.2444763373484986,
+            "saturation_ratio": 0.006097560975609756,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:hybrid_astar:0",
+        "planner": "hybrid_astar",
+        "variant": 0,
+        "quality": {
+          "length_m": 16.840725945943376,
+          "min_clearance_m": 2.330576042746172,
+          "turning_rad": 5.313829968544819,
+          "duration_s": 33.79999999999994,
+          "max_acceleration_m_s2": 3.0019499654346435,
+          "mean_jerk_m_s3": 0.4869606638373632,
+          "max_curvature": 12.268720672360555,
+          "score_terms": {
+            "length": 1.1121858689280417,
+            "clearance": 1.4693435225326617,
+            "turning": 1.6914446124875173,
+            "acceleration": 1.0006499884782145,
+            "jerk": 0.04869606638373632
+          },
+          "score": 2.693909680418218,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.09901390696599603,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.0019499654346435413,
+            "saturation_ratio": 0.0058823529411764705,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:0",
+        "planner": "rrt_star",
+        "variant": 0,
+        "quality": {
+          "length_m": 15.308234451001017,
+          "min_clearance_m": 2.12156588474701,
+          "turning_rad": 2.013686860386089,
+          "duration_s": 30.599999999999923,
+          "max_acceleration_m_s2": 0.7368207931804273,
+          "mean_jerk_m_s3": 0.1843908885822111,
+          "max_curvature": 2.958920080577059,
+          "score_terms": {
+            "length": 1.0109779168244173,
+            "clearance": 2.1205944542330273,
+            "turning": 0.6409764353392907,
+            "acceleration": 0.24560693106014242,
+            "jerk": 0.018439088858221108
+          },
+          "score": 2.8413629396136653,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": true,
+            "tracking_rms_proxy": 0.03060041996354187,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.0,
+            "saturation_ratio": 0.0,
+            "recommendation": "continue_mpc_prototype"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:1",
+        "planner": "rrt_star",
+        "variant": 1,
+        "quality": {
+          "length_m": 20.101179519484084,
+          "min_clearance_m": 2.295827362501369,
+          "turning_rad": 8.586748822909817,
+          "duration_s": 40.20000000000003,
+          "max_acceleration_m_s2": 3.3821831059234024,
+          "mean_jerk_m_s3": 0.591576216744669,
+          "max_curvature": 10.084193856003154,
+          "score_terms": {
+            "length": 1.3275109328491372,
+            "clearance": 1.548401411991707,
+            "turning": 2.7332470405092226,
+            "acceleration": 1.127394368641134,
+            "jerk": 0.0591576216744669
+          },
+          "score": 3.1482861548987797,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": false,
+            "tracking_rms_proxy": 0.11878416572409846,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.38218310592340243,
+            "saturation_ratio": 0.0049504950495049506,
+            "recommendation": "defer_online_mpc"
+          }
+        },
+        "map_version": 1
+      },
+      {
+        "id": "m1:g2:rrt_star:3",
+        "planner": "rrt_star",
+        "variant": 3,
+        "quality": {
+          "length_m": 21.473542005931364,
+          "min_clearance_m": 2.1710839137317994,
+          "turning_rad": 5.935058986514369,
+          "duration_s": 43.00000000000007,
+          "max_acceleration_m_s2": 2.9298606353422487,
+          "mean_jerk_m_s3": 0.4719017026632215,
+          "max_curvature": 12.024044818785043,
+          "score_terms": {
+            "length": 1.4181437339156067,
+            "clearance": 1.91907670462976,
+            "turning": 1.8891879504914728,
+            "acceleration": 0.9766202117807495,
+            "jerk": 0.04719017026632215
+          },
+          "score": 3.3856358304735643,
+          "kinematic_feasibility": {
+            "evaluated": true,
+            "feasible": true,
+            "tracking_rms_proxy": 0.09201499638215158,
+            "max_velocity_violation": 0.0,
+            "max_acceleration_violation": 0.0,
+            "saturation_ratio": 0.0,
+            "recommendation": "continue_mpc_prototype"
+          }
+        },
+        "map_version": 1
+      }
+    ],
+    "backup_count": 5,
+    "peak_backup_count": 5,
+    "initial_backup_count": 5,
+    "switch_count": 1,
+    "events": [
+      {
+        "type": "pool_generated",
+        "map_version": 0,
+        "accepted": 9,
+        "failed": [
+          {
+            "planner": "astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "hybrid_astar",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          },
+          {
+            "planner": "rrt_star",
+            "variant": 2,
+            "reason": "Endpoint violates formation clearance"
+          }
+        ]
+      },
+      {
+        "type": "backup_switch",
+        "source": "cached_backup",
+        "old": "m0:g1:rrt_star:0",
+        "new": "m0:g1:hybrid_astar:0",
+        "map_version": 1,
+        "rejected": [
+          "m0:g1:rrt_star:0",
+          "m0:g1:hybrid_astar:3",
+          "m0:g1:rrt_star:1",
+          "m0:g1:hybrid_astar:1",
+          "m0:g1:rrt_star:3"
+        ],
+        "validation_wall_s": 0.16368151200003922
+      },
+      {
+        "type": "recovery_ready",
+        "policy": "cache",
+        "map_version": 1,
+        "received_sim": 18.001,
+        "ready_sim": 18.001,
+        "latency_wall_s": 0.16509329690597951
+      },
+      {
+        "type": "pool_generated",
+        "map_version": 1,
+        "accepted": 12,
+        "failed": []
+      }
+    ],
+    "weights": {
+      "length": 1.0,
+      "clearance": 0.8,
+      "turning": 0.15,
+      "acceleration": 0.15,
+      "jerk": 0.05
+    },
+    "requested_planners": [
+      "astar",
+      "hybrid_astar",
+      "rrt_star"
+    ],
+    "variants_per_planner": 4,
+    "status": "READY",
+    "obstacle_source": "Gazebo scene command acknowledgments; not a perception estimator"
+  },
+  "controllers": {
+    "0": "pid (Gazebo actuator control)",
+    "2": "pid (Gazebo actuator control)",
+    "1": "pid (Gazebo actuator control)"
+  },
+  "simulation_time": 78.271,
+  "mission_status": "HOLDING",
+  "samples": 19716,
+  "odometry_samples": {
+    "0": 7828,
+    "1": 7828,
+    "2": 7828
+  },
+  "imu_samples": {
+    "0": 7828,
+    "1": 7828,
+    "2": 7828
+  },
+  "tracking_rmse_m": 0.3673149148770608,
+  "max_tracking_error_m": 1.420000898565166,
+  "min_pairwise_distance_m": 0.9949034715519345,
+  "contact_samples_after_takeoff": 0,
+  "positions": {
+    "0": [
+      17.99792348544884,
+      16.000255216401182,
+      1.5000023712092616
+    ],
+    "1": [
+      17.99792133777099,
+      15.00025504502325,
+      1.500002378782227
+    ],
+    "2": [
+      17.997923293590528,
+      17.000253774051068,
+      1.500002364480162
+    ]
+  }
+}

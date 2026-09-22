@@ -16,6 +16,7 @@ public:
 
     Vec3 update(const Vec3& angle_error, const Vec3& angle_rate, const Vec3& des_rate = Vec3{0.0, 0.0, 0.0});
     void reset();
+    void set_dt(double dt) { dt_ = dt; }
 
 private:
     std::array<double, 3> lam_;

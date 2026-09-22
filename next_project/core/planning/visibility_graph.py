@@ -132,6 +132,8 @@ class VisibilityGraph:
                     adj_set.update(new_adj)
 
         # 插入新的 start(0) 和 goal(1)
+        # Inserting two endpoint vertices shifts every existing obstacle index.
+        self.adjacency = [{j + 2 for j in neighbors} for neighbors in self.adjacency]
         self.vertices.insert(0, start_arr)
         self.vertex_to_obs.insert(0, -1)
         self.adjacency.insert(0, set())
@@ -155,6 +157,8 @@ class VisibilityGraph:
         """内部：在已构建障碍物顶点图基础上插入起点/终点。"""
         start_arr = np.asarray(start, dtype=float)
         goal_arr = np.asarray(goal, dtype=float)
+        # Inserting two endpoint vertices shifts every existing obstacle index.
+        self.adjacency = [{j + 2 for j in neighbors} for neighbors in self.adjacency]
         self.vertices.insert(0, start_arr)
         self.vertex_to_obs.insert(0, -1)
         self.adjacency.insert(0, set())

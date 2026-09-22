@@ -2,7 +2,7 @@
 
 This directory contains the C++ port/refactor of the Python simulation code.
 
-The C++ implementation is a runnable subset of the Python mainline. It currently covers formation dynamics, PID/SMC/backstepping control, A*/Hybrid A* obstacle planning, engineering FIRI-style convex-corridor refinement, Safe/Danger scheduling with a GNN visible-graph variant, online `WindowReplanner` task/local waypoint layering, risk-adaptive replanning support, six-direction range sensing with dynamic obstacle TTL, APF avoidance, fault injection/detection/reconfiguration, benchmark output, and SVG/PNG visualization. Python-only features at the moment include the full Python obstacle-event logging surface and Plotly HTML visualization.
+The C++ implementation is a runnable subset of the Python mainline. It currently covers formation dynamics, PID/SMC/backstepping control, A*/Hybrid A* obstacle planning, engineering FIRI-style convex-corridor refinement, Safe/Danger scheduling with a GNN visible-graph variant, online `WindowReplanner` task/local waypoint layering, risk-adaptive replanning support, six-direction range sensing with dynamic obstacle TTL, APF avoidance, fault injection/detection/reconfiguration, benchmark output, and SVG/PNG visualization. Python-only features at the moment include the full Python obstacle-event logging surface.
 
 ## Layout
 
@@ -46,7 +46,7 @@ cmake --build build --config Release
 - `sim_main`: basic formation simulation.
 - `sim_benchmark`: benchmark runner.
 - `sim_warehouse`: warehouse obstacle scenario.
-- `sim_dynamic_replay`: dynamic obstacle replay backend used by the Web server.
+- `sim_dynamic_replay`: offline dynamic obstacle replay CLI.
 - `sim_apf_formation_probe`: APF/formation probe executable for focused checks.
 - `sim_formation_safety_probe`: formation safety probe executable.
 - `sim_scene_3dgs`: imported `.ply` / `.obj` / `.stl` scene runner. Optional

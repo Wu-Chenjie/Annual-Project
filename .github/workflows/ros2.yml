@@ -1,0 +1,30 @@
+name: ROS 2 Gazebo
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+jobs:
+  gazebo:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ROS and Gazebo image
+        run: docker build -f docker/Dockerfile.ros2 -t annual-swarm:ci .
+      - name: Run package tests
+        run: docker run --rm annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && cd ros2_ws && colcon test --event-handlers console_direct+ && colcon test-result --verbose'
+      - name: Validate every planner and controller with Gazebo physics
+        run: docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm validate_matrix.py --timeout 240 --output-dir /results/matrix'
+      - name: Single-planner reserves and safe hover without a route
+        run: |
+          docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm smoke_test.py --planner portfolio --launch-arg candidate_planners:=astar --launch-arg candidate_variants:=12 --launch-arg dynamic_obstacle:=true --launch-arg dynamic_demo:=true --expect-backup-switch --timeout 240 --output-dir /results/candidates-single'
+          docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm smoke_test.py --planner portfolio --launch-arg dynamic_obstacle:=true --launch-arg dynamic_demo:=true --launch-arg dynamic_demo_mode:=block_goal --expect-no-safe-backup --timeout 120 --output-dir /results/candidates-blocked'
+      - name: Redirect the mission while airborne
+        run: docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm smoke_test.py --redirect-goal 18,4,1.5 --timeout 240 --output-dir /results/redirect'
+      - name: Reject a goal inside an obstacle without takeoff
+        run: docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm smoke_test.py --goal 7,7,1.5 --expect-planner-failure --timeout 45 --output-dir /results/rejected-goal'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gazebo-flight
+          path: artifacts/
