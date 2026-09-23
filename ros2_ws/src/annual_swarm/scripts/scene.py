@@ -30,7 +30,7 @@ def canonical_json(value):
     if isinstance(value, (int,float)): return format(Decimal(str(value)), 'f')
     return json.dumps(value)
 
-def generate(share, map_file, output, start, dynamic=False, starts=None):
+def generate(share, map_file, output, start, dynamic=False, starts=None, lidar=False):
     share, output = Path(share), Path(output)
     data = json.loads(Path(map_file).read_text())
     if len(start) != 3: raise ValueError('start requires three coordinates')
@@ -44,6 +44,9 @@ def generate(share, map_file, output, start, dynamic=False, starts=None):
         raise ValueError('bounds must be ordered')
     tree = ET.parse(share / 'worlds/indoor.sdf')
     world = tree.getroot().find('world')
+    if lidar:
+        plugin = ET.SubElement(world, 'plugin', filename='gz-sim-sensors-system', name='gz::sim::systems::Sensors')
+        ET.SubElement(plugin, 'render_engine').text = 'ogre2'
     for i, obs in enumerate(data['obstacles']):
         model = ET.SubElement(world, 'model', name=f'obstacle_{i}')
         ET.SubElement(model, 'static').text = 'true'
@@ -97,6 +100,25 @@ def generate(share, map_file, output, start, dynamic=False, starts=None):
                     visual.find('material/diffuse').text = color
         model.find("link/sensor[@name='contact']/topic").text = f'/{name}/contacts'
         model.find("link/sensor[@name='imu']/topic").text = f'/{name}/imu'
+        if lidar:
+            sensor = ET.SubElement(model.find('link'), 'sensor', name='exploration_lidar', type='gpu_lidar')
+            ET.SubElement(sensor, 'pose').text = '0 0 0.4 0 0 0'
+            ET.SubElement(sensor, 'topic').text = f'/{name}/lidar'
+            ET.SubElement(sensor, 'update_rate').text = '5'
+            ET.SubElement(sensor, 'always_on').text = 'true'
+            scan = ET.SubElement(ET.SubElement(sensor, 'lidar'), 'scan')
+            for kind, count in [('horizontal', 181), ('vertical', 31)]:
+                axis = ET.SubElement(scan, kind)
+                for tag, value in [('samples', count), ('resolution', 1), ('min_angle', -math.pi/3), ('max_angle', math.pi/3)]:
+                    ET.SubElement(axis, tag).text = str(value)
+            ranges = ET.SubElement(sensor.find('lidar'), 'range')
+            for tag, value in [('min', .1), ('max', 4.5), ('resolution', .01)]:
+                ET.SubElement(ranges, tag).text = str(value)
+            noise = ET.SubElement(sensor.find('lidar'), 'noise')
+            ET.SubElement(noise, 'type').text = 'gaussian'
+            ET.SubElement(noise, 'mean').text = '0'; ET.SubElement(noise, 'stddev').text = '0.005'
+            bridges.append(dict(ros_topic_name=f'/{name}/lidar/points', gz_topic_name=f'/{name}/lidar/points',
+                ros_type_name='sensor_msgs/msg/PointCloud2', gz_type_name='gz.msgs.PointCloudPacked', direction='GZ_TO_ROS'))
         world.append(model)
         for topic, ros_type, gz_type, direction in [
             ('odometry','nav_msgs/msg/Odometry','gz.msgs.Odometry','GZ_TO_ROS'),

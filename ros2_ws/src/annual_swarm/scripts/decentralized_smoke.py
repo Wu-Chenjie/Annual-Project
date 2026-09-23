@@ -21,10 +21,14 @@ def main():
     if args.map:
         cmd.append(f'map:={args.map}')
     env = os.environ.copy(); env['GZ_PARTITION'] = 'annual_decentralized_'+uuid.uuid4().hex
+    env['PYTHONDONTWRITEBYTECODE'] = '1'
+    env['PYTHONPYCACHEPREFIX'] = '/tmp/'+env['GZ_PARTITION']+'_pycache'
+    env['ROS_DOMAIN_ID'] = str(20+int(uuid.uuid4().hex[:4], 16)%180)
+    (out/'transport.json').write_text(json.dumps({k: env[k] for k in ('GZ_PARTITION', 'ROS_DOMAIN_ID')}, indent=2))
     recorder = None
     with (out/'launch.log').open('w') as log:
         proc = subprocess.Popen(cmd, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-        deadline = time.monotonic()+args.timeout; holding = None
+        deadline = time.monotonic()+args.timeout; holding = None; launched = time.monotonic(); last_valid = launched
         try:
             if args.record:
                 (out/'recording-start.json').write_text(json.dumps(dict(wall_start_unix=time.time(), gz_partition=env['GZ_PARTITION'], width=1920, height=1080, fps=10)))
@@ -36,10 +40,20 @@ def main():
                     raise RuntimeError(f'Launch exited, see {out}')
                 file = out/'summary.json'
                 if file.exists():
-                    if time.time()-file.stat().st_mtime > 20:
+                    if time.time()-file.stat().st_mtime > (60 if args.gui else 20) and time.monotonic()-launched > 120:
                         raise RuntimeError('Experiment telemetry stopped; inspect launch.log')
-                    s = json.loads(file.read_text())
+                    try:
+                        s = json.loads(file.read_text())
+                    except (FileNotFoundError, UnicodeDecodeError, json.JSONDecodeError):
+                        if time.monotonic()-last_valid > 60 and time.monotonic()-launched > 120:
+                            raise RuntimeError('No readable telemetry for 60 seconds')
+                        time.sleep(.2)
+                        continue
+                    last_valid = time.monotonic()
                     assert s['contacts_after_takeoff'] == 0 and s['status'] != 'FAILED', s
+                    if s['simulation_time'] > 40.:
+                        assert len(s.get('agent_ages', {})) == s.get('fleet_size', 3), 'An exploration process failed to start'
+                        assert max(s['agent_ages'].values(), default=0) < 12., 'An exploration heartbeat stopped'
                     if s['status'] == 'COMPLETE':
                         if holding is None:
                             holding = s['simulation_time']

@@ -12,21 +12,28 @@ def angle_delta(a, b):
     return math.atan2(math.sin(a-b), math.cos(a-b))
 
 
-def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=3.5):
-    """Predicted view: known occupied cells occlude; unknown cells may be free.
+def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5):
+    """Predicted view: count the first unknown surface on each ray; do not see through it.
 
-    This function never receives simulator truth. Its optimistic gain is corrected
+    This function never receives simulator truth. Its predicted gain is corrected
     by the next actual observation, including previously unknown occluders.
     """
-    angles = np.linspace(yaw-fov/2, yaw+fov/2, 121)
+    angles = np.linspace(yaw-fov/2, yaw+fov/2, 61 if runtime.state.ndim == 3 else 121)
     ranges = np.arange(0., radius+runtime.resolution/2, runtime.resolution/2)
-    xy = np.asarray(position)[:2]+np.stack([np.cos(angles), np.sin(angles)], axis=1)[:, None, :]*ranges[None, :, None]
-    cells = np.floor((xy-runtime.origin)/runtime.resolution).astype(int)
+    if runtime.state.ndim == 3:
+        position = np.asarray(position)+np.array([0., 0., .4])
+        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, 13))
+        directions = np.column_stack([np.cos(pitch.ravel())*np.cos(headings.ravel()),
+                                      np.cos(pitch.ravel())*np.sin(headings.ravel()), np.sin(pitch.ravel())])
+        coordinates = np.asarray(position)+directions[:, None, :]*ranges[None, :, None]
+    else:
+        coordinates = np.asarray(position)[:2]+np.stack([np.cos(angles), np.sin(angles)], axis=1)[:, None, :]*ranges[None, :, None]
+    cells = np.floor((coordinates-runtime.origin)/runtime.resolution).astype(int)
     valid = np.all((cells >= 0) & (cells < runtime.shape), axis=2)
     clipped = np.clip(cells, 0, np.array(runtime.shape)-1)
-    hit = (runtime.state[clipped[:, :, 0], clipped[:, :, 1]] == 1) | ~valid
+    hit = (runtime.state[tuple(np.moveaxis(clipped, -1, 0))] != 0) | ~valid
     keep = valid & (np.cumsum(hit, axis=1)-hit == 0)
-    ids = np.unique(clipped[keep, 0]*runtime.shape[1]+clipped[keep, 1])
+    ids = np.unique(np.ravel_multi_index(tuple(clipped[keep].T), runtime.shape))
     return frozenset(int(k) for k in ids if runtime.state.flat[k] == -1)
 
 
@@ -143,7 +150,7 @@ class ObservationPlanner:
     def __init__(self):
         self.evaluator = PathQualityEvaluator()
 
-    def plan(self, runtime, graph, position, yaw, task, epoch, recent=()):
+    def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None):
         options = []
         for point in task.viewpoints:
             path = graph.route(position, point)
@@ -158,7 +165,7 @@ class ObservationPlanner:
                     continue
                 rotation = abs(angle_delta(heading, yaw))/.65
                 # Coupled information/time utility, penalizing needlessly long routes.
-                value = len(cells)*runtime.resolution**2/(1.5+travel+rotation)
+                value = len(cells)*runtime.resolution**runtime.state.ndim/(1.5+travel+rotation)
                 options.append(dict(position=point, yaw=float(heading), path=path, cells=cells, value=value, travel=travel))
         if not options:
             return None
@@ -166,13 +173,14 @@ class ObservationPlanner:
         for first in beam:
             best_second = 0.; second = None
             for other in beam:
-                extra = len(other['cells']-first['cells'])*runtime.resolution**2
+                extra = len(other['cells']-first['cells'])*runtime.resolution**runtime.state.ndim
                 if extra <= 0:
                     continue
                 cost = graph.distance(first['position'], other['position'])/.6+abs(angle_delta(other['yaw'], first['yaw']))/.65+1.5
                 if np.isfinite(cost) and extra/cost > best_second:
                     best_second = extra/cost; second = other
-            first['objective'] = first['value']+.35*best_second
+            exit_cost = 0. if next_goal is None else graph.distance(first['position'], next_goal)/.6
+            first['objective'] = first['value']+.35*best_second-(.002*exit_cost if np.isfinite(exit_cost) else 0.)
             first['second'] = second
         choice = max(beam, key=lambda o: o['objective'])
         # Preserve the original multi-planner quality evaluator and five reserves.
@@ -190,6 +198,6 @@ class ObservationPlanner:
                 abs(angle_delta(choice['yaw'], yaw))/.65+candidate.quality['score']-len(choice['cells'])*.025)
         candidates = sorted([pool.active]+pool.backups, key=lambda c: c.quality['observation_motion_cost'])
         pool.active, pool.backups = candidates[0], candidates[1:6]
-        return dict(pool=pool, yaw=choice['yaw'], gain=len(choice['cells'])*runtime.resolution**2,
+        return dict(pool=pool, yaw=choice['yaw'], gain=len(choice['cells'])*runtime.resolution**runtime.state.ndim,
                     objective=choice['objective'], lookahead=None if choice['second'] is None else
                     dict(position=choice['second']['position'].tolist(), yaw=choice['second']['yaw']))

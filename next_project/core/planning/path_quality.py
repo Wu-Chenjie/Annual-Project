@@ -77,7 +77,8 @@ class RankedPathPool:
     @staticmethod
     def connect(position,path,runtime):
         """Trim traversed prefix and check the entire joining segment, not just endpoints."""
-        position=np.asarray(position,float).copy(); position[2]=runtime.altitude
+        position=np.asarray(position,float).copy()
+        if getattr(runtime, "ndim", 2) == 2:position[2]=runtime.altitude
         path=np.asarray(path,float)
         nearest=int(np.argmin(np.linalg.norm(path-position,axis=1)))
         # A blocked remaining suffix invalidates this reserve. Do not jump over an

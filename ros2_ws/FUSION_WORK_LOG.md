@@ -1,0 +1,39 @@
+# 融合探索实现与验收记录
+
+要求：将 RACER 与 GVP-MREP 的相关机制结合为一条实际运行的 ROS 2 / Gazebo 三维探索链路，补接口、录原生视频、上传 GitHub。
+
+## 已实现并接入
+
+- 原生 GPU LiDAR 私有体素地图、IMU/带协方差定位测量 EKF。
+- 增量前沿、自适应 Hgrid、持久 EROI 视点状态。
+- 历史节点、有限半径 Dijkstra 树、跨机握手边、MR-DTG 增量/快照同步。
+- 局部/全局图 Voronoi、双机容量路线交换与版本化提交。
+- 区域顺序引导的位置/偏航联合观测搜索、多候选质量池、至多五条备选。
+- 最小 jerk 连续五次轨迹、时间优化、导数极值核验、控制前馈。
+- 路径预约、通信中断安全边界、旧实例隔离、真实进程退出/重启恢复。
+- 真实跟踪、通信、协商前后代价、候选与预约事件审计。
+
+完整实现及边界见 [DECENTRALIZED_EXPLORATION.md](DECENTRALIZED_EXPLORATION.md)。定位适配器不等同于 SLAM；窗口精确求解不等同于全队全局最优；单次演示不等同于论文基准复现。
+
+## 回归与联调
+
+最新完整 ROS 回归：**108 tests, 0 errors, 0 failures, 0 skipped**。新增首次观测立即细分的跨机状态测试，确保没有旧父区域记录时仍传播 splitR。候选筛选的向量化在实测三维地图上与原实现的区域、状态、视点及排序完全一致（主机测量约 0.80 s → 0.04 s）。
+
+历史未完成尝试均保留在本地 artifacts/fusion/，不作为完成证据：
+
+| 尝试 | 状态/修复 |
+|---|---|
+| 平面融合与 lidar3d 系列 | 三维传感、坐标变换、短退让与字节码缓存隔离联调 |
+| native-first / second | GUI 渲染初始化等待；分离 EGL 服务端与原生 GUI |
+| native-third | 低收益重复观测与安全包络退让修复 |
+| native-fourth | 共享区域服务反馈；动态障碍实际横穿后离场 |
+| native-fifth | 48.11% 时共享文件短读误中止；改为容器本地实时写入及有界重试 |
+| native-sixth | 989.689 s / 55.009% / 零碰撞后主动停止；定位到首次细分父任务未广播及冗余候选遍历 |
+
+## 当前录制（未完成）
+
+- native-seventh：修复后的统一版本，真实 Gazebo + RViz，同屏 1920×1080，24 倍录屏时钟播放。
+- 专用 Colima profile annual-fusion，6 CPU / 8 GB，Docker context colima-annual-fusion，容器 annual-fusion-run。
+- 实时目录 /tmp/annual-fusion-native-seventh；录制 exec session 94245，超时 14400 s。
+- 达到 95% 且无碰撞后自动运行独立融合审计，再编码视频。源码快照、哈希和环境信息由录制器自动保存。
+- 仍需：完成运行、独立审计结果、图表/视频逐段检查、精选证据打包、最终文档数字、镜像验收、提交上传。

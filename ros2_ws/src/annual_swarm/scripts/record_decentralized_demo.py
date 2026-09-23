@@ -1,16 +1,36 @@
 #!/usr/bin/env python3
 """Record native Gazebo + live RViz windows, then encode an explicitly sped-up demo."""
 import argparse
+import hashlib
 import json
 import os
+import platform
 import signal
 import subprocess
+import tarfile
 import time
 from pathlib import Path
 
 
 def command(args, **kwargs):
     return subprocess.run(args, check=True, **kwargs)
+
+
+def provenance(out):
+    root = Path(__file__).resolve().parents[4]
+    files = []
+    for name in ('next_project/core', 'next_project/cpp', 'next_project/maps', 'ros2_ws/src/annual_swarm', 'docker'):
+        files.extend(p for p in (root/name).rglob('*') if p.is_file()
+                     and not {'__pycache__', 'build', '.pytest_cache'} & set(p.parts))
+    manifest = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)}
+    revision = subprocess.run(['git', '-C', str(root), 'rev-parse', 'HEAD'], capture_output=True, text=True)
+    (out/'source-manifest.json').write_text(json.dumps(dict(base_commit=revision.stdout.strip(), files=manifest), indent=2))
+    with tarfile.open(out/'recorded-source.tar.gz', 'w:gz') as archive:
+        for p in sorted(files):
+            archive.add(p, arcname=p.relative_to(root))
+    (out/'environment.json').write_text(json.dumps(dict(platform=platform.platform(), python=platform.python_version(),
+        cpu_count=os.cpu_count(), ros_distro=os.environ.get('ROS_DISTRO'),
+        note='Source snapshot at recording startup; build the workspace before invoking this script.'), indent=2))
 
 
 def main():
@@ -23,7 +43,7 @@ def main():
     if out.exists():
         raise FileExistsError(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    env = dict(os.environ, DISPLAY=os.environ.get('DISPLAY', ':99'), LIBGL_ALWAYS_SOFTWARE='1', QT_X11_NO_MITSHM='1')
+    env = dict(os.environ, OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1', LP_NUM_THREADS='2', DISPLAY=os.environ.get('DISPLAY', ':99'), LIBGL_ALWAYS_SOFTWARE='1', QT_X11_NO_MITSHM='1')
     servers = []
     display = env['DISPLAY']; number = display.split(':')[-1].split('.')[0]
     if not Path(f'/tmp/.X11-unix/X{number}').exists():
@@ -55,6 +75,7 @@ def main():
                 time.sleep(.5)
             if len(arranged) != 2:
                 raise RuntimeError('Gazebo and RViz windows did not both become visible')
+            provenance(out)
             # Persist provenance before the potentially long mission.
             (out/'recording.json').write_text(json.dumps(dict(source='live X11 capture of native Gazebo and RViz',
                 wall_start_unix=start, arranged_wall_unix=time.time(), screen=[1920, 1080], capture_fps=10,
@@ -62,6 +83,8 @@ def main():
                 command=cmd), indent=2))
             if proc.wait() != 0:
                 raise RuntimeError(f'Gazebo acceptance failed; retain recording and inspect {log_file}')
+            if json.loads((out/'summary.json').read_text()).get('mapping_dimensions') == 3:
+                command(['python3', str(Path(__file__).with_name('audit_fusion_run.py')), str(out)], env=env)
         finally:
             if proc.poll() is None:
                 proc.send_signal(signal.SIGINT)
