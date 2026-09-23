@@ -430,3 +430,36 @@ def test_truth_dynamic_voxel_intersections_clear_with_obstacle(tmp_path):
     truth.dynamic_snapshot(1, [obstacle]); assert truth.occupied.sum() == 13
     truth.dynamic_snapshot(2, []); assert truth.occupied.sum() == 9
     truth.dynamic_snapshot(1, [obstacle]); assert truth.occupied.sum() == 9
+
+
+
+def test_delayed_localization_rewinds_imu_and_keeps_outlier_gate():
+    from core.exploration.state_estimation import InertialOdometryFilter
+    f = InertialOdometryFilter(); R = np.diag([.007**2]*3+[.015**2]*3)
+    p = np.zeros(3); v = np.zeros(3); truth = [(p.copy(), v.copy())]
+    f.predict(0., np.zeros(3)); assert f.correct_at(0., p, v, R)
+    accepted = 0
+    for k in range(1, 251):
+        a = np.array([0., 0., 5. if k < 40 else -2. if k < 90 else .5])
+        p += v*.01+.5*a*.01**2; v += a*.01; truth.append((p.copy(), v.copy()))
+        f.predict(k*.01, a)
+        if k % 5 == 0 and k >= 10:
+            past_p, past_v = truth[k-7]
+            result = f.correct_at((k-7)*.01, past_p+(1000. if k == 100 else 0.), past_v, R)
+            assert result == (k != 100)
+            accepted += result
+        assert np.allclose(f.x[:3], p, atol=1e-8)
+        assert np.allclose(f.x[3:6], v, atol=1e-8)
+    assert accepted > 40 and f.rejected == 1
+
+
+def test_filter_lag_buffer_is_bounded_and_rejects_stale_measurement():
+    from core.exploration.state_estimation import InertialOdometryFilter
+    f = InertialOdometryFilter(); R = np.eye(6)*.001
+    f.predict(0., np.zeros(3)); f.correct_at(0., np.zeros(3), np.zeros(3), R)
+    for k in range(1, 1001):f.predict(k*.01, np.zeros(3))
+    before = f.x.copy(); assert len(f.history) <= 200
+    assert not f.correct_at(7., np.ones(3), np.zeros(3), R)
+    assert np.array_equal(f.x, before) and f.time == 10.
+    assert f.correct_at(9.9, np.zeros(3), np.zeros(3), R)
+    assert f.time == 10. and len(f.history) <= 200

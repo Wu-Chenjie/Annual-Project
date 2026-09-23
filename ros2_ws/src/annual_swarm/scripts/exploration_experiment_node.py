@@ -44,6 +44,7 @@ class Experiment(Node):
         self.references = (self.output/'tracking.csv').open('w'); self.reference_writer = csv.writer(self.references)
         self.reference_writer.writerow(['time', 'drone', 'error_m', 'yaw_error_rad', 'vx', 'vy', 'vz', 'ax', 'ay', 'az', 'method'])
         self.contacts = 0; self.minimum = None; self.started = None; self.finished = None; self.status = 'WAITING'
+        self.failure_reason = None
         self.distances = {i: 0. for i in range(self.fleet_size)}; self.samples = {i: 0 for i in range(self.fleet_size)}; self.sequence = 0
         self.t90 = None; self.t95 = None; self.coverage = []; self.paused = []; self.pause_started = None; self.resumed = False
         self.coverage_details = {}
@@ -196,7 +197,10 @@ class Experiment(Node):
                 if coverage >= self.threshold:
                     self.status = 'COMPLETE'; self.finished = t
             if self.contacts:
-                self.status = 'FAILED'; self.finished = t
+                self.status = 'FAILED'; self.finished = t; self.failure_reason = 'contact'
+            if any(i in self.airborne and (np.any(p < self.world.bounds[0]-.5) or np.any(p > self.world.bounds[1]+.5))
+                   for i, p in self.positions.items()):
+                self.status = 'FAILED'; self.finished = t; self.failure_reason = 'flight_bounds'
             if self.finished is not None:
                 np.savez_compressed(self.output/'observed_final.npz', state=self.observed.state,
                                     bounds=self.observed.bounds, resolution=self.observed.resolution)
@@ -213,7 +217,7 @@ class Experiment(Node):
         def totals(field):
             return {i: sum(c.get(field, 0) for (drone, _), c in self.session_counters.items() if drone == i)
                     for i in range(self.fleet_size)}
-        report = dict(fleet_size=self.fleet_size, agent_ages={i: t-p['time'] for i, p in self.states.items()}, status=self.status, simulation_time=t, start_time=self.started, finish_time=self.finished,
+        report = dict(fleet_size=self.fleet_size, agent_ages={i: t-p['time'] for i, p in self.states.items()}, status=self.status, failure_reason=self.failure_reason, simulation_time=t, start_time=self.started, finish_time=self.finished,
             architecture='fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight',
             coverage=self.coverage[-1][1] if self.coverage else 0., t90=self.t90, t95=self.t95, coverage_target=self.threshold,
             contacts_after_takeoff=self.contacts, min_separation_m=self.minimum, distances_m=self.distances,

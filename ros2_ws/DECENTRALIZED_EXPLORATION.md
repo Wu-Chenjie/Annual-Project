@@ -26,7 +26,7 @@
 每架机各有以下独立节点：
 
 1. `localization_measurement_node.py`：仿真定位测量适配器，向真值里程计加入位置/速度噪声及协方差。可替换为发布标准 `nav_msgs/Odometry` 的外部定位系统；它不是 VIO/LIO/SLAM。
-2. `state_estimator_node.py`：IMU 预测、测量校正、异常测量门限、正定协方差。机体系速度和世界系速度显式转换。
+2. `state_estimator_node.py`：IMU 预测、测量校正、异常测量门限、正定协方差。延迟定位先回溯到测量时间，再重放最多 200 帧 IMU；未来时间的测量等待 IMU 到达后处理。机体系速度和世界系速度显式转换。
 3. `pointcloud_mapping_node.py`：订阅实际 `PointCloud2` 和本机估计位姿，仅维护本机占据地图。
 4. `decentralized_agent_node.py`：本机地图、融合规划、区域协商、候选池及预约协议。没有集中任务分配节点。
 5. `view_executor_node.py`：独立核验预约、跟踪连续参考、执行偏航和到点观测；误差过大暂停轨迹时间。

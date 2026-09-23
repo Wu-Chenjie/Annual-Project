@@ -16,6 +16,7 @@ class Estimator(Node):
         super().__init__('state_estimator')
         self.id = int(self.declare_parameter('drone_id', 0).value)
         self.filter = InertialOdometryFilter(); self.attitude = None; self.angular = None
+        self.measurements = []
         self.pub = self.create_publisher(Odometry, f'/drone_{self.id}/estimated_odometry', qos_profile_sensor_data)
         self.create_subscription(Imu, f'/drone_{self.id}/imu', self.imu, qos_profile_sensor_data)
         self.create_subscription(Odometry, f'/drone_{self.id}/localization_measurement', self.measurement, qos_profile_sensor_data)
@@ -26,7 +27,9 @@ class Estimator(Node):
         q = m.pose.pose.orientation
         rotation = Rotation.from_quat([q.x, q.y, q.z, q.w])
         world_velocity = rotation.apply([v.x, v.y, v.z])
-        self.filter.correct([p.x, p.y, p.z], world_velocity, np.diag(variance))
+        stamp = m.header.stamp.sec+m.header.stamp.nanosec*1e-9
+        self.measurements.append((stamp, [p.x, p.y, p.z], world_velocity, np.diag(variance)))
+        self.measurements.sort(key=lambda item: item[0]); self.measurements = self.measurements[-100:]
         if self.attitude is None:
             self.attitude = m.pose.pose.orientation
 
@@ -37,7 +40,10 @@ class Estimator(Node):
             return
         self.attitude = q; a = m.linear_acceleration
         acceleration = Rotation.from_quat([q.x, q.y, q.z, q.w]).apply([a.x, a.y, a.z])+[0., 0., -9.81]
-        self.filter.predict(t, acceleration)
+        if not self.filter.predict(t, acceleration):return
+        while self.measurements and self.measurements[0][0] <= t:
+            stamp, position, velocity, covariance = self.measurements.pop(0)
+            self.filter.correct_at(stamp, position, velocity, covariance)
         if not self.filter.initialized:
             return
         out = Odometry(); out.header = m.header; out.header.frame_id = 'world'; out.child_frame_id = f'drone_{self.id}/base_link'
