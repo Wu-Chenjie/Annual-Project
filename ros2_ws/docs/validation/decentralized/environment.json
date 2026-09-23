@@ -45,5 +45,7 @@
     "failures": 0,
     "skipped": 0
   },
-  "runtime": "ROS 2 Jazzy; Gazebo Harmonic; aarch64 Colima; 2 vCPU / 4 GiB; software OpenGL; Xvfb 1920x1080"
+  "runtime": "ROS 2 Jazzy; Gazebo Harmonic; aarch64 Colima; 2 vCPU / 4 GiB; software OpenGL; Xvfb 1920x1080",
+  "recorded_source_commit": "2b9bcbad26bb94779730cc761f950e329414efad",
+  "post_recording_compatibility_note": "The following compatibility commit preserves legacy trajectory feed-forward when a same-stamp PoseStamped arrives. The recorded decentralized launch publishes no trajectory feed-forward commands, so its control inputs are unaffected. A separate real Gazebo feed-forward formation regression and all 76 package tests pass."
 }

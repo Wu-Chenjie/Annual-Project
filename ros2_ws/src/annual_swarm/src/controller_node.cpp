@@ -59,7 +59,7 @@ class FlightController : public rclcpp::Node {
         orientation.normalize();
         double roll, pitch;
         tf2::Matrix3x3(orientation).getRPY(roll, pitch, target_yaw_);
-        target_vel_ = {}; target_acc_ = {};
+        // Pose and trajectory messages can share a stamp; preserve feed-forward.
         target_ = {p.x,p.y,p.z}; target_time_ = rclcpp::Time(msg->header.stamp).seconds(); have_target_ = true;
       });
     trajectory_sub_ = create_subscription<trajectory_msgs::msg::MultiDOFJointTrajectory>("trajectory_target", 1,

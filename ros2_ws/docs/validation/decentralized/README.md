@@ -31,3 +31,5 @@
 [summary.json](summary.json) 是未改写的运行摘要；[events.jsonl](events.jsonl) 合并三机原始事件；[environment.json](environment.json) 保留录制模块 SHA-256 与环境；[recording.json](recording.json) 和 [video-probe.json](video-probe.json) 保留录制与媒体属性。原始 10 fps 录屏、逐帧里程计、完整同伴消息和所有候选坐标保留在本地 `artifacts/decentralized/release_demo/`，不把调试失败运行计入上述结果。
 
 当前是固定 1.5 m 高度的平面探索，使用由实际 Gazebo 位姿驱动的理想 120° / 3.5 m 遮挡射线传感器。固定成员预约协议在失联时悬停；尚未实现三维建图、视觉 SLAM、动态成员变更或任意网络分区下的持续探索。单次演示不构成对 RACER/GVP-MREP 的性能复现，也不用于和不同传感假设的旧集中式结果宣称速度提升。
+
+录制源代码对应提交 [`2b9bcba`](https://github.com/Wu-Chenjie/Annual-Project/commit/2b9bcbad26bb94779730cc761f950e329414efad)。随后只修正了旧编队接口的前馈兼容性：同时间戳的位置消息保留轨迹前馈。录屏探索任务没有轨迹前馈输入，控制行为不受影响；该接口另行通过真实 Gazebo 前馈编队回归，见 [formation-feedforward.json](formation-feedforward.json)，完整 76 项测试再次通过。
