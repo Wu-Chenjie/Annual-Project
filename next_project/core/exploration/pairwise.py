@@ -120,21 +120,34 @@ class PairExchange:
         if tx and now > tx['expires']:
             # Once committed, retain and retransmit until applied; do not undo a
             # decision another participant may already have installed.
-            if tx['phase'] not in ('commit', 'applied'):
+            if tx['phase'] == 'prepare':
                 self.transaction = None; tx = None
         if tx:
             other = tx['follower'] if tx['leader'] == self.drone else tx['leader']
-            packet = peers.get(other, {}).get('pair_transaction')
+            peer = peers.get(other, {})
+            packet = peer.get('pair_transaction')
+            # After accepting, a delayed commit may already be in flight. Only
+            # an ordered post-expiry leader state showing that it abandoned
+            # this transaction permits releasing the follower's prepare lock.
+            if (tx['phase'] == 'accept' and peer.get('time', -1.) > tx['expires']
+                    and (not packet or packet['token'] != tx['token'])):
+                self.transaction = None
+                return
+            if (tx['phase'] == 'applied' and tx['follower'] == self.drone
+                    and peer.get('time', -1.) > tx.get('applied_at', tx['expires'])
+                    and (not packet or packet['token'] != tx['token'])):
+                self.transaction = None
+                return
             if packet and packet['token'] == tx['token']:
                 if tx['leader'] == self.drone and tx['phase'] == 'prepare' and packet['phase'] == 'accept':
                     tx['phase'] = 'commit'
                 elif tx['leader'] != self.drone and tx['phase'] == 'accept' and packet['phase'] == 'commit':
-                    self.apply(tx); tx['phase'] = 'applied'
+                    self.apply(tx); tx['phase'] = 'applied'; tx['applied_at'] = now
                 elif tx['leader'] == self.drone and tx['phase'] == 'commit' and packet['phase'] == 'applied':
                     self.apply(tx); tx['phase'] = 'applied'; tx['expires'] = now+2.
                 elif tx['phase'] == 'applied' and packet['phase'] == 'applied':
                     self.transaction = None
-            if tx['phase'] == 'applied' and now > tx['expires']+2:
+            if tx['phase'] == 'applied' and tx['leader'] == self.drone and now > tx['expires']+2:
                 self.transaction = None
             return
         for source, peer in sorted(peers.items()):

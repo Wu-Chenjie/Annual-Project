@@ -350,7 +350,7 @@ class ExplorationAgent(Node):
             self.fusion.graph.rebuild()
             offer = result.get('offer')
             if offer and not self.pair.transaction:
-                base = {r: self.owners.get(r, owner) for r, owner in offer['owners'].items()}
+                base = {r: self.owners.get(r) for r in offer['owners']}
                 if all(owner in (self.id, offer['other']) for owner in base.values()):
                     if self.pair.offer(offer['other'], offer['result'], base, t):
                         self.event('pair_cvrp_prepared', other=offer['other'], before=offer['result']['before'], after=offer['result']['after'],

@@ -17,7 +17,7 @@ def command(args, **kwargs):
 
 
 def provenance(out):
-    root = Path(__file__).resolve().parents[4]
+    root = next(p for p in Path(__file__).resolve().parents if (p/'next_project/core').is_dir())
     files = []
     for name in ('next_project/core', 'next_project/cpp', 'next_project/maps', 'ros2_ws/src/annual_swarm', 'docker'):
         files.extend(p for p in (root/name).rglob('*') if p.is_file()

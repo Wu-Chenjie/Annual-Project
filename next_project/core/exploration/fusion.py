@@ -113,8 +113,11 @@ class FusionPlanner:
         offer = None
         partners = [i for i in available if i != self.drone and self.drone < i]
         partners.sort(key=lambda i: (last_success.get(i, -1), i))
-        for other in partners[:1]:
-            ids = [r for r, owner in owners.items() if owner in (self.drone, other) and r in tasks and r in region_costs]
+        for other in partners:
+            # Deferred services have no live bids. Including them manufactures
+            # owners absent from the peer's auction revision, so prepare can
+            # never be accepted after the fleet has serviced boundary regions.
+            ids = [r for r, owner in owners.items() if owner in (self.drone, other) and r in feasible and r in region_costs]
             ids.sort(key=lambda r: (abs(region_costs[r].get(self.drone, np.inf)-region_costs[r].get(other, np.inf)), r))
             ids = ids[:10]
             if len(ids) < 2:
@@ -127,6 +130,9 @@ class FusionPlanner:
                      for i in (self.drone, other)]
             result = solve_pair(ids, starts, between, demands, owners, (self.drone, other), pinned, fixed_loads=fixed)
             offer = dict(other=other, result=result, owners={r: owners[r] for r in ids})
+            if (result['status'] == 'optimal_window' and
+                    (not result.get('before_feasible', True) or result['after'] < result['before']-.2)):
+                break
         local = copy.deepcopy(runtime); local.block_paths(reservations, radius=1.25)
         local_graph = router(local) if plan_view else None
         choices = ([active] if active in feasible else [])+[r for r in tour if r != active]

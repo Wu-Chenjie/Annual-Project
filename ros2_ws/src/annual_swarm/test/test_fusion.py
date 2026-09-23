@@ -10,6 +10,7 @@ from core.exploration.hierarchy import AdaptiveRegions, FrontierIndex
 from core.exploration.mrdtg import DeltaGraph, MultiRobotGraph, graph_voronoi
 from core.exploration.pairwise import solve_pair, PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory, ContinuousTrajectory, interpolate
+from core.exploration.fusion import FusionPlanner
 
 
 def opened():
@@ -97,6 +98,17 @@ def test_graph_voronoi_uses_traversable_cost_not_euclidean():
     assert owners[7] == 0
 
 
+def test_deferred_regions_do_not_enter_bilateral_exchange_window():
+    m = opened(); m.state[24:, :] = -1; m.rebuild()
+    planner = FusionPlanner(0, m.bounds); position = np.array([2., 2., 1.5])
+    first = planner.compute(m, position, 0., None, [], {}, [], 1, 1., False, {}, {}, {})
+    assert len(first['tasks']) >= 2
+    peers = {1: dict(available=True, time=2., graph_connections=dict(planner.connections))}
+    cooldown = {r: 100. for r in first['tasks']}
+    second = planner.compute(m, position, 0., None, [], cooldown, [], 1, 2., False, peers, {}, {})
+    assert second['offer'] is None and not second['bids']
+
+
 def test_pair_cvrp_matches_brute_force_and_capacity():
     xy = np.array([[1., 0.], [2., 0.], [8., 0.], [9., 0.]])
     start = np.linalg.norm(np.array([[0., 0.], [10., 0.]])[:, None]-xy[None], axis=2)
@@ -140,6 +152,34 @@ def test_pair_handshake_survives_repeated_delivery():
     for _ in range(3):
         b.apply(b.transaction)
     assert b.commits == 1
+
+
+
+@pytest.mark.parametrize('commit_before_outage', [False, True])
+def test_pair_accept_lock_survives_partition_until_leader_resolution(commit_before_outage):
+    owners = {1: 0, 2: 0}; a, b = PairExchange(0), PairExchange(1)
+    result = dict(status='optimal_window', before=10., after=4., capacity=2., loads=[1., 1.],
+                  assignments={1: 0, 2: 1}, routes={'0': [1], '1': [2]})
+    a.offer(1, result, owners, 1.)
+    old_leader = dict(time=1., pair_transaction=dict(a.transaction))
+    b.tick({0: old_leader}, owners, 1.1)
+    if commit_before_outage:
+        a.tick({1: dict(time=1.1, pair_transaction=b.transaction)}, owners, 1.2)
+    # Eighteen seconds without a fresh leader must not discard an accepted vote.
+    b.tick({0: old_leader}, owners, 19.)
+    assert b.transaction['phase'] == 'accept'
+    a.tick({}, owners, 19.)
+    b.tick({0: dict(time=19., pair_transaction=a.transaction)}, owners, 19.1)
+    if commit_before_outage:
+        # The acknowledgement can also be delayed beyond the original expiry.
+        b.tick({0: dict(time=19., pair_transaction=a.transaction)}, owners, 37.)
+        assert b.transaction['phase'] == 'applied'
+        a.tick({1: dict(time=37., pair_transaction=b.transaction)}, owners, 37.2)
+        assert a.overrides == b.overrides == {1: 0, 2: 1}
+        assert a.commits == b.commits == 1
+    else:
+        assert a.transaction is None and b.transaction is None
+        assert a.commits == b.commits == 0
 
 
 def test_pair_rejects_stale_owner_revision():
