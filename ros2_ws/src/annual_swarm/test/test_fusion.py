@@ -398,3 +398,35 @@ def test_lidar_self_filter_retains_close_external_obstacles():
     from core.exploration.voxel_mapping import lidar_return_mask
     points = np.array([[.6, 0, 0], [.2, 0, -.32], [0, 0, -.6], [4.5, 0, 0], [np.inf, 0, 0]])
     assert lidar_return_mask(points).tolist() == [True, False, True, False, False]
+
+
+@pytest.mark.parametrize('geometry', [
+    dict(type='aabb', min=[.9, .9, 1.1], max=[1.1, 1.1, 1.9]),
+    dict(type='cylinder', center_xy=[1., 1.], radius=.2, z_range=[1.1, 1.9])])
+def test_truth_uses_entire_voxel_not_only_center(tmp_path, geometry):
+    import json
+    from core.exploration.voxel_mapping import VoxelTruth, VoxelMap
+    scene = tmp_path/'map.json'
+    scene.write_text(json.dumps(dict(bounds=[[0, 0, 0], [3, 3, 3]], obstacles=[geometry])))
+    truth = VoxelTruth(scene, resolution=1.)
+    # A small obstacle straddles four cells, but contains none of their centers.
+    assert np.count_nonzero(truth.occupied[:, :, 1]) == 4
+    assert not truth.center_occupied[:, :, 1].any()
+    observed = VoxelMap(truth.bounds, resolution=1.)
+    observed.state[:] = truth.occupied.astype(np.int8)
+    metrics = truth.coverage_metrics(observed)
+    assert metrics['coverage'] == 1.
+    assert metrics['legacy_center_free_coverage'] == pytest.approx(14/18)
+    assert metrics['truth_free_voxels'] == metrics['observed_free_voxels'] == 14
+
+
+def test_truth_dynamic_voxel_intersections_clear_with_obstacle(tmp_path):
+    import json
+    from core.exploration.voxel_mapping import VoxelTruth
+    scene = tmp_path/'map.json'
+    scene.write_text(json.dumps(dict(bounds=[[0, 0, 0], [3, 3, 3]], obstacles=[])))
+    truth = VoxelTruth(scene, resolution=1.)
+    obstacle = dict(type='cylinder', center_xy=[1., 1.], radius=.2, z_range=[1.1, 1.9])
+    truth.dynamic_snapshot(1, [obstacle]); assert truth.occupied.sum() == 13
+    truth.dynamic_snapshot(2, []); assert truth.occupied.sum() == 9
+    truth.dynamic_snapshot(1, [obstacle]); assert truth.occupied.sum() == 9

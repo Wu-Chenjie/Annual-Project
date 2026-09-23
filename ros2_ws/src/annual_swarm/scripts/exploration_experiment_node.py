@@ -46,6 +46,7 @@ class Experiment(Node):
         self.contacts = 0; self.minimum = None; self.started = None; self.finished = None; self.status = 'WAITING'
         self.distances = {i: 0. for i in range(self.fleet_size)}; self.samples = {i: 0 for i in range(self.fleet_size)}; self.sequence = 0
         self.t90 = None; self.t95 = None; self.coverage = []; self.paused = []; self.pause_started = None; self.resumed = False
+        self.coverage_details = {}
         self.csv = (self.output/'trajectory.csv').open('w'); self.writer = csv.writer(self.csv)
         self.writer.writerow(['time', 'drone', 'x', 'y', 'z', 'yaw'])
         self.telemetry = (self.output/'peer_states.jsonl').open('w')
@@ -185,7 +186,8 @@ class Experiment(Node):
             if self.pause_started is not None and not self.resumed and t-self.pause_started >= self.pause_duration:
                 self.paused = []; self.resumed = True
         if self.finished is None:
-            coverage = self.world.coverage(self.observed); self.coverage.append([t, coverage])
+            self.coverage_details = self.world.coverage_metrics(self.observed)
+            coverage = self.coverage_details['coverage']; self.coverage.append([t, coverage])
             if self.started is not None:
                 if coverage >= .9 and self.t90 is None:
                     self.t90 = t-self.started
@@ -195,6 +197,9 @@ class Experiment(Node):
                     self.status = 'COMPLETE'; self.finished = t
             if self.contacts:
                 self.status = 'FAILED'; self.finished = t
+            if self.finished is not None:
+                np.savez_compressed(self.output/'observed_final.npz', state=self.observed.state,
+                                    bounds=self.observed.bounds, resolution=self.observed.resolution)
         self.obstacle_trial(t)
         restart = [self.restart_trial['drone']] if self.restart_trial and not self.restart_recovered else []
         self.control_pub.publish(String(data=json.dumps(dict(paused=self.paused, isolated=self.isolated,
@@ -226,6 +231,7 @@ class Experiment(Node):
             restart_trial=self.restart_trial, restart_recovered=self.restart_recovered,
             tracking_reference='Gazebo truth position versus executed reference at telemetry receipt',
             assumptions='3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations')
+        report.update(self.coverage_details)
         tmp = self.output/'summary.tmp'; tmp.write_text(json.dumps(report, indent=2)); tmp.replace(self.output/'summary.json')
         if rclpy.ok():
             self.diag.publish(String(data=json.dumps(report)))

@@ -7,6 +7,8 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
+import planning_runtime
+from core.exploration.voxel_mapping import VoxelTruth, VoxelMap
 
 
 def records(path):
@@ -76,6 +78,16 @@ def audit(root):
     spans = {i: float(np.ptp(z)) for i, z in altitude.items()}
     assert min(yaw_travel.values()) > 6 and max(spans.values()) > .7
     assert summary['status'] == 'COMPLETE' and summary['coverage'] >= .95
+    # Recompute the denominator from geometry and the final sensor map. A
+    # partially occupied boundary voxel must not be called truth-free merely
+    # because its center lies outside a wall. Retain the old metric explicitly.
+    snapshot = np.load(root/'observed_final.npz')
+    observed = VoxelMap(snapshot['bounds'], resolution=float(snapshot['resolution']))
+    observed.state[:] = snapshot['state']
+    truth = VoxelTruth(root/'map.json', resolution=observed.resolution)
+    measured = truth.coverage_metrics(observed)
+    for field in ('coverage', 'legacy_center_free_coverage', 'truth_free_voxels', 'observed_free_voxels'):
+        assert abs(summary[field]-measured[field]) < 1e-12, (field, summary[field], measured[field])
     assert summary['contacts_after_takeoff'] == 0 and summary['min_separation_m'] > .8
     assert summary['mapping_dimensions'] == 3 and min(summary['observation_frames'].values()) > 100
     assert all(x > 3 for x in summary['distances_m'].values()) and min(summary['views'].values()) > 0
@@ -104,6 +116,7 @@ def audit(root):
                   candidates=candidate_count, max_backups=max_backups, airborne_altitude_span_m=spans,
                   yaw_travel_rad=yaw_travel, overlapping_same_region_leases=0, dynamic_response_events=obstacle_responses,
                   coverage=summary['coverage'], t95_s=summary['t95'], contacts=summary['contacts_after_takeoff'],
+                  coverage_definition=measured['coverage_definition'], legacy_center_free_coverage=measured['legacy_center_free_coverage'],
                   min_separation_m=summary['min_separation_m'], truth_tracking=summary['tracking'],
                   summary_sha256=hashlib.sha256((root/'summary.json').read_bytes()).hexdigest(),
                   scope='Observed flight and protocol evidence for this run; not a proof of arbitrary networks or paper benchmark reproduction.')

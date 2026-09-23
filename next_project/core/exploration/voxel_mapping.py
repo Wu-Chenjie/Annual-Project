@@ -205,22 +205,56 @@ class VoxelTruth:
         self.origin = self.bounds[0]; self.resolution = resolution
         self.shape = tuple(np.ceil((self.bounds[1]-self.origin)/resolution).astype(int))
         xyz = self.origin+(np.indices(self.shape).transpose(1, 2, 3, 0)+.5)*resolution
+        self.xyz = xyz
+        self.low = np.maximum(xyz-resolution/2, self.bounds[0])
+        self.high = np.minimum(xyz+resolution/2, self.bounds[1])
         self.occupied = xyz[..., 2] < resolution
+        self.center_occupied = self.occupied.copy()
         for o in data['obstacles']:
+            self.occupied |= self.intersects(o)
             if o['type'] == 'aabb':
-                self.occupied |= np.all((xyz >= o['min']) & (xyz <= o['max']), axis=3)
+                self.center_occupied |= np.all((xyz >= o['min']) & (xyz <= o['max']), axis=3)
             elif o['type'] == 'cylinder':
-                self.occupied |= ((np.linalg.norm(xyz[..., :2]-o['center_xy'], axis=3) <= o['radius']) &
+                self.center_occupied |= ((np.linalg.norm(xyz[..., :2]-o['center_xy'], axis=3) <= o['radius']) &
                                   (xyz[..., 2] >= o['z_range'][0]) & (xyz[..., 2] <= o['z_range'][1]))
-        self.static_occupied = self.occupied.copy(); self.xyz = xyz; self.last_obstacle_version = -1
+        self.static_occupied = self.occupied.copy()
+        self.static_center_occupied = self.center_occupied.copy(); self.last_obstacle_version = -1
+
+    def intersects(self, obstacle):
+        """A surface return occupies its voxel even if the center is outside geometry.
+
+        Use positive-volume box intersection (and closest-point circle/box
+        intersection for cylinders). Boundary voxels are clipped to map bounds.
+        This matches the map's conservative occupied-voxel representation.
+        """
+        if obstacle['type'] == 'aabb':
+            return np.all((self.high > np.asarray(obstacle['min'])+1e-9) &
+                          (self.low < np.asarray(obstacle['max'])-1e-9), axis=3)
+        if obstacle['type'] == 'cylinder':
+            center = np.asarray(obstacle['center_xy'])
+            nearest = np.clip(center, self.low[..., :2], self.high[..., :2])
+            return ((np.linalg.norm(nearest-center, axis=3) < obstacle['radius']-1e-9) &
+                    (self.high[..., 2] > obstacle['z_range'][0]+1e-9) & (self.low[..., 2] < obstacle['z_range'][1]-1e-9))
+        raise ValueError('Unsupported truth geometry')
 
     def dynamic_snapshot(self, version, obstacles):
         if version <= self.last_obstacle_version:return
         self.occupied = self.static_occupied.copy()
+        self.center_occupied = self.static_center_occupied.copy()
         for o in obstacles:
-            self.occupied |= ((np.linalg.norm(self.xyz[..., :2]-o['center_xy'], axis=3) <= o['radius']) &
+            self.occupied |= self.intersects(dict(o, type='cylinder'))
+            self.center_occupied |= ((np.linalg.norm(self.xyz[..., :2]-o['center_xy'], axis=3) <= o['radius']) &
                               (self.xyz[..., 2] >= o['z_range'][0]) & (self.xyz[..., 2] <= o['z_range'][1]))
         self.last_obstacle_version = version
 
     def coverage(self, observed):
         return float(np.count_nonzero((observed.state == 0) & ~self.occupied)/np.count_nonzero(~self.occupied))
+
+    def coverage_metrics(self, observed):
+        free = ~self.occupied
+        return dict(coverage=self.coverage(observed),
+            coverage_definition='observed-free / geometrically fully-free voxels; box/cylinder intersection',
+            legacy_center_free_coverage=float(np.count_nonzero((observed.state == 0) & ~self.center_occupied)/np.count_nonzero(~self.center_occupied)),
+            truth_free_voxels=int(free.sum()), observed_free_voxels=int(np.count_nonzero((observed.state == 0) & free)),
+            unobserved_free_voxels=int(np.count_nonzero((observed.state == -1) & free)),
+            falsely_occupied_free_voxels=int(np.count_nonzero((observed.state == 1) & free)))

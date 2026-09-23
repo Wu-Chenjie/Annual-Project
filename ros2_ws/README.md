@@ -1,5 +1,7 @@
 # ROS 2 / Gazebo 使用说明
 
+当前主入口为 `decentralized_search.launch.py`：三维点云、分层区域、MR-DTG、双机任务/路线协商、观测位姿与连续轨迹组成单一融合流程。完整节点契约、故障恢复与录制命令见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下文保留的 `swarm.launch.py` 是原编队入口。
+
 ## 环境与启动
 
 目标平台：Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic。采用官方 [ROS/Gazebo 配套版本](https://gazebosim.org/docs/harmonic/ros_installation/)及 [ros_gz_bridge](https://github.com/gazebosim/ros_gz/tree/jazzy/ros_gz_bridge)。不使用 Gazebo Classic、`gazebo_ros_pkgs` 或原来的 Humble 空世界脚本。
@@ -20,10 +22,10 @@ cd ros2_ws
 rosdep install --from-paths src --ignore-src -r -y
 colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 source install/setup.bash
-ros2 launch annual_swarm swarm.launch.py
+ros2 launch annual_swarm decentralized_search.launch.py headless:=false rviz:=true
 ```
 
-从仓库根目录也可执行 `./start_gazebo.sh`。Gazebo 自动运行，三机从地面起飞到 1.5 m，经三柱场景绕障后在 `(18,16,1.5)` 周围悬停。GUI 中可在实体列表选择 `drone_0` 聚焦观察。
+原编队可执行 `ros2 launch annual_swarm swarm.launch.py`。从仓库根目录也可执行 `./start_gazebo.sh`。Gazebo 自动运行，三机从地面起飞到 1.5 m，经三柱场景绕障后在 `(18,16,1.5)` 周围悬停。GUI 中可在实体列表选择 `drone_0` 聚焦观察。
 
 ```bash
 # 无 GUI（无须显示器/GPU；仍有真实物理、IMU、碰撞）
@@ -50,13 +52,21 @@ ros2 bag record /clock /swarm/path /swarm/status \
 ```bash
 docker build -f docker/Dockerfile.ros2 -t annual-swarm:jazzy .
 docker run --rm -it annual-swarm:jazzy
-# 完整三机飞行自动验收，保存日志/CSV/JSON到本地
+# 原编队三机飞行自动验收，保存日志/CSV/JSON到本地
 mkdir -p artifacts
 docker run --rm -v "$PWD/artifacts:/results" annual-swarm:jazzy bash -c \
   'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm smoke_test.py --timeout 240 --output-dir /results'
 ```
 
-macOS 上采用 Docker Linux 无界面运行；原生 Gazebo GUI 在 Ubuntu 上使用。容器没有配置 X11/VNC；这里不提供 HTML 界面。
+运行镜像默认启动融合探索。macOS 上使用 Docker Linux；无界面运行仍有真实物理与点云传感。录制镜像提供 Xvfb、Openbox、原生 Gazebo/RViz 和 ffmpeg：
+
+```bash
+docker build -f docker/Dockerfile.demo -t annual-swarm:demo .
+# 同一次运行保留视频、源码快照、轨迹、协商日志和独立审计结果
+docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:demo
+```
+
+默认输出 `artifacts/fusion/demo`，目录已存在时录制器拒绝覆盖。原生 GUI 在虚拟 X11 屏幕中录制，不需要 HTML 或浏览器。
 
 ## 节点与接口
 
