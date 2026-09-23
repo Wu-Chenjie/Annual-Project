@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "codec": "h264",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "duration_seconds": 140.066667,
+  "full_decode": "ffmpeg -v error -i decentralized-exploration.mp4 -f null -: exit 0",
+  "visual_frames_seconds": [
+    20,
+    65,
+    139.966667
+  ],
+  "completion_frame_verified": true,
+  "video_sha256": "5dcfaa2b5f8b81f074da151e01f1e0b21684e7c3d0e803ec54a5483be44a704f"
+}

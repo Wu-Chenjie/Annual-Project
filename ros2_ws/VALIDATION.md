@@ -1,6 +1,8 @@
 # ROS / Gazebo 迁移验收记录
 
-验证日期：2026-09-22。仓库基线：`7b09723d033068caac723433f3668efd832312d4`。
+最新三维融合探索验收、录像源码版本、117 项包测试与独立冷启动证据见 [融合版运行证据](docs/validation/fusion/README.md)。架构和接口边界见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下面按时间保留历史验证，不将旧限制或旧指标当作当前融合版结论。
+
+历史首轮验证日期：2026-09-22。仓库基线：`7b09723d033068caac723433f3668efd832312d4`。
 
 环境：Docker Linux aarch64、Ubuntu 24.04、ROS 2 Jazzy、Gazebo Sim 8.15.0（Harmonic）。首次安装使用 Ubuntu 镜像站加速，ROS 软件包来自官方 APT 源。已通过真实 Gazebo GUI 截图检查，旧截图保存在 `artifacts/screenshots/`；下面的飞行指标来自实际无界面物理仿真。
 

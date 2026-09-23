@@ -1,4 +1,4 @@
-name: Decentralized Gazebo exploration
+name: Fused 3D Gazebo exploration
 on:
   workflow_dispatch:
     inputs:
@@ -9,7 +9,7 @@ on:
 jobs:
   exploration:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - name: Build ROS and simulation runtime
@@ -28,7 +28,10 @@ jobs:
         if: inputs.record_video
         run: |
           mkdir -p artifacts
-          docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:demo
+          docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:demo bash -c '
+            source /opt/ros/jazzy/setup.bash
+            source ros2_ws/install/setup.bash
+            python3 ros2_ws/src/annual_swarm/scripts/record_decentralized_demo.py --output-dir artifacts/fusion/demo --timeout 7200 --speed 24'
       - name: Headless real physics acceptance
         if: ${{ !inputs.record_video }}
         run: |
@@ -36,25 +39,16 @@ jobs:
           docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:jazzy bash -c '
             source /opt/ros/jazzy/setup.bash
             source ros2_ws/install/setup.bash
-            python3 ros2_ws/src/annual_swarm/scripts/decentralized_smoke.py --output-dir artifacts/decentralized/demo --timeout 2400'
+            python3 ros2_ws/src/annual_swarm/scripts/decentralized_smoke.py --output-dir artifacts/fusion/demo --timeout 7200'
       - name: Audit lease and flight records
         run: |
           docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:jazzy \
-            python3 ros2_ws/src/annual_swarm/scripts/audit_decentralized_run.py artifacts/decentralized/demo
+            python3 ros2_ws/src/annual_swarm/scripts/audit_fusion_run.py artifacts/fusion/demo
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: decentralized-gazebo-evidence
+          name: fused-3d-gazebo-evidence
           path: |
-            artifacts/decentralized/**/summary.json
-            artifacts/decentralized/**/audit.json
-            artifacts/decentralized/**/environment.json
-            artifacts/decentralized/**/recording*.json
-            artifacts/decentralized/**/video-probe.json
-            artifacts/decentralized/**/decentralized-exploration.mp4
-            artifacts/decentralized/**/demo-preview.png
-            artifacts/decentralized/**/events.jsonl
-            artifacts/decentralized/**/candidates.jsonl
-            artifacts/decentralized/**/coverage.json
-            artifacts/decentralized/**/launch.log
+            artifacts/fusion/demo/**
+            !artifacts/fusion/demo/gazebo-rviz-raw.mp4
           retention-days: 14

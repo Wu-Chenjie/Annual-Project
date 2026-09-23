@@ -49,10 +49,12 @@ ros2 topic echo /swarm/planner_diagnostics
 
 新增复杂环境三机独立搜索：有限视距观测、动态图任务分区、成对负载优化和动态任务转交，见 [搜索使用说明](ros2_ws/EXPLORATION.md) 和 [复杂地图实测图](ros2_ws/docs/validation/search/README.md)。
 
-### 当前融合探索与历史录像
+### 融合探索录像与证据
 
-三维点云、IMU/定位估计、自适应区域、历史树握手拓扑、图分区与双机 CVRP、连续轨迹以及断连/重启恢复的实现及边界见 [DECENTRALIZED_EXPLORATION.md](ros2_ws/DECENTRALIZED_EXPLORATION.md)。使用 `decentralized_search.launch.py`，旧集中式探索和编队入口保留。
+三维点云、IMU/定位估计、自适应区域、历史树握手拓扑、图分区与双机 CVRP、连续轨迹以及断连/重启恢复的实现及边界见 [融合架构与接口](ros2_ws/DECENTRALIZED_EXPLORATION.md)。主入口 `decentralized_search.launch.py` 将这些环节共同运行，没有 RACER/GVP 模式选择器。
 
-[观看历史平面版 Gazebo 演示视频](ros2_ws/docs/validation/decentralized/decentralized-exploration.mp4) · [验收数据](ros2_ws/docs/validation/decentralized/README.md)
+[观看三维融合版 Gazebo 原生视频](ros2_ws/docs/validation/fusion/fused-exploration.mp4) · [实测指标、故障恢复、独立审计与原始证据](ros2_ws/docs/validation/fusion/README.md)
 
-![历史平面版录屏节选](ros2_ws/docs/validation/decentralized/demo.gif)
+![三维融合探索完成画面](ros2_ws/docs/validation/fusion/demo-preview.png)
+
+[历史平面版录像与旧口径数据](ros2_ws/docs/validation/decentralized/README.md) 单独保留，不能与当前三维传感结果直接比较。旧集中式探索和编队入口继续用于原算法回归。
