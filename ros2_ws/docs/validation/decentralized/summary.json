@@ -1,0 +1,58 @@
+{
+  "status": "COMPLETE",
+  "simulation_time": 380.528,
+  "start_time": 15.001000000000001,
+  "finish_time": 377.0,
+  "architecture": "three independent agents, peer insertion auctions and unanimous path leases",
+  "coverage": 0.9504965392717424,
+  "t90": 312.50000000000006,
+  "t95": 361.999,
+  "coverage_target": 0.95,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 2.0309104905865056,
+  "distances_m": {
+    "0": 63.99521275290151,
+    "1": 61.47011072683452,
+    "2": 67.53857943522767
+  },
+  "odometry_samples": {
+    "0": 38023,
+    "1": 38022,
+    "2": 38022
+  },
+  "pause_resumed": true,
+  "paused": [],
+  "graph": {
+    "2": {
+      "nodes": 114,
+      "edges": 118,
+      "free_cells": 3046
+    },
+    "0": {
+      "nodes": 114,
+      "edges": 118,
+      "free_cells": 3051
+    },
+    "1": {
+      "nodes": 114,
+      "edges": 118,
+      "free_cells": 3046
+    }
+  },
+  "commits": {
+    "2": 29,
+    "0": 33,
+    "1": 28
+  },
+  "views": {
+    "2": 26,
+    "0": 32,
+    "1": 27
+  },
+  "peer_payload_bytes": {
+    "2": 12498735,
+    "0": 12504065,
+    "1": 12357291
+  },
+  "assumptions": "Planar 1.5 m altitude; ideal 120 degree 3.5 m occluded ray sensor; Gazebo truth odometry; fixed fleet quorum freezes on partition"
+}

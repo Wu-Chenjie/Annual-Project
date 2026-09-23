@@ -90,6 +90,11 @@ def generate(share, map_file, output, start, dynamic=False, starts=None):
         name = f'drone_{i}'
         model = copy.deepcopy(template); model.set('name',name)
         ET.SubElement(model,'pose').text = vector([spawn[0],spawn[1],0.10,0,0,0])
+        if starts is not None:
+            color = ['1 0.32 0.18 1', '0.1 0.85 0.5 1', '0.25 0.6 1 1'][i % 3]
+            for visual in model.findall('link/visual'):
+                if visual.get('name') == 'body' or visual.get('name', '').startswith('rotor'):
+                    visual.find('material/diffuse').text = color
         model.find("link/sensor[@name='contact']/topic").text = f'/{name}/contacts'
         model.find("link/sensor[@name='imu']/topic").text = f'/{name}/imu'
         world.append(model)

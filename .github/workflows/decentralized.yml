@@ -1,0 +1,60 @@
+name: Decentralized Gazebo exploration
+on:
+  workflow_dispatch:
+    inputs:
+      record_video:
+        description: Record native Gazebo and RViz through Xvfb
+        type: boolean
+        default: true
+jobs:
+  exploration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ROS and simulation runtime
+        run: docker build -f docker/Dockerfile.ros2 -t annual-swarm:jazzy .
+      - name: Package tests
+        run: |
+          docker run --rm annual-swarm:jazzy bash -c '
+            source /opt/ros/jazzy/setup.bash
+            cd ros2_ws
+            colcon test --packages-select annual_swarm
+            colcon test-result --verbose'
+      - name: Build recording tools
+        if: inputs.record_video
+        run: docker build -f docker/Dockerfile.demo -t annual-swarm:demo .
+      - name: Real physics acceptance and recording
+        if: inputs.record_video
+        run: |
+          mkdir -p artifacts
+          docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:demo
+      - name: Headless real physics acceptance
+        if: ${{ !inputs.record_video }}
+        run: |
+          mkdir -p artifacts
+          docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:jazzy bash -c '
+            source /opt/ros/jazzy/setup.bash
+            source ros2_ws/install/setup.bash
+            python3 ros2_ws/src/annual_swarm/scripts/decentralized_smoke.py --output-dir artifacts/decentralized/demo --timeout 2400'
+      - name: Audit lease and flight records
+        run: |
+          docker run --rm -v "$PWD/artifacts:/workspace/artifacts" annual-swarm:jazzy \
+            python3 ros2_ws/src/annual_swarm/scripts/audit_decentralized_run.py artifacts/decentralized/demo
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: decentralized-gazebo-evidence
+          path: |
+            artifacts/decentralized/**/summary.json
+            artifacts/decentralized/**/audit.json
+            artifacts/decentralized/**/environment.json
+            artifacts/decentralized/**/recording*.json
+            artifacts/decentralized/**/video-probe.json
+            artifacts/decentralized/**/decentralized-exploration.mp4
+            artifacts/decentralized/**/demo-preview.png
+            artifacts/decentralized/**/events.jsonl
+            artifacts/decentralized/**/candidates.jsonl
+            artifacts/decentralized/**/coverage.json
+            artifacts/decentralized/**/launch.log
+          retention-days: 14

@@ -1,0 +1,8 @@
+# Build the runtime first: docker build -f docker/Dockerfile.ros2 -t annual-swarm:jazzy .
+FROM annual-swarm:jazzy
+SHELL ["/bin/bash", "-c"]
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    ros-jazzy-rviz2 xvfb openbox xdotool ffmpeg fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+ENV DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 QT_X11_NO_MITSHM=1
+CMD ["bash", "-c", "source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && python3 ros2_ws/src/annual_swarm/scripts/record_decentralized_demo.py --output-dir artifacts/decentralized/demo"]

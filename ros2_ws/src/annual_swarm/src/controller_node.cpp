@@ -53,6 +53,13 @@ class FlightController : public rclcpp::Node {
         if (msg->header.frame_id != "world") return;
         auto p = msg->pose.position;
         if (!std::isfinite(p.x) || !std::isfinite(p.y) || !std::isfinite(p.z)) return;
+        const auto &q = msg->pose.orientation;
+        tf2::Quaternion orientation(q.x,q.y,q.z,q.w);
+        if (!std::isfinite(orientation.length2()) || orientation.length2() < 0.9) return;
+        orientation.normalize();
+        double roll, pitch;
+        tf2::Matrix3x3(orientation).getRPY(roll, pitch, target_yaw_);
+        target_vel_ = {}; target_acc_ = {};
         target_ = {p.x,p.y,p.z}; target_time_ = rclcpp::Time(msg->header.stamp).seconds(); have_target_ = true;
       });
     trajectory_sub_ = create_subscription<trajectory_msgs::msg::MultiDOFJointTrajectory>("trajectory_target", 1,

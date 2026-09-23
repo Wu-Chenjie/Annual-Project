@@ -1,0 +1,93 @@
+{
+  "state_transitions": [
+    {
+      "status": "TAKEOFF",
+      "simulation_time": 0.202
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 2.0420000000000003
+    },
+    {
+      "status": "HOLDING",
+      "simulation_time": 17.602
+    }
+  ],
+  "dynamic_obstacles": {},
+  "formation": {
+    "apf": false,
+    "formation_apf": false,
+    "velocity_feedforward": false,
+    "apf_active_samples": 0,
+    "max_apf_acceleration": 0.0,
+    "max_reference_velocity": 0.0
+  },
+  "planner": {
+    "algorithm": "astar",
+    "implementation": "next_project/core/planning",
+    "window_events": [],
+    "sensor_source": "known static map; Gazebo odometry",
+    "dstar_state_reused": false,
+    "esdf": false,
+    "firi": "disabled",
+    "fallbacks": [],
+    "trajectory_method": "none",
+    "trajectory_fallback": null,
+    "mpc_feasibility_only": {
+      "evaluated": true,
+      "feasible": true,
+      "tracking_rms_proxy": 1.9962881843967106e-15,
+      "max_velocity_violation": 0.0,
+      "max_acceleration_violation": 0.0,
+      "saturation_ratio": 0.0,
+      "recommendation": "continue_mpc_prototype"
+    },
+    "plan_count": 1,
+    "wall_seconds": 0.029923328896984458,
+    "points": 61,
+    "goal": [
+      8.0,
+      3.0,
+      1.5
+    ]
+  },
+  "controllers": {
+    "1": "pid (Gazebo actuator control)",
+    "0": "pid (Gazebo actuator control)",
+    "2": "pid (Gazebo actuator control)"
+  },
+  "simulation_time": 21.081,
+  "mission_status": "HOLDING",
+  "samples": 6264,
+  "odometry_samples": {
+    "0": 2109,
+    "1": 2109,
+    "2": 2109
+  },
+  "imu_samples": {
+    "0": 2109,
+    "1": 2108,
+    "2": 2108
+  },
+  "tracking_rmse_m": 0.4072589833620233,
+  "max_tracking_error_m": 1.4202161268257847,
+  "min_pairwise_distance_m": 1.0,
+  "contact_samples_after_takeoff": 0,
+  "positions": {
+    "0": [
+      7.9980392679291645,
+      3.0,
+      1.5000031907418094
+    ],
+    "1": [
+      7.99803829313544,
+      2.0,
+      1.5000031673312249
+    ],
+    "2": [
+      7.9980409460419395,
+      4.0,
+      1.5000031434996688
+    ]
+  }
+}

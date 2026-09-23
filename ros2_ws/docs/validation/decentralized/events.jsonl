@@ -1,0 +1,299 @@
+{"type": "path_proposed", "drone": 0, "time": 17.5, "token": "0:1", "region": 5, "tour": [5, 0], "workload": 16.32061233452225, "objective": 1.851078495545781}
+{"type": "path_proposed", "drone": 2, "time": 17.501, "token": "2:1", "region": 4, "tour": [4, 9], "workload": 8.87235226078539, "objective": 2.5593416924776093}
+{"type": "path_proposed", "drone": 1, "time": 18.0, "token": "1:1", "region": 1, "tour": [1, 6, 7, 2], "workload": 30.472349182671557, "objective": 2.0383912042097703}
+{"type": "path_committed", "drone": 0, "time": 18.401, "token": "0:1", "region": 5, "quorum": [1, 2], "gain_m2": 10.4375, "lookahead": {"position": [4.625, 1.125, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 2, "time": 18.401, "token": "2:1", "region": 4, "quorum": [0, 1], "gain_m2": 10.0625, "lookahead": {"position": [3.875, 17.375, 1.5], "yaw": -0.7853981633974483}}
+{"type": "path_committed", "drone": 1, "time": 19.200000000000003, "token": "1:1", "region": 1, "quorum": [0, 2], "gain_m2": 7.5, "lookahead": {"position": [3.875, 6.375, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 2, "time": 26.802000000000003, "region": 4, "epoch": 1}
+{"type": "view_observed", "drone": 1, "time": 28.001, "region": 1, "epoch": 1}
+{"type": "path_proposed", "drone": 2, "time": 28.501, "token": "2:2", "region": 4, "tour": [4, 9, 8], "workload": 18.588415730120634, "objective": 1.0329224555818715}
+{"type": "path_proposed", "drone": 1, "time": 29.000000000000004, "token": "1:2", "region": 1, "tour": [1, 7, 2], "workload": 43.87261245568121, "objective": 1.0843694641796435}
+{"type": "view_observed", "drone": 0, "time": 29.202, "region": 5, "epoch": 1}
+{"type": "path_committed", "drone": 2, "time": 29.6, "token": "2:2", "region": 4, "quorum": [0, 1], "gain_m2": 2.5625, "lookahead": {"position": [1.125, 17.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "path_proposed", "drone": 0, "time": 30.001, "token": "0:2", "region": 5, "tour": [5, 0, 6], "workload": 29.49645869865739, "objective": 2.365948774266829}
+{"type": "path_committed", "drone": 1, "time": 30.001, "token": "1:2", "region": 1, "quorum": [0, 2], "gain_m2": 6.875, "lookahead": {"position": [2.875, 6.375, 1.5], "yaw": -2.356194490192345}}
+{"type": "path_committed", "drone": 0, "time": 31.200000000000003, "token": "0:2", "region": 5, "quorum": [1, 2], "gain_m2": 11.25, "lookahead": {"position": [7.375, 2.625, 1.5], "yaw": 1.5707963267948966}}
+{"type": "view_observed", "drone": 2, "time": 32.0, "region": 4, "epoch": 2}
+{"type": "path_proposed", "drone": 2, "time": 33.0, "token": "2:3", "region": 4, "tour": [4, 9, 8], "workload": 21.233226751932403, "objective": 0.574717452061035}
+{"type": "path_committed", "drone": 2, "time": 34.0, "token": "2:3", "region": 4, "quorum": [0, 1], "gain_m2": 3.875, "lookahead": {"position": [1.125, 17.125, 1.5], "yaw": -1.5707963267948966}}
+{"type": "view_observed", "drone": 1, "time": 40.0, "region": 1, "epoch": 2}
+{"type": "path_proposed", "drone": 1, "time": 41.0, "token": "1:3", "region": 1, "tour": [1, 0, 7, 2], "workload": 39.93328426537223, "objective": 0.44627488325650005}
+{"type": "path_committed", "drone": 1, "time": 42.0, "token": "1:3", "region": 1, "quorum": [0, 2], "gain_m2": 3.125, "lookahead": null}
+{"type": "view_observed", "drone": 0, "time": 42.801, "region": 5, "epoch": 2}
+{"type": "path_proposed", "drone": 0, "time": 43.5, "token": "0:3", "region": 5, "tour": [5, 11, 10, 6], "workload": 33.19345962023074, "objective": 1.0572294471877168}
+{"type": "path_committed", "drone": 0, "time": 44.402, "token": "0:3", "region": 5, "quorum": [1, 2], "gain_m2": 3.6875, "lookahead": {"position": [7.875, 2.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 45.601000000000006, "region": 4, "epoch": 3}
+{"type": "region_yielded", "drone": 2, "time": 46.501000000000005, "region": 4}
+{"type": "path_proposed", "drone": 2, "time": 46.501000000000005, "token": "2:4", "region": 9, "tour": [4, 9, 8], "workload": 22.18444991826308, "objective": 1.6984009368655493}
+{"type": "view_observed", "drone": 1, "time": 47.6, "region": 1, "epoch": 3}
+{"type": "path_committed", "drone": 2, "time": 47.6, "token": "2:4", "region": 9, "quorum": [0, 1], "gain_m2": 12.0, "lookahead": {"position": [6.625, 16.625, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 0, "time": 48.0, "region": 5, "epoch": 3}
+{"type": "path_proposed", "drone": 1, "time": 49.5, "token": "1:4", "region": 7, "tour": [7, 2], "workload": 25.675075390005752, "objective": 1.6943414026975676}
+{"type": "path_proposed", "drone": 0, "time": 50.003, "token": "0:4", "region": 5, "tour": [5, 11, 10, 6], "workload": 36.843161691254146, "objective": 0.5150115588752251}
+{"type": "path_committed", "drone": 1, "time": 50.401, "token": "1:4", "region": 7, "quorum": [0, 2], "gain_m2": 11.1875, "lookahead": {"position": [6.125, 9.375, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 0, "time": 51.2, "token": "0:4", "region": 5, "quorum": [1, 2], "gain_m2": 1.8125, "lookahead": {"position": [7.375, 3.625, 1.5], "yaw": 0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 54.80200000000001, "region": 5, "epoch": 4}
+{"type": "path_proposed", "drone": 0, "time": 56.001000000000005, "token": "0:5", "region": 5, "tour": [5, 11, 10, 6], "workload": 38.91029075931023, "objective": 0.18384116755731678}
+{"type": "path_committed", "drone": 0, "time": 57.2, "token": "0:5", "region": 5, "quorum": [1, 2], "gain_m2": 1.0625, "lookahead": null}
+{"type": "view_observed", "drone": 0, "time": 62.801, "region": 5, "epoch": 5}
+{"type": "region_yielded", "drone": 0, "time": 64.0, "region": 5}
+{"type": "path_proposed", "drone": 0, "time": 64.0, "token": "0:6", "region": 10, "tour": [5, 6, 10, 11], "workload": 40.941098320648734, "objective": 1.257685982788173}
+{"type": "path_committed", "drone": 0, "time": 65.202, "token": "0:6", "region": 10, "quorum": [1, 2], "gain_m2": 6.75, "lookahead": {"position": [10.375, 1.625, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 2, "time": 67.60000000000001, "region": 9, "epoch": 4}
+{"type": "path_proposed", "drone": 2, "time": 69.5, "token": "2:5", "region": 9, "tour": [9, 4, 8], "workload": 26.49110770024619, "objective": 2.2841096023258616}
+{"type": "view_observed", "drone": 1, "time": 69.60000000000001, "region": 7, "epoch": 4}
+{"type": "path_committed", "drone": 2, "time": 70.4, "token": "2:5", "region": 9, "quorum": [0, 1], "gain_m2": 9.875, "lookahead": {"position": [7.875, 16.875, 1.5], "yaw": 0.0}}
+{"type": "path_proposed", "drone": 1, "time": 71.5, "token": "1:5", "region": 7, "tour": [7, 2, 6, 5], "workload": 55.59664773842043, "objective": 2.141557615171098}
+{"type": "path_committed", "drone": 1, "time": 72.40100000000001, "token": "1:5", "region": 7, "quorum": [0, 2], "gain_m2": 8.25, "lookahead": {"position": [7.125, 11.625, 1.5], "yaw": 0.7853981633974483}}
+{"type": "availability_pause", "drone": 1, "time": 75.51400000000001, "region": 7}
+{"type": "lease_cancellation_requested", "drone": 1, "time": 75.51400000000001, "region": 7, "reason": "experiment_pause"}
+{"type": "region_reassigned", "drone": 0, "time": 76.0, "region": 2, "previous_owner": 1, "new_owner": 0, "reason": "peer_unavailable"}
+{"type": "region_reassigned", "drone": 0, "time": 76.0, "region": 7, "previous_owner": 1, "new_owner": 0, "reason": "peer_unavailable"}
+{"type": "reservation_retired", "drone": 1, "time": 76.40100000000001, "token": "1:5", "stop_epoch": 6}
+{"type": "view_observed", "drone": 2, "time": 78.0, "region": 9, "epoch": 5}
+{"type": "view_observed", "drone": 0, "time": 79.2, "region": 10, "epoch": 6}
+{"type": "path_proposed", "drone": 2, "time": 80.0, "token": "2:6", "region": 9, "tour": [9, 8, 4, 14, 13], "workload": 40.88135868897797, "objective": 0.9737809460098972}
+{"type": "path_committed", "drone": 2, "time": 81.202, "token": "2:6", "region": 9, "quorum": [0, 1], "gain_m2": 3.0625, "lookahead": {"position": [4.625, 16.125, 1.5], "yaw": -2.356194490192345}}
+{"type": "path_proposed", "drone": 0, "time": 82.0, "token": "0:7", "region": 10, "tour": [10, 11, 5, 6, 2, 7], "workload": 84.09210180344465, "objective": 1.149256843466397}
+{"type": "path_committed", "drone": 0, "time": 83.2, "token": "0:7", "region": 10, "quorum": [1, 2], "gain_m2": 5.125, "lookahead": {"position": [10.375, 1.625, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 2, "time": 84.80000000000001, "region": 9, "epoch": 6}
+{"type": "path_proposed", "drone": 2, "time": 87.0, "token": "2:7", "region": 9, "tour": [9, 8, 4, 14, 13], "workload": 41.877372905745766, "objective": 0.8946389794654738}
+{"type": "path_committed", "drone": 2, "time": 88.001, "token": "2:7", "region": 9, "quorum": [0, 1], "gain_m2": 3.8125, "lookahead": {"position": [4.625, 16.125, 1.5], "yaw": -2.356194490192345}}
+{"type": "view_observed", "drone": 2, "time": 92.40100000000001, "region": 9, "epoch": 7}
+{"type": "path_proposed", "drone": 2, "time": 93.0, "token": "2:8", "region": 9, "tour": [9, 8, 4, 14, 13], "workload": 45.297236935449135, "objective": 0.5539807909602237}
+{"type": "view_observed", "drone": 0, "time": 93.2, "region": 10, "epoch": 7}
+{"type": "path_committed", "drone": 2, "time": 94.0, "token": "2:8", "region": 9, "quorum": [0, 1], "gain_m2": 3.3125, "lookahead": {"position": [4.625, 16.125, 1.5], "yaw": -2.356194490192345}}
+{"type": "path_proposed", "drone": 0, "time": 95.0, "token": "0:8", "region": 10, "tour": [10, 11, 5, 6, 2, 7], "workload": 78.9870953007298, "objective": 1.056881765216201}
+{"type": "path_committed", "drone": 0, "time": 96.0, "token": "0:8", "region": 10, "quorum": [1, 2], "gain_m2": 2.6875, "lookahead": {"position": [10.375, 1.625, 1.5], "yaw": -1.5707963267948966}}
+{"type": "view_observed", "drone": 0, "time": 98.4, "region": 10, "epoch": 8}
+{"type": "path_proposed", "drone": 0, "time": 99.001, "token": "0:9", "region": 10, "tour": [10], "workload": Infinity, "objective": 0.21985931776062195}
+{"type": "path_committed", "drone": 0, "time": 100.001, "token": "0:9", "region": 10, "quorum": [1, 2], "gain_m2": 1.125, "lookahead": {"position": [10.375, 1.375, 1.5], "yaw": -0.7853981633974483}}
+{"type": "availability_resume", "drone": 1, "time": 101.015, "region": null}
+{"type": "path_proposed", "drone": 1, "time": 102.0, "token": "1:7", "region": 7, "tour": [7, 2, 6, 5, 10, 11], "workload": 85.47559704597442, "objective": 1.754649718966417}
+{"type": "path_committed", "drone": 1, "time": 103.2, "token": "1:7", "region": 7, "quorum": [0, 2], "gain_m2": 7.125, "lookahead": {"position": [7.125, 11.625, 1.5], "yaw": 0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 104.80300000000001, "region": 10, "epoch": 9}
+{"type": "path_proposed", "drone": 0, "time": 105.5, "token": "0:10", "region": 10, "tour": [10, 11, 6, 15], "workload": 52.269880870388604, "objective": 1.4284054206975456}
+{"type": "path_committed", "drone": 0, "time": 106.4, "token": "0:10", "region": 10, "quorum": [1, 2], "gain_m2": 6.75, "lookahead": {"position": [11.875, 1.375, 1.5], "yaw": 0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 108.003, "region": 9, "epoch": 8}
+{"type": "path_proposed", "drone": 2, "time": 110.501, "token": "2:9", "region": 9, "tour": [9, 8, 3, 4, 14, 13], "workload": 55.65690946868156, "objective": 0.438064452186333}
+{"type": "view_observed", "drone": 1, "time": 111.2, "region": 7, "epoch": 7}
+{"type": "path_committed", "drone": 2, "time": 111.60000000000001, "token": "2:9", "region": 9, "quorum": [0, 1], "gain_m2": 1.1875, "lookahead": null}
+{"type": "path_proposed", "drone": 1, "time": 112.5, "token": "1:8", "region": 7, "tour": [7, 2, 6], "workload": 41.44749483710291, "objective": 0.6504855467944897}
+{"type": "path_committed", "drone": 1, "time": 113.60000000000001, "token": "1:8", "region": 7, "quorum": [0, 2], "gain_m2": 2.4375, "lookahead": {"position": [6.375, 8.125, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 0, "time": 113.60600000000001, "region": 10, "epoch": 10}
+{"type": "view_observed", "drone": 2, "time": 114.001, "region": 9, "epoch": 9}
+{"type": "region_yielded", "drone": 2, "time": 114.50000000000001, "region": 9}
+{"type": "path_proposed", "drone": 2, "time": 114.50000000000001, "token": "2:10", "region": 13, "tour": [9, 13, 14, 8, 3, 4], "workload": 59.64169931656937, "objective": 1.2078476871226327}
+{"type": "path_committed", "drone": 2, "time": 115.60000000000001, "token": "2:10", "region": 13, "quorum": [0, 1], "gain_m2": 8.0, "lookahead": {"position": [10.125, 15.125, 1.5], "yaw": 0.0}}
+{"type": "path_proposed", "drone": 0, "time": 116.00000000000001, "token": "0:11", "region": 10, "tour": [10, 11, 15], "workload": 38.977981367331154, "objective": 1.3996969278007925}
+{"type": "path_committed", "drone": 0, "time": 116.80000000000001, "token": "0:11", "region": 10, "quorum": [1, 2], "gain_m2": 3.75, "lookahead": {"position": [11.875, 1.375, 1.5], "yaw": 1.5707963267948966}}
+{"type": "view_observed", "drone": 1, "time": 118.00000000000001, "region": 7, "epoch": 8}
+{"type": "path_proposed", "drone": 1, "time": 118.501, "token": "1:9", "region": 7, "tour": [7, 2, 6], "workload": 40.703412225569046, "objective": 0.10797036111900296}
+{"type": "view_observed", "drone": 0, "time": 119.20100000000001, "region": 10, "epoch": 11}
+{"type": "path_committed", "drone": 1, "time": 119.60000000000001, "token": "1:9", "region": 7, "quorum": [0, 2], "gain_m2": 0.3125, "lookahead": {"position": [6.375, 8.125, 1.5], "yaw": 0.0}}
+{"type": "region_yielded", "drone": 0, "time": 120.50000000000001, "region": 10}
+{"type": "path_proposed", "drone": 0, "time": 120.50000000000001, "token": "0:12", "region": 11, "tour": [10, 11, 15], "workload": 36.546115837984885, "objective": 1.4526026999511457}
+{"type": "path_committed", "drone": 0, "time": 121.60000000000001, "token": "0:12", "region": 11, "quorum": [1, 2], "gain_m2": 10.4375, "lookahead": {"position": [10.875, 6.625, 1.5], "yaw": 1.5707963267948966}}
+{"type": "view_observed", "drone": 1, "time": 130.8, "region": 7, "epoch": 9}
+{"type": "path_proposed", "drone": 1, "time": 131.51000000000002, "token": "1:10", "region": 7, "tour": [7, 2, 6], "workload": 36.05194240631426, "objective": 0.12595097629255503}
+{"type": "path_committed", "drone": 1, "time": 132.4, "token": "1:10", "region": 7, "quorum": [0, 2], "gain_m2": 0.375, "lookahead": null}
+{"type": "view_observed", "drone": 1, "time": 137.20100000000002, "region": 7, "epoch": 10}
+{"type": "region_yielded", "drone": 1, "time": 138.501, "region": 7}
+{"type": "path_proposed", "drone": 1, "time": 138.501, "token": "1:11", "region": 2, "tour": [7, 2], "workload": 21.161701526036914, "objective": 0.8532252107816178}
+{"type": "path_committed", "drone": 1, "time": 139.60000000000002, "token": "1:11", "region": 2, "quorum": [0, 2], "gain_m2": 7.1875, "lookahead": {"position": [1.875, 10.375, 1.5], "yaw": 1.5707963267948966}}
+{"type": "view_observed", "drone": 2, "time": 140.0, "region": 13, "epoch": 10}
+{"type": "path_proposed", "drone": 2, "time": 141.0, "token": "2:11", "region": 13, "tour": [13, 14, 9, 4, 8, 3], "workload": 58.31799974148766, "objective": 2.699721976103247}
+{"type": "path_committed", "drone": 2, "time": 142.0, "token": "2:11", "region": 13, "quorum": [0, 1], "gain_m2": 10.9375, "lookahead": {"position": [11.875, 12.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 146.80100000000002, "region": 13, "epoch": 11}
+{"type": "path_proposed", "drone": 2, "time": 148.0, "token": "2:12", "region": 13, "tour": [13, 18, 14, 9, 4, 8, 3], "workload": 67.94912883184517, "objective": 2.2580639263781284}
+{"type": "path_committed", "drone": 2, "time": 149.20000000000002, "token": "2:12", "region": 13, "quorum": [0, 1], "gain_m2": 8.125, "lookahead": {"position": [11.875, 12.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 151.20000000000002, "region": 11, "epoch": 12}
+{"type": "path_proposed", "drone": 0, "time": 153.5, "token": "0:13", "region": 11, "tour": [11, 16, 15], "workload": 21.958496806763357, "objective": 1.756443975973845}
+{"type": "path_committed", "drone": 0, "time": 154.4, "token": "0:13", "region": 11, "quorum": [1, 2], "gain_m2": 4.75, "lookahead": {"position": [10.625, 6.375, 1.5], "yaw": 1.5707963267948966}}
+{"type": "view_observed", "drone": 0, "time": 157.20100000000002, "region": 11, "epoch": 13}
+{"type": "path_proposed", "drone": 0, "time": 158.0, "token": "0:14", "region": 11, "tour": [11, 16, 15], "workload": 25.594055617590364, "objective": 1.1135202709513576}
+{"type": "view_observed", "drone": 2, "time": 158.0, "region": 13, "epoch": 12}
+{"type": "path_committed", "drone": 0, "time": 159.20100000000002, "token": "0:14", "region": 11, "quorum": [1, 2], "gain_m2": 4.6875, "lookahead": {"position": [11.125, 7.375, 1.5], "yaw": 2.356194490192345}}
+{"type": "path_proposed", "drone": 2, "time": 160.0, "token": "2:13", "region": 13, "tour": [13, 18, 17, 14, 9, 4, 8], "workload": 108.53195018162688, "objective": 1.1851740176045045}
+{"type": "view_observed", "drone": 1, "time": 160.8, "region": 2, "epoch": 11}
+{"type": "path_committed", "drone": 2, "time": 161.20100000000002, "token": "2:13", "region": 13, "quorum": [0, 1], "gain_m2": 2.875, "lookahead": {"position": [11.875, 15.125, 1.5], "yaw": 0.0}}
+{"type": "path_proposed", "drone": 1, "time": 162.5, "token": "1:12", "region": 2, "tour": [2, 3, 7, 8], "workload": 28.53126003253003, "objective": 0.6088546858126862}
+{"type": "path_committed", "drone": 1, "time": 163.60000000000002, "token": "1:12", "region": 2, "quorum": [0, 2], "gain_m2": 2.125, "lookahead": {"position": [1.125, 11.125, 1.5], "yaw": 0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 163.60000000000002, "region": 13, "epoch": 13}
+{"type": "path_proposed", "drone": 2, "time": 164.501, "token": "2:14", "region": 13, "tour": [13, 18, 17, 14, 9, 4], "workload": 65.89252813530572, "objective": 0.3869256714838937}
+{"type": "view_observed", "drone": 0, "time": 164.80200000000002, "region": 11, "epoch": 14}
+{"type": "path_committed", "drone": 2, "time": 165.60000000000002, "token": "2:14", "region": 13, "quorum": [0, 1], "gain_m2": 2.625, "lookahead": {"position": [10.625, 15.375, 1.5], "yaw": 0.7853981633974483}}
+{"type": "path_proposed", "drone": 0, "time": 166.5, "token": "0:15", "region": 11, "tour": [11, 12, 17, 16, 15], "workload": 46.955450294033064, "objective": 0.4973653996670128}
+{"type": "view_observed", "drone": 1, "time": 167.20000000000002, "region": 2, "epoch": 12}
+{"type": "path_committed", "drone": 0, "time": 167.601, "token": "0:15", "region": 11, "quorum": [1, 2], "gain_m2": 1.6875, "lookahead": {"position": [10.375, 7.875, 1.5], "yaw": -3.141592653589793}}
+{"type": "path_proposed", "drone": 1, "time": 169.501, "token": "1:13", "region": 2, "tour": [2, 7, 8], "workload": 24.76105362156425, "objective": 0.11598875885935526}
+{"type": "path_committed", "drone": 1, "time": 170.4, "token": "1:13", "region": 2, "quorum": [0, 2], "gain_m2": 0.5625, "lookahead": null}
+{"type": "view_observed", "drone": 0, "time": 172.401, "region": 11, "epoch": 15}
+{"type": "path_proposed", "drone": 0, "time": 173.0, "token": "0:16", "region": 11, "tour": [11, 17, 12, 16, 15], "workload": 45.58558141917742, "objective": 0.1872634470700368}
+{"type": "path_committed", "drone": 0, "time": 174.001, "token": "0:16", "region": 11, "quorum": [1, 2], "gain_m2": 0.4375, "lookahead": {"position": [11.625, 6.875, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 1, "time": 174.002, "region": 2, "epoch": 13}
+{"type": "view_observed", "drone": 2, "time": 175.60000000000002, "region": 13, "epoch": 14}
+{"type": "path_proposed", "drone": 1, "time": 176.0, "token": "1:14", "region": 8, "tour": [7, 8], "workload": 19.843918044947237, "objective": 0.04198662079814722}
+{"type": "path_committed", "drone": 1, "time": 177.203, "token": "1:14", "region": 8, "quorum": [0, 2], "gain_m2": 0.3125, "lookahead": {"position": [4.125, 15.125, 1.5], "yaw": 2.356194490192345}}
+{"type": "path_proposed", "drone": 2, "time": 177.5, "token": "2:15", "region": 13, "tour": [13, 18, 14, 9, 4, 3], "workload": 64.01378374269729, "objective": 0.15394513300965987}
+{"type": "path_committed", "drone": 2, "time": 178.40400000000002, "token": "2:15", "region": 13, "quorum": [0, 1], "gain_m2": 0.6875, "lookahead": {"position": [11.875, 12.875, 1.5], "yaw": -2.356194490192345}}
+{"type": "view_observed", "drone": 0, "time": 181.20000000000002, "region": 11, "epoch": 16}
+{"type": "region_yielded", "drone": 0, "time": 182.0, "region": 11}
+{"type": "path_proposed", "drone": 0, "time": 182.0, "token": "0:17", "region": 15, "tour": [11, 15, 16, 12, 17, 18], "workload": 67.65473196503588, "objective": 1.5857206612612003}
+{"type": "path_committed", "drone": 0, "time": 183.202, "token": "0:17", "region": 15, "quorum": [1, 2], "gain_m2": 10.875, "lookahead": {"position": [14.125, 3.125, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 2, "time": 185.20100000000002, "region": 13, "epoch": 15}
+{"type": "path_proposed", "drone": 2, "time": 186.5, "token": "2:16", "region": 13, "tour": [13, 14, 9, 3], "workload": 39.22898849298768, "objective": 0.07587425465513062}
+{"type": "path_committed", "drone": 2, "time": 187.60000000000002, "token": "2:16", "region": 13, "quorum": [0, 1], "gain_m2": 0.5, "lookahead": {"position": [11.875, 12.875, 1.5], "yaw": -2.356194490192345}}
+{"type": "view_observed", "drone": 1, "time": 195.601, "region": 8, "epoch": 14}
+{"type": "view_observed", "drone": 2, "time": 195.601, "region": 13, "epoch": 16}
+{"type": "path_proposed", "drone": 1, "time": 196.501, "token": "1:15", "region": 9, "tour": [3, 9, 14], "workload": 30.765143112452563, "objective": 0.05671245485567999}
+{"type": "region_yielded", "drone": 2, "time": 196.501, "region": 13}
+{"type": "path_proposed", "drone": 2, "time": 196.501, "token": "2:17", "region": 18, "tour": [13, 18], "workload": 10.210034748123071, "objective": 2.0216903548604654}
+{"type": "path_committed", "drone": 2, "time": 197.20100000000002, "token": "2:17", "region": 18, "quorum": [0, 1], "gain_m2": 13.0625, "lookahead": {"position": [14.625, 12.125, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 1, "time": 197.601, "token": "1:15", "region": 9, "quorum": [0, 2], "gain_m2": 0.4375, "lookahead": {"position": [7.875, 17.625, 1.5], "yaw": 0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 201.20000000000002, "region": 15, "epoch": 17}
+{"type": "path_proposed", "drone": 0, "time": 203.0, "token": "0:18", "region": 15, "tour": [15, 16, 11, 12, 17], "workload": 49.499505798261026, "objective": 1.7252449968775525}
+{"type": "path_committed", "drone": 0, "time": 204.0, "token": "0:18", "region": 15, "quorum": [1, 2], "gain_m2": 4.375, "lookahead": {"position": [14.625, 1.125, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 0, "time": 206.4, "region": 15, "epoch": 18}
+{"type": "region_yielded", "drone": 0, "time": 207.0, "region": 15}
+{"type": "path_proposed", "drone": 0, "time": 207.0, "token": "0:19", "region": 16, "tour": [15, 16, 11, 12, 17], "workload": 47.50786131871771, "objective": 1.7648291518238597}
+{"type": "path_committed", "drone": 0, "time": 208.0, "token": "0:19", "region": 16, "quorum": [1, 2], "gain_m2": 5.625, "lookahead": {"position": [15.625, 5.875, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 2, "time": 212.40200000000002, "region": 18, "epoch": 17}
+{"type": "path_proposed", "drone": 2, "time": 214.5, "token": "2:18", "region": 18, "tour": [18, 13, 15], "workload": 57.34472437470857, "objective": 1.5563674148292155}
+{"type": "view_observed", "drone": 1, "time": 214.80300000000003, "region": 9, "epoch": 15}
+{"type": "path_committed", "drone": 2, "time": 215.60000000000002, "token": "2:18", "region": 18, "quorum": [0, 1], "gain_m2": 13.3125, "lookahead": {"position": [14.625, 15.875, 1.5], "yaw": 1.5707963267948966}}
+{"type": "region_yielded", "drone": 1, "time": 216.0, "region": 9}
+{"type": "path_proposed", "drone": 1, "time": 216.0, "token": "1:16", "region": 14, "tour": [9, 14, 3], "workload": 33.15267044613845, "objective": 1.3705664042245747}
+{"type": "path_committed", "drone": 1, "time": 217.20000000000002, "token": "1:16", "region": 14, "quorum": [0, 2], "gain_m2": 7.625, "lookahead": {"position": [10.875, 18.125, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 0, "time": 218.8, "region": 16, "epoch": 19}
+{"type": "path_proposed", "drone": 0, "time": 219.5, "token": "0:20", "region": 16, "tour": [16, 21, 11, 12, 17, 22], "workload": 58.25857690222135, "objective": 1.7148287418618813}
+{"type": "path_committed", "drone": 0, "time": 220.4, "token": "0:20", "region": 16, "quorum": [1, 2], "gain_m2": 5.4375, "lookahead": {"position": [15.875, 5.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 226.80100000000002, "region": 16, "epoch": 20}
+{"type": "path_proposed", "drone": 0, "time": 227.501, "token": "0:21", "region": 16, "tour": [16, 21, 15, 11, 12, 17, 22], "workload": 72.34469964390777, "objective": 0.20510328199227884}
+{"type": "path_committed", "drone": 0, "time": 228.401, "token": "0:21", "region": 16, "quorum": [1, 2], "gain_m2": 0.5625, "lookahead": null}
+{"type": "view_observed", "drone": 1, "time": 229.20100000000002, "region": 14, "epoch": 16}
+{"type": "view_observed", "drone": 0, "time": 230.80100000000002, "region": 16, "epoch": 21}
+{"type": "path_proposed", "drone": 1, "time": 231.001, "token": "1:17", "region": 14, "tour": [14, 19, 3], "workload": 32.82888074799505, "objective": 0.9974602410658948}
+{"type": "region_yielded", "drone": 0, "time": 231.502, "region": 16}
+{"type": "path_proposed", "drone": 0, "time": 231.502, "token": "0:22", "region": 21, "tour": [16, 21, 15, 11, 12], "workload": 48.817473256730295, "objective": 2.4342914987282827}
+{"type": "path_committed", "drone": 1, "time": 232.00000000000003, "token": "1:17", "region": 14, "quorum": [0, 2], "gain_m2": 2.9375, "lookahead": {"position": [11.875, 17.625, 1.5], "yaw": -0.7853981633974483}}
+{"type": "path_committed", "drone": 0, "time": 232.401, "token": "0:22", "region": 21, "quorum": [1, 2], "gain_m2": 11.125, "lookahead": {"position": [18.625, 5.875, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 1, "time": 237.60500000000002, "region": 14, "epoch": 17}
+{"type": "path_proposed", "drone": 1, "time": 240.00000000000003, "token": "1:18", "region": 14, "tour": [14, 19, 3], "workload": 35.94232200017375, "objective": 0.40237531082158656}
+{"type": "path_committed", "drone": 1, "time": 241.20000000000002, "token": "1:18", "region": 14, "quorum": [0, 2], "gain_m2": 0.9375, "lookahead": {"position": [11.875, 17.625, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 243.20100000000002, "region": 21, "epoch": 22}
+{"type": "view_observed", "drone": 1, "time": 243.60000000000002, "region": 14, "epoch": 18}
+{"type": "path_proposed", "drone": 0, "time": 244.50000000000003, "token": "0:23", "region": 21, "tour": [21, 26, 20, 15, 11, 12], "workload": 62.02860449480052, "objective": 2.514702414812858}
+{"type": "path_proposed", "drone": 1, "time": 244.50000000000003, "token": "1:19", "region": 14, "tour": [14, 3], "workload": 25.444822268240298, "objective": 0.12017525270867815}
+{"type": "path_committed", "drone": 0, "time": 245.602, "token": "0:23", "region": 21, "quorum": [1, 2], "gain_m2": 8.625, "lookahead": {"position": [19.875, 6.125, 1.5], "yaw": 1.5707963267948966}}
+{"type": "path_committed", "drone": 1, "time": 245.602, "token": "1:19", "region": 14, "quorum": [0, 2], "gain_m2": 0.4375, "lookahead": null}
+{"type": "view_observed", "drone": 1, "time": 249.20000000000002, "region": 14, "epoch": 19}
+{"type": "view_observed", "drone": 2, "time": 249.20100000000002, "region": 18, "epoch": 18}
+{"type": "path_proposed", "drone": 2, "time": 250.50400000000002, "token": "2:19", "region": 18, "tour": [18, 19, 24, 13, 17, 22], "workload": 53.888227698545855, "objective": 0.17919002981183305}
+{"type": "path_committed", "drone": 2, "time": 251.60000000000002, "token": "2:19", "region": 18, "quorum": [0, 1], "gain_m2": 0.5625, "lookahead": null}
+{"type": "view_observed", "drone": 0, "time": 252.00000000000003, "region": 21, "epoch": 23}
+{"type": "path_proposed", "drone": 0, "time": 252.50000000000003, "token": "0:24", "region": 21, "tour": [21, 20, 26, 27, 15, 11, 12], "workload": 74.76076207546399, "objective": 2.2304803605073835}
+{"type": "path_committed", "drone": 0, "time": 253.60000000000002, "token": "0:24", "region": 21, "quorum": [1, 2], "gain_m2": 8.875, "lookahead": {"position": [18.875, 4.125, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 254.00000000000003, "region": 18, "epoch": 19}
+{"type": "region_yielded", "drone": 2, "time": 254.502, "region": 18}
+{"type": "path_proposed", "drone": 2, "time": 254.502, "token": "2:20", "region": 17, "tour": [18, 13, 17, 22, 3], "workload": 75.15226285438224, "objective": 0.7971900784112396}
+{"type": "path_proposed", "drone": 1, "time": 255.502, "token": "1:20", "region": 19, "tour": [19, 24], "workload": 13.757742944685027, "objective": 1.4097119327738787}
+{"type": "path_committed", "drone": 2, "time": 255.60000000000002, "token": "2:20", "region": 17, "quorum": [0, 1], "gain_m2": 6.9375, "lookahead": {"position": [15.875, 11.375, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 1, "time": 256.40000000000003, "token": "1:20", "region": 19, "quorum": [0, 2], "gain_m2": 8.125, "lookahead": {"position": [15.875, 17.625, 1.5], "yaw": 0.0}}
+{"type": "lease_cancellation_requested", "drone": 2, "time": 256.50300000000004, "region": 17, "reason": "path_or_tracking_invalidated"}
+{"type": "view_observed", "drone": 0, "time": 257.2, "region": 21, "epoch": 24}
+{"type": "reservation_retired", "drone": 2, "time": 259.2, "token": "2:20", "stop_epoch": 21}
+{"type": "path_proposed", "drone": 0, "time": 259.5, "token": "0:25", "region": 21, "tour": [21, 27, 26, 20, 15, 11, 12], "workload": 78.65833298038326, "objective": 1.1251492114100472}
+{"type": "path_proposed", "drone": 2, "time": 259.5, "token": "2:22", "region": 17, "tour": [18, 13, 17, 22, 3], "workload": 75.15226285438224, "objective": 0.7971900784112396}
+{"type": "cached_route_switched", "drone": 2, "time": 259.5, "region": 17}
+{"type": "path_committed", "drone": 2, "time": 260.401, "token": "2:22", "region": 17, "quorum": [0, 1], "gain_m2": 6.9375, "lookahead": {"position": [15.875, 11.375, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 0, "time": 260.40200000000004, "token": "0:25", "region": 21, "quorum": [1, 2], "gain_m2": 2.1875, "lookahead": {"position": [19.375, 7.875, 1.5], "yaw": 2.356194490192345}}
+{"type": "lease_cancellation_requested", "drone": 2, "time": 261.5, "region": 17, "reason": "path_or_tracking_invalidated"}
+{"type": "reservation_retired", "drone": 2, "time": 264.002, "token": "2:22", "stop_epoch": 23}
+{"type": "path_proposed", "drone": 2, "time": 264.002, "token": "2:24", "region": 17, "tour": [17, 22], "workload": 30.14913139097362, "objective": 0.7971900784112396}
+{"type": "cached_route_switched", "drone": 2, "time": 264.002, "region": 17}
+{"type": "view_observed", "drone": 0, "time": 264.40000000000003, "region": 21, "epoch": 25}
+{"type": "path_committed", "drone": 2, "time": 265.20300000000003, "token": "2:24", "region": 17, "quorum": [0, 1], "gain_m2": 6.9375, "lookahead": {"position": [15.875, 11.375, 1.5], "yaw": 0.0}}
+{"type": "lease_cancellation_requested", "drone": 2, "time": 266.5, "region": 17, "reason": "path_or_tracking_invalidated"}
+{"type": "path_proposed", "drone": 0, "time": 267.004, "token": "0:26", "region": 21, "tour": [21, 20, 26, 27, 15], "workload": 61.839683153524, "objective": 0.9530982273142105}
+{"type": "path_committed", "drone": 0, "time": 268.004, "token": "0:26", "region": 21, "quorum": [1, 2], "gain_m2": 3.625, "lookahead": {"position": [18.875, 4.125, 1.5], "yaw": -1.5707963267948966}}
+{"type": "reservation_retired", "drone": 2, "time": 269.2, "token": "2:24", "stop_epoch": 25}
+{"type": "path_proposed", "drone": 2, "time": 270.5, "token": "2:26", "region": -102, "tour": [17, 22, 12], "workload": 45.77509118030224, "objective": 0.0}
+{"type": "tracking_recovery", "drone": 2, "time": 270.5, "goal": [14.375, 15.875, 1.5]}
+{"type": "path_committed", "drone": 2, "time": 271.61, "token": "2:26", "region": -102, "quorum": [0, 1], "gain_m2": 0.0, "lookahead": null}
+{"type": "view_observed", "drone": 0, "time": 272.80100000000004, "region": 21, "epoch": 26}
+{"type": "view_observed", "drone": 1, "time": 272.80100000000004, "region": 19, "epoch": 20}
+{"type": "path_proposed", "drone": 0, "time": 273.50100000000003, "token": "0:27", "region": 21, "tour": [21, 20, 27, 26, 16, 15, 11], "workload": 83.19210098436507, "objective": 0.7511280618294709}
+{"type": "path_proposed", "drone": 1, "time": 273.502, "token": "1:21", "region": 19, "tour": [19, 24, 23, 13, 18, 22, 17, 12, 3], "workload": 111.94167143673054, "objective": 1.1014045426303196}
+{"type": "view_observed", "drone": 2, "time": 274.00100000000003, "region": -102, "epoch": 26}
+{"type": "path_committed", "drone": 1, "time": 274.40000000000003, "token": "1:21", "region": 19, "quorum": [0, 2], "gain_m2": 2.8125, "lookahead": {"position": [14.625, 18.875, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 0, "time": 274.40200000000004, "token": "0:27", "region": 21, "quorum": [1, 2], "gain_m2": 2.875, "lookahead": {"position": [18.875, 4.125, 1.5], "yaw": -0.7853981633974483}}
+{"type": "path_proposed", "drone": 2, "time": 276.5, "token": "2:27", "region": 22, "tour": [23, 24, 13, 18, 22, 17, 12, 3], "workload": 114.41371439345431, "objective": 1.131677442170012}
+{"type": "view_observed", "drone": 1, "time": 276.8, "region": 19, "epoch": 21}
+{"type": "path_committed", "drone": 2, "time": 277.60200000000003, "token": "2:27", "region": 22, "quorum": [0, 1], "gain_m2": 8.6875, "lookahead": {"position": [17.375, 11.625, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 0, "time": 278.0, "region": 21, "epoch": 27}
+{"type": "path_proposed", "drone": 1, "time": 278.0, "token": "1:22", "region": 19, "tour": [19, 24, 23, 13, 18, 22, 17, 3], "workload": 96.81933734152496, "objective": 0.24970158817160085}
+{"type": "path_committed", "drone": 1, "time": 279.20000000000005, "token": "1:22", "region": 19, "quorum": [0, 2], "gain_m2": 1.0, "lookahead": {"position": [13.625, 18.875, 1.5], "yaw": 0.0}}
+{"type": "path_proposed", "drone": 0, "time": 280.00100000000003, "token": "0:28", "region": 21, "tour": [21, 20, 27, 26, 16, 15, 11, 12], "workload": 92.30483449773625, "objective": 0.5820419335698118}
+{"type": "path_committed", "drone": 0, "time": 281.20000000000005, "token": "0:28", "region": 21, "quorum": [1, 2], "gain_m2": 0.875, "lookahead": {"position": [18.875, 4.125, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 1, "time": 287.201, "region": 19, "epoch": 22}
+{"type": "region_yielded", "drone": 1, "time": 289.0, "region": 19}
+{"type": "path_proposed", "drone": 1, "time": 289.0, "token": "1:23", "region": 24, "tour": [19, 24, 23, 13, 12, 11], "workload": 59.41549874840832, "objective": 1.9875849729081039}
+{"type": "path_committed", "drone": 1, "time": 290.002, "token": "1:23", "region": 24, "quorum": [0, 2], "gain_m2": 13.4375, "lookahead": {"position": [18.625, 16.875, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 0, "time": 297.202, "region": 21, "epoch": 28}
+{"type": "path_proposed", "drone": 0, "time": 300.00100000000003, "token": "0:29", "region": 21, "tour": [21, 20, 27, 26, 16, 15], "workload": 60.13562182540899, "objective": 1.509055905941483}
+{"type": "path_committed", "drone": 0, "time": 301.20000000000005, "token": "0:29", "region": 21, "quorum": [1, 2], "gain_m2": 3.9375, "lookahead": {"position": [18.875, 4.125, 1.5], "yaw": -1.5707963267948966}}
+{"type": "view_observed", "drone": 0, "time": 303.601, "region": 21, "epoch": 29}
+{"type": "path_proposed", "drone": 0, "time": 306.002, "token": "0:30", "region": 21, "tour": [21, 27, 26, 16, 15], "workload": 55.64651019144496, "objective": 0.1615402708264758}
+{"type": "path_committed", "drone": 0, "time": 307.20000000000005, "token": "0:30", "region": 21, "quorum": [1, 2], "gain_m2": 0.4375, "lookahead": null}
+{"type": "view_observed", "drone": 1, "time": 308.0, "region": 24, "epoch": 23}
+{"type": "view_observed", "drone": 0, "time": 309.61100000000005, "region": 21, "epoch": 30}
+{"type": "path_proposed", "drone": 1, "time": 310.0, "token": "1:24", "region": 24, "tour": [24, 29, 28, 23, 19, 12, 11], "workload": 70.17367841313636, "objective": 1.7754402345856153}
+{"type": "path_committed", "drone": 1, "time": 311.201, "token": "1:24", "region": 24, "quorum": [0, 2], "gain_m2": 7.625, "lookahead": {"position": [18.125, 16.125, 1.5], "yaw": -1.5707963267948966}}
+{"type": "region_yielded", "drone": 0, "time": 312.0, "region": 21}
+{"type": "path_proposed", "drone": 0, "time": 312.0, "token": "0:31", "region": 27, "tour": [21, 27, 26, 16, 15], "workload": 55.646509262965004, "objective": 1.4043751325629945}
+{"type": "path_committed", "drone": 0, "time": 313.20000000000005, "token": "0:31", "region": 27, "quorum": [1, 2], "gain_m2": 9.6875, "lookahead": {"position": [21.625, 10.125, 1.5], "yaw": 2.356194490192345}}
+{"type": "view_observed", "drone": 1, "time": 318.0, "region": 24, "epoch": 24}
+{"type": "path_proposed", "drone": 1, "time": 321.0, "token": "1:25", "region": 24, "tour": [24, 29, 28, 23, 19, 18, 12, 11, 21], "workload": 104.67701131410803, "objective": 0.6657912610326631}
+{"type": "view_observed", "drone": 2, "time": 321.601, "region": 22, "epoch": 27}
+{"type": "path_committed", "drone": 1, "time": 322.0, "token": "1:25", "region": 24, "quorum": [0, 2], "gain_m2": 3.3125, "lookahead": {"position": [19.875, 18.875, 1.5], "yaw": 0.0}}
+{"type": "path_proposed", "drone": 2, "time": 324.5, "token": "2:28", "region": 22, "tour": [22, 17, 13, 3], "workload": 50.49244039474778, "objective": 2.0038203539426815}
+{"type": "path_committed", "drone": 2, "time": 325.606, "token": "2:28", "region": 22, "quorum": [0, 1], "gain_m2": 8.4375, "lookahead": {"position": [17.375, 11.375, 1.5], "yaw": -0.7853981633974483}}
+{"type": "view_observed", "drone": 2, "time": 329.201, "region": 22, "epoch": 28}
+{"type": "path_proposed", "drone": 2, "time": 331.0, "token": "2:29", "region": 22, "tour": [22, 23, 17, 13, 3], "workload": 95.50663781409746, "objective": 1.0393847734091544}
+{"type": "path_committed", "drone": 2, "time": 332.00100000000003, "token": "2:29", "region": 22, "quorum": [0, 1], "gain_m2": 4.375, "lookahead": {"position": [19.875, 11.125, 1.5], "yaw": 0.0}}
+{"type": "view_observed", "drone": 1, "time": 333.201, "region": 24, "epoch": 25}
+{"type": "path_proposed", "drone": 1, "time": 335.5, "token": "1:26", "region": 24, "tour": [24, 28, 23, 29, 19, 18, 13, 12], "workload": 65.31795858539974, "objective": 0.282168909298173}
+{"type": "path_committed", "drone": 1, "time": 336.40200000000004, "token": "1:26", "region": 24, "quorum": [0, 2], "gain_m2": 0.875, "lookahead": {"position": [16.875, 16.375, 1.5], "yaw": -1.5707963267948966}}
+{"type": "view_observed", "drone": 1, "time": 339.603, "region": 24, "epoch": 26}
+{"type": "view_observed", "drone": 0, "time": 340.802, "region": 27, "epoch": 31}
+{"type": "view_observed", "drone": 2, "time": 340.802, "region": 22, "epoch": 29}
+{"type": "path_proposed", "drone": 0, "time": 341.50100000000003, "token": "0:32", "region": 27, "tour": [27, 26, 21, 16, 15, 12], "workload": 66.8310123806624, "objective": 0.40791957948750596}
+{"type": "path_proposed", "drone": 1, "time": 341.50100000000003, "token": "1:27", "region": 24, "tour": [24, 29, 28, 23, 19, 18, 13, 11], "workload": 71.09437691208488, "objective": 0.15336940923384113}
+{"type": "path_proposed", "drone": 2, "time": 341.50100000000003, "token": "2:30", "region": 22, "tour": [22, 17, 3], "workload": 86.2191303046622, "objective": 0.08201498016739976}
+{"type": "path_committed", "drone": 0, "time": 342.40000000000003, "token": "0:32", "region": 27, "quorum": [1, 2], "gain_m2": 2.0625, "lookahead": null}
+{"type": "path_committed", "drone": 1, "time": 342.40000000000003, "token": "1:27", "region": 24, "quorum": [0, 2], "gain_m2": 1.0, "lookahead": {"position": [17.125, 17.625, 1.5], "yaw": 1.5707963267948966}}
+{"type": "path_committed", "drone": 2, "time": 342.40000000000003, "token": "2:30", "region": 22, "quorum": [0, 1], "gain_m2": 0.375, "lookahead": {"position": [17.125, 11.875, 1.5], "yaw": -1.5707963267948966}}
+{"type": "view_observed", "drone": 0, "time": 351.6, "region": 27, "epoch": 32}
+{"type": "view_observed", "drone": 2, "time": 352.0, "region": 22, "epoch": 30}
+{"type": "path_proposed", "drone": 0, "time": 353.5, "token": "0:33", "region": 26, "tour": [26, 21, 16, 15, 11], "workload": 61.48306426280983, "objective": 0.7864209067612908}
+{"type": "path_proposed", "drone": 2, "time": 353.5, "token": "2:31", "region": 22, "tour": [22, 17, 13, 3], "workload": 62.02584462520767, "objective": 0.08112641474322471}
+{"type": "view_observed", "drone": 1, "time": 353.60400000000004, "region": 24, "epoch": 27}
+{"type": "path_committed", "drone": 0, "time": 354.40000000000003, "token": "0:33", "region": 26, "quorum": [1, 2], "gain_m2": 6.4375, "lookahead": {"position": [21.875, 4.125, 1.5], "yaw": -1.5707963267948966}}
+{"type": "path_committed", "drone": 2, "time": 354.40000000000003, "token": "2:31", "region": 22, "quorum": [0, 1], "gain_m2": 0.375, "lookahead": null}
+{"type": "path_proposed", "drone": 1, "time": 355.50100000000003, "token": "1:28", "region": 24, "tour": [24, 23, 28, 29, 19, 18, 12, 11], "workload": 73.0237209449661, "objective": 0.13053093040399866}
+{"type": "path_committed", "drone": 1, "time": 356.40000000000003, "token": "1:28", "region": 24, "quorum": [0, 2], "gain_m2": 0.6875, "lookahead": {"position": [16.125, 17.625, 1.5], "yaw": 2.356194490192345}}
+{"type": "view_observed", "drone": 1, "time": 360.80400000000003, "region": 24, "epoch": 28}
+{"type": "view_observed", "drone": 2, "time": 361.20000000000005, "region": 22, "epoch": 31}
+{"type": "region_yielded", "drone": 1, "time": 362.00100000000003, "region": 24}
+{"type": "path_proposed", "drone": 1, "time": 362.00100000000003, "token": "1:29", "region": 29, "tour": [24, 29, 23, 28, 12, 11], "workload": 55.9502171636017, "objective": 0.1543013802720675}
+{"type": "region_yielded", "drone": 2, "time": 362.00100000000003, "region": 22}
+{"type": "path_proposed", "drone": 2, "time": 362.00100000000003, "token": "2:32", "region": 17, "tour": [22, 17, 18, 13, 3], "workload": 65.46768053091746, "objective": 0.7884499244909509}
+{"type": "path_committed", "drone": 1, "time": 363.20000000000005, "token": "1:29", "region": 29, "quorum": [0, 2], "gain_m2": 1.0, "lookahead": {"position": [20.375, 18.875, 1.5], "yaw": 0.0}}
+{"type": "path_committed", "drone": 2, "time": 363.20000000000005, "token": "2:32", "region": 17, "quorum": [0, 1], "gain_m2": 4.1875, "lookahead": null}
+{"type": "view_observed", "drone": 2, "time": 372.8, "region": 17, "epoch": 32}
+{"type": "region_yielded", "drone": 2, "time": 373.5, "region": 17}
+{"type": "view_observed", "drone": 1, "time": 374.0, "region": 29, "epoch": 29}
+{"type": "lease_cancellation_requested", "drone": 0, "time": 377.01500000000004, "region": 26, "reason": "experiment_complete"}
+{"type": "lease_cancellation_requested", "drone": 1, "time": 377.021, "region": 29, "reason": "experiment_complete"}
+{"type": "reservation_retired", "drone": 0, "time": 378.40000000000003, "token": "0:33", "stop_epoch": 34}

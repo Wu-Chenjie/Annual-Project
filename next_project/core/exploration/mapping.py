@@ -29,8 +29,13 @@ class RaySensorWorld:
             if o['z_range'][0]<=1.5<=o['z_range'][1]:
                 self.occupied|=np.linalg.norm(xy-o['center_xy'],axis=2)<=o['radius']
         self.last_obstacle_version=version
-    def observe(self,position):
-        cells=np.floor((np.asarray(position)[:2]+self.rays-self.origin)/self.resolution).astype(int)
+    def observe(self,position,yaw=None,fov=2*np.pi/3):
+        rays=self.rays
+        if yaw is not None:
+            angles=np.linspace(0,2*np.pi,len(rays),endpoint=False)
+            delta=np.arctan2(np.sin(angles-yaw),np.cos(angles-yaw))
+            rays=rays[np.abs(delta)<=fov/2]
+        cells=np.floor((np.asarray(position)[:2]+rays-self.origin)/self.resolution).astype(int)
         valid=np.all((cells>=0)&(cells<self.shape),axis=2)
         clipped=np.clip(cells,0,np.array(self.shape)-1)
         hit=self.occupied[clipped[:,:,0],clipped[:,:,1]]|~valid
