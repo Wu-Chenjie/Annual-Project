@@ -463,3 +463,20 @@ def test_filter_lag_buffer_is_bounded_and_rejects_stale_measurement():
     assert np.array_equal(f.x, before) and f.time == 10.
     assert f.correct_at(9.9, np.zeros(3), np.zeros(3), R)
     assert f.time == 10. and len(f.history) <= 200
+
+
+def test_unresolved_ground_contact_impulse_does_not_latch_innovation_rejection():
+    from core.exploration.state_estimation import InertialOdometryFilter
+    f = InertialOdometryFilter(); R = np.diag([.007**2]*3+[.015**2]*3)
+    # Spawn drops 2 cm onto its hull: contact removes downward velocity, but
+    # sampled Gazebo IMU goes directly from free fall to gravity support.
+    f.predict(.05, [0., 0., -9.81])
+    assert f.correct_at(.05, [2., 2., .087], [0., 0., -.5], R)
+    for k in range(6, 11):f.predict(k*.01, [0., 0., -9.81 if k == 6 else 0.])
+    assert f.correct_at(.10, [2., 2., .080], [0., 0., 0.], R)
+    for k in range(11, 51):
+        f.predict(k*.01, [0., 0., 0.])
+        if k % 5 == 0:assert f.correct_at(k*.01, [2., 2., .080], [0., 0., 0.], R)
+    assert abs(f.x[2]-.08) < .002 and abs(f.x[5]) < .002
+    f.predict(.51, [0., 0., 0.])
+    assert not f.correct_at(.51, [2., 2., 1000.], [0., 0., 0.], R)

@@ -32,7 +32,7 @@ def summarize(root, output):
     plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False})
     fig, axes = plt.subplots(2, 2, figsize=(12, 8), constrained_layout=True)
     ax = axes[0, 0]; ax.plot(coverage[:, 0]-start, 100*coverage[:, 1], color='#20465e', lw=2)
-    ax.axhline(95, ls='--', color='#6c777d', lw=1); ax.set(xlabel='Simulation time (s)', ylabel='Observed free-space coverage (%)', ylim=(0, 101))
+    ax.axhline(95, ls='--', color='#6c777d', lw=1); ax.set(xlabel='Simulation time (s)', ylabel='Fully-free voxel coverage (%)', ylim=(0, 101))
     if summary.get('network_started'):
         t = summary['network_started']-start; ax.axvspan(t, t+18, color='#d49332', alpha=.2, label='Planning link outage')
     if summary.get('dynamic_trial'):

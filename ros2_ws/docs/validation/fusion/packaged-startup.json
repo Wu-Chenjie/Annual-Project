@@ -1,0 +1,174 @@
+{
+  "passed": true,
+  "scope": "Packaged image cold startup through sensor mapping and first committed flight by all three agents; no full mission claim.",
+  "summary": {
+    "fleet_size": 3,
+    "agent_ages": {
+      "0": 0.3460000000000001,
+      "1": 0.38000000000000256,
+      "2": 0.3940000000000019
+    },
+    "status": "SEARCHING",
+    "failure_reason": null,
+    "simulation_time": 30.000000000000004,
+    "start_time": 13.5,
+    "finish_time": null,
+    "architecture": "fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight",
+    "coverage": 0.24407311952755636,
+    "t90": null,
+    "t95": null,
+    "coverage_target": 0.95,
+    "contacts_after_takeoff": 0,
+    "min_separation_m": 6.4871507916652575,
+    "distances_m": {
+      "0": 3.702280823661334,
+      "1": 4.506364870701214,
+      "2": 2.227908692103762
+    },
+    "odometry_samples": {
+      "0": 2999,
+      "1": 2997,
+      "2": 2997
+    },
+    "pause_resumed": false,
+    "paused": [],
+    "graph": {
+      "0": {
+        "nodes": 4,
+        "edges": 1,
+        "free_cells": 1619
+      },
+      "1": {
+        "nodes": 4,
+        "edges": 1,
+        "free_cells": 1919
+      },
+      "2": {
+        "nodes": 4,
+        "edges": 1,
+        "free_cells": 883
+      }
+    },
+    "commits": {
+      "0": 2,
+      "1": 1,
+      "2": 2
+    },
+    "views": {
+      "0": 1,
+      "1": 1,
+      "2": 2
+    },
+    "peer_payload_bytes": {
+      "0": 207177,
+      "1": 264592,
+      "2": 178005
+    },
+    "graph_payload_bytes": {
+      "0": 82893,
+      "1": 103459,
+      "2": 67850
+    },
+    "fusion": {
+      "0": {
+        "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+        "hgrid_leaves": 79,
+        "hgrid_splits": 12,
+        "frontier_clusters": 9,
+        "reused_frontiers": 5,
+        "history_nodes": 3,
+        "handshake_updates": 0,
+        "delta_applied": 10,
+        "local_regions": 37,
+        "global_regions": 14,
+        "shared_deferred_regions": 0,
+        "pair_status": "infeasible",
+        "compute_wall_s": 3.06253621308133,
+        "map_clearance": 1.4093972532090002,
+        "worker_running": true
+      },
+      "1": {
+        "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+        "hgrid_leaves": 86,
+        "hgrid_splits": 13,
+        "frontier_clusters": 19,
+        "reused_frontiers": 6,
+        "history_nodes": 4,
+        "handshake_updates": 1,
+        "delta_applied": 11,
+        "local_regions": 54,
+        "global_regions": 4,
+        "shared_deferred_regions": 0,
+        "pair_status": "infeasible",
+        "compute_wall_s": 3.414382380899042,
+        "map_clearance": 1.0656096366455816,
+        "worker_running": false
+      },
+      "2": {
+        "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+        "hgrid_leaves": 79,
+        "hgrid_splits": 12,
+        "frontier_clusters": 16,
+        "reused_frontiers": 10,
+        "history_nodes": 3,
+        "handshake_updates": 0,
+        "delta_applied": 10,
+        "local_regions": 37,
+        "global_regions": 14,
+        "shared_deferred_regions": 0,
+        "pair_status": "no_pair",
+        "compute_wall_s": 2.193322197999805,
+        "map_clearance": 1.3572451858526962,
+        "worker_running": true
+      }
+    },
+    "pair_commits": {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    "tracking": {
+      "0": {
+        "samples": 31,
+        "rms_m": 0.02549325875490057,
+        "p95_m": 0.037912070839292475,
+        "max_m": 0.04023622605521709
+      },
+      "1": {
+        "samples": 49,
+        "rms_m": 0.017987855895859668,
+        "p95_m": 0.029063289661527592,
+        "max_m": 0.0321765232825495
+      },
+      "2": {
+        "samples": 30,
+        "rms_m": 0.010511288917749922,
+        "p95_m": 0.020785257291424494,
+        "max_m": 0.02180615702449735
+      }
+    },
+    "observation_frames": {
+      "0": 75,
+      "1": 75,
+      "2": 75
+    },
+    "mapping_dimensions": 3,
+    "isolated": [],
+    "network_started": null,
+    "network_resumed": false,
+    "dynamic_trial": null,
+    "dynamic_finished": false,
+    "restart_trial": null,
+    "restart_recovered": false,
+    "tracking_reference": "Gazebo truth position versus executed reference at telemetry receipt",
+    "assumptions": "3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations",
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "legacy_center_free_coverage": 0.2292289252896524,
+    "truth_free_voxels": 58589,
+    "observed_free_voxels": 14300,
+    "unobserved_free_voxels": 44173,
+    "falsely_occupied_free_voxels": 116
+  },
+  "image_id": "sha256:cee3f67c5e16bd6f498afd0b2e80236b530e88ee007e234321f0feca75588de6",
+  "fixed_estimator_sha256": "a6aa58f2387b000ecd781645a960bc1ccdf38cea6ebb34840c7b496091107870"
+}

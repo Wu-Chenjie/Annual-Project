@@ -1,0 +1,6 @@
+Native recording workspace at 314fd02: 116 tests, 0 errors, 0 failures, 0 skipped.
+Final packaged runtime after contact-impulse covariance fix: 117 tests, 0 errors, 0 failures, 0 skipped.
+Final host fusion regressions: 40 passed.
+Additional legacy planner boundary/window/quality/trajectory regressions: 13 passed.
+Packaged cold startup: three agents committed routes by simulation time 30 s, zero contacts, no flight-bound violation.
+Full mission evidence and startup evidence have separate source/runtime provenance.

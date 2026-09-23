@@ -38,7 +38,17 @@ class InertialOdometryFilter:
         F[:3, 6:] = -np.eye(3)*.5*dt*dt; F[3:6, 6:] = -np.eye(3)*dt
         a = np.asarray(world_acceleration)-self.x[6:]
         self.x[:3] += self.x[3:6]*dt+.5*a*dt*dt; self.x[3:6] += a*dt
-        self.P = F@self.P@F.T+np.diag([1e-6]*3+[.002]*3+[1e-6]*3)*dt
+        # Continuous white acceleration uncertainty, integrated into position
+        # and velocity together. The physics engine's instantaneous ground
+        # contact impulse is not necessarily present in its sampled IMU signal.
+        # An overconfident velocity covariance can then reject every subsequent
+        # valid localization measurement. 1 m^2/s^3 retains the innovation gate
+        # while accounting for this unresolved dynamics/model uncertainty.
+        Q = np.diag([1e-6]*3+[0.]*3+[1e-6]*3)*dt
+        Q[:3, :3] += np.eye(3)*dt**3/3
+        Q[:3, 3:6] = Q[3:6, :3] = np.eye(3)*dt**2/2
+        Q[3:6, 3:6] = np.eye(3)*dt
+        self.P = F@self.P@F.T+Q
 
     def correct(self, position, velocity, covariance):
         accepted = self._correct(position, velocity, covariance)
