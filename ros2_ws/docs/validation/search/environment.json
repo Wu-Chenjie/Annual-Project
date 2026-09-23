@@ -1,0 +1,30 @@
+{
+  "date": "2026-09-23",
+  "base_commit": "a8ea13917cb54f97f2b80f2a8834b034ae2b11e4",
+  "platform": "ROS 2 Jazzy / Gazebo Harmonic; colima Docker aarch64; 2 CPUs, approximately 4 GB RAM",
+  "source_sha256": {
+    "next_project/core/exploration/coordinator.py": "5d4d9e2c74d972ea8acf7ddd3431fc9ed01ed34bd652526f256c3d5866434cdb",
+    "next_project/core/exploration/graph.py": "74d9c426411e512db64ac363a0529b4970f54423e043070ebeb28fbf99d8f232",
+    "next_project/core/exploration/__init__.py": "1ea9926067eed74763f003a5460b956a98bf5efc0a77616447c0eaf15e6178e7",
+    "next_project/core/exploration/allocation.py": "8a59b9ddafc27ac914dc5bcf1cb0d12bb7787aab9a55b58074d73832d5e4c98b",
+    "next_project/core/exploration/mapping.py": "ddc956e3f65f4ee40e5a3c51b3fe5a6d6199cd48f82c14a178d731225df12216",
+    "ros2_ws/src/annual_swarm/scripts/search_node.py": "1d7e682bfc035fe9aacc5a31492cc054d8f359fcd6ca9448be8ad7154201e353",
+    "ros2_ws/src/annual_swarm/scripts/search_smoke.py": "a59472c82faa76e25938f6b2df68925c4ab8cd750b7b7cbf4d5a5b5d5d67f053",
+    "ros2_ws/src/annual_swarm/scripts/search_executor_node.py": "cced5ab04a682cec2b21a2ff8e738e72d4d4fab5403fe41f832596381e9b5887",
+    "ros2_ws/src/annual_swarm/launch/search.launch.py": "e0e59e6673a4f835b7590d03065925ebfe74371138e68399be5b037a9705617f"
+  },
+  "maps_sha256": {
+    "next_project/maps/search_office.json": "ee31478a4ec69a5d0ddda86633f93ad69d4152be9daf2f58468be8b5dac16137",
+    "next_project/maps/search_maze.json": "e6b0f0490c2ddf20a0fd04855c850c4324d67e15e536dc2964190ad2b66cffb7"
+  },
+  "sensor": "planar occluded 360-degree ray sensor, 3.5 m, 720 rays, 0.25 m map",
+  "repeats": 1,
+  "order": [
+    "office nearest_frontier",
+    "office graph_voronoi",
+    "office gvp_pairwise",
+    "maze gvp_pairwise"
+  ],
+  "pause": "UAV 1 at 50 elapsed simulation seconds, 30-second controlled hover",
+  "coverage": "Observed free planar cells / true free planar cells; threshold 95%"
+}
