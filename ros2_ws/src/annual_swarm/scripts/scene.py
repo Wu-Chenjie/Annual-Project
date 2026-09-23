@@ -30,7 +30,7 @@ def canonical_json(value):
     if isinstance(value, (int,float)): return format(Decimal(str(value)), 'f')
     return json.dumps(value)
 
-def generate(share, map_file, output, start, dynamic=False):
+def generate(share, map_file, output, start, dynamic=False, starts=None):
     share, output = Path(share), Path(output)
     data = json.loads(Path(map_file).read_text())
     if len(start) != 3: raise ValueError('start requires three coordinates')
@@ -84,10 +84,17 @@ def generate(share, map_file, output, start, dynamic=False):
             if tag=='visual':ET.SubElement(ET.SubElement(element,'material'),'diffuse').text='0.9 0.15 0.1 1'
     bridges = [dict(ros_topic_name='/clock',gz_topic_name='/clock',ros_type_name='rosgraph_msgs/msg/Clock',gz_type_name='gz.msgs.Clock',direction='GZ_TO_ROS',qos_profile='CLOCK')]
     template = ET.parse(share/'models/quadrotor.sdf').getroot().find('model')
-    for i,offset in enumerate(OFFSETS):
+    spawns=starts if starts is not None else [[start[k]+offset[k] for k in range(3)] for offset in OFFSETS]
+    for i,spawn in enumerate(spawns):
+        coordinates(spawn,3)
         name = f'drone_{i}'
         model = copy.deepcopy(template); model.set('name',name)
-        ET.SubElement(model,'pose').text = vector([start[0]+offset[0],start[1]+offset[1],0.10,0,0,0])
+        ET.SubElement(model,'pose').text = vector([spawn[0],spawn[1],0.10,0,0,0])
+        if starts is not None:
+            color = ['1 0.32 0.18 1', '0.1 0.85 0.5 1', '0.25 0.6 1 1'][i % 3]
+            for visual in model.findall('link/visual'):
+                if visual.get('name') == 'body' or visual.get('name', '').startswith('rotor'):
+                    visual.find('material/diffuse').text = color
         model.find("link/sensor[@name='contact']/topic").text = f'/{name}/contacts'
         model.find("link/sensor[@name='imu']/topic").text = f'/{name}/imu'
         world.append(model)

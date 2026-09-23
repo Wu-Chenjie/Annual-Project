@@ -219,3 +219,7 @@ ros2 run annual_swarm compare_recovery.py --repeats 2 --output-dir /tmp/recovery
 这组实验隔离“障碍后的恢复策略”，没有比较启动阶段生成候选池的成本；单一地图、固定障碍事件、少量重复不能证明所有地图上的优势。
 
 可选绘图（需 matplotlib）：`python3 ros2_ws/src/annual_swarm/scripts/plot_recovery_comparison.py <结果目录>/results.json`。本次实际对照记录见 [VALIDATION.md](VALIDATION.md)。
+
+## 复杂地图独立搜索
+
+新增 `search.launch.py`，三机各自执行搜索任务；与本页固定编队入口独立。复杂地图、观测假设、分配策略、动态转交与对照命令见 [EXPLORATION.md](EXPLORATION.md)。

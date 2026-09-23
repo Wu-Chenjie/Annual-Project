@@ -1,0 +1,93 @@
+{
+  "state_transitions": [
+    {
+      "status": "TAKEOFF",
+      "simulation_time": 0.22
+    },
+    {
+      "status": "FLYING",
+      "simulation_time": 2.04
+    },
+    {
+      "status": "HOLDING",
+      "simulation_time": 14.040000000000001
+    }
+  ],
+  "dynamic_obstacles": {},
+  "formation": {
+    "apf": false,
+    "formation_apf": false,
+    "velocity_feedforward": true,
+    "apf_active_samples": 0,
+    "max_apf_acceleration": 0.0,
+    "max_reference_velocity": 0.5000000000000222
+  },
+  "planner": {
+    "algorithm": "astar",
+    "implementation": "next_project/core/planning",
+    "window_events": [],
+    "sensor_source": "known static map; Gazebo odometry",
+    "dstar_state_reused": false,
+    "esdf": false,
+    "firi": "disabled",
+    "fallbacks": [],
+    "trajectory_method": "none",
+    "trajectory_fallback": null,
+    "mpc_feasibility_only": {
+      "evaluated": true,
+      "feasible": true,
+      "tracking_rms_proxy": 1.9962881843967106e-15,
+      "max_velocity_violation": 0.0,
+      "max_acceleration_violation": 0.0,
+      "saturation_ratio": 0.0,
+      "recommendation": "continue_mpc_prototype"
+    },
+    "plan_count": 1,
+    "wall_seconds": 0.04253463097847998,
+    "points": 61,
+    "goal": [
+      8.0,
+      3.0,
+      1.5
+    ]
+  },
+  "controllers": {
+    "0": "pid (Gazebo actuator control)",
+    "2": "pid (Gazebo actuator control)",
+    "1": "pid (Gazebo actuator control)"
+  },
+  "simulation_time": 18.091,
+  "mission_status": "HOLDING",
+  "samples": 5364,
+  "odometry_samples": {
+    "0": 1810,
+    "1": 1810,
+    "2": 1810
+  },
+  "imu_samples": {
+    "0": 1810,
+    "1": 1810,
+    "2": 1810
+  },
+  "tracking_rmse_m": 0.3113906044494289,
+  "max_tracking_error_m": 1.4202061320938084,
+  "min_pairwise_distance_m": 1.0,
+  "contact_samples_after_takeoff": 0,
+  "positions": {
+    "0": [
+      7.998990549108098,
+      3.0,
+      1.5000107250931747
+    ],
+    "1": [
+      7.998988391488892,
+      2.0,
+      1.5000107156111357
+    ],
+    "2": [
+      7.998987332676713,
+      4.0,
+      1.5000107159707887
+    ]
+  }
+}

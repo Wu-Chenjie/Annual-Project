@@ -1,0 +1,36 @@
+name: Complex-map search validation
+on:
+  workflow_dispatch:
+    inputs:
+      map:
+        description: Search map
+        type: choice
+        default: search_maze
+        options: [search_office, search_maze]
+      policy:
+        description: Task allocator
+        type: choice
+        default: gvp_pairwise
+        options: [nearest_frontier, graph_voronoi, gvp_pairwise]
+jobs:
+  search:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ROS 2 and Gazebo
+        run: docker build -f docker/Dockerfile.ros2 -t annual-search:ci .
+      - name: Run package checks
+        run: docker run --rm annual-search:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && cd ros2_ws && colcon test && colcon test-result --verbose'
+      - name: Search occluded rooms and transfer an interrupted task
+        env:
+          SEARCH_MAP: ${{ inputs.map }}
+          SEARCH_POLICY: ${{ inputs.policy }}
+        run: >-
+          docker run --rm -v "$PWD/artifacts:/results" -e SEARCH_MAP -e SEARCH_POLICY
+          annual-search:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm search_smoke.py --map "/workspace/next_project/maps/${SEARCH_MAP}.json" --policy "$SEARCH_POLICY" --pause-after 50 --timeout 900 --output-dir /results/search'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: complex-search-records
+          path: artifacts/

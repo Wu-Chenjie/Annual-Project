@@ -1,0 +1,50 @@
+[
+  {
+    "case": "办公室 / 最近前沿",
+    "summary": "search_office_nearest_frontier.json",
+    "coverage": 0.95,
+    "t95": 294.5,
+    "distance_xy_m": 222.47788612652096,
+    "transfers": 2,
+    "backup_range": [
+      0,
+      5
+    ]
+  },
+  {
+    "case": "办公室 / 图 Voronoi",
+    "summary": "search_office_graph_voronoi.json",
+    "coverage": 0.9501483679525222,
+    "t95": 313.5,
+    "distance_xy_m": 234.72756727547426,
+    "transfers": 1,
+    "backup_range": [
+      0,
+      5
+    ]
+  },
+  {
+    "case": "办公室 / GVP＋成对优化",
+    "summary": "search_office_gvp_pairwise.json",
+    "coverage": 0.9511869436201781,
+    "t95": 259.5,
+    "distance_xy_m": 196.68317789860217,
+    "transfers": 1,
+    "backup_range": [
+      1,
+      5
+    ]
+  },
+  {
+    "case": "窄门迷宫 / GVP＋成对优化",
+    "summary": "final_maze.json",
+    "coverage": 0.9507974721637075,
+    "t95": 433.5,
+    "distance_xy_m": 315.4870272960958,
+    "transfers": 2,
+    "backup_range": [
+      0,
+      5
+    ]
+  }
+]

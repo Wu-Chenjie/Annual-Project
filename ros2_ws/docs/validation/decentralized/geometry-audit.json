@@ -1,0 +1,12 @@
+{
+  "recording_sources_verified": true,
+  "candidate_geometry_checks": 283,
+  "candidate_generators": {
+    "sparse_topology": 66,
+    "graph_astar_penalized": 187,
+    "astar": 29,
+    "tracking_recovery": 1
+  },
+  "normal_clearance_m": 0.65,
+  "recovery_clearance_m": 0.5
+}

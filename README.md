@@ -48,3 +48,13 @@ ros2 topic echo /swarm/planner_diagnostics
 当前为已知静态地图、定高、固定三机队形，使用 Gazebo 真值里程计。新增 portfolio 模式支持质量评分、五条备选及真实 Gazebo 圆柱障碍快照切换；未知地图建图和故障拓扑重构尚未接入；MPC 仅复用原可行性评估器，不是在线 MPC 控制器。详细能力、实验分支含义和验收命令见 [ROS 使用说明](ros2_ws/README.md)。
 
 实际 Gazebo 截图及动态恢复对照图见 [运行证据](ros2_ws/docs/validation/README.md)。
+
+新增复杂环境三机独立搜索：有限视距观测、动态图任务分区、成对负载优化和动态任务转交，见 [搜索使用说明](ros2_ws/EXPLORATION.md) 和 [复杂地图实测图](ros2_ws/docs/validation/search/README.md)。
+
+### 去中心化区域探索演示
+
+新增三机独立代理、区域路线联合竞价、压缩骨架拓扑图及视场/运动联合规划，运行与协议说明见 [DECENTRALIZED_EXPLORATION.md](ros2_ws/DECENTRALIZED_EXPLORATION.md)。使用 `decentralized_search.launch.py`，旧集中式探索和编队入口保留。
+
+[观看 Gazebo 完整演示视频](ros2_ws/docs/validation/decentralized/decentralized-exploration.mp4) · [验收数据](ros2_ws/docs/validation/decentralized/README.md)
+
+![去中心化 Gazebo 探索录屏节选](ros2_ws/docs/validation/decentralized/demo.gif)

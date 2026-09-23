@@ -4,7 +4,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     ros-jazzy-ros-gz ros-jazzy-gz-sim-vendor ros-jazzy-gz-transport-vendor \
     ros-jazzy-gz-plugin-vendor ros-jazzy-actuator-msgs ros-jazzy-tf2-geometry-msgs \
     python3-colcon-common-extensions python3-pytest python3-yaml python3-numpy python3-scipy \
-    ros-jazzy-ament-cmake-pytest build-essential cmake \
+    ros-jazzy-ament-cmake-pytest ros-jazzy-visualization-msgs build-essential cmake \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /workspace
 COPY . /workspace

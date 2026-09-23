@@ -1,0 +1,1518 @@
+{
+  "status": "COMPLETE",
+  "simulation_time": 319.37100000000004,
+  "start_time": 2.5,
+  "finish_time": 316.0,
+  "policy": "graph_voronoi",
+  "coverage": 0.9501483679525222,
+  "coverage_target": 0.95,
+  "t90": 293.5,
+  "t95": 313.5,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 2.5508929133350735,
+  "distances_m": {
+    "0": 83.76347685099654,
+    "1": 69.58223093930025,
+    "2": 81.38185948517746
+  },
+  "odometry_samples": {
+    "0": 31562,
+    "1": 31562,
+    "2": 31562
+  },
+  "graph": {
+    "nodes": 3392,
+    "edges": 6207,
+    "frontiers": 11,
+    "map_version": 788,
+    "allocation": {
+      "objective": 89.43133333333334,
+      "initial_objective": 89.43133333333334,
+      "moves": 0,
+      "loads": [
+        25.21666666666667,
+        15.080000000000002,
+        67.81
+      ],
+      "unreachable": []
+    },
+    "active": {
+      "0": 3547,
+      "1": 2901,
+      "2": 6089
+    },
+    "round": 628,
+    "wall_seconds": 0.033968351082876325,
+    "backup_counts": {
+      "0": 5,
+      "1": 3,
+      "2": 4
+    }
+  },
+  "available": [
+    0,
+    1,
+    2
+  ],
+  "pause_resumed": true,
+  "events": [
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 1447,
+      "time": 2.5,
+      "backup_count": 5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 352,
+      "time": 3.0,
+      "backup_count": 3
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 1515,
+      "time": 3.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 352,
+      "time": 7.500000000000001
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 352,
+      "reason": "observed",
+      "time": 7.500000000000001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 685,
+      "time": 7.500000000000001,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 1447,
+      "time": 12.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 1447,
+      "reason": "observed",
+      "time": 12.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 1052,
+      "time": 12.5,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 1515,
+      "time": 14.500000000000002
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 1515,
+      "reason": "observed",
+      "time": 14.500000000000002
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 1587,
+      "time": 14.500000000000002,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 685,
+      "time": 21.0
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 685,
+      "reason": "observed",
+      "time": 21.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 611,
+      "time": 21.0,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 1052,
+      "time": 22.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 1052,
+      "reason": "observed",
+      "time": 22.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 1215,
+      "time": 22.0,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 1587,
+      "time": 22.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 1587,
+      "reason": "observed",
+      "time": 22.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2468,
+      "time": 22.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 1215,
+      "time": 26.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 1215,
+      "reason": "observed",
+      "time": 26.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 421,
+      "time": 26.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 611,
+      "time": 27.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 611,
+      "reason": "observed",
+      "time": 27.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 1573,
+      "time": 27.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2468,
+      "time": 33.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2468,
+      "reason": "observed",
+      "time": 33.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2234,
+      "time": 33.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 421,
+      "time": 37.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 421,
+      "reason": "observed",
+      "time": 37.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 1942,
+      "time": 37.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 1573,
+      "time": 39.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 1573,
+      "reason": "observed",
+      "time": 39.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 1326,
+      "time": 39.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2234,
+      "time": 41.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2234,
+      "reason": "observed",
+      "time": 41.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2220,
+      "time": 41.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 1326,
+      "time": 47.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 1326,
+      "reason": "observed",
+      "time": 47.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 611,
+      "time": 47.5,
+      "backup_count": 3
+    },
+    {
+      "type": "availability_pause",
+      "drone": 1,
+      "time": 52.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 611,
+      "reason": "unavailable",
+      "time": 52.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2220,
+      "time": 54.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2220,
+      "reason": "observed",
+      "time": 54.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2627,
+      "time": 54.0,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 1942,
+      "time": 55.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 1942,
+      "reason": "observed",
+      "time": 55.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 611,
+      "time": 55.5,
+      "backup_count": 5
+    },
+    {
+      "type": "task_transferred",
+      "old_drone": 1,
+      "drone": 0,
+      "task": 611,
+      "time": 55.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2627,
+      "time": 64.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2627,
+      "reason": "observed",
+      "time": 64.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2233,
+      "time": 64.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2233,
+      "time": 72.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2233,
+      "reason": "observed",
+      "time": 72.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 2955,
+      "time": 72.5,
+      "backup_count": 3
+    },
+    {
+      "type": "availability_resume",
+      "drone": 1,
+      "time": 82.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 1326,
+      "time": 82.5,
+      "backup_count": 2
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 1326,
+      "time": 87.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 1326,
+      "reason": "observed",
+      "time": 87.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 1020,
+      "time": 87.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 2955,
+      "time": 88.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 2955,
+      "reason": "observed",
+      "time": 88.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 3829,
+      "time": 88.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 3829,
+      "time": 100.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 3829,
+      "reason": "observed",
+      "time": 100.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 4627,
+      "time": 100.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 1020,
+      "time": 102.0
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 1020,
+      "reason": "observed",
+      "time": 102.0
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 611,
+      "time": 105.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 611,
+      "reason": "observed",
+      "time": 105.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 2037,
+      "time": 105.5,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 4627,
+      "time": 110.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 4627,
+      "reason": "observed",
+      "time": 110.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 4866,
+      "time": 110.5,
+      "backup_count": 2
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 4866,
+      "time": 114.50000000000001
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 4866,
+      "reason": "observed",
+      "time": 114.50000000000001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 5107,
+      "time": 114.50000000000001,
+      "backup_count": 2
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 5107,
+      "time": 118.50000000000001
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 5107,
+      "reason": "observed",
+      "time": 118.50000000000001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 5346,
+      "time": 118.50000000000001,
+      "backup_count": 2
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 1326,
+      "time": 120.00000000000001,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 5346,
+      "time": 122.00000000000001
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 5346,
+      "reason": "observed",
+      "time": 122.00000000000001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6228,
+      "time": 122.00000000000001,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6228,
+      "time": 133.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6228,
+      "reason": "observed",
+      "time": 133.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6470,
+      "time": 133.0,
+      "backup_count": 2
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 1326,
+      "time": 135.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 1326,
+      "reason": "observed",
+      "time": 135.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6470,
+      "time": 137.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6470,
+      "reason": "observed",
+      "time": 137.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6219,
+      "time": 137.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 2037,
+      "time": 138.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 2037,
+      "reason": "observed",
+      "time": 138.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 2447,
+      "time": 138.5,
+      "backup_count": 4
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 3419,
+      "time": 145.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6219,
+      "time": 148.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6219,
+      "reason": "observed",
+      "time": 148.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 5900,
+      "time": 148.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 2447,
+      "time": 149.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 2447,
+      "reason": "observed",
+      "time": 149.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 2200,
+      "time": 149.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 5900,
+      "time": 153.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 5900,
+      "reason": "observed",
+      "time": 153.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 7102,
+      "time": 153.0,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 2200,
+      "time": 158.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 2200,
+      "reason": "observed",
+      "time": 158.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3328,
+      "time": 158.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 7102,
+      "time": 167.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 7102,
+      "reason": "observed",
+      "time": 167.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 7193,
+      "time": 167.5,
+      "backup_count": 1
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 3328,
+      "time": 178.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 3328,
+      "reason": "observed",
+      "time": 178.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 7193,
+      "time": 178.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 7193,
+      "reason": "observed",
+      "time": 178.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3237,
+      "time": 178.5,
+      "backup_count": 5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6376,
+      "time": 179.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 3419,
+      "time": 183.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 3419,
+      "reason": "observed",
+      "time": 183.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 4540,
+      "time": 183.5,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 3237,
+      "time": 189.001
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 3237,
+      "reason": "observed",
+      "time": 189.001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 2992,
+      "time": 189.001,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 2992,
+      "time": 195.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 2992,
+      "reason": "observed",
+      "time": 195.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3790,
+      "time": 195.0,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 4540,
+      "time": 197.0
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 4540,
+      "reason": "observed",
+      "time": 197.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 4208,
+      "time": 197.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6376,
+      "time": 199.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6376,
+      "reason": "observed",
+      "time": 199.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6293,
+      "time": 199.5,
+      "backup_count": 2
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6293,
+      "time": 203.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6293,
+      "reason": "observed",
+      "time": 203.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6442,
+      "time": 203.0,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 3790,
+      "time": 205.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 3790,
+      "reason": "observed",
+      "time": 205.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4032,
+      "time": 205.5,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4032,
+      "time": 209.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4032,
+      "reason": "observed",
+      "time": 209.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4752,
+      "time": 209.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6442,
+      "time": 214.00300000000001
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6442,
+      "reason": "observed",
+      "time": 214.00300000000001
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 5560,
+      "time": 214.00300000000001,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4752,
+      "time": 218.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4752,
+      "reason": "observed",
+      "time": 218.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3547,
+      "time": 218.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 4208,
+      "time": 222.0
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 4208,
+      "reason": "observed",
+      "time": 222.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 2182,
+      "time": 222.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 5560,
+      "time": 225.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 5560,
+      "reason": "observed",
+      "time": 225.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 5632,
+      "time": 225.0,
+      "backup_count": 0
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 5632,
+      "time": 235.00000000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 5632,
+      "reason": "observed",
+      "time": 235.00000000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6429,
+      "time": 235.00000000000003,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 3547,
+      "time": 237.50000000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 3547,
+      "reason": "observed",
+      "time": 237.50000000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4032,
+      "time": 237.50000000000003,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4032,
+      "time": 245.50000000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4032,
+      "reason": "observed",
+      "time": 245.50000000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4752,
+      "time": 245.50000000000003,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6429,
+      "time": 247.00000000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6429,
+      "reason": "observed",
+      "time": 247.00000000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 7312,
+      "time": 247.00000000000003,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4752,
+      "time": 254.00000000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4752,
+      "reason": "observed",
+      "time": 254.00000000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 2912,
+      "time": 254.00000000000003,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 7312,
+      "time": 258.50100000000003
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 7312,
+      "reason": "observed",
+      "time": 258.50100000000003
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 7322,
+      "time": 258.50100000000003,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 7322,
+      "time": 268.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 7322,
+      "reason": "observed",
+      "time": 268.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6347,
+      "time": 268.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 2912,
+      "time": 275.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 2912,
+      "reason": "observed",
+      "time": 275.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3468,
+      "time": 275.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 3468,
+      "time": 284.0
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 3468,
+      "reason": "observed",
+      "time": 284.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4112,
+      "time": 284.0,
+      "backup_count": 5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6347,
+      "time": 286.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6347,
+      "reason": "observed",
+      "time": 286.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6184,
+      "time": 286.0,
+      "backup_count": 2
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4112,
+      "reason": "blocked",
+      "time": 289.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6184,
+      "time": 290.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6184,
+      "reason": "observed",
+      "time": 290.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6013,
+      "time": 290.0,
+      "backup_count": 4
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 2182,
+      "time": 290.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 2182,
+      "reason": "observed",
+      "time": 290.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 2732,
+      "time": 290.5,
+      "backup_count": 4
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4112,
+      "time": 291.5,
+      "backup_count": 3
+    },
+    {
+      "type": "task_replanned",
+      "old_drone": 0,
+      "drone": 0,
+      "task": 4112,
+      "time": 291.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6013,
+      "reason": "blocked",
+      "time": 295.0
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4112,
+      "time": 295.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4112,
+      "reason": "observed",
+      "time": 295.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 4752,
+      "time": 295.5,
+      "backup_count": 4
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6096,
+      "time": 297.0,
+      "backup_count": 1
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6096,
+      "time": 300.5
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6096,
+      "reason": "observed",
+      "time": 300.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6013,
+      "time": 300.5,
+      "backup_count": 2
+    },
+    {
+      "type": "task_replanned",
+      "old_drone": 2,
+      "drone": 2,
+      "task": 6013,
+      "time": 300.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 2732,
+      "time": 303.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 2732,
+      "reason": "observed",
+      "time": 303.5
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 0,
+      "task": 4752,
+      "time": 303.5
+    },
+    {
+      "type": "task_released",
+      "drone": 0,
+      "task": 4752,
+      "reason": "observed",
+      "time": 303.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 3213,
+      "time": 303.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6013,
+      "time": 304.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6013,
+      "reason": "observed",
+      "time": 304.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 0,
+      "task": 3547,
+      "time": 304.0,
+      "backup_count": 5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6324,
+      "time": 304.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 1,
+      "task": 3213,
+      "time": 309.5
+    },
+    {
+      "type": "task_released",
+      "drone": 1,
+      "task": 3213,
+      "reason": "observed",
+      "time": 309.5
+    },
+    {
+      "type": "task_assigned",
+      "drone": 1,
+      "task": 2901,
+      "time": 309.5,
+      "backup_count": 3
+    },
+    {
+      "type": "viewpoint_observed",
+      "drone": 2,
+      "task": 6324,
+      "time": 316.0
+    },
+    {
+      "type": "task_released",
+      "drone": 2,
+      "task": 6324,
+      "reason": "observed",
+      "time": 316.0
+    },
+    {
+      "type": "task_assigned",
+      "drone": 2,
+      "task": 6089,
+      "time": 316.0,
+      "backup_count": 4
+    }
+  ],
+  "planner_wall_max": 0.22098101885057986,
+  "published_path_payload_bytes": 15043,
+  "published_topology_payload_bytes": 9798261,
+  "assumptions": "Central shared observed map; 360-degree 3.5 m occluded ray sensor; planar world-frame truth odometry; graph/pairwise heuristic, not RACER/GVP reproduction"
+}
