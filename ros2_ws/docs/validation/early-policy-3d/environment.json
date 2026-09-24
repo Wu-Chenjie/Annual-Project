@@ -1,0 +1,26 @@
+{
+  "platform": "Linux-6.8.0-100-generic-aarch64-with-glibc2.39",
+  "python": "3.12.3",
+  "cpu_count": 6,
+  "ros_distro": "jazzy",
+  "native_binary_sha256": {
+    "lib/libannual_motor_system.so": "43ec7791f3b5435e7eb979d38c83c2c634d98ead3ef5a97de86b87f2ae0cc4b7",
+    "lib/annual_swarm/controller_node": "79958707e4d50876e08595662769244e5093a41d11607646e6dd916c13790458"
+  },
+  "container": "annual-fusion-run",
+  "colima_profile": "annual-fusion",
+  "cpu_assignment": 6,
+  "memory_assignment_gib": 8,
+  "benchmark_source": "964c451",
+  "historical_source": "71365916e1a4851d937f493c93bfa0beec73eacf",
+  "common_runtime_source": "620d1aa344c87f513aa2121ba12aa4e531dbc2c6",
+  "docker_image": "annual-swarm:demo",
+  "docker_image_id": "sha256:fb21aaf4adcf4e957e6824a29978dcf32acda04172f953c3b1abfd9e60158175",
+  "packages": [
+    "ffmpeg=7:6.1.1-3ubuntu5",
+    "ros-jazzy-gz-sim-vendor=0.0.13-1noble.20260904.022149",
+    "ros-jazzy-ros-gz-bridge=1.0.24-1noble.20260904.011459",
+    "ros-jazzy-ros-gz-sim=1.0.24-1noble.20260904.032840",
+    "ros-jazzy-rviz2=14.1.23-1noble.20260907.034615"
+  ]
+}

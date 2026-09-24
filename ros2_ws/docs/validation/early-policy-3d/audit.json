@@ -1,0 +1,52 @@
+{
+  "outcome": {
+    "outcome": "SIMULATION_TIME_LIMIT",
+    "reason": "Did not reach 95% within the preregistered limit",
+    "wall_elapsed_s": 3833.2688510919997,
+    "last_coverage": 0.5352540579289627,
+    "last_simulation_time": 2415.502
+  },
+  "coverage_recomputed": {
+    "coverage": 0.535288194029596,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "legacy_center_free_coverage": 0.5086216540151818,
+    "truth_free_voxels": 58589,
+    "observed_free_voxels": 31362,
+    "unobserved_free_voxels": 27031,
+    "falsely_occupied_free_voxels": 196
+  },
+  "zero_contacts": true,
+  "minimum_separation_over_point8": true,
+  "all_three_moved": true,
+  "continuous_reference_limits_passed": true,
+  "max_backups": 5,
+  "event_counts": {
+    "client_started": 4,
+    "path_committed": 150,
+    "view_observed": 129,
+    "route_cancelled": 19,
+    "client_restart_requested": 1,
+    "client_process_exit": 1
+  },
+  "pause_resumed": true,
+  "network_resumed": true,
+  "restart_recovered": true,
+  "restart_scope": "Per-UAV centralized command client, not a per-UAV planner",
+  "dynamic_trial": {
+    "start": 2364.502,
+    "drone": 1,
+    "center": [
+      6.774928030743984,
+      8.400478607226722
+    ],
+    "side": [
+      -0.42656783923670344,
+      0.6767864349474877
+    ],
+    "token": "central:139"
+  },
+  "dynamic_finished": true,
+  "common_metric_checks_passed": true,
+  "complete_95": false,
+  "note": "Completion is distinct from safe execution and evidence validity. A time-limited run is not a completed mission."
+}

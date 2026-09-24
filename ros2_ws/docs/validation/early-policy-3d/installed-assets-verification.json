@@ -1,0 +1,56 @@
+{
+  "checked_files": 10,
+  "mismatches": [],
+  "files": {
+    "ros2_ws/src/annual_swarm/config/exploration.rviz": {
+      "installed_sha256": "d784217f756862cd1f58104522960e899e152978db0162fbda9bbd9f3c263b46",
+      "source_sha256": "d784217f756862cd1f58104522960e899e152978db0162fbda9bbd9f3c263b46",
+      "reference_recording_sha256": "d784217f756862cd1f58104522960e899e152978db0162fbda9bbd9f3c263b46"
+    },
+    "ros2_ws/src/annual_swarm/config/flight.yaml": {
+      "installed_sha256": "945ce83383a76814753cae2dc0b0050c5c1168d644be9ef85c2954655c5b0f5f",
+      "source_sha256": "945ce83383a76814753cae2dc0b0050c5c1168d644be9ef85c2954655c5b0f5f",
+      "reference_recording_sha256": "945ce83383a76814753cae2dc0b0050c5c1168d644be9ef85c2954655c5b0f5f"
+    },
+    "ros2_ws/src/annual_swarm/config/exploration-gazebo.config": {
+      "installed_sha256": "e1d6135bc4b4c505af983e6480811cdb82fa3f307820fbac93d57abaaca01847",
+      "source_sha256": "e1d6135bc4b4c505af983e6480811cdb82fa3f307820fbac93d57abaaca01847",
+      "reference_recording_sha256": "e1d6135bc4b4c505af983e6480811cdb82fa3f307820fbac93d57abaaca01847"
+    },
+    "ros2_ws/src/annual_swarm/models/quadrotor.sdf": {
+      "installed_sha256": "249cdcb815f6a6eac1e41194a2e9fbac4bd34b16a027c1ab3cf8fe1baa024895",
+      "source_sha256": "249cdcb815f6a6eac1e41194a2e9fbac4bd34b16a027c1ab3cf8fe1baa024895",
+      "reference_recording_sha256": "249cdcb815f6a6eac1e41194a2e9fbac4bd34b16a027c1ab3cf8fe1baa024895"
+    },
+    "ros2_ws/src/annual_swarm/worlds/indoor.sdf": {
+      "installed_sha256": "a20b6fe237b13b8bb395509c60b35c0c4aa52925fa0bec18e8bb7b94229a80dd",
+      "source_sha256": "a20b6fe237b13b8bb395509c60b35c0c4aa52925fa0bec18e8bb7b94229a80dd",
+      "reference_recording_sha256": "a20b6fe237b13b8bb395509c60b35c0c4aa52925fa0bec18e8bb7b94229a80dd"
+    },
+    "ros2_ws/src/annual_swarm/launch/swarm.launch.py": {
+      "installed_sha256": "bcba5b27b4a9d20c0e325a55055e70e9e09f06f80fa9d7e468f1f54af427fdc9",
+      "source_sha256": "bcba5b27b4a9d20c0e325a55055e70e9e09f06f80fa9d7e468f1f54af427fdc9",
+      "reference_recording_sha256": "bcba5b27b4a9d20c0e325a55055e70e9e09f06f80fa9d7e468f1f54af427fdc9"
+    },
+    "ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py": {
+      "installed_sha256": "aac906fa5bd051e9b82de395a0b8eb91b025e06564a860d7fd068a8ee75cc277",
+      "source_sha256": "aac906fa5bd051e9b82de395a0b8eb91b025e06564a860d7fd068a8ee75cc277",
+      "reference_recording_sha256": "aac906fa5bd051e9b82de395a0b8eb91b025e06564a860d7fd068a8ee75cc277"
+    },
+    "ros2_ws/src/annual_swarm/launch/search.launch.py": {
+      "installed_sha256": "e0e59e6673a4f835b7590d03065925ebfe74371138e68399be5b037a9705617f",
+      "source_sha256": "e0e59e6673a4f835b7590d03065925ebfe74371138e68399be5b037a9705617f",
+      "reference_recording_sha256": "e0e59e6673a4f835b7590d03065925ebfe74371138e68399be5b037a9705617f"
+    },
+    "ros2_ws/src/annual_swarm/scripts/scene.py": {
+      "installed_sha256": "19ca822215fc687a57a0b8cc13078cdd69ca248cbb6ae1bf1c23036f50c4ea20",
+      "source_sha256": "19ca822215fc687a57a0b8cc13078cdd69ca248cbb6ae1bf1c23036f50c4ea20",
+      "reference_recording_sha256": "19ca822215fc687a57a0b8cc13078cdd69ca248cbb6ae1bf1c23036f50c4ea20"
+    },
+    "next_project/maps/search_fusion_3d.json": {
+      "installed_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+      "source_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+      "reference_recording_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d"
+    }
+  }
+}

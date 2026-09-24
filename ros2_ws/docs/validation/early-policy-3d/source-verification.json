@@ -1,0 +1,8 @@
+{
+  "source_commit": "964c451e55c910f45e124f68ce9c5344b7d0f29b",
+  "recorded_files": 369,
+  "workspace_mismatches": [],
+  "archive_mismatches": [],
+  "checked_after_recording": true,
+  "note": "Verified before adding postprocessing-only audit utilities. Runtime source was frozen throughout this recording."
+}

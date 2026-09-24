@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Audit a possibly censored baseline run; compare only common 3D metrics."""
-import argparse,csv,hashlib,json
+import argparse,csv,hashlib,json,subprocess,sys
 from collections import defaultdict,Counter
 from pathlib import Path
 import numpy as np
@@ -40,7 +40,7 @@ def main():
     assert np.isclose(coverage['coverage'],old['coverage'],atol=1/58589)
     events=[e for f in a.baseline.glob('drone_*/events.jsonl') for e in records(f)]
     limits=[e['trajectory_limits'] for e in events if e['type']=='path_committed']
-    envelope=all(l['speed']<=.601 and l['acceleration']<=.801 and l['jerk']<=2.001 for l in limits)
+    envelope=bool(limits) and all(l['speed']<=.601 and l['acceleration']<=.801 and l['jerk']<=2.001 for l in limits)
     candidates=list(records(a.baseline/'candidate_paths.jsonl'));maximum=max((len(c['paths'])-1 for c in candidates),default=0)
     outcome=json.loads((a.baseline/'run-result.json').read_text())
     audit=dict(outcome=outcome,coverage_recomputed=coverage,zero_contacts=old['contacts']==0,minimum_separation_over_point8=old['minimum_separation_m']>.8,
@@ -51,7 +51,7 @@ def main():
         common_metric_checks_passed=True,complete_95=outcome['outcome']=='COMPLETE' and old['coverage']>=.95,
         note='Completion is distinct from safe execution and evidence validity. A time-limited run is not a completed mission.')
     (a.output_dir/'audit.json').write_text(json.dumps(audit,indent=2)+'\n')
-    result=dict(early_policy_3d=old,optimized_fused=new,interpretation='One attempt per version; common map, sensing, coverage and motion constraints. Central map sharing, dimensional frontier adaptation and restart semantics differ; not an isolated allocator ablation.')
+    result=dict(early_policy_3d=old,optimized_fused=new,interpretation='One recorded run of each final fixed version is shown; earlier diagnostic and failed attempts are disclosed separately. Common map, sensing, coverage and motion constraints. Central sharing, dimensional adaptation and realized fault/restart semantics differ; not an isolated allocator ablation.')
     (a.output_dir/'comparison.json').write_text(json.dumps(result,indent=2)+'\n')
     import matplotlib
     matplotlib.use('Agg')
@@ -61,7 +61,9 @@ def main():
         summary=json.loads((root/'summary.json').read_text());curve=np.array(json.loads((root/'coverage.json').read_text()));curve[:,0]-=summary['start_time'];curve=curve[curve[:,0]>=0]
         ax.plot(curve[:,0],100*curve[:,1],label=label,color=color,lw=2)
     ax.axhline(95,color='#555555',ls='--',lw=1);ax.set(xlabel='Simulation time after initial scan (s)',ylabel='Observed fully-free voxels (%)',title='Actual Gazebo runs: common 3D sensing and coverage',ylim=(15,100));ax.legend(loc='lower right');ax.grid(alpha=.15)
-    fig.supxlabel('Single attempt per version. Centralized sharing and restart semantics differ; no statistical claim.',fontsize=9)
+    fig.supxlabel('Final fixed versions shown; earlier attempts disclosed. Central sharing and fault semantics differ.',fontsize=9)
     fig.savefig(a.output_dir/'coverage-comparison.png',dpi=170);plt.close(fig)
+    for script,name in [('audit_flight.py','flight-audit.json'),('audit_policy.py','policy-audit.json'),('audit_repeat_gain.py','repeat-gain-audit.json')]:
+        subprocess.run([sys.executable,str(Path(__file__).with_name(script)),str(a.baseline),str(a.output_dir/name)],check=True,stdout=subprocess.DEVNULL)
     print(json.dumps(result,indent=2))
 if __name__=='__main__':main()

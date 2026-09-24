@@ -1,0 +1,12 @@
+{
+  "known_failed_attempt": "87489a4",
+  "failed_attempt_contact_counter": 0,
+  "failed_attempt_detected": true,
+  "failed_attempt_landing_samples": {
+    "0": 19917,
+    "1": 19902,
+    "2": 63
+  },
+  "final_attempt_no_recorded_landings": true,
+  "note": "Same truth-height audit correctly rejects the known failed attempt despite its zero contact counter."
+}
