@@ -10,7 +10,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, DurabilityPolicy, qos_profile_sensor_data
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
-from adapter import view_finished
+from contracts import view_finished
 
 
 class Client(Node):

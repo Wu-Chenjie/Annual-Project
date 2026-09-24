@@ -16,6 +16,7 @@ from core.exploration.graph import route_pool
 from core.exploration.decentralized import tracking_recovery
 from core.planning.continuous_trajectory import optimize_trajectory
 from vendor import coordinator as archived
+from contracts import central_execution_lease, view_finished
 
 
 class FrontierVoxelMap(VoxelMap):
@@ -96,14 +97,6 @@ Only orientation is chosen; the old frontier position and assignment are fixed.
     return float(angles[int(np.argmax(scores))])
 
 
-def central_execution_lease(states, drone, token, now, seeds, timeout=3.):
-    """An actual centralized authorization, not a fabricated peer quorum."""
-    state = states.get(drone, {}); intent = state.get('intent') or {}
-    return bool(token and state.get('available') and state.get('ready')
-                and 0 <= now-state.get('time', -1e9) <= timeout
-                and 0 <= now-state.get('central_time', -1e9) <= timeout
-                and intent.get('token') == token and intent.get('committed')
-                and not intent.get('retiring'))
 
 
 archived.ObservedMap = FrontierVoxelMap
@@ -159,10 +152,3 @@ def plan_step(payload):
     stats = dict(core.stats)
     return dict(commands=commands, candidates=candidates, events=events, stats=stats, failures=failures,
                 compute_wall_s=time.monotonic()-start, snapshot_time=payload['time'])
-
-
-def view_finished(execution, epoch, duration):
-    # 'view_observed' reason lasts one 50 Hz tick; 5 Hz reports may skip it.
-    # Completion is the persistent epoch/arrival/trajectory-time contract.
-    return bool(execution.get('epoch') == epoch and execution.get('arrived')
-                and execution.get('trajectory_time', -1.) >= duration-1e-6)

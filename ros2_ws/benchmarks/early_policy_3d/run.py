@@ -32,7 +32,7 @@ def main():
     try:
         recorder=subprocess.Popen(['ffmpeg','-y','-loglevel','warning','-f','x11grab','-framerate','10','-video_size','1920x1080','-i',env['DISPLAY'],'-c:v','libx264','-preset','ultrafast','-crf','23','-threads','1','-pix_fmt','yuv420p',str(out/'gazebo-rviz-raw.mp4')],env=env,stdout=log,stderr=log)
         proc=subprocess.Popen(['ros2','launch',str(here/'benchmark.launch.py'),f'output_dir:={out}'],env=env,stdout=log,stderr=log,start_new_session=True)
-        arranged=set();holding=None
+        arranged=set();holding=None;bad_since={}
         while time.monotonic()-start<args.wall_limit:
             if proc.poll() is not None:raise RuntimeError('Launch exited')
             if len(arranged)<2:
@@ -49,6 +49,26 @@ def main():
                 last=s
                 if time.time()-file.stat().st_mtime>90:raise RuntimeError('Telemetry stopped')
                 if s['status']=='FAILED':result=dict(outcome='FAILED',reason=s.get('failure_reason'));break
+                # A zero contact counter alone cannot certify flight: also stop
+                # on sustained loss of airborne tracking, retaining raw evidence.
+                peer_file=out/'peer_states.jsonl'
+                if s.get('start_time') is not None and s['simulation_time']>s['start_time']+5 and peer_file.exists():
+                    with peer_file.open('rb') as stream:
+                        size=stream.seek(0,2);stream.seek(max(0,size-262144));lines=stream.read().splitlines()
+                    latest={}
+                    for line in lines:
+                        try:state=json.loads(line)
+                        except (json.JSONDecodeError,UnicodeDecodeError):continue
+                        latest[state['drone']]=state
+                    for i,state in latest.items():
+                        error=state.get('execution',{}).get('tracking_error',0.)
+                        bad=state['position'][2]<.5 or error>.8
+                        if bad:
+                            bad_since.setdefault(i,state['time'])
+                            if state['time']-bad_since[i]>=1.:
+                                result=dict(outcome='EXECUTION_FAILURE',reason='Sustained landing or tracking loss',drone=i,time=state['time'],estimated_position=state['position'],tracking_error_m=error)
+                        else:bad_since.pop(i,None)
+                    if result:break
                 if s['status']=='COMPLETE':
                     if holding is None:holding=s['simulation_time']
                     if s['simulation_time']-holding>=3.:result=dict(outcome='COMPLETE');break
