@@ -1,0 +1,447 @@
+{
+  "passed": true,
+  "verified_installed_files": 110,
+  "frozen_source_files": 203,
+  "files": {
+    "share/annual_swarm/launch/decentralized_search.launch.py": {
+      "source": "ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py",
+      "sha256": "245cb1a08d647302d09c33214b055fdc81c6f8ecefe32984c2a02d35687d1c3c"
+    },
+    "share/annual_swarm/launch/exploration_palette.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/exploration_palette.py",
+      "sha256": "c357209c71f3c2ba91754b827c208c1d073d2b984b54a0f3b011815b2cf39610"
+    },
+    "share/annual_swarm/launch/swarm.launch.py": {
+      "source": "ros2_ws/src/annual_swarm/launch/swarm.launch.py",
+      "sha256": "bcba5b27b4a9d20c0e325a55055e70e9e09f06f80fa9d7e468f1f54af427fdc9"
+    },
+    "share/annual_swarm/launch/scene.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/scene.py",
+      "sha256": "913b35b1a28b1f7ffc8d661027a87a47389488fa7efe22a885cb311d9d50b632"
+    },
+    "share/annual_swarm/launch/search.launch.py": {
+      "source": "ros2_ws/src/annual_swarm/launch/search.launch.py",
+      "sha256": "e0e59e6673a4f835b7590d03065925ebfe74371138e68399be5b037a9705617f"
+    },
+    "share/annual_swarm/maps/laboratory.json": {
+      "source": "next_project/maps/laboratory.json",
+      "sha256": "0f073a3811b5dd2b20b842a526b39b73b6c9aa693652bfe830620d556c931332"
+    },
+    "share/annual_swarm/maps/sample_corridor.json": {
+      "source": "next_project/maps/sample_corridor.json",
+      "sha256": "12c89394057bfa579aa5859080ef1d1bb276f47f07526aa2ec719d1b0fefd1e0"
+    },
+    "share/annual_swarm/maps/sample_warehouse.json": {
+      "source": "next_project/maps/sample_warehouse.json",
+      "sha256": "65c7105462cb9c896e2b96e80eb70870d6c1222f2995ec110169e61f0b339600"
+    },
+    "share/annual_swarm/maps/sample_open_office.json": {
+      "source": "next_project/maps/sample_open_office.json",
+      "sha256": "cdfc11198470e44b71876a0bbbdf778aa8eb1d2aef8a0fbdec7f5290e3f9ca1b"
+    },
+    "share/annual_swarm/maps/search_maze.json": {
+      "source": "next_project/maps/search_maze.json",
+      "sha256": "e6b0f0490c2ddf20a0fd04855c850c4324d67e15e536dc2964190ad2b66cffb7"
+    },
+    "share/annual_swarm/maps/unknown_map_arena.json": {
+      "source": "next_project/maps/unknown_map_arena.json",
+      "sha256": "5b0b763d8a441fdf98059cfb655f9be69a3ce865c40d1f9e0209cabed5a9fe2e"
+    },
+    "share/annual_swarm/maps/formation_maze_stress.json": {
+      "source": "next_project/maps/formation_maze_stress.json",
+      "sha256": "aad8982405dffe66b12b48eb9554e62115ad2c48b9366677c6adc7e5dbc9aade"
+    },
+    "share/annual_swarm/maps/search_office.json": {
+      "source": "next_project/maps/search_office.json",
+      "sha256": "ee31478a4ec69a5d0ddda86633f93ad69d4152be9daf2f58468be8b5dac16137"
+    },
+    "share/annual_swarm/maps/sample_office.json": {
+      "source": "next_project/maps/sample_office.json",
+      "sha256": "6dc0c3a238854c1e5114313b1a6efb5121f989b6bbd70d9307d24516e900d02c"
+    },
+    "share/annual_swarm/maps/sample_simple.json": {
+      "source": "next_project/maps/sample_simple.json",
+      "sha256": "b13c7e4ef7fffa4fdd8fb4ccf6f6572e3f72633de024534624685b59d63ec620"
+    },
+    "share/annual_swarm/maps/rrt_dual_channel_escape.json": {
+      "source": "next_project/maps/rrt_dual_channel_escape.json",
+      "sha256": "a0c014913c3486a3e55b6bdcbf053e1e2d52cc52540fadc0042d580592e2cd85"
+    },
+    "share/annual_swarm/maps/meeting_room.json": {
+      "source": "next_project/maps/meeting_room.json",
+      "sha256": "506ea0d4ee0c5521fda37db5880c9e0aba50dffb8afae990c8407353f5e86780"
+    },
+    "share/annual_swarm/maps/open3d_redwood_fragment.json": {
+      "source": "next_project/maps/open3d_redwood_fragment.json",
+      "sha256": "dcf62dd571ec3390a2e26b291b204d8145835db33f5b5c4e8e7cc79ca7986251"
+    },
+    "share/annual_swarm/maps/sample_warehouse_edited.json": {
+      "source": "next_project/maps/sample_warehouse_edited.json",
+      "sha256": "eb6cabae18c987e7ab851a9a440f91226b640eb9f04a8f20501217ba069359c2"
+    },
+    "share/annual_swarm/maps/company_cubicles.json": {
+      "source": "next_project/maps/company_cubicles.json",
+      "sha256": "e45a988af13a15288f32e64e46906ae0a6e53cb468f920cfc6ea576fa570b4d8"
+    },
+    "share/annual_swarm/maps/school_corridor.json": {
+      "source": "next_project/maps/school_corridor.json",
+      "sha256": "04cf5b6c6027e963f6ae52076d102bbbc4b9e8c3ee0e996d5f8872051ed59efb"
+    },
+    "share/annual_swarm/maps/search_fusion_3d.json": {
+      "source": "next_project/maps/search_fusion_3d.json",
+      "sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d"
+    },
+    "share/annual_swarm/models/quadrotor.sdf": {
+      "source": "ros2_ws/src/annual_swarm/models/quadrotor.sdf",
+      "sha256": "249cdcb815f6a6eac1e41194a2e9fbac4bd34b16a027c1ab3cf8fe1baa024895"
+    },
+    "share/annual_swarm/worlds/indoor.sdf": {
+      "source": "ros2_ws/src/annual_swarm/worlds/indoor.sdf",
+      "sha256": "a20b6fe237b13b8bb395509c60b35c0c4aa52925fa0bec18e8bb7b94229a80dd"
+    },
+    "share/annual_swarm/config/exploration.rviz": {
+      "source": "ros2_ws/src/annual_swarm/config/exploration.rviz",
+      "sha256": "930c1ad38c906f67d7a2b2d088cb3f252cb73c95a6b9da6747684d3a8cc9a07b"
+    },
+    "share/annual_swarm/config/exploration_priority.yaml": {
+      "source": "ros2_ws/src/annual_swarm/config/exploration_priority.yaml",
+      "sha256": "4c910d37eaff10c53af2efbe5e262868c4417fedcca6d161c774c25f2e647cc5"
+    },
+    "share/annual_swarm/config/exploration-gazebo.config": {
+      "source": "ros2_ws/src/annual_swarm/config/exploration-gazebo.config",
+      "sha256": "e1d6135bc4b4c505af983e6480811cdb82fa3f307820fbac93d57abaaca01847"
+    },
+    "share/annual_swarm/config/flight.yaml": {
+      "source": "ros2_ws/src/annual_swarm/config/flight.yaml",
+      "sha256": "945ce83383a76814753cae2dc0b0050c5c1168d644be9ef85c2954655c5b0f5f"
+    },
+    "lib/annual_swarm/compare_search.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/compare_search.py",
+      "sha256": "676e08572c52ed53e34a85c2b2e81a6663c54f9882d19ebd5b2ffd8626876e8a"
+    },
+    "lib/annual_swarm/metrics_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/metrics_node.py",
+      "sha256": "6a5cd38bc66d12ebfddf50bf239e2fae712509836fc80f25d091dad85a805e03"
+    },
+    "lib/annual_swarm/exploration_palette.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/exploration_palette.py",
+      "sha256": "c357209c71f3c2ba91754b827c208c1d073d2b984b54a0f3b011815b2cf39610"
+    },
+    "lib/annual_swarm/decentralized_agent_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py",
+      "sha256": "0aeda3139adb7892a758d602cbd57a17e76e563bc33079b10f11d017b0da6a6b"
+    },
+    "lib/annual_swarm/search_executor_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/search_executor_node.py",
+      "sha256": "cced5ab04a682cec2b21a2ff8e738e72d4d4fab5403fe41f832596381e9b5887"
+    },
+    "lib/annual_swarm/dynamic_obstacle_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/dynamic_obstacle_node.py",
+      "sha256": "19b0fcd03bf8940947729c0864d490dcaafc3b059c555520de1b6a9cdffc9bb1"
+    },
+    "lib/annual_swarm/search_smoke.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/search_smoke.py",
+      "sha256": "a59472c82faa76e25938f6b2df68925c4ab8cd750b7b7cbf4d5a5b5d5d67f053"
+    },
+    "lib/annual_swarm/decentralized_smoke.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/decentralized_smoke.py",
+      "sha256": "626ac9a28af1666b61cfa68e19921b98926b492ac1297efeab5c4eb0b0033542"
+    },
+    "lib/annual_swarm/smoke_test.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/smoke_test.py",
+      "sha256": "1fc0d37e393100dfcb9404f90d780e19b055f4be4172271ccd3af74d5deb6d66"
+    },
+    "lib/annual_swarm/validate_matrix.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/validate_matrix.py",
+      "sha256": "b66c2cdaeb1d9ac20af1c1697338b4a3c5784686ab040f6b4858a7174cf15279"
+    },
+    "lib/annual_swarm/audit_decentralized_run.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/audit_decentralized_run.py",
+      "sha256": "f5c7126cc2bf8a7c3f86af8f5c1113d23f3e4d9e024f9ccddf2be133445d61fe"
+    },
+    "lib/annual_swarm/state_estimator_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/state_estimator_node.py",
+      "sha256": "ea30701286864ef4786749a028db623091f93782dccc403e3ae3d1f7e9a5a445"
+    },
+    "lib/annual_swarm/compare_recovery.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/compare_recovery.py",
+      "sha256": "dcea73aa2d73ee98ea8b5612cd0a30a883319e973eb53e9bdb5fb74518d89ded"
+    },
+    "lib/annual_swarm/search_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/search_node.py",
+      "sha256": "1d7e682bfc035fe9aacc5a31492cc054d8f359fcd6ca9448be8ad7154201e353"
+    },
+    "lib/annual_swarm/view_executor_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/view_executor_node.py",
+      "sha256": "26a7c5f636fe0d14393cbfea2f6471154ba1c05c41b4df9de487b91e305aa9e8"
+    },
+    "lib/annual_swarm/exploration_visualization_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py",
+      "sha256": "7f78edf84f097e6de6db7a98f7ae3a3ccb4665fc2e1a07aa5cd856a7e5e42786"
+    },
+    "lib/annual_swarm/localization_measurement_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/localization_measurement_node.py",
+      "sha256": "b4bc51c28c3a9ad31d5d7ff5063f0885959be43994e2609f555737f0b1d70b54"
+    },
+    "lib/annual_swarm/formation_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/formation_node.py",
+      "sha256": "757df685b53f9434fab0f22503fc4669795e753765bf3c911135a9ee3fb7c598"
+    },
+    "lib/annual_swarm/record_decentralized_demo.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/record_decentralized_demo.py",
+      "sha256": "1cdd940de85a98aa08c513c8c898697b072f7aaf7bf181347ee49a83e8c062e6"
+    },
+    "lib/annual_swarm/pointcloud_mapping_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/pointcloud_mapping_node.py",
+      "sha256": "2880c3af99eb3ddc51dc4d188e6461cc68c1bdf097faf196143c03d81f5f922c"
+    },
+    "lib/annual_swarm/candidate_pool_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/candidate_pool_node.py",
+      "sha256": "03e5d0317006ea4f7e51300c497704597baa5d045eca361a6a104d7c8015326c"
+    },
+    "lib/annual_swarm/candidate_runtime.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/candidate_runtime.py",
+      "sha256": "743728aab245ca5437310cf29b850fc782a8a5da5fc70e10445414dcf9fb7313"
+    },
+    "lib/annual_swarm/audit_fusion_run.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/audit_fusion_run.py",
+      "sha256": "60406836aedea0d93e2161d74f7fe166539c703150f32e2ca99bc4d318452736"
+    },
+    "lib/annual_swarm/exploration_experiment_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/exploration_experiment_node.py",
+      "sha256": "1a3ebf8ce205317248736d0b4d9571b7527c81a027594d9b0a1f61e42a55f856"
+    },
+    "lib/annual_swarm/planning_runtime.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/planning_runtime.py",
+      "sha256": "057094874cfe3dbda5b97ef74714e7af66792ed60bc768a2ddd38a661b572080"
+    },
+    "lib/annual_swarm/planning_node.py": {
+      "source": "ros2_ws/src/annual_swarm/scripts/planning_node.py",
+      "sha256": "bff2a345f5b6bfc765f5449d950c70ff162e9aef2929e8a70e003d61904e4357"
+    },
+    "lib/annual_swarm/legacy/core/__init__.py": {
+      "source": "next_project/core/__init__.py",
+      "sha256": "c61421ddce419637ae3425ec57602b6da5b4a1a325da8ee365b71b706bc07562"
+    },
+    "lib/annual_swarm/legacy/core/map_loader.py": {
+      "source": "next_project/core/map_loader.py",
+      "sha256": "c3a922a757ed57a863ffda4aa20ab7f6f3a6e5528f8f5ef1b1fee49941377c77"
+    },
+    "lib/annual_swarm/legacy/core/safety_profiles.py": {
+      "source": "next_project/core/safety_profiles.py",
+      "sha256": "781c932b3a8ed05c6ba8ef05f9bc2c15332f526b3a82ec5836fdf038ade4406b"
+    },
+    "lib/annual_swarm/legacy/core/smc.py": {
+      "source": "next_project/core/smc.py",
+      "sha256": "06304fbf0a597973888a24b423903f915dedc74b5f6b55675a12428ff0fe3406"
+    },
+    "lib/annual_swarm/legacy/core/allocator.py": {
+      "source": "next_project/core/allocator.py",
+      "sha256": "cfbc3296cfa422d76a24fd25d44862694fa62144c79aa7d8eb4489264c54f907"
+    },
+    "lib/annual_swarm/legacy/core/drone.py": {
+      "source": "next_project/core/drone.py",
+      "sha256": "fc918a6721cf1a009b3ddeed57728aae9d0ef85ac5fbd9bc3d27f3f8e748b5ee"
+    },
+    "lib/annual_swarm/legacy/core/drone_params.py": {
+      "source": "next_project/core/drone_params.py",
+      "sha256": "300033173870dd0c412f337860bdf7a417bb2a35763a1db53d7db8cc010962ce"
+    },
+    "lib/annual_swarm/legacy/core/obstacles.py": {
+      "source": "next_project/core/obstacles.py",
+      "sha256": "e0022895aa886753ef4aef283b22ca98b7173bf2fad5713c2c5375571886e250"
+    },
+    "lib/annual_swarm/legacy/core/risk_report.py": {
+      "source": "next_project/core/risk_report.py",
+      "sha256": "8591db14fbac10b6895e0e5cac2eddd4c9dacc7770d6ee8bac2054c826781851"
+    },
+    "lib/annual_swarm/legacy/core/formation_adaptation.py": {
+      "source": "next_project/core/formation_adaptation.py",
+      "sha256": "fe491fd8cccb2573feed2d2f9de638a239525680147b8473adb96edce3757d3c"
+    },
+    "lib/annual_swarm/legacy/core/formation_clearance.py": {
+      "source": "next_project/core/formation_clearance.py",
+      "sha256": "219c5ea5bf9c48939d12e7c1ffb1103a5d162de99a09d6e6aa5adae693ade93f"
+    },
+    "lib/annual_swarm/legacy/core/sensors.py": {
+      "source": "next_project/core/sensors.py",
+      "sha256": "32bbd7a62c5a2fc8b63398d00343766f88f97e00eccbe49b25bd2bea582665f7"
+    },
+    "lib/annual_swarm/legacy/core/topology.py": {
+      "source": "next_project/core/topology.py",
+      "sha256": "c66ad4ea4831504a99555ae9ac728545eaa23bee482e24114e7222173cea8c32"
+    },
+    "lib/annual_swarm/legacy/core/fault_detector.py": {
+      "source": "next_project/core/fault_detector.py",
+      "sha256": "9f1b719bf385c14ca821aa70d3f3ca1da6125044ff0f9c8f22743474b44f80d1"
+    },
+    "lib/annual_swarm/legacy/core/result_schema.py": {
+      "source": "next_project/core/result_schema.py",
+      "sha256": "25cdd4c2fb15f65343386bd5ffdf65bcacc8e0b0ed0c20dc5c2ba661b3a52a8f"
+    },
+    "lib/annual_swarm/legacy/core/rotor.py": {
+      "source": "next_project/core/rotor.py",
+      "sha256": "34f31dfb762211301bcdc904babd74ed0644f7416abfe3a526fa3fe16a4d66e6"
+    },
+    "lib/annual_swarm/legacy/core/controller.py": {
+      "source": "next_project/core/controller.py",
+      "sha256": "d56ef832052b7a1dc08352461c6698734015faf7a07b5b7472c56bd043c7fb0b"
+    },
+    "lib/annual_swarm/legacy/core/artificial_potential_field.py": {
+      "source": "next_project/core/artificial_potential_field.py",
+      "sha256": "f4fe1ad6ca4459639e6f4208c2a9e731aca1aad75a8444c196a8015551863ec1"
+    },
+    "lib/annual_swarm/legacy/core/wind_field.py": {
+      "source": "next_project/core/wind_field.py",
+      "sha256": "8833e9ff362496201e0757514fc9d5d315fc60d64ba76b4a777f4360c5823554"
+    },
+    "lib/annual_swarm/legacy/core/formation_safety.py": {
+      "source": "next_project/core/formation_safety.py",
+      "sha256": "4ba61c85654299d048e873382d80ff6097698fe8064834762f00aa5bc5fdc27b"
+    },
+    "lib/annual_swarm/legacy/core/model_importer.py": {
+      "source": "next_project/core/model_importer.py",
+      "sha256": "fe210845f08a32beeedd84a3a60b06b6ad6183ac88607a2815267b3924402417"
+    },
+    "lib/annual_swarm/legacy/core/exploration/__init__.py": {
+      "source": "next_project/core/exploration/__init__.py",
+      "sha256": "1ea9926067eed74763f003a5460b956a98bf5efc0a77616447c0eaf15e6178e7"
+    },
+    "lib/annual_swarm/legacy/core/exploration/hierarchy.py": {
+      "source": "next_project/core/exploration/hierarchy.py",
+      "sha256": "06c368e71be1e9fc97f3a200155675440d5fe4516fb8093ddf9b7796dc8c52be"
+    },
+    "lib/annual_swarm/legacy/core/exploration/mrdtg.py": {
+      "source": "next_project/core/exploration/mrdtg.py",
+      "sha256": "14b70970c1d6a8fab32ea042fc53a0e891d737c113b93b3901f26e2e2132a1e0"
+    },
+    "lib/annual_swarm/legacy/core/exploration/pairwise.py": {
+      "source": "next_project/core/exploration/pairwise.py",
+      "sha256": "a8ede900fac908594fbcc85993986fa3b910ff0f46fef0654543b37340283bae"
+    },
+    "lib/annual_swarm/legacy/core/exploration/allocation.py": {
+      "source": "next_project/core/exploration/allocation.py",
+      "sha256": "8a59b9ddafc27ac914dc5bcf1cb0d12bb7787aab9a55b58074d73832d5e4c98b"
+    },
+    "lib/annual_swarm/legacy/core/exploration/graph.py": {
+      "source": "next_project/core/exploration/graph.py",
+      "sha256": "544f241cbb6392981cdac4ce5e84c651d00a438ecdfb1a3fdb36d59d4c0875c7"
+    },
+    "lib/annual_swarm/legacy/core/exploration/voxel_mapping.py": {
+      "source": "next_project/core/exploration/voxel_mapping.py",
+      "sha256": "8944eca86afbd2738db12821f8e0c6899c0c965700594193686642419001804d"
+    },
+    "lib/annual_swarm/legacy/core/exploration/decentralized.py": {
+      "source": "next_project/core/exploration/decentralized.py",
+      "sha256": "78b0938b72146d76aeec261bb9a7244931d5b842e4602c25da91bce52b9ff8a6"
+    },
+    "lib/annual_swarm/legacy/core/exploration/coordinator.py": {
+      "source": "next_project/core/exploration/coordinator.py",
+      "sha256": "5d4d9e2c74d972ea8acf7ddd3431fc9ed01ed34bd652526f256c3d5866434cdb"
+    },
+    "lib/annual_swarm/legacy/core/exploration/sparse_graph.py": {
+      "source": "next_project/core/exploration/sparse_graph.py",
+      "sha256": "3b89ceac0fde85b6139a5acef90ae48c6f03813575c33221d356e74a85776e1b"
+    },
+    "lib/annual_swarm/legacy/core/exploration/fusion.py": {
+      "source": "next_project/core/exploration/fusion.py",
+      "sha256": "f3da4b62d872f4cdffecaf736a3580490ee42e4d2cdc0a9f1e16e7b9abdbdaf9"
+    },
+    "lib/annual_swarm/legacy/core/exploration/priority.py": {
+      "source": "next_project/core/exploration/priority.py",
+      "sha256": "593389bf34f4154fa40e040700445de5776065c3edab10cda5721ee42c5a3cbe"
+    },
+    "lib/annual_swarm/legacy/core/exploration/state_estimation.py": {
+      "source": "next_project/core/exploration/state_estimation.py",
+      "sha256": "a6aa58f2387b000ecd781645a960bc1ccdf38cea6ebb34840c7b496091107870"
+    },
+    "lib/annual_swarm/legacy/core/exploration/regions.py": {
+      "source": "next_project/core/exploration/regions.py",
+      "sha256": "8ca19421e10395036bcca3090d8249b45af59ae25270a62bf30e1b0ed775012f"
+    },
+    "lib/annual_swarm/legacy/core/exploration/mapping.py": {
+      "source": "next_project/core/exploration/mapping.py",
+      "sha256": "06aa853b9990e2a47c1e4a8fd36b5d8e1f2f5049af7093f8ca2ced57cf868131"
+    },
+    "lib/annual_swarm/legacy/core/planning/__init__.py": {
+      "source": "next_project/core/planning/__init__.py",
+      "sha256": "c3471b0490ba7359ee8815ca0f9b452b402050e1ffbfda2bd383b72ae6a569f3"
+    },
+    "lib/annual_swarm/legacy/core/planning/visibility_graph.py": {
+      "source": "next_project/core/planning/visibility_graph.py",
+      "sha256": "4e9d08884bf845f749602cf97061272b53b1b3efbefad3b14e2a02d0fab6d7fe"
+    },
+    "lib/annual_swarm/legacy/core/planning/gnn_planner.py": {
+      "source": "next_project/core/planning/gnn_planner.py",
+      "sha256": "3623c8a6b15245fd995b612292974ba104adfaf30e0f57347596b5f5528e48cd"
+    },
+    "lib/annual_swarm/legacy/core/planning/informed_rrt_star.py": {
+      "source": "next_project/core/planning/informed_rrt_star.py",
+      "sha256": "6484d27b5d4ba52f0e90780f15e1207ed579c4dd07d1fefb10cf3f76b1867239"
+    },
+    "lib/annual_swarm/legacy/core/planning/base.py": {
+      "source": "next_project/core/planning/base.py",
+      "sha256": "01d191e78233aa3999f827bbcf773cbf709c2160ec67e5948f33c52b336b603e"
+    },
+    "lib/annual_swarm/legacy/core/planning/trajectory_optimizer.py": {
+      "source": "next_project/core/planning/trajectory_optimizer.py",
+      "sha256": "4bf120a39762bc61156b10a7eca2d4d7a522023bef8322657d7aad8fa80fda04"
+    },
+    "lib/annual_swarm/legacy/core/planning/path_quality.py": {
+      "source": "next_project/core/planning/path_quality.py",
+      "sha256": "f3b776ff012144e9e892e7d77aeb719804e7e96d5ccd31556dab410048519e9d"
+    },
+    "lib/annual_swarm/legacy/core/planning/new_plan.md": {
+      "source": "next_project/core/planning/new_plan.md",
+      "sha256": "54cb7f5dd5d37a0067ff3fbcb9e286c82493d22e2e03dbb286f081e9f644214a"
+    },
+    "lib/annual_swarm/legacy/core/planning/dstar_lite.py": {
+      "source": "next_project/core/planning/dstar_lite.py",
+      "sha256": "c67d074c053ee8d6b5320233d88061cd3d04c18459b36112dc4d9cdfbdcdefd9"
+    },
+    "lib/annual_swarm/legacy/core/planning/dijkstra.py": {
+      "source": "next_project/core/planning/dijkstra.py",
+      "sha256": "d85cadfd4ce7196a6aa03f282a867fee7b3245997877b087e56aa0e764804ddc"
+    },
+    "lib/annual_swarm/legacy/core/planning/rrt_star.py": {
+      "source": "next_project/core/planning/rrt_star.py",
+      "sha256": "33132ae7d27c0018b981da486e17fa377a74cbc1f67615b9fcbe54ade8f8d73d"
+    },
+    "lib/annual_swarm/legacy/core/planning/astar.py": {
+      "source": "next_project/core/planning/astar.py",
+      "sha256": "8d708ffd43c17784692a2091cd4e264fa174addbc326facc6c63ea4384d6a7c5"
+    },
+    "lib/annual_swarm/legacy/core/planning/mpc_tracker.py": {
+      "source": "next_project/core/planning/mpc_tracker.py",
+      "sha256": "0aa1dcdaf2ea8598180fb221a4cb2e1a248468e5b844eb9c96ad351e1ee25547"
+    },
+    "lib/annual_swarm/legacy/core/planning/hybrid_astar.py": {
+      "source": "next_project/core/planning/hybrid_astar.py",
+      "sha256": "e54c463e6597bc58d7fb80ca8587ef6b2d2c9e6a65c5b4d5f221958ceea38b1d"
+    },
+    "lib/annual_swarm/legacy/core/planning/dual_mode.py": {
+      "source": "next_project/core/planning/dual_mode.py",
+      "sha256": "90af31f595319bf227960f0fc6f0a3d19bdd7d47a2e74f8091ba37d10d104086"
+    },
+    "lib/annual_swarm/legacy/core/planning/firi.py": {
+      "source": "next_project/core/planning/firi.py",
+      "sha256": "e018db2bf699ba360e9208a8ca8a92e5192630b18a537c5c5611741f6a673b2d"
+    },
+    "lib/annual_swarm/legacy/core/planning/continuous_trajectory.py": {
+      "source": "next_project/core/planning/continuous_trajectory.py",
+      "sha256": "c0051a7c8e15c8abbdbb3bc3efff3f0890fbffeeec4a019caf329d55691c0c30"
+    },
+    "lib/annual_swarm/legacy/core/planning/esdf.py": {
+      "source": "next_project/core/planning/esdf.py",
+      "sha256": "7e5ce76c54f3485fe47b06676334e2e32389c0f10a52ca3d2668e89f238f0dce"
+    },
+    "lib/annual_swarm/legacy/core/planning/replanner.py": {
+      "source": "next_project/core/planning/replanner.py",
+      "sha256": "71d0bfa5ee0a76ae43a301b6d31287f1bc92b782307843ea95fddd106d61cf8a"
+    },
+    "lib/annual_swarm/legacy/core/planning/voronoi_region.py": {
+      "source": "next_project/core/planning/voronoi_region.py",
+      "sha256": "83fe53942fe3ec8430e040f28829027f1475ae052a8f7683ba398525c51cfbd2"
+    }
+  }
+}

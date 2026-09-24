@@ -1,0 +1,14 @@
+{
+  "base_commit": "1b0a6b5b4af7d391b88c77199266799f7e2c2165",
+  "includes_uncommitted_changes": false,
+  "arguments": {
+    "source_root": "/tmp/annual-palette-20260924",
+    "manifest": "/workspace/artifacts/palette-video/source-manifest.json",
+    "archive": "/workspace/artifacts/palette-video/recorded-source.tar.gz",
+    "output_dir": "/tmp/annual-palette-video-v1",
+    "simulation_limit": 2400.0,
+    "wall_limit": 14400.0,
+    "speed": 24.0
+  },
+  "comparison": "Same 3D scene, sensors, estimation, physical limits and fault-trigger rules as optimized-final. New full recording with the committed display palette; no planner/controller changes from the integrated run."
+}

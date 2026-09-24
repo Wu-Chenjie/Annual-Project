@@ -1,6 +1,8 @@
 # 室内无人机集群：ROS 2 / Gazebo 仿真
 
-最新联合路线/观测收益改进在同条件 Gazebo 中 **820.0 s 达到 95% 三维覆盖**，总航程 327.1 m，零接触；较此前 1631.0 s 优化融合版缩短 49.7%。[新录像、三版本对照及独立审计](ros2_ws/docs/validation/fusion-integrated/README.md)。这是单次工程实测，未声称所有场景都能获得同等改善。
+最新[新配色完整录像（1080p，62.47 秒）](ros2_ws/docs/validation/palette-video/palette-exploration.mp4)已录制：本次 **890.5 s 达到 95% 三维覆盖**，最终覆盖率 95.07%，总航程 402.4 m，零接触。[本次数据、源码与独立审计](ros2_ws/docs/validation/palette-video/README.md)。本轮仅更新显示配色，规划与控制算法保持一致。
+
+此前联合路线/观测收益改进的一次同条件 Gazebo 飞行为 **820.0 s 达到 95% 三维覆盖**，总航程 327.1 m，零接触；较此前 1631.0 s 优化融合版缩短 49.7%。[原录像、三版本对照及独立审计](ros2_ws/docs/validation/fusion-integrated/README.md)完整保留。各次运行的异步调度和路线不同，单次实测不能保证每次复现相同耗时。
 
 早期策略接入同一三维传感环境时，2400.6 s 覆盖 53.53%，未达到 95%。[历史对照与全部尝试披露](ros2_ws/docs/validation/early-policy-3d/README.md) 保留当时的版本和指标；这不是原二维约 300 s 任务的复现。
 
