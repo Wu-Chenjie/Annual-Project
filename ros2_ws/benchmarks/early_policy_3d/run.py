@@ -59,8 +59,8 @@ def main():
             elif time.monotonic()-start>180:raise RuntimeError('No experiment telemetry')
             time.sleep(1)
         if not result:result=dict(outcome='WALL_TIME_LIMIT')
-    except Exception as exc:
-        result=dict(outcome='INFRASTRUCTURE_FAILURE',reason=repr(exc))
+    except (Exception, KeyboardInterrupt) as exc:
+        result=dict(outcome='INTERRUPTED' if isinstance(exc,KeyboardInterrupt) else 'INFRASTRUCTURE_FAILURE',reason=repr(exc))
     finally:
         result.update(wall_elapsed_s=time.monotonic()-start,last_coverage=last.get('coverage') if last else None,last_simulation_time=last.get('simulation_time') if last else None)
         (out/'run-result.json').write_text(json.dumps(result,indent=2));print(json.dumps(result),flush=True)

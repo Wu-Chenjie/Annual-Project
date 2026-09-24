@@ -115,7 +115,9 @@ class Coordinator(Node):
             for i,paths in result['candidates'].items():
                 self.candidates.write(json.dumps(dict(time=t,drone=i,paths=paths))+'\n');self.candidates.flush()
             for i,packet in result['commands'].items():
-                if packet is None:continue
+                if packet is None:
+                    self.cancel(i,'historical_policy_release')
+                    continue
                 if i in self.active or not self.available(i) or t-result['snapshot_time']>20.:
                     self.rejected.add(i);continue
                 runtime=self.runtime(i,packet['recovery'])
