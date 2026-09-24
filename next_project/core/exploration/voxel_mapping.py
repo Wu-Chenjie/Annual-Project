@@ -112,6 +112,11 @@ class VoxelMap:
             return False
         if not (np.all(idx >= 0) and np.all(idx < self.shape)):
             return False
+        # A centerline inside an occupied/unknown box cannot pass any positive
+        # body-clearance check. Reject it before the costly neighborhood query;
+        # free centerlines still undergo the full envelope and reservation test.
+        if np.any(self.state[tuple(idx.T)] != 0):
+            return False
         # Every voxel box potentially intersecting the ellipsoid is checked;
         # nearest-center interpolation alone is not a safety certificate.
         radius = self.clearance+np.linalg.norm(self.metric*self.resolution/2)

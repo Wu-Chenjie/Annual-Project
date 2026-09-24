@@ -601,3 +601,44 @@ def test_prefetch_process_preserves_actual_history_and_starts_at_endpoint():
     assert result['fusion'].diagnostics['anticipatory_view']
     if result['selection']:
         assert np.allclose(result['selection']['pool'].active.path[0],end)
+
+
+def test_history_cache_reuses_distant_changes_but_rechecks_local_obstacle():
+    import copy
+    from core.exploration.voxel_mapping import VoxelMap
+    m=VoxelMap([[0,0,0],[24,12,4]]);m.state[:]=0;m.rebuild()
+    h=AdaptiveRegions(m.bounds);h.update(m)
+    graph=MultiRobotGraph(0,m.bounds)
+    a=np.array([2.25,2.25,1.65]);b=np.array([5.25,2.25,1.65])
+    graph.update(m,a,h,1.);graph.update(m,b,h,2.)
+    assert graph.edges
+    trees=dict(graph.trees)
+    m.state[tuple(m.indices([21.,8.,1.65]))]=1;m.version+=1;m.rebuild()
+    graph.update(m,b,h,3.)
+    assert all(graph.trees[k] is v for k,v in trees.items())
+    m.state[tuple(m.indices([3.75,2.25,1.65]))]=1;m.version+=1;m.rebuild()
+    reference=copy.deepcopy(graph);reference.trees={};reference.handshake_cache={}
+    graph.update(m,b,h,4.);reference.update(m,b,h,4.)
+    assert graph.edges==reference.edges
+    assert all(m.safe_path(edge['points']) for edge in graph.edges)
+    assert all(graph.trees[k] is not v for k,v in trees.items())
+
+
+def test_collision_fast_reject_does_not_skip_body_clearance_or_reservations():
+    from core.exploration.voxel_mapping import VoxelMap
+    m=VoxelMap([[0,0,0],[8,8,4]]);m.state[:]=0
+    m.state[10,5:15,:]=1;m.rebuild()
+    tree=m.obstacle_tree
+    class CountQueries:
+        calls=0
+        def query_ball_point(self,*args,**kwargs):
+            self.calls+=1;return tree.query_ball_point(*args,**kwargs)
+    counter=CountQueries();m.obstacle_tree=counter
+    assert not m.safe_path([[2.1,2.1,1.5],[4.5,2.1,1.5]])
+    assert counter.calls==0  # The centerline itself enters an occupied voxel.
+    assert not m.safe_path([[2.7,2.1,1.5],[2.7,3.3,1.5]])
+    assert counter.calls==1  # Free centerline, but insufficient body clearance.
+    assert m.safe_path([[1.5,2.1,1.5],[1.5,3.3,1.5]])
+    m.block_paths([[[1.5,3.3,1.5]]]);assert not m.safe_path([[1.5,2.1,1.5],[1.5,3.3,1.5]])
+    m.state[10,5:15,:]=-1;m.rebuild()
+    assert not m.safe_path([[2.1,2.1,1.5],[4.5,2.1,1.5]])
