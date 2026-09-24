@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """One independently replaceable exploration agent. No truth map or fleet planner."""
 import copy
+from dataclasses import fields
 from concurrent.futures import ProcessPoolExecutor
 from multiprocessing import get_context
 import json
@@ -17,9 +18,10 @@ import planning_runtime  # installed core module location
 from core.exploration.decentralized import MapReplica, PeerLedger, remainder, tracking_recovery
 from core.exploration.sparse_graph import SparseTopology
 from core.exploration.fusion import FusionPlanner, reusable_trajectory
+from core.exploration.priority import PriorityConfig, service_cells, service_result
 from core.exploration.pairwise import PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory
-from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
+from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells, information_count
 from core.planning.path_quality import PathQualityEvaluator, RankedPathPool, Candidate
 
 
@@ -32,7 +34,9 @@ class ExplorationAgent(Node):
         self.network_isolated = set()
         self.replica = MapReplica(bounds, self.id, volumetric=True, flight_limits=(.7, min(3.1, bounds[1][2]-.3))); self.ledger = PeerLedger(self.id, members=tuple(range(len(self.seeds))))
         self.ledger.seeds = self.seeds
-        self.fusion = FusionPlanner(self.id, bounds); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
+        priority_config = PriorityConfig(**{f.name: self.declare_parameter('exploration_priority.'+f.name, f.default).value
+                                           for f in fields(PriorityConfig)})
+        self.fusion = FusionPlanner(self.id, bounds, priority_config); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
         self.bootstrapped = False; self.rejoin_ready = False; self.join_stopped_since = None
         self.last_graph_full = -30.; self.graph_bytes = 0; self.last_pair_commits = 0
         self.position = None; self.yaw = 0.; self.observation = None; self.execution = {}
@@ -53,13 +57,16 @@ class ExplorationAgent(Node):
             for line in previous_events.read_text().splitlines():
                 try:
                     e = json.loads(line)
-                    if e.get('type') == 'region_low_yield':
+                    if e.get('type') == 'region_service':
+                        self.service_feedback[int(e['region'])] = e['feedback']
+                    elif e.get('type') == 'region_low_yield':
                         self.service_feedback[int(e['region'])] = dict(stamp=e['time'], defer_until=e['retry_after'], observed_new_cells=e['new_cells'])
                 except (ValueError, KeyError):
                     continue
         self.log = (self.output/'events.jsonl').open('a'); self.paths = (self.output/'candidates.jsonl').open('a')
         self.last_map_dump = -20.
         self.view_start_known = 0
+        self.view_start_cells = np.empty(0, dtype=int)
         self.bytes = 0; self.peer_bytes = 0; self.commits = 0; self.observed_views = 0
         # CPU-bound graph/tour/trajectory work must not hold the ROS callback GIL.
         # Spawn avoids inheriting DDS threads or sockets into the planning worker.
@@ -247,24 +254,32 @@ class ExplorationAgent(Node):
         if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
             self.intent['committed'] = True; self.commits += 1
             self.view_start_known = int(np.count_nonzero(self.replica.map.state != -1))
+            self.view_start_cells = service_cells(self.replica.map, self.tasks.get(self.active),
+                                                 self.intent['path'][-1], self.intent['yaw'])
             self.publish(self.command_pub, dict(epoch=self.epoch, path=self.intent['path'], yaw=self.intent['yaw'],
                                                region=self.active, token=self.intent['token'], trajectory=self.intent.get('trajectory')))
             self.event('path_committed', token=self.intent['token'], region=self.active, quorum=self.intent['voters'],
-                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'])
+                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'],
+                       exploration_priority=self.selection.get('priority'))
         if self.intent and self.intent.get('committed') and self.execution.get('arrived') and self.execution.get('epoch') == self.epoch:
             self.observed_views += 1
             new_cells = max(0, int(np.count_nonzero(self.replica.map.state != -1))-self.view_start_known)
             self.recent.append((t+(240. if new_cells < 3 else 0.), self.position.copy(), self.intent['yaw']))
             self.event('view_observed', region=self.active, epoch=self.epoch, token=self.intent['token'], new_cells=new_cells,
                        observed_volume=new_cells*self.replica.map.resolution**self.replica.map.state.ndim)
-            if self.active is not None and self.active >= 0 and new_cells < 30:
-                # A noisy wall fringe can remain an apparent frontier after a
-                # successful view. Measured low yield ends the current regional
-                # service, allowing the coverage tour to advance before retry.
-                self.cooldown[self.active] = t+600.
-                self.service_feedback[self.active] = dict(stamp=t, defer_until=t+600., observed_new_cells=new_cells)
-                self.event('region_low_yield', region=self.active, new_cells=new_cells, retry_after=t+600.)
-                self.active = None
+            if self.active is not None and self.active >= 0 and not self.selection.get('transit'):
+                gained = int(np.count_nonzero(self.replica.map.state.ravel()[self.view_start_cells] != -1))
+                previous = max((self.service_feedback.get(self.active, {}), self.fusion.graph.services.get(self.active, {})),
+                               key=lambda v: v.get('stamp', -1.))
+                feedback = service_result(previous, t, gained, len(self.view_start_cells), self.fusion.priority.config)
+                self.service_feedback[self.active] = feedback
+                self.cooldown[self.active] = feedback['defer_until']
+                if feedback['low_yield_streak']:
+                    self.event('region_low_yield', region=self.active, new_cells=gained, retry_after=feedback['defer_until'])
+                # Write last so restart replay restores streaks and successful resets.
+                self.event('region_service', region=self.active, feedback=feedback)
+                if feedback['low_yield_streak']:
+                    self.active = None
             # Retain the regional service priority while selecting its next view.
             self.intent = None; self.selection = None
         if self.intent and not self.intent.get('committed') and t-self.intent['created'] > 6:
@@ -375,6 +390,7 @@ class ExplorationAgent(Node):
             self.last_plan = result['wall']; self.graph = result['graph']; self.tasks = result['tasks']
             self.bids, self.tour, self.workload = result['bids'], result['tour'], result['workload']
             self.graph_seq += 1; snapshot = self.graph.snapshot(); snapshot['sequence'] = self.graph_seq
+            snapshot['exploration_priority'] = self.fusion.priority_layer
             self.publish(self.graph_pub, snapshot)
             if self.active not in self.tasks and not self.intent:
                 self.active = None
@@ -439,11 +455,13 @@ class ExplorationAgent(Node):
         candidate = selection['pool'].active
         if candidate is None:
             return
-        if pending['anticipatory'] and not selection.get('transit'):
-            cells = visible_cells(runtime, candidate.path[-1], selection['yaw'])
+        if not selection.get('transit'):
+            cells = (visible_cells(runtime, candidate.path[-1], selection['yaw'])-
+                     self.fusion.priority.committed_cells(runtime, self.ledger.states, t))
             if len(cells) < 5:
                 return
-            selection['gain'] = len(cells)*runtime.resolution**runtime.state.ndim
+            selection['gain'] = information_count(cells, self.fusion.graph.observed_mask(runtime),
+                self.fusion.priority.config.history_weight)*runtime.resolution**runtime.state.ndim
         if self.ledger.can_propose(candidate.path, rid, t):
             self.propose(rid, selection)
             if self.intent and pending['anticipatory']:

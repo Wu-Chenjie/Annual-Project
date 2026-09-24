@@ -1,7 +1,8 @@
 """Capacity-constrained two-vehicle coverage routing and bilateral transactions.
 
 Held-Karp computes open tours for every subset in a bounded interaction window.
-The assignment step minimizes total travel with makespan pressure, with hard
+The fused objective combines travel/service and information completion time,
+with makespan pressure. The assignment step retains hard
 unknown-volume capacities and pinned committed tasks. No external LKH process or
 claim of global fleet optimality is required.
 """
@@ -15,7 +16,9 @@ def fingerprint(owners):
     return hashlib.sha256(json.dumps(sorted((int(k), int(v)) for k, v in owners.items())).encode()).hexdigest()[:20]
 
 
-def subset_tours(start, between):
+def subset_tours(start, between, weights=None, latency_weight=.5):
+    if weights is not None and np.sum(weights) > 0:
+        return information_subset_tours(start, between, weights, latency_weight)
     n = len(start); size = 1 << n
     dp = np.full((size, n), np.inf); prev = np.full((size, n), -1, int)
     for j in range(n):
@@ -40,7 +43,41 @@ def subset_tours(start, between):
     return costs, route
 
 
-def solve_pair(ids, start_costs, between, demands, owners, pair, pinned=None, capacity_factor=1.35, fixed_loads=(0., 0.)):
+def information_subset_tours(start, between, weights, latency_weight):
+    """Exact suffix DP for travel plus weighted mean arrival/service time.
+
+    Prepending an edge delays every remaining reward by that edge's duration.
+    A fixed normalization across all subsets keeps assignments comparable.
+    """
+    n = len(start); size = 1 << n; weights = np.asarray(weights, float)
+    scale = latency_weight/max(float(weights.sum()), 1e-12)
+    mass = np.zeros(size); dp = np.full((size, n), np.inf); following = np.full((size, n), -1, int)
+    for mask in range(1, size):
+        bit = mask & -mask; mass[mask] = mass[mask ^ bit]+weights[bit.bit_length()-1]
+        for j in range(n):
+            if not mask & (1 << j):
+                continue
+            rest = mask ^ (1 << j)
+            service = 1.5*(1.+scale*mass[mask])
+            if not rest:
+                dp[mask, j] = service
+            else:
+                values = dp[rest]+between[j]*(1.+scale*mass[rest])
+                k = int(np.argmin(values)); dp[mask, j] = service+values[k]; following[mask, j] = k
+    starts = dp+np.asarray(start)[None, :]*(1.+scale*mass[:, None])
+    costs = np.min(starts, axis=1); costs[0] = 0.
+    def route(mask):
+        if not mask:
+            return []
+        j = int(np.argmin(starts[mask])); order = []
+        while mask:
+            order.append(j); k = following[mask, j]; mask ^= 1 << j; j = k
+        return order
+    return costs, route
+
+
+def solve_pair(ids, start_costs, between, demands, owners, pair, pinned=None, capacity_factor=1.35, fixed_loads=(0., 0.),
+               reward_weights=None, latency_weight=.5):
     ids = list(ids); n = len(ids)
     if n > 12:
         raise ValueError('Pair interaction window is bounded at 12 regions')
@@ -50,7 +87,11 @@ def solve_pair(ids, start_costs, between, demands, owners, pair, pinned=None, ca
         raise ValueError('Invalid CVRP dimensions/demands')
     if fixed_loads.shape != (2,) or not np.isfinite(fixed_loads).all() or np.any(fixed_loads < 0):
         raise ValueError('Invalid frozen outside-window workload')
-    tables = [subset_tours(starts[i], between) for i in range(2)]
+    if reward_weights is not None:
+        reward_weights = np.asarray(reward_weights, float)
+        if reward_weights.shape != (n,) or not np.isfinite(reward_weights).all() or np.any(reward_weights < 0):
+            raise ValueError('Invalid information rewards')
+    tables = [subset_tours(starts[i], between, reward_weights, latency_weight) for i in range(2)]
     total_mask = (1 << n)-1
     volumes = np.zeros(1 << n)
     for mask in range(1, 1 << n):

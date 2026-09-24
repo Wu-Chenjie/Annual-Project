@@ -1,0 +1,64 @@
+{
+  "window_start_elapsed_s": 600,
+  "window_end_elapsed_s": 1437.999,
+  "commits": 75,
+  "aging_over_80_percent": 64,
+  "priority_region_mismatch": 0,
+  "examples": [
+    {
+      "drone": 1,
+      "time": 1265.9070000000002,
+      "region": 107,
+      "priority_region": 107,
+      "score": 2.991369514557544,
+      "predicted_gain": 0.05399999999999999,
+      "aging_fraction": 0.9995931580663568,
+      "travel_s": 46.50000000000008,
+      "source": "local_rays"
+    },
+    {
+      "drone": 2,
+      "time": 878.0,
+      "region": 197,
+      "priority_region": 197,
+      "score": 1.9026505396992235,
+      "predicted_gain": 0.026999999999999996,
+      "aging_fraction": 0.9992639007163949,
+      "travel_s": 49.000000000000085,
+      "source": "local_rays"
+    },
+    {
+      "drone": 2,
+      "time": 1092.546,
+      "region": 158,
+      "priority_region": 158,
+      "score": 2.5322192164072908,
+      "predicted_gain": 0.026999999999999996,
+      "aging_fraction": 0.9991996283757112,
+      "travel_s": 21.500000000000018,
+      "source": "local_rays"
+    },
+    {
+      "drone": 2,
+      "time": 1120.8220000000001,
+      "region": 158,
+      "priority_region": 158,
+      "score": 2.5322192164072908,
+      "predicted_gain": 0.026999999999999996,
+      "aging_fraction": 0.9991996283757112,
+      "travel_s": 21.500000000000018,
+      "source": "local_rays"
+    },
+    {
+      "drone": 2,
+      "time": 1041.867,
+      "region": 58,
+      "priority_region": 58,
+      "score": 2.512193622464362,
+      "predicted_gain": 0.05399999999999999,
+      "aging_fraction": 0.9991268099541587,
+      "travel_s": 41.000000000000064,
+      "source": "local_rays"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "snapshot": "observed_final.npz",
+  "recomputed": {
+    "coverage": 0.9509122872894229,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "legacy_center_free_coverage": 0.900791050739113,
+    "truth_free_voxels": 58589,
+    "observed_free_voxels": 55713,
+    "unobserved_free_voxels": 2392,
+    "falsely_occupied_free_voxels": 484
+  },
+  "summary_coverage": 0.9509122872894229,
+  "difference_from_summary": 0.0,
+  "note": "observed_latest is captured after the recorder stop condition; the sample may differ from the last summary. observed_final is frozen by the experiment at termination."
+}

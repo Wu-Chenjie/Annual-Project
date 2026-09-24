@@ -18,6 +18,7 @@ class Visualization(Node):
     def __init__(self):
         super().__init__('exploration_visualization')
         self.fleet_size = int(self.declare_parameter('fleet_size', 3).value)
+        self.priority_source = int(self.declare_parameter('priority_source', 0).value)
         self.states = {}; self.graphs = {}; self.poses = {}; self.trails = {i: [] for i in range(self.fleet_size)}; self.map = None; self.diag = {}
         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.pub = self.create_publisher(MarkerArray, '/exploration/markers', q)
@@ -57,6 +58,36 @@ class Visualization(Node):
                 m = self.marker('observed_map', value+1, Marker.CUBE_LIST, color)
                 m.scale.x = m.scale.y = res*.98; m.scale.z = height
                 self.points(m, np.column_stack([xy, np.full(len(xy), z)])); out.markers.append(m)
+        # The gain layer belongs to one planner replica. Component IDs and scores
+        # from private maps must not be merged as if they were a global costmap.
+        layer = self.graphs.get(self.priority_source, {}).get('exploration_priority', {})
+        priorities = {r['region']: r for r in sorted(layer.get('regions', []), key=lambda r: -r['score'])[:10]
+                      if r['score'] > 0}
+        if layer.get('shape'):
+            groups = np.array(layer['slice_labels']).reshape(layer['shape'])
+            peak = max((c['priority'] for c in layer['components']), default=0.)
+            for component in layer['components']:
+                if component['priority'] <= 0:
+                    continue
+                cells = np.argwhere(groups == component['id'])
+                if not len(cells):
+                    continue
+                strength = component['priority']/max(peak, 1e-9)
+                color = (1., .85-.65*strength, .08)
+                m = self.marker('unknown_region_priority', component['id'], Marker.CUBE_LIST, color, .55)
+                m.scale.x = m.scale.y = layer['resolution']*.95; m.scale.z = .035
+                xy = np.array(layer['origin'])+(cells+.5)*layer['resolution']
+                self.points(m, np.column_stack([xy, np.full(len(xy), .08)])); out.markers.append(m)
+            for component in sorted(layer['components'], key=lambda c: -c['priority'])[:12]:
+                if component['priority'] <= 0:
+                    continue
+                low, high = np.array(component['bounds'])[:, :2]
+                label = self.marker('unknown_region_labels', component['id'], Marker.TEXT_VIEW_FACING, (1., .8, .2))
+                label.scale.z = .26
+                label.pose.position.x, label.pose.position.y = map(float, (low+high)/2)
+                label.pose.position.z = .65
+                label.text = f"C{component['id']} {component['volume']:.1f} {layer['unit']}\nP {component['priority']:.3f}"
+                out.markers.append(label)
         # Display one replica's sparse graph, not a misleading union of three copies.
         graph = self.graphs.get(0, {})
         nodes = self.marker('sparse_junctions', 0, Marker.SPHERE_LIST, (1., .85, .3)); nodes.scale.x = nodes.scale.y = nodes.scale.z = .14
@@ -81,6 +112,11 @@ class Visualization(Node):
             label = self.marker('region_labels', rid, Marker.TEXT_VIEW_FACING, color); label.scale.z = .3
             label.pose.position.x = float(x); label.pose.position.y = float(y); label.pose.position.z = .35
             label.text = f'R{rid} / '+(f'U{owner}' if owner >= 0 else 'auction'); out.markers.append(label)
+            if rid in priorities:
+                row = priorities[rid]
+                label.text += f"\nP {row['score']:.3f} / wait {row['wait_s']:.0f}s"
+                if row['deferred']:
+                    label.text += ' / retry later'
         for i, pose in self.poses.items():
             color = COLORS[i % len(COLORS)]; p = pose.position
             body = self.marker('actual_vehicle', i, Marker.CUBE, color); body.pose = pose
@@ -109,6 +145,7 @@ class Visualization(Node):
             f"Coverage {d.get('coverage', 0)*100:.1f}%  |  t={elapsed:.0f}s  |  {d.get('status', 'WAITING')}\n"
             f"Sparse graph: {len(graph.get('nodes', []))} nodes / {graph.get('free_cells', 0)} free cells\n"
             'Hgrid > MR-DTG > GVP + pair CVRP > continuous flight\n'
+            f"Unknown priority: UAV {self.priority_source} estimate / orange = higher / snapshot t={layer.get('time', 0):.0f}s\n"
             f"Network {'RECOVERED' if d.get('network_resumed') else 'PARTITION' if d.get('isolated') else 'OK'} | Restart {'RECOVERED' if d.get('restart_recovered') else 'PENDING' if d.get('restart_trial') else '-'} | Obstacle {'CLEARED' if d.get('dynamic_finished') else 'ACTIVE' if d.get('dynamic_trial') else '-'}")
         out.markers.append(text); self.pub.publish(out)
 

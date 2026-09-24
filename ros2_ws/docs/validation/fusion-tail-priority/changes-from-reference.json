@@ -1,0 +1,50 @@
+{
+  "next_project/core/exploration/fusion.py": {
+    "before": "321c0fecefaf6c69134d5d422901d65ffd48f567aafb39a5d60381fc26e49012",
+    "after": "58436bab95877ead4e6ec9ea089d0f1141a5fcfb06d4069b8c3d25c0ec4b209e"
+  },
+  "next_project/core/exploration/mrdtg.py": {
+    "before": "46a44c121616c58fd6e8c72147625b8987d9c9089e4319acf87fcd28f9eb6f8e",
+    "after": "3618b1b72b2b992fab63cf0428a67f5f920c1d8f5857029c389adc9c9a8cebe2"
+  },
+  "next_project/core/exploration/priority.py": {
+    "before": null,
+    "after": "f12703f9b3f44dccd86ce710e6ad7bf1a61f086abd1487368291678da9120fdb"
+  },
+  "next_project/core/exploration/regions.py": {
+    "before": "0ddab77a8d9cfd2a2789d9a6c4fe8cb33e4caa218bc69fcad02aa12af4cddcc6",
+    "after": "08f0756d543a7c9be3210bfdfcc18909fecd9999b4b917ca699530c54d546f6e"
+  },
+  "ros2_ws/src/annual_swarm/CMakeLists.txt": {
+    "before": "62866dd0301aa9a9099554093e758907dab37053d99d86c4fdfec9ac52074830",
+    "after": "c58aa919424dd8a1c9d76146bc6cf9e5219f75e0c5c5bba90de880e89c2dcdc1"
+  },
+  "ros2_ws/src/annual_swarm/config/exploration.rviz": {
+    "before": "d784217f756862cd1f58104522960e899e152978db0162fbda9bbd9f3c263b46",
+    "after": "9a3993a396aa103ddd6929fe545cce898a6d3d7840f410d1f5a0ed987300a611"
+  },
+  "ros2_ws/src/annual_swarm/config/exploration_priority.yaml": {
+    "before": null,
+    "after": "117bfb44c9caa5a8d6d34c4901b077dd907d853855ed7a37759f55667bd7ac53"
+  },
+  "ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py": {
+    "before": "aac906fa5bd051e9b82de395a0b8eb91b025e06564a860d7fd068a8ee75cc277",
+    "after": "245cb1a08d647302d09c33214b055fdc81c6f8ecefe32984c2a02d35687d1c3c"
+  },
+  "ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py": {
+    "before": "74e56776070ec6d32a139c575c50b4be714003293278dc039524bdca11f042d9",
+    "after": "18a45b097fe5c2820923aa2294b84e9c6caacfe88b6258202e6407d67add4486"
+  },
+  "ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py": {
+    "before": "700f4a0fafc4ad8005f956533087657916a0e3869b8601564e3e8cbcb4651282",
+    "after": "e5d5a268e6933f4619f288e09bda9d44f2a7b4353d4b7a6f171df046f51cdbec"
+  },
+  "ros2_ws/src/annual_swarm/test/test_exploration_priority.py": {
+    "before": null,
+    "after": "f3f5bd2ac1e6dc48afa649c16c7da3f7075ca7598f48aff55d3e033b7db10e75"
+  },
+  "ros2_ws/src/annual_swarm/test/test_priority_ros.py": {
+    "before": null,
+    "after": "ae1eaf120d97276ed19dd20d4cf066568afe03f1c7f5ad52cd388d434d1cdee6"
+  }
+}

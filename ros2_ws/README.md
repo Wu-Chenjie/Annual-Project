@@ -1,10 +1,12 @@
 # ROS 2 / Gazebo 使用说明
 
-早期策略已接入同一三维传感环境实测：2400.6 s 时覆盖 53.53%，未达到 95%；当前优化融合版为 1631.0 s 达到 95%。[原生录像、同口径对照及全部尝试披露](docs/validation/early-policy-3d/README.md)。这是旧策略的三维接口适配对照，不是原二维约 300 s 任务的复现。
+最新联合路线/观测收益改进在同条件 Gazebo 中 **820.0 s 达到 95% 三维覆盖**，总航程 327.1 m，零接触。[新录像、三版本对照及独立审计](docs/validation/fusion-integrated/README.md) 同时保留单次实测和计算开销的限制。
+
+早期策略接入同一三维传感环境时，2400.6 s 覆盖 53.53%，未达到 95%。[历史录像、对照及全部尝试披露](docs/validation/early-policy-3d/README.md) 保留当时的数据；这不是原二维约 300 s 任务的复现。
 
 当前主入口为 `decentralized_search.launch.py`：三维点云、分层区域、MR-DTG、双机任务/路线协商、观测位姿与连续轨迹组成单一融合流程。完整节点契约、故障恢复与录制命令见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下文保留的 `swarm.launch.py` 是原编队入口。
 
-最新 [优化版视频与性能对照](docs/validation/fusion-optimized/README.md) 保留实际轨迹、测试、源码及审计证据：同地图达到 95% 覆盖用时缩短 25.3%，总航程增加 37.1%。
+历史 [优化融合版视频与性能对照](docs/validation/fusion-optimized/README.md) 保留实际轨迹、测试、源码及审计证据；[上轮末端优先级版](docs/validation/fusion-tail-priority/README.md) 的收尾改善和总耗时退化也完整保留。
 
 ## 环境与启动
 

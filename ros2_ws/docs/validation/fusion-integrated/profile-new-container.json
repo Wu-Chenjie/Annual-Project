@@ -1,0 +1,327 @@
+[
+  {
+    "wall": 0.7490678059999709,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 0,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.7486894910000501,
+      "stage_wall_s": {
+        "map": 6.545000019286817e-06,
+        "hierarchy": 0.029973604000019805,
+        "topology": 0.031499741999937214,
+        "priority": 0.07503858400002628,
+        "tour": 0.272811129000047,
+        "pair": 2.8769999289579573e-06,
+        "view": 0.16936509800007116,
+        "trajectory": 0.16998236599999927
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "team_observed_cells": 58398,
+      "priority_compute": {
+        "raycasts": 120,
+        "refined_regions": 20,
+        "cached_regions": 5,
+        "bound_regions": 46
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.2644577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 146,
+        "travel_s": 7.999999999999998,
+        "wait_s": 0.0,
+        "aging_multiplier": 1.0,
+        "gain_source": "local_rays",
+        "information_reward": 2.512348551636786,
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.6883170710000286,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.6879178699999784,
+      "stage_wall_s": {
+        "map": 8.586999911130988e-06,
+        "hierarchy": 0.02808120100007727,
+        "topology": 0.027513915999975325,
+        "priority": 0.027688628999953835,
+        "tour": 0.26789650700004586,
+        "pair": 3.2929999633779516e-06,
+        "view": 0.16863356700002896,
+        "trajectory": 0.16808354099998724
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "team_observed_cells": 58398,
+      "priority_compute": {
+        "raycasts": 24,
+        "refined_regions": 4,
+        "cached_regions": 26,
+        "bound_regions": 41
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.2657800309889442,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 146,
+        "travel_s": 7.999999999999998,
+        "wait_s": 2.0,
+        "aging_multiplier": 1.005,
+        "gain_source": "local_rays",
+        "information_reward": 2.5249102943949695,
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.6832583750000367,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.682894067999996,
+      "stage_wall_s": {
+        "map": 6.085999984861701e-06,
+        "hierarchy": 0.027283592999992834,
+        "topology": 0.02596260000007078,
+        "priority": 0.024833327000010286,
+        "tour": 0.26096941999992396,
+        "pair": 2.3339999870586325e-06,
+        "view": 0.16977722200010703,
+        "trajectory": 0.17405389999998988
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "team_observed_cells": 58398,
+      "priority_compute": {
+        "raycasts": 20,
+        "refined_regions": 4,
+        "cached_regions": 30,
+        "bound_regions": 37
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.26710231970033205,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 146,
+        "travel_s": 7.999999999999998,
+        "wait_s": 4.0,
+        "aging_multiplier": 1.01,
+        "gain_source": "local_rays",
+        "information_reward": 2.537472037153154,
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.6878574659999686,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.6874860299999455,
+      "stage_wall_s": {
+        "map": 6.461999987550371e-06,
+        "hierarchy": 0.027094123999972908,
+        "topology": 0.025694423999993887,
+        "priority": 0.025927122999974017,
+        "tour": 0.26087370599998394,
+        "pair": 2.0420000055310084e-06,
+        "view": 0.16730444400002398,
+        "trajectory": 0.18057882799996605
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "team_observed_cells": 58398,
+      "priority_compute": {
+        "raycasts": 20,
+        "refined_regions": 3,
+        "cached_regions": 35,
+        "bound_regions": 33
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.2684246084117198,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 146,
+        "travel_s": 7.999999999999998,
+        "wait_s": 6.0,
+        "aging_multiplier": 1.015,
+        "gain_source": "local_rays",
+        "information_reward": 2.5500337799113373,
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.6867195629999969,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.6863463769999498,
+      "stage_wall_s": {
+        "map": 6.545000019286817e-06,
+        "hierarchy": 0.02695259399990846,
+        "topology": 0.026779008000062277,
+        "priority": 0.03235712899993359,
+        "tour": 0.2647919550000779,
+        "pair": 2.8349999183774344e-06,
+        "view": 0.16614603100003933,
+        "trajectory": 0.16930577799996627
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "team_observed_cells": 58398,
+      "priority_compute": {
+        "raycasts": 28,
+        "refined_regions": 4,
+        "cached_regions": 38,
+        "bound_regions": 29
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.2697468971231076,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 146,
+        "travel_s": 7.999999999999998,
+        "wait_s": 8.0,
+        "aging_multiplier": 1.02,
+        "gain_source": "local_rays",
+        "information_reward": 2.562595522669522,
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  }
+]

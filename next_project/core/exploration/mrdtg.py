@@ -5,12 +5,19 @@ Occupancy arrays are never serialized by this transport. Received edges guide
 travel; the executing UAV still checks each local segment against its own sensor.
 """
 import copy
+import hashlib
 import heapq
+import json
 import math
 import uuid
 import numpy as np
 from .sparse_graph import length
 from .hierarchy import ExplorationRegion
+
+
+def observation_grid(runtime):
+    description = [list(map(int, runtime.shape)), runtime.origin.tolist(), float(runtime.resolution)]
+    return hashlib.sha256(json.dumps(description, separators=(',', ':')).encode()).hexdigest()
 
 
 def grid_tree(runtime, start, radius=6., router=None):
@@ -122,6 +129,13 @@ class DeltaGraph:
                 p = np.asarray(value['points'], float)
                 if p.ndim != 2 or p.shape[1] != 3 or len(p) < 2 or not np.isfinite(p).all():
                     raise ValueError('Invalid graph edge')
+            if value['kind'] == 'observed_cells':
+                if (not isinstance(value.get('block'), int) or not 0 <= value['block'] < 1000000 or
+                        not isinstance(value.get('grid'), str) or len(value['grid']) != 64 or
+                        not isinstance(value.get('bits'), str) or len(value['bits']) != 64 or
+                        any(c not in '0123456789abcdef' for c in value['bits']+value['grid'])):
+                    raise ValueError('Invalid observed-cell receipt')
+                int(value['bits'], 16)
         self.remote[src] = target; self.received[src] = seq; self.sessions[src] = session
         self.needs_snapshot.discard(src); self.applied += 1
         return True
@@ -148,10 +162,44 @@ class MultiRobotGraph:
         self.trees = {}; self.last_version = -1; self.free_cells = 0; self.version = 0
         self.handshakes = 0; self.attachments = {}; self.runtime = None
         self.services = {}
+        self.coverage = {}; self.coverage_cache = None
         self.handshake_cache = {}
 
+    def record_observation(self, runtime):
+        """Actual locally sensed cells, in 256-bit receipts; no occupancy values.
+
+        These records only discount redundant information gain. They never
+        authorize traversal, update a voxel map or predict an unseen ray endpoint.
+        A restarted source reconstructs them from its persisted local sensor map.
+        """
+        grid = observation_grid(runtime)
+        packed = np.packbits((runtime.state != -1).ravel(), bitorder='little').tobytes()
+        for offset in range(0, len(packed), 32):
+            block = offset//32
+            bits = int.from_bytes(packed[offset:offset+32], 'little')
+            key = f'c:{grid}:{block}'
+            old = self.replica.records.get(key)
+            if old:
+                bits |= int(old['bits'], 16)
+            if bits:
+                self.replica.put(key, dict(kind='observed_cells', grid=grid, block=block, bits=f'{bits:064x}'))
+
+    def observed_mask(self, runtime):
+        grid = observation_grid(runtime); blocks = self.coverage.get(grid, {})
+        key = (grid, tuple(sorted(blocks.items())))
+        if self.coverage_cache is None or self.coverage_cache[0] != key:
+            mask = np.zeros(runtime.state.size, dtype=bool)
+            for block, bits in blocks.items():
+                start = block*256
+                if start >= len(mask):
+                    continue
+                values = np.unpackbits(np.frombuffer(bits.to_bytes(32, 'little'), dtype=np.uint8), bitorder='little')
+                mask[start:start+256] = values[:len(mask[start:start+256])]
+            self.coverage_cache = (key, mask)
+        return self.coverage_cache[1]
+
     def rebuild(self):
-        nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}
+        nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}; coverage = {}
         for source, v in self.replica.values():
             if v['kind'] == 'history':
                 nodes[v['id']] = np.array(v['position'])
@@ -170,8 +218,13 @@ class MultiRobotGraph:
                     regions[rid] = v; stamps[rid] = stamp
             elif v['kind'] == 'region_service':
                 rid = int(v['id'])
-                if v['defer_until'] > services.get(rid, {}).get('defer_until', -1.):
-                    services[rid] = v
+                # New successful sensing clears an older deferral. Selecting by
+                # retry deadline would make a stale failure override that success.
+                if (v['stamp'], source) > services.get(rid, {}).get('_order', (-1., -1)):
+                    services[rid] = dict(v, _order=(v['stamp'], source))
+            elif v['kind'] == 'observed_cells':
+                blocks = coverage.setdefault(v['grid'], {})
+                blocks[v['block']] = blocks.get(v['block'], 0) | int(v['bits'], 16)
         self.nodes = nodes; self.edges = []; self.adj = {n: [] for n in nodes}
         for key, edge in edge_records.items():
             if key in blocked:
@@ -180,7 +233,7 @@ class MultiRobotGraph:
                 index = len(self.edges); self.edges.append(edge)
                 self.adj[edge['u']].append((edge['v'], edge['length'], index, False))
                 self.adj[edge['v']].append((edge['u'], edge['length'], index, True))
-        self.regions = regions; self.region_stamps = stamps; self.services = services
+        self.regions = regions; self.region_stamps = stamps; self.services = services; self.coverage = coverage
 
     def update(self, runtime, position, hierarchy, now):
         self.runtime = runtime; self.free_cells = int(runtime.safe.sum()); self.version = runtime.version

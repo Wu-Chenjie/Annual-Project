@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "sampled_distinct_plans": 334,
+  "scored_commits": 219,
+  "max_age_multiplier": 1.5,
+  "max_age_fraction_of_positive_score": 0.3333333333333333,
+  "max_refined_regions": 24,
+  "max_coarse_raycasts": 174,
+  "median_priority_wall_s": 0.6935686319999377,
+  "max_team_observed_cells": 69589,
+  "gain_sources": {
+    "local_rays": 167,
+    "region_bound": 52,
+    "remote_proxy": 0
+  },
+  "scope": "Checks the sampled execution diagnostics and all logged commits. Mathematical route, receipt idempotence/rejoin and unchanged occupancy contracts are covered by the separate test suite. Flight and sensor-map safety require separate audits."
+}

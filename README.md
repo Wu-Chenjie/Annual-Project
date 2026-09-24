@@ -1,6 +1,8 @@
 # 室内无人机集群：ROS 2 / Gazebo 仿真
 
-早期策略已接入同一三维传感环境实测：2400.6 s 时覆盖 53.53%，未达到 95%；当前优化融合版为 1631.0 s 达到 95%。[原生录像、同口径对照及全部尝试披露](ros2_ws/docs/validation/early-policy-3d/README.md)。这是旧策略的三维接口适配对照，不是原二维约 300 s 任务的复现。
+最新联合路线/观测收益改进在同条件 Gazebo 中 **820.0 s 达到 95% 三维覆盖**，总航程 327.1 m，零接触；较此前 1631.0 s 优化融合版缩短 49.7%。[新录像、三版本对照及独立审计](ros2_ws/docs/validation/fusion-integrated/README.md)。这是单次工程实测，未声称所有场景都能获得同等改善。
+
+早期策略接入同一三维传感环境时，2400.6 s 覆盖 53.53%，未达到 95%。[历史对照与全部尝试披露](ros2_ws/docs/validation/early-policy-3d/README.md) 保留当时的版本和指标；这不是原二维约 300 s 任务的复现。
 
 主运行入口已迁移到 **ROS 2 Jazzy + Gazebo Harmonic（Ubuntu 24.04）**。当前主任务为三架四旋翼的去中心化三维搜索：自适应区域、增量 MR-DTG、图 Voronoi、双机容量路线协商、观测位姿与连续轨迹共同组成一条融合流程。复用仓库原有 C++ 飞控和 Python 规划算法，Gazebo 负责刚体动力学、重力与碰撞。网页服务、HTML 页面和 Plotly HTML 导出已移除。
 
@@ -54,6 +56,10 @@ ros2 topic echo /swarm/planner_diagnostics
 ### 融合探索录像与证据
 
 三维点云、IMU/定位估计、自适应区域、历史树握手拓扑、图分区与双机 CVRP、连续轨迹以及断连/重启恢复的实现及边界见 [融合架构与接口](ros2_ws/DECENTRALIZED_EXPLORATION.md)。主入口 `decentralized_search.launch.py` 将这些环节共同运行，没有 RACER/GVP 模式选择器。
+
+最新版本将行驶时间与信息加权完成时间共同优化，保留优化后的路线；等待奖励有界，并通过压缩的实际观测回执减少跨机重复收益计算。区域粗评估有预算与轮转，执行视点仍做完整几何和预约核验。[本次视频与三版本数据](ros2_ws/docs/validation/fusion-integrated/README.md) 同时记录 90%→95% 为 67.0 s、173 项测试通过，以及单轮规划仍比此前优化融合版慢的限制。[上轮末端优先级版](ros2_ws/docs/validation/fusion-tail-priority/README.md) 的总耗时退化记录完整保留。
+
+![联合改进的三版本对照](ros2_ws/docs/validation/fusion-integrated/three-way-comparison.png)
 
 [观看优化版 Gazebo 原生视频](ros2_ws/docs/validation/fusion-optimized/fused-exploration.mp4) · [优化前后对照、独立审计与原始证据](ros2_ws/docs/validation/fusion-optimized/README.md)
 

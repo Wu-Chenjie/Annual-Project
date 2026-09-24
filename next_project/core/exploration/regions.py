@@ -12,17 +12,18 @@ def angle_delta(a, b):
     return math.atan2(math.sin(a-b), math.cos(a-b))
 
 
-def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5):
+def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5, *, azimuth_samples=None, pitch_samples=13):
     """Predicted view: count the first unknown surface on each ray; do not see through it.
 
     This function never receives simulator truth. Its predicted gain is corrected
     by the next actual observation, including previously unknown occluders.
     """
-    angles = np.linspace(yaw-fov/2, yaw+fov/2, 61 if runtime.state.ndim == 3 else 121)
+    count = azimuth_samples if azimuth_samples is not None else (61 if runtime.state.ndim == 3 else 121)
+    angles = np.linspace(yaw-fov/2, yaw+fov/2, count)
     ranges = np.arange(0., radius+runtime.resolution/2, runtime.resolution/2)
     if runtime.state.ndim == 3:
         position = np.asarray(position)+np.array([0., 0., .4])
-        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, 13))
+        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, pitch_samples))
         directions = np.column_stack([np.cos(pitch.ravel())*np.cos(headings.ravel()),
                                       np.cos(pitch.ravel())*np.sin(headings.ravel()), np.sin(pitch.ravel())])
         coordinates = np.asarray(position)+directions[:, None, :]*ranges[None, :, None]
@@ -85,10 +86,25 @@ class RegionTasks:
         return int(tile[0]*self.shape[1]+tile[1])
 
 
-def optimize_tour(start, ids, tasks, graph, pinned=None):
-    """Cheapest insertion followed by improving 2-opt, on sparse-graph costs."""
+def information_count(cells, observed_mask=None, history_weight=.1):
+    """Discount prior team observations for gain only; never change occupancy."""
+    if observed_mask is None or not cells:
+        return float(len(cells))
+    seen = int(np.count_nonzero(observed_mask[np.fromiter(cells, dtype=int)]))
+    return len(cells)-(1.-history_weight)*seen
+
+
+def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latency_weight=.5):
+    """Joint travel and information-weighted completion time, without post-sorting.
+
+    Rewards use information amounts, not information/time (which would count
+    travel twice). Waiting can modify those rewards by a bounded multiplier.
+    The returned workload remains physical travel + estimated service time.
+    """
     route = [pinned] if pinned in ids else []
     remaining = sorted(set(ids)-set(route))
+    weights = {r: max(0., float((rewards or {}).get(r, 0.))) for r in ids}
+    scale = latency_weight/max(sum(weights.values()), 1e-12) if rewards else 0.
     cache = {}
     def distance(a, b):
         key = (a, b)
@@ -97,8 +113,17 @@ def optimize_tour(start, ids, tasks, graph, pinned=None):
         return cache[key]
     def cost(order):
         return sum(distance(a, b)+1.+tasks[b].unknown*.012 for a, b in zip([None]+order, order))
+    def objective(order):
+        elapsed = 0.; weighted = 0.
+        for a, b in zip([None]+order, order):
+            elapsed += distance(a, b)+1.+tasks[b].unknown*.012
+            weighted += weights[b]*elapsed if weights[b] else 0.
+        return elapsed+scale*weighted
     while remaining:
-        base = cost(route)
+        base = objective(route) if scale else cost(route)
+        arrival = np.r_[0., np.cumsum([distance(a, b)+1.+tasks[b].unknown*.012
+                                      for a, b in zip([None]+route, route)])]
+        suffix = np.r_[np.cumsum([weights[r] for r in route][::-1])[::-1], 0.]
         choices = []
         for r in remaining:
             service = 1.+tasks[r].unknown*.012
@@ -107,33 +132,52 @@ def optimize_tour(start, ids, tasks, graph, pinned=None):
                 added = distance(a, r)+service
                 if k < len(route):
                     added += distance(r, route[k])-distance(a, route[k])
-                value = base+added if np.isfinite(base) else cost(route[:k]+[r]+route[k:])
+                if np.isfinite(base) and np.isfinite(added):
+                    value = base+added
+                    if scale:
+                        value += scale*(weights[r]*(arrival[k]+distance(a, r)+service)+added*suffix[k])
+                else:
+                    value = objective(route[:k]+[r]+route[k:]) if scale else cost(route[:k]+[r]+route[k:])
                 choices.append((value, r, k))
         value, r, k = min(choices)
         if not np.isfinite(value):
             break
         route.insert(k, r); remaining.remove(r)
     for _ in range(4):
-        before = cost(route); best = route; best_cost = before
+        before = objective(route) if scale else cost(route); best = route; best_cost = before
         # Reversing directed internal edges also changes their cost. Prefix
         # sums retain correctness for asymmetric costs, not just Euclidean ones.
         forward = [distance(a, b) for a, b in zip(route, route[1:])]
         reverse = [distance(b, a) for a, b in zip(route, route[1:])]
         finite_reverse = np.isfinite(reverse).all()
         changes = np.r_[0., np.cumsum(np.subtract(reverse, forward))] if finite_reverse else None
+        if scale and finite_reverse:
+            service = np.array([1.+tasks[r].unknown*.012 for r in route])
+            w = np.array([weights[r] for r in route])
+            arrivals = np.cumsum([distance(a, b)+s for a, b, s in zip([None]+route, route, service)])
+            reverse_time = np.r_[0., np.cumsum(np.asarray(reverse)+service[:-1])]
+            weighted_arrivals = np.r_[0., np.cumsum(w*arrivals)]
+            weighted_reverse = np.r_[0., np.cumsum(w*reverse_time)]
+            weight_prefix = np.r_[0., np.cumsum(w)]
         for i in range(1 if route and route[0] == pinned else 0, len(route)):
             for j in range(i+2, len(route)+1):
                 if finite_reverse and np.isfinite(before):
                     a = route[i-1] if i else None
-                    value = before+distance(a, route[j-1])-distance(a, route[i])+changes[j-1]-changes[i]
+                    delta = distance(a, route[j-1])-distance(a, route[i])+changes[j-1]-changes[i]
                     if j < len(route):
-                        value += distance(route[i], route[j])-distance(route[j-1], route[j])
+                        delta += distance(route[i], route[j])-distance(route[j-1], route[j])
+                    value = before+delta
+                    if scale and np.isfinite(delta):
+                        shifted_start = (arrivals[i-1] if i else 0.)+distance(a, route[j-1])+service[j-1]+reverse_time[j-1]
+                        new_block = (weight_prefix[j]-weight_prefix[i])*shifted_start-(weighted_reverse[j]-weighted_reverse[i])
+                        old_block = weighted_arrivals[j]-weighted_arrivals[i]
+                        value += scale*(new_block-old_block+delta*(weight_prefix[-1]-weight_prefix[j]))
                 else:
-                    value = cost(route[:i]+route[i:j][::-1]+route[j:])
+                    value = objective(route[:i]+route[i:j][::-1]+route[j:]) if scale else cost(route[:i]+route[i:j][::-1]+route[j:])
                 if value+1e-6 < best_cost:
                     best = route[:i]+route[i:j][::-1]+route[j:]; best_cost = value
         route = best
-        if cost(route) >= before-1e-6:
+        if (objective(route) if scale else cost(route)) >= before-1e-6:
             break
     return route, cost(route)
 
@@ -172,7 +216,8 @@ class ObservationPlanner:
     def __init__(self):
         self.evaluator = PathQualityEvaluator()
 
-    def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None, excluded_cells=frozenset()):
+    def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None, excluded_cells=frozenset(),
+             observed_mask=None, history_weight=.1):
         options = []
         for point in task.viewpoints:
             path = graph.route(position, point)
@@ -187,7 +232,7 @@ class ObservationPlanner:
                     continue
                 rotation = abs(angle_delta(heading, yaw))/.65
                 # Coupled information/time utility, penalizing needlessly long routes.
-                value = len(cells)*runtime.resolution**runtime.state.ndim/(1.5+travel+rotation)
+                value = information_count(cells, observed_mask, history_weight)*runtime.resolution**runtime.state.ndim/(1.5+travel+rotation)
                 options.append(dict(position=point, yaw=float(heading), path=path, cells=cells, value=value, travel=travel))
         if not options:
             return None
@@ -195,7 +240,7 @@ class ObservationPlanner:
         for first in beam:
             best_second = 0.; second = None
             for other in beam:
-                extra = len(other['cells']-first['cells'])*runtime.resolution**runtime.state.ndim
+                extra = information_count(other['cells']-first['cells'], observed_mask, history_weight)*runtime.resolution**runtime.state.ndim
                 if extra <= 0:
                     continue
                 cost = graph.distance(first['position'], other['position'])/.6+abs(angle_delta(other['yaw'], first['yaw']))/.65+1.5
@@ -214,12 +259,13 @@ class ObservationPlanner:
             pool.rank(([pool.active] if pool.active else [])+pool.backups+[topology])
         if pool.active is None:
             return None
+        effective = information_count(choice['cells'], observed_mask, history_weight)
         # The selected route's quality enters the observation-motion objective too.
         for candidate in [pool.active]+pool.backups:
             candidate.quality['observation_motion_cost'] = (candidate.quality['length_m']/.6+
-                abs(angle_delta(choice['yaw'], yaw))/.65+candidate.quality['score']-len(choice['cells'])*.025)
+                abs(angle_delta(choice['yaw'], yaw))/.65+candidate.quality['score']-effective*.025)
         candidates = sorted([pool.active]+pool.backups, key=lambda c: c.quality['observation_motion_cost'])
         pool.active, pool.backups = candidates[0], candidates[1:6]
-        return dict(pool=pool, yaw=choice['yaw'], gain=len(choice['cells'])*runtime.resolution**runtime.state.ndim,
+        return dict(pool=pool, yaw=choice['yaw'], gain=effective*runtime.resolution**runtime.state.ndim,
                     objective=choice['objective'], lookahead=None if choice['second'] is None else
                     dict(position=choice['second']['position'].tolist(), yaw=choice['second']['yaw']))

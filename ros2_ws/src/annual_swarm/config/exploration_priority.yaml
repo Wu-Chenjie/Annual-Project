@@ -1,0 +1,20 @@
+/**:
+  ros__parameters:
+    exploration_priority:
+      region_weight: 0.35
+      region_reference_volume: 8.0
+      aging_per_minute: 0.15
+      aging_bonus_max: 0.5
+      history_weight: 0.1
+      route_latency_weight: 0.5
+      repeat_decay_s: 600.0
+      low_yield_cells: 30
+      retry_base_s: 15.0
+      retry_max_s: 120.0
+      preview_points: 2
+      preview_headings: 4
+      preview_azimuth_samples: 21
+      preview_pitch_samples: 5
+      remote_gain_cap: 1.0
+      preview_regions: 24
+      refresh_regions: 4

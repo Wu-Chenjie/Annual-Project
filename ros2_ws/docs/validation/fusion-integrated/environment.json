@@ -1,0 +1,10 @@
+{
+  "platform": "Linux-6.8.0-100-generic-aarch64-with-glibc2.39",
+  "python": "3.12.3",
+  "cpu_count": 6,
+  "ros_distro": "jazzy",
+  "colima_profile": "annual-fusion",
+  "cpu_assignment": 6,
+  "memory_assignment_gib": 8,
+  "frozen_source_root": "/tmp/annual-integrated-20260924"
+}
