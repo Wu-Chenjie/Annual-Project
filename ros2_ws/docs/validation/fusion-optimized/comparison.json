@@ -1,0 +1,264 @@
+{
+  "baseline": {
+    "t90_s": 1456.5,
+    "t95_s": 2183.5,
+    "coverage": 0.950246633327075,
+    "distance_m": 476.04819484247446,
+    "contacts": 0,
+    "minimum_separation_m": 1.307642012850271,
+    "tracking": {
+      "0": {
+        "samples": 3094,
+        "rms_m": 0.018230691975685272,
+        "p95_m": 0.03394750797430308,
+        "max_m": 0.05342658714598525
+      },
+      "1": {
+        "samples": 3188,
+        "rms_m": 0.01677105362014361,
+        "p95_m": 0.03030238787617873,
+        "max_m": 0.12084979552072611
+      },
+      "2": {
+        "samples": 2840,
+        "rms_m": 0.01708682773380552,
+        "p95_m": 0.030840964797937152,
+        "max_m": 0.05442876541954006
+      }
+    },
+    "movement": {
+      "1": {
+        "sampled_duration_s": 2183.49,
+        "moving_fraction": 0.19480281567582133,
+        "moving_mean_speed_m_s": 0.3391567567148819,
+        "all_time_mean_speed_m_s": 0.07407589544875962
+      },
+      "2": {
+        "sampled_duration_s": 2183.49,
+        "moving_fraction": 0.18438829580167515,
+        "moving_mean_speed_m_s": 0.32069288854232564,
+        "all_time_mean_speed_m_s": 0.06739591145710994
+      },
+      "0": {
+        "sampled_duration_s": 2183.49,
+        "moving_fraction": 0.1934151289907447,
+        "moving_mean_speed_m_s": 0.340862971577978,
+        "all_time_mean_speed_m_s": 0.07424747502297341
+      }
+    },
+    "planning_wall_s": {
+      "count": 1197,
+      "median": 4.184544187000938,
+      "p95": 15.31577127439996,
+      "maximum": 75.26843619600004
+    },
+    "stage_wall_s": {},
+    "between_views_wait_s": {
+      "count": 278,
+      "median": 10.051000000000016,
+      "p95": 40.36019999999992,
+      "maximum": 107.08500000000004
+    },
+    "cancellations": {
+      "experiment_pause": 1,
+      "proposal_voter_timeout": 45,
+      "path_or_tracking_invalidated": 28,
+      "intent_invalidated_before_commit": 7,
+      "experiment_complete": 2
+    },
+    "event_counts": {
+      "incarnation_ready": 4,
+      "path_proposed": 363,
+      "path_committed": 310,
+      "view_observed": 279,
+      "region_low_yield": 76,
+      "pair_cvrp_prepared": 142,
+      "pair_cvrp_committed": 214,
+      "availability_pause": 1,
+      "lease_cancellation_requested": 83,
+      "region_reassigned": 6,
+      "reservation_retired": 30,
+      "availability_resume": 1,
+      "network_partition": 3,
+      "network_recovered": 3,
+      "region_yielded": 16,
+      "process_restart_requested": 1,
+      "pair_rejoin_released": 1,
+      "peer_rejoined": 2,
+      "tracking_recovery": 19,
+      "cached_route_switched": 3
+    },
+    "prepared_curves": 0,
+    "proposed_curves": 363,
+    "commits": 310,
+    "views": 279,
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589
+  },
+  "current": {
+    "t90_s": 1136.0030000000002,
+    "t95_s": 1631.005,
+    "coverage": 0.9524654798682346,
+    "distance_m": 652.625140527426,
+    "contacts": 0,
+    "minimum_separation_m": 1.7443277962802688,
+    "tracking": {
+      "0": {
+        "samples": 4678,
+        "rms_m": 0.018341514269161426,
+        "p95_m": 0.03242415252519957,
+        "max_m": 0.07076497465077382
+      },
+      "1": {
+        "samples": 3836,
+        "rms_m": 0.017388990721660072,
+        "p95_m": 0.031645830340007085,
+        "max_m": 0.09927638976750855
+      },
+      "2": {
+        "samples": 4452,
+        "rms_m": 0.017721479411833874,
+        "p95_m": 0.03094235465099874,
+        "max_m": 0.13660950189471405
+      }
+    },
+    "movement": {
+      "0": {
+        "sampled_duration_s": 1631.0,
+        "moving_fraction": 0.4263274064990797,
+        "moving_mean_speed_m_s": 0.3286098601237159,
+        "all_time_mean_speed_m_s": 0.147517889858632
+      },
+      "1": {
+        "sampled_duration_s": 1631.0,
+        "moving_fraction": 0.3148068669527896,
+        "moving_mean_speed_m_s": 0.3356829744497705,
+        "all_time_mean_speed_m_s": 0.1135433047203498
+      },
+      "2": {
+        "sampled_duration_s": 1631.0,
+        "moving_fraction": 0.3953341508277126,
+        "moving_mean_speed_m_s": 0.32519645478479897,
+        "all_time_mean_speed_m_s": 0.13589759640067928
+      }
+    },
+    "planning_wall_s": {
+      "count": 648,
+      "median": 4.366884498499985,
+      "p95": 8.948032568100047,
+      "maximum": 17.43512492299942
+    },
+    "stage_wall_s": {
+      "map": {
+        "count": 648,
+        "median": 2.0405500208653393e-05,
+        "p95": 5.4979749984340734e-05,
+        "maximum": 0.008394027999656828
+      },
+      "hierarchy": {
+        "count": 648,
+        "median": 0.2585423319999336,
+        "p95": 0.4671629859499717,
+        "maximum": 0.7366866600000321
+      },
+      "topology": {
+        "count": 648,
+        "median": 1.0546001625000372,
+        "p95": 3.4609096415998235,
+        "maximum": 6.456070883999928
+      },
+      "tour": {
+        "count": 648,
+        "median": 0.5884960804996808,
+        "p95": 2.584382254899856,
+        "maximum": 3.2188969789999646
+      },
+      "pair": {
+        "count": 648,
+        "median": 0.09851306499990642,
+        "p95": 0.2562214967001636,
+        "maximum": 0.41983364499992604
+      },
+      "view": {
+        "count": 648,
+        "median": 0.8553533799999968,
+        "p95": 2.1032907645497287,
+        "maximum": 9.770037414999933
+      },
+      "trajectory": {
+        "count": 648,
+        "median": 0.9154166680002618,
+        "p95": 2.835479730799966,
+        "maximum": 4.498829958999522
+      }
+    },
+    "between_views_wait_s": {
+      "count": 369,
+      "median": 2.4890000000000327,
+      "p95": 16.243999999999865,
+      "maximum": 40.06000000000017
+    },
+    "cancellations": {
+      "experiment_pause": 1,
+      "path_or_tracking_invalidated": 21,
+      "proposal_voter_timeout": 19,
+      "peer_priority": 1,
+      "intent_invalidated_before_commit": 4,
+      "experiment_complete": 2
+    },
+    "event_counts": {
+      "incarnation_ready": 4,
+      "path_proposed": 419,
+      "path_committed": 395,
+      "next_view_ready": 268,
+      "view_observed": 370,
+      "next_view_adopted": 153,
+      "region_low_yield": 103,
+      "pair_cvrp_prepared": 106,
+      "pair_cvrp_committed": 148,
+      "availability_pause": 1,
+      "lease_cancellation_requested": 48,
+      "region_reassigned": 95,
+      "reservation_retired": 24,
+      "tracking_recovery": 12,
+      "availability_resume": 1,
+      "region_yielded": 17,
+      "network_partition": 3,
+      "network_recovered": 3,
+      "process_restart_requested": 1,
+      "peer_rejoined": 2,
+      "motion_suspended": 17,
+      "motion_resumed": 17,
+      "cached_route_switched": 3
+    },
+    "prepared_curves": 401,
+    "proposed_curves": 419,
+    "commits": 395,
+    "views": 370,
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589
+  },
+  "change": {
+    "t90_s": {
+      "before": 1456.5,
+      "after": 1136.0030000000002,
+      "reduction_percent": 22.00460006865773
+    },
+    "t95_s": {
+      "before": 2183.5,
+      "after": 1631.005,
+      "reduction_percent": 25.303182963132574
+    },
+    "distance_m": {
+      "before": 476.04819484247446,
+      "after": 652.625140527426,
+      "reduction_percent": -37.09224141546872
+    }
+  },
+  "interpretation": "One completed run per version; identical scene and coverage denominator. No statistical significance or isolated ablation is claimed. Inspect source manifests for all implementation differences.",
+  "motion_definition": "Time-weighted intervals between Gazebo pose samples inside [start_time, finish_time]; moving means speed > 0.05 m/s.",
+  "planning_definition": "Deduplicated compute_wall_s per agent incarnation. Optimized compute also includes continuous trajectory fitting that previously ran in the ROS callback.",
+  "wait_definition": "Elapsed simulation time from view_observed to the next path_committed in the same incarnation; includes intentional fault recovery and arbitration."
+}

@@ -53,8 +53,10 @@ ros2 topic echo /swarm/planner_diagnostics
 
 三维点云、IMU/定位估计、自适应区域、历史树握手拓扑、图分区与双机 CVRP、连续轨迹以及断连/重启恢复的实现及边界见 [融合架构与接口](ros2_ws/DECENTRALIZED_EXPLORATION.md)。主入口 `decentralized_search.launch.py` 将这些环节共同运行，没有 RACER/GVP 模式选择器。
 
-[观看三维融合版 Gazebo 原生视频](ros2_ws/docs/validation/fusion/fused-exploration.mp4) · [实测指标、故障恢复、独立审计与原始证据](ros2_ws/docs/validation/fusion/README.md)
+[观看优化版 Gazebo 原生视频](ros2_ws/docs/validation/fusion-optimized/fused-exploration.mp4) · [优化前后对照、独立审计与原始证据](ros2_ws/docs/validation/fusion-optimized/README.md)
 
-![三维融合探索完成画面](ros2_ws/docs/validation/fusion/demo-preview.png)
+同地图、相同飞行限速的一次完整对照中，达到 95% 覆盖用时由 2183.5 s 降至 1631.0 s（缩短 25.3%），视点间等待中位数由 10.05 s 降至 2.49 s；零接触。总航程同时增加 37.1%，重复探索仍需改进，不能据此声称能耗或路径长度也得到优化。[原三维融合基线](ros2_ws/docs/validation/fusion/README.md) 保留供复算。
+
+![优化后三维融合探索完成画面](ros2_ws/docs/validation/fusion-optimized/demo-preview.png)
 
 [历史平面版录像与旧口径数据](ros2_ws/docs/validation/decentralized/README.md) 单独保留，不能与当前三维传感结果直接比较。旧集中式探索和编队入口继续用于原算法回归。

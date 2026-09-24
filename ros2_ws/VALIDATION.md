@@ -1,6 +1,6 @@
 # ROS / Gazebo 迁移验收记录
 
-最新三维融合探索验收、录像源码版本、117 项包测试与独立冷启动证据见 [融合版运行证据](docs/validation/fusion/README.md)。架构和接口边界见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下面按时间保留历史验证，不将旧限制或旧指标当作当前融合版结论。
+最新三维融合探索验收、录像源码版本、129 项包测试及同地图性能对照见 [优化版运行证据](docs/validation/fusion-optimized/README.md)。95% 覆盖用时缩短 25.3%，总航程增加 37.1%，零接触；每版本仅一次完整运行。[原融合基线与独立冷启动证据](docs/validation/fusion/README.md) 单独保留。架构和接口边界见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下面按时间保留历史验证，不将旧限制或旧指标当作当前融合版结论。
 
 历史首轮验证日期：2026-09-22。仓库基线：`7b09723d033068caac723433f3668efd832312d4`。
 

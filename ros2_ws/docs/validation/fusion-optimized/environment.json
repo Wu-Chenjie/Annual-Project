@@ -1,0 +1,7 @@
+{
+  "platform": "Linux-6.8.0-100-generic-aarch64-with-glibc2.39",
+  "python": "3.12.3",
+  "cpu_count": 6,
+  "ros_distro": "jazzy",
+  "note": "Source snapshot at recording startup; build the workspace before invoking this script."
+}

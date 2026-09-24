@@ -1,0 +1,38 @@
+{
+  "full_decode_passed": true,
+  "duration_s": 109.366667,
+  "sha256": "b41d2af9354cf698f4362e0daaecb3d6f44abbccc8b32d661ca809caf7f73929",
+  "sampled_frames": [
+    {
+      "file": "early-frame.png",
+      "time_s": 16.40500005
+    },
+    {
+      "file": "middle-frame.png",
+      "time_s": 60.151666850000005
+    },
+    {
+      "file": "demo-preview.png",
+      "time_s": 109.3,
+      "public_file": true
+    }
+  ],
+  "video_streams": [
+    {
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080,
+      "avg_frame_rate": "30/1",
+      "nb_frames": "3281"
+    }
+  ],
+  "sample_frame_location": "Early and middle samples are retained in local artifacts/fusion/optimized-final; the final sample is published as demo-preview.png.",
+  "visual_review": {
+    "passed": true,
+    "native_gazebo_and_rviz_visible": true,
+    "early_hud": "40.4%, t=224s, SEARCHING",
+    "middle_hud": "86.6%, t=868s, SEARCHING",
+    "final_hud": "95.2%, t=1634s, COMPLETE",
+    "scope": "Manual inspection of three actual extracted frames; video was fully decoded separately. HUD time is the displayed task clock, not video wall-clock time."
+  }
+}

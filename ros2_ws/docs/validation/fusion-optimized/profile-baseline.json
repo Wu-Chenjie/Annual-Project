@@ -1,0 +1,62 @@
+[
+  {
+    "wall": 3.3618565411306918,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 0,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 3.361855207942426
+    }
+  },
+  {
+    "wall": 3.349783457815647,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 50,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 3.349781916011125
+    }
+  },
+  {
+    "wall": 3.3715899167582393,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 50,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 3.3715887921862304
+    }
+  }
+]

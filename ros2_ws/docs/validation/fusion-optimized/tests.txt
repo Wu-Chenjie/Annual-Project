@@ -1,0 +1,6 @@
+Starting >>> annual_swarm
+[Processing: annual_swarm]
+Finished <<< annual_swarm [31.3s]
+
+Summary: 1 package finished [31.4s]
+Summary: 129 tests, 0 errors, 0 failures, 0 skipped

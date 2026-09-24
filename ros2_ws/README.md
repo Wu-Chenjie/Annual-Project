@@ -2,6 +2,8 @@
 
 当前主入口为 `decentralized_search.launch.py`：三维点云、分层区域、MR-DTG、双机任务/路线协商、观测位姿与连续轨迹组成单一融合流程。完整节点契约、故障恢复与录制命令见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下文保留的 `swarm.launch.py` 是原编队入口。
 
+最新 [优化版视频与性能对照](docs/validation/fusion-optimized/README.md) 保留实际轨迹、测试、源码及审计证据：同地图达到 95% 覆盖用时缩短 25.3%，总航程增加 37.1%。
+
 ## 环境与启动
 
 目标平台：Ubuntu 24.04、ROS 2 Jazzy、Gazebo Harmonic。采用官方 [ROS/Gazebo 配套版本](https://gazebosim.org/docs/harmonic/ros_installation/)及 [ros_gz_bridge](https://github.com/gazebosim/ros_gz/tree/jazzy/ros_gz_bridge)。不使用 Gazebo Classic、`gazebo_ros_pkgs` 或原来的 Humble 空世界脚本。
