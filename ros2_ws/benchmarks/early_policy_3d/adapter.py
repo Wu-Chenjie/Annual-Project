@@ -11,6 +11,7 @@ from scipy.ndimage import maximum_filter, distance_transform_edt
 from scipy.signal import fftconvolve
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
+from scipy.spatial import cKDTree
 from core.exploration.voxel_mapping import VoxelMap
 from core.exploration.graph import route_pool
 from core.exploration.decentralized import tracking_recovery
@@ -19,9 +20,33 @@ from vendor import coordinator as archived
 from contracts import central_execution_lease, view_finished
 
 
+class HorizontalReservations:
+    def __init__(self,points):self.tree=cKDTree(np.asarray(points)[:,:2])
+    def query(self,points):return self.tree.query(np.asarray(points)[...,:2])
+
+
 class FrontierVoxelMap(VoxelMap):
     def __init__(self, bounds):
         super().__init__(bounds, flight_limits=(.7, 3.1))
+
+    def block_paths(self, paths, radius=1.25):
+        # Preserve the historical horizontal reservation contract in 3D.
+        # The common executor also uses horizontal separation, so vertical
+        # spacing alone must never authorize crossing/stacked flight paths.
+        chunks=[]
+        for path in paths:
+            points=np.asarray(path,float).reshape(-1,3)
+            chunks.append(points)
+            chunks.extend(np.linspace(a,b,max(2,int(np.linalg.norm(b-a)/.15)+1)) for a,b in zip(points[:-1],points[1:]))
+        if not chunks:return
+        self._built_signature=None
+        self.reserved_points=HorizontalReservations(np.vstack(chunks))
+        self.reserved_radius=radius
+        cells=np.argwhere(self.safe)
+        if len(cells):
+            blocked=self.reserved_points.query(self.points(cells))[0]<radius
+            key=tuple(cells[blocked].T)
+            self.safe[key]=False;self.distance[key]=0.;self.grid.data[key]=True
 
     def frontier_targets(self, spacing=2., limit=24):
         # Historical geometric heuristic extended from a disk to a 2 m sphere.

@@ -46,3 +46,15 @@ def test_persistent_completion_survives_skipped_transient_reason():
     assert not view_finished(state,7,5.)
     state['arrived']=False
     assert not view_finished(state,7,4.)
+
+
+def test_reservation_blocks_vertical_stacking_like_the_common_executor():
+    m=FrontierVoxelMap([[0,0,0],[8,8,4]]);m.state[:]=0;m.rebuild()
+    assert m.safe_path([[3.,3.,2.85]])
+    m.block_paths([[[3.,3.,.9],[3.,5.,.9]]])
+    assert not m.safe_path([[3.,3.,2.85]])
+    assert not m.safe_path([[3.9,3.,2.85]])
+    assert m.safe_path([[4.5,3.,2.85],[4.5,5.,2.85]])
+    # Map refresh clears reservations only for a new map field, as in runtime.
+    m.rebuild()
+    assert m.safe_path([[3.,3.,2.85]])
