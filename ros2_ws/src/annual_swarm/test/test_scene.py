@@ -1,11 +1,13 @@
 import importlib.util
 import json
+import sys
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import pytest
 import yaml
 
 PACKAGE = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PACKAGE/'scripts'))
 spec = importlib.util.spec_from_file_location('scene', PACKAGE/'scripts/scene.py')
 scene = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(scene)

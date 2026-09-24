@@ -6,6 +6,7 @@ import math
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import yaml
+from exploration_palette import UAV_COLORS
 
 OFFSETS = [(0.0, 0.0, 0.0), (0.0, -1.0, 0.0), (0.0, 1.0, 0.0)]
 
@@ -94,7 +95,7 @@ def generate(share, map_file, output, start, dynamic=False, starts=None, lidar=F
         model = copy.deepcopy(template); model.set('name',name)
         ET.SubElement(model,'pose').text = vector([spawn[0],spawn[1],0.10,0,0,0])
         if starts is not None:
-            color = ['1 0.32 0.18 1', '0.1 0.85 0.5 1', '0.25 0.6 1 1'][i % 3]
+            color = vector([*UAV_COLORS[i % len(UAV_COLORS)], 1.])
             for visual in model.findall('link/visual'):
                 if visual.get('name') == 'body' or visual.get('name', '').startswith('rotor'):
                     visual.find('material/diffuse').text = color

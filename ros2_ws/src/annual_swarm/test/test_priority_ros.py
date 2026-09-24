@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT/'next_project'))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
 from exploration_visualization_node import Visualization
+from exploration_palette import PRIORITY_HIGH
 from decentralized_agent_node import ExplorationAgent
 from core.exploration.priority import ExplorationPriority
 from core.exploration.voxel_mapping import VoxelMap
@@ -30,9 +31,20 @@ def test_priority_markers_contain_unknown_voxels_size_and_score():
         markers = packets[-1].markers
         heat = next(x for x in markers if x.ns == 'unknown_region_priority')
         assert len(heat.points) == np.count_nonzero(np.array(layer['slice_labels']) == 1)
-        assert heat.color.r == 1. and heat.color.a > 0
+        assert (heat.color.r, heat.color.g, heat.color.b) == pytest.approx(PRIORITY_HIGH)
+        assert heat.color.a > 0
         text = next(x.text for x in markers if x.ns == 'unknown_region_labels')
         assert 'm3' in text and '0.700' in text
+        # A peer observation changes the display category, never the private map.
+        observed = m.state.copy(); observed[20:22, :, :] = 0
+        node.map = dict(state=observed.ravel().tolist(), shape=list(m.shape),
+                        resolution=m.resolution, origin=m.origin.tolist())
+        node.tick(); markers = packets[-1].markers
+        heat = next(x for x in markers if x.ns == 'unknown_region_priority')
+        peer = next(x for x in markers if x.ns == 'peer_observed_local_unknown')
+        assert len(peer.points) == 2*m.shape[1]
+        assert len(heat.points)+len(peer.points) == np.count_nonzero(np.array(layer['slice_labels']) == 1)
+        assert np.all(m.state[20:, :, :] == -1)
         # A completed component disappears on the next published DELETEALL frame.
         node.graphs[0] = {}
         node.tick()

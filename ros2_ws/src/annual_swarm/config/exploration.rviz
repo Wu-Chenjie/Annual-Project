@@ -19,6 +19,7 @@ Visualization Manager:
         flown_trajectory: true
         live_status: true
         observed_map: true
+        peer_observed_local_unknown: true
         region_labels: true
         regional_tasks: true
         sparse_corridors: true
