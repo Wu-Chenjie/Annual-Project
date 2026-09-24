@@ -77,7 +77,8 @@ class FusionPlanner:
         self.diagnostics = {}; self.connections = {}; self.ownership = {}
 
     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
-                peers, overrides, last_success, service_feedback=None, anticipated_view=None):
+                peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True):
+        plan_view = plan_view and can_move
         begin = time.monotonic(); stages = {}; mark = begin
         def stage(name):
             nonlocal mark
@@ -88,7 +89,7 @@ class FusionPlanner:
             self.graph.replica.put(f's:{rid}', dict(kind='region_service', id=rid, **value))
         self.graph.rebuild()
         pinned = {int(p['active']): int(i) for i, p in peers.items() if p.get('active') is not None and p.get('intent')}
-        if active is not None:
+        if active is not None and can_move:
             pinned[active] = self.drone
         self.hierarchy.split.update(r for r, v in self.graph.regions.items() if v.get('status') == 'splitR')
         local_tasks = self.hierarchy.update(runtime, pinned)
@@ -96,7 +97,7 @@ class FusionPlanner:
         self.graph.update(runtime, position, self.hierarchy, now)
         stage('topology')
         connections = {self.drone: {n: value[0] for n, value in self.graph.attachments.items()}}
-        available = {self.drone}
+        available = {self.drone} if can_move else set()
         for i, peer in peers.items():
             connections[i] = peer.get('graph_connections', {})
             if peer.get('available') and now-peer['time'] < 3.:
@@ -124,7 +125,7 @@ class FusionPlanner:
         # Newly active local EROIs without an H-node connection still receive a
         # safe local view, so a narrow doorway cannot prevent graph bootstrapping.
         for rid in local_tasks:
-            if rid not in owners:
+            if rid not in owners and can_move:
                 owners[rid] = self.drone
         self.tasks = tasks; self.ownership = owners
         router = VoxelRouter if runtime.state.ndim == 3 else SparseTopology
@@ -143,7 +144,7 @@ class FusionPlanner:
         owned = [r for r, owner in owners.items() if owner == self.drone and r in feasible]
         tour, workload = optimize_tour(position, owned, feasible, costs, active)
         bids = {}
-        for rid, task in feasible.items():
+        for rid, task in (feasible.items() if can_move else []):
             distance = costs.distance(position, task.entry)
             if np.isfinite(distance):
                 bids[rid] = float(distance/.6+(0 if owners.get(rid) == self.drone else 10000))
@@ -153,7 +154,7 @@ class FusionPlanner:
         # Select a fair interaction partner and solve a bounded exact two-vehicle
         # subproblem. Already executing regional services stay pinned.
         offer = None
-        partners = [i for i in available if i != self.drone and self.drone < i]
+        partners = [i for i in available if can_move and i != self.drone and self.drone < i]
         partners.sort(key=lambda i: (last_success.get(i, -1), i))
         for other in partners:
             # Deferred services have no live bids. Including them manufactures
@@ -184,7 +185,7 @@ class FusionPlanner:
         # Global burden sharing: prioritize useful, nearby history regions when
         # all locally partitioned work has disappeared. The region lease still
         # arbitrates exclusivity before any motion starts.
-        if not choices:
+        if not choices and can_move:
             fallback = []
             for rid, task in feasible.items():
                 d = costs.distance(position, task.entry)/.6
@@ -246,7 +247,7 @@ class FusionPlanner:
             local_regions=sum(v == 'local' for v in tiers.values()), global_regions=sum(v == 'global' for v in tiers.values()),
             shared_deferred_regions=sum(v['defer_until'] > now for v in self.graph.services.values()),
             pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin,
-            stage_wall_s=stages, anticipatory_view=anticipated_view is not None)
+            stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move)
         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
                     selection=selection, selected=selected, rejected=rejected, offer=offer,
                     wall=time.monotonic()-begin, position=position, version=runtime.version)

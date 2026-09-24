@@ -40,6 +40,7 @@ class ExplorationAgent(Node):
         self.intent = None; self.selection = None; self.active = None; self.epoch = 0
         self.cached_pending = None; self.retiring = None; self.stop_epoch = None; self.stop_since = None; self.speed = 0.
         self.preplanned = None
+        self.motion_blocked = False
         self.sequence = 0; self.ready = False; self.available = True; self.done = False
         self.cooldown = {}; self.recent = []; self.graph = None; self.tasks = {}
         self.service_feedback = {}
@@ -185,7 +186,8 @@ class ExplorationAgent(Node):
                     rejoin_ready=self.rejoin_ready, stopped=self.speed < .08 and self.execution.get('arrived', False),
                     peer_sessions={i: p.get('session') for i, p in self.ledger.states.items()},
                     sequence=self.sequence, time=self.now(), position=self.position.tolist(), yaw=self.yaw,
-                    ready=self.ready, available=self.available and self.rejoin_ready and not self.done, bids=self.bids if self.available else {},
+                    ready=self.ready, available=self.available and self.rejoin_ready and not self.done and not self.motion_blocked,
+                    motion_blocked=self.motion_blocked, bids=self.bids if self.available and not self.motion_blocked else {},
                     tour=self.tour, workload=self.workload, owners=self.owners, active=self.active,
                     intent=intent, acks=self.acks, observation=None,
                     fusion=dict(self.fusion.diagnostics, map_clearance=self.replica.map.signed_distance(self.position),
@@ -338,7 +340,14 @@ class ExplorationAgent(Node):
                 if self.intent is not None:
                     self.intent['recovery'] = True
                     self.event('tracking_recovery', goal=path[-1].tolist())
-            return
+                self.set_motion_blocked(False)
+                return
+            # A conservative map may offer no certified retreat. Keep sensing,
+            # graph replication and task redistribution alive while holding;
+            # do not erase unknown cells or retain bids for work we cannot do.
+            self.set_motion_blocked(True)
+        else:
+            self.set_motion_blocked(False)
         if self.future is not None:
             if not self.future.done():
                 return
@@ -357,7 +366,7 @@ class ExplorationAgent(Node):
             self.fusion.graph.replica.applied = remote.applied
             self.fusion.graph.rebuild()
             offer = result.get('offer')
-            if offer and not self.pair.transaction:
+            if offer and not self.pair.transaction and not self.motion_blocked:
                 base = {r: self.owners.get(r) for r in offer['owners']}
                 if all(owner in (self.id, offer['other']) for owner in base.values()):
                     if self.pair.offer(offer['other'], offer['result'], base, t):
@@ -369,7 +378,7 @@ class ExplorationAgent(Node):
             self.publish(self.graph_pub, snapshot)
             if self.active not in self.tasks and not self.intent:
                 self.active = None
-            if self.future_epoch == self.epoch:
+            if self.future_epoch == self.epoch and not self.motion_blocked:
                 if not self.intent:
                     for rid in result['rejected']:
                         self.cooldown[rid] = t+6
@@ -383,7 +392,7 @@ class ExplorationAgent(Node):
                         self.event('next_view_ready', region=rid, epoch=self.epoch, compute_wall_s=result['wall'])
                     else:
                         self.adopt_preplan(t)
-        if t-self.last_submit < 2.:
+        if t-self.last_submit < (10. if self.motion_blocked else 2.):
             return
         if self.intent and (not self.intent.get('committed') or self.intent.get('recovery')):
             return
@@ -403,7 +412,17 @@ class ExplorationAgent(Node):
         self.future = self.worker.submit(planner.compute, copy.deepcopy(self.replica.map), self.position.copy(), self.yaw,
             active, recent, dict(self.cooldown), reservations, self.epoch, t, True,
             copy.deepcopy(self.ledger.states), dict(self.pair.overrides), dict(self.pair.last_success),
-            copy.deepcopy(self.service_feedback), anticipated)
+            copy.deepcopy(self.service_feedback), anticipated, not self.motion_blocked)
+
+    def set_motion_blocked(self, blocked):
+        if blocked == self.motion_blocked:
+            return
+        self.motion_blocked = blocked
+        if blocked:
+            self.active = None; self.preplanned = None
+        self.event('motion_suspended' if blocked else 'motion_resumed',
+                   reason='no_certified_recovery' if blocked else 'certified_motion_available',
+                   position=self.position.tolist(), map_clearance=self.replica.map.signed_distance(self.position))
 
     def adopt_preplan(self, t):
         pending = self.preplanned

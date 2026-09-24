@@ -642,3 +642,19 @@ def test_collision_fast_reject_does_not_skip_body_clearance_or_reservations():
     m.block_paths([[[1.5,3.3,1.5]]]);assert not m.safe_path([[1.5,2.1,1.5],[1.5,3.3,1.5]])
     m.state[10,5:15,:]=-1;m.rebuild()
     assert not m.safe_path([[2.1,2.1,1.5],[4.5,2.1,1.5]])
+
+
+def test_motion_blocked_agent_keeps_topology_but_releases_task_bids():
+    from core.exploration.voxel_mapping import VoxelMap
+    m=VoxelMap([[0,0,0],[8,8,4]]);m.state[:]=0;m.state[20:,:,:]=-1;m.rebuild()
+    planner=FusionPlanner(0,m.bounds)
+    # A peer's history is still replicated while this UAV is unable to retreat.
+    planner.graph.replica.remote[1]={'h:1:a':dict(kind='history',id='1:a',position=[3.15,2.25,1.65])}
+    peers={1:dict(active=None,intent=None,available=True,time=10.,graph_connections={'1:a':0.})}
+    result=planner.compute(m,np.array([.15,2.25,1.65]),0.,None,[],{},[],1,10.,True,peers,{}, {},can_move=False)
+    assert result['bids']=={} and result['tour']==[] and result['offer'] is None and result['selection'] is None
+    assert result['graph'].free_cells>0 and result['graph'].nodes
+    assert not result['fusion'].diagnostics['can_move']
+    assert 0 not in result['fusion'].ownership.values()
+    resumed=planner.compute(m,np.array([3.15,2.25,1.65]),0.,None,[],{},[],2,11.,True,peers,{}, {},can_move=True)
+    assert resumed['bids'] and resumed['fusion'].diagnostics['can_move']
