@@ -66,6 +66,14 @@ class VoxelMap:
         return indices, values
 
     def rebuild(self):
+        # Copies sent to the planner already contain a valid collision field.
+        # Compare bytes as well as configuration: tests/imports may edit state
+        # directly without incrementing the sensor version counter.
+        signature = (self.state.tobytes(), self.clearance, self.flight_limits)
+        if getattr(self, '_built_signature', None) == signature:
+            return
+        self._built_signature = signature
+        self.reserved_points = None
         # Quadrotor collision envelope is anisotropic: 0.6m horizontally and
         # 0.2m vertically (the physical hull is only 0.16m tall). Isotropic
         # inflation incorrectly turns the lidar's nadir shadow into a deadlock.
@@ -140,6 +148,7 @@ class VoxelMap:
             chunks.extend(np.linspace(a, b, max(2, int(np.linalg.norm(b-a)/.15)+1)) for a, b in zip(p[:-1], p[1:]))
         if not chunks:
             return
+        self._built_signature = None
         cells = np.argwhere(self.safe)
         if not len(cells):
             return
@@ -170,13 +179,14 @@ class VoxelRouter:
             return -1
         return int(self.lookup[tuple(idx)])
 
-    def search(self, start):
+    def search(self, start, limit=np.inf):
         index = self.node(start)
         if index < 0:
             return None
-        if index not in self.cache:
-            self.cache[index] = dijkstra(self.matrix, directed=False, indices=index, return_predecessors=True)
-        return self.cache[index]
+        key = (index, limit)
+        if key not in self.cache:
+            self.cache[key] = dijkstra(self.matrix, directed=False, indices=index, return_predecessors=True, limit=limit)
+        return self.cache[key]
 
     def route(self, start, goal):
         if self.runtime.safe_path([start, goal]):

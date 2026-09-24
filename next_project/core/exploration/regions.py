@@ -98,18 +98,40 @@ def optimize_tour(start, ids, tasks, graph, pinned=None):
     def cost(order):
         return sum(distance(a, b)+1.+tasks[b].unknown*.012 for a, b in zip([None]+order, order))
     while remaining:
-        choices = [(cost(route[:k]+[r]+route[k:]), r, k) for r in remaining for k in range(1 if route and route[0] == pinned else 0, len(route)+1)]
+        base = cost(route)
+        choices = []
+        for r in remaining:
+            service = 1.+tasks[r].unknown*.012
+            for k in range(1 if route and route[0] == pinned else 0, len(route)+1):
+                a = route[k-1] if k else None
+                added = distance(a, r)+service
+                if k < len(route):
+                    added += distance(r, route[k])-distance(a, route[k])
+                value = base+added if np.isfinite(base) else cost(route[:k]+[r]+route[k:])
+                choices.append((value, r, k))
         value, r, k = min(choices)
         if not np.isfinite(value):
             break
         route.insert(k, r); remaining.remove(r)
     for _ in range(4):
-        before = cost(route); best = route
+        before = cost(route); best = route; best_cost = before
+        # Reversing directed internal edges also changes their cost. Prefix
+        # sums retain correctness for asymmetric costs, not just Euclidean ones.
+        forward = [distance(a, b) for a, b in zip(route, route[1:])]
+        reverse = [distance(b, a) for a, b in zip(route, route[1:])]
+        finite_reverse = np.isfinite(reverse).all()
+        changes = np.r_[0., np.cumsum(np.subtract(reverse, forward))] if finite_reverse else None
         for i in range(1 if route and route[0] == pinned else 0, len(route)):
             for j in range(i+2, len(route)+1):
-                candidate = route[:i]+route[i:j][::-1]+route[j:]
-                if cost(candidate)+1e-6 < cost(best):
-                    best = candidate
+                if finite_reverse and np.isfinite(before):
+                    a = route[i-1] if i else None
+                    value = before+distance(a, route[j-1])-distance(a, route[i])+changes[j-1]-changes[i]
+                    if j < len(route):
+                        value += distance(route[i], route[j])-distance(route[j-1], route[j])
+                else:
+                    value = cost(route[:i]+route[i:j][::-1]+route[j:])
+                if value+1e-6 < best_cost:
+                    best = route[:i]+route[i:j][::-1]+route[j:]; best_cost = value
         route = best
         if cost(route) >= before-1e-6:
             break
@@ -150,7 +172,7 @@ class ObservationPlanner:
     def __init__(self):
         self.evaluator = PathQualityEvaluator()
 
-    def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None):
+    def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None, excluded_cells=frozenset()):
         options = []
         for point in task.viewpoints:
             path = graph.route(position, point)
@@ -160,7 +182,7 @@ class ObservationPlanner:
             for heading in np.linspace(-np.pi, np.pi, 8, endpoint=False):
                 if any(np.linalg.norm(point-p) < .65 and abs(angle_delta(heading, h)) < .7 for p, h in recent):
                     continue
-                cells = visible_cells(runtime, point, heading)
+                cells = visible_cells(runtime, point, heading)-excluded_cells
                 if len(cells) < 5:
                     continue
                 rotation = abs(angle_delta(heading, yaw))/.65

@@ -480,3 +480,124 @@ def test_unresolved_ground_contact_impulse_does_not_latch_innovation_rejection()
     assert abs(f.x[2]-.08) < .002 and abs(f.x[5]) < .002
     f.predict(.51, [0., 0., 0.])
     assert not f.correct_at(.51, [2., 2., 1000.], [0., 0., 0.], R)
+
+
+def _reference_tour(start, ids, tasks, graph, pinned=None):
+    """Frozen full-recomputation oracle for incremental insertion / directed 2-opt."""
+    route = [pinned] if pinned in ids else []
+    remaining = sorted(set(ids)-set(route))
+    def cost(order):
+        return sum(graph.distance(start if a is None else tasks[a].entry, tasks[b].entry)/.6
+                   +1+tasks[b].unknown*.012 for a, b in zip([None]+order, order))
+    while remaining:
+        value, r, k = min((cost(route[:k]+[r]+route[k:]), r, k) for r in remaining
+                         for k in range(1 if route and route[0] == pinned else 0, len(route)+1))
+        if not np.isfinite(value):
+            break
+        route.insert(k, r); remaining.remove(r)
+    for _ in range(4):
+        before = cost(route); best = route
+        for i in range(1 if route and route[0] == pinned else 0, len(route)):
+            for j in range(i+2, len(route)+1):
+                candidate = route[:i]+route[i:j][::-1]+route[j:]
+                if cost(candidate)+1e-6 < cost(best):
+                    best = candidate
+        route = best
+        if cost(route) >= before-1e-6:
+            break
+    return route, cost(route)
+
+
+@pytest.mark.parametrize('directed,pinned,disconnected', [(False,None,False),(True,3,False),(True,None,True),(False,3,True)])
+def test_incremental_tour_matches_full_cost_oracle(directed, pinned, disconnected):
+    from types import SimpleNamespace
+    from core.exploration.regions import optimize_tour
+    for seed in range(12):
+        rng = np.random.default_rng(seed); costs = rng.uniform(.1, 50, (14,14))
+        if not directed: costs = costs+costs.T
+        np.fill_diagonal(costs, 0)
+        if disconnected: costs[-1,:-1] = costs[:-1,-1] = np.inf
+        tasks = {i: SimpleNamespace(entry=i, unknown=int(rng.integers(0,100))) for i in range(1,14)}
+        graph = SimpleNamespace(distance=lambda a,b:costs[a,b])
+        expected, value = _reference_tour(0, list(tasks), tasks, graph, pinned)
+        actual, optimized = optimize_tour(0, list(tasks), tasks, graph, pinned)
+        assert actual == expected
+        assert optimized == pytest.approx(value)
+
+
+def test_voxel_collision_cache_detects_direct_edits_and_clears_reservations():
+    from core.exploration.voxel_mapping import VoxelMap
+    m = VoxelMap([[0,0,0],[8,8,4]])
+    m.state[:] = 0; m.rebuild(); tree = m.obstacle_tree
+    m.rebuild(); assert m.obstacle_tree is tree
+    a = np.array([2.1,2.1,1.5]); b = np.array([5.1,2.1,1.5])
+    assert m.safe_path([a,b])
+    m.block_paths([[b]],radius=1.25); assert not m.safe_path([a,b])
+    m.rebuild(); assert m.safe_path([a,b])
+    m.state[tuple(m.indices([3.1,2.1,1.5]))] = 1; m.rebuild()
+    assert not m.safe_path([a,b]) and m.obstacle_tree is not tree
+    m.state[:] = 0; m.flight_limits = (2.,3.1); m.rebuild()
+    assert not m.safe_path([a]) and not m.safe[:,:,4].any()
+
+
+def test_compiled_bounded_tree_matches_grid_distances():
+    from core.exploration.voxel_mapping import VoxelMap, VoxelRouter
+    from core.exploration.mrdtg import grid_tree, tree_path
+    m = VoxelMap([[0,0,0],[10,10,4]])
+    m.state[:] = 0; m.state[15:18,7:25,:] = 1; m.rebuild()
+    start = np.array([2.25,2.25,1.65])
+    expected, _ = grid_tree(m,start)
+    actual, previous = grid_tree(m,start,router=VoxelRouter(m))
+    assert actual.keys() == expected.keys()
+    assert all(actual[k] == pytest.approx(v) for k,v in expected.items())
+    for cell in list(actual)[::41]:
+        path = tree_path(m,previous,cell)
+        assert m.safe_path(path)
+        assert np.linalg.norm(np.diff(path,axis=0),axis=1).sum() == pytest.approx(actual[cell])
+
+
+def test_attachment_memoizes_disconnected_points(monkeypatch):
+    from types import SimpleNamespace
+    from core.exploration.fusion import GraphCosts
+    calls=[]
+    graph=SimpleNamespace(attachments={}, connect=lambda p:(calls.append(tuple(p)) or {}), search=lambda a:({}, {}, {}))
+    costs=GraphCosts(graph,SimpleNamespace(distance=lambda a,b:np.inf),{},np.zeros(3))
+    a=np.ones(3)
+    for k in range(2,12): assert np.isinf(costs.distance(a,np.ones(3)*k))
+    assert calls.count(tuple(a)) == 1
+
+
+def test_prepared_curve_rejects_new_obstacle_and_changed_reserve():
+    from core.exploration.voxel_mapping import VoxelMap
+    from core.exploration.fusion import reusable_trajectory
+    from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
+    m=VoxelMap([[0,0,0],[8,8,4]]);m.state[:]=0;m.rebuild()
+    path=np.array([[2.1,2.1,1.5],[5.1,2.1,1.5]])
+    curve=optimize_trajectory(path,m,0.,0.)
+    pool=RankedPathPool();pool.rank([Candidate('a','test',0,path,PathQualityEvaluator().evaluate(path,m),0)])
+    selection=dict(pool=pool,trajectory=curve,trajectory_candidate='a')
+    assert reusable_trajectory(selection,m,path[0],0.) is curve
+    assert reusable_trajectory(selection,m,path[0]+[.1,0,0],0.) is None
+    assert reusable_trajectory(selection,m,path[0],.3) is None
+    pool.active.id='b';assert reusable_trajectory(selection,m,path[0],0.) is None
+    pool.active.id='a';m.state[tuple(m.indices([3.1,2.1,1.5]))]=1;m.rebuild()
+    assert reusable_trajectory(selection,m,path[0],0.) is None
+
+
+def test_prefetch_process_preserves_actual_history_and_starts_at_endpoint():
+    from concurrent.futures import ProcessPoolExecutor
+    from multiprocessing import get_context
+    from core.exploration.voxel_mapping import VoxelMap
+    m=VoxelMap([[0,0,0],[8,8,4]])
+    m.state[:]=0;m.state[20:,:,:]=-1;m.rebuild()
+    start=np.array([2.25,2.25,1.65]);end=np.array([3.15,2.25,1.65])
+    planner=FusionPlanner(0,m.bounds)
+    with ProcessPoolExecutor(max_workers=1,mp_context=get_context('spawn')) as worker:
+        result=worker.submit(planner.compute,m,start,0.,None,[],{},[],1,10.,True,{}, {},{}, {},
+                             dict(position=end.tolist(),yaw=0.)).result(timeout=30)
+    assert np.allclose(result['position'],end)
+    assert any(np.allclose(p,start) for p in result['graph'].own_nodes.values())
+    assert not any(np.allclose(p,end) for p in result['graph'].own_nodes.values())
+    assert result['fusion'].diagnostics['anticipatory_view']
+    if result['selection']:
+        assert np.allclose(result['selection']['pool'].active.path[0],end)

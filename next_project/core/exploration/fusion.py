@@ -10,14 +10,39 @@ from .voxel_mapping import VoxelRouter
 from .regions import ObservationPlanner, optimize_tour, visible_cells
 from .pairwise import solve_pair
 from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
+from core.planning.continuous_trajectory import optimize_trajectory
+
+
+def reusable_trajectory(selection, runtime, position, yaw):
+    """A speculative curve is reusable only after current collision validation.
+
+    Small endpoint tracking errors use the same tolerance as view completion;
+    a changed active reserve, yaw, or joining segment requires fresh fitting.
+    """
+    trajectory = selection.get('trajectory')
+    active = selection['pool'].active
+    if trajectory is None or active is None or selection.get('trajectory_candidate') != active.id:
+        return None
+    start = trajectory.sample(0.)[0]
+    if np.linalg.norm(start-position) > .08 or abs(math.atan2(math.sin(yaw-trajectory.yaw), math.cos(yaw-trajectory.yaw))) > .12:
+        return None
+    if not runtime.safe_path([position, start]) or not runtime.safe_path(trajectory.path()):
+        return None
+    return trajectory
 
 
 class GraphCosts:
     def __init__(self, graph, sparse, tasks, position):
         self.graph = graph; self.sparse = sparse; self.tasks = tasks; self.position = position
-        self.cache = {}; self.searches = {}
+        self.cache = {}; self.searches = {}; self.attachments = {}
 
     def attachment(self, point):
+        key = tuple(np.round(point, 4))
+        if key not in self.attachments:
+            self.attachments[key] = self._attachment(point)
+        return self.attachments[key]
+
+    def _attachment(self, point):
         if np.linalg.norm(point-self.position) < 1e-5:
             return {n: c[0] for n, c in self.graph.attachments.items()}
         for rid, task in self.tasks.items():
@@ -52,8 +77,13 @@ class FusionPlanner:
         self.diagnostics = {}; self.connections = {}; self.ownership = {}
 
     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
-                peers, overrides, last_success, service_feedback=None):
-        begin = time.monotonic(); runtime.rebuild()
+                peers, overrides, last_success, service_feedback=None, anticipated_view=None):
+        begin = time.monotonic(); stages = {}; mark = begin
+        def stage(name):
+            nonlocal mark
+            stamp = time.monotonic(); stages[name] = stamp-mark; mark = stamp
+        runtime.rebuild()
+        stage('map')
         for rid, value in (service_feedback or {}).items():
             self.graph.replica.put(f's:{rid}', dict(kind='region_service', id=rid, **value))
         self.graph.rebuild()
@@ -62,7 +92,9 @@ class FusionPlanner:
             pinned[active] = self.drone
         self.hierarchy.split.update(r for r, v in self.graph.regions.items() if v.get('status') == 'splitR')
         local_tasks = self.hierarchy.update(runtime, pinned)
+        stage('hierarchy')
         self.graph.update(runtime, position, self.hierarchy, now)
+        stage('topology')
         connections = {self.drone: {n: value[0] for n, value in self.graph.attachments.items()}}
         available = {self.drone}
         for i, peer in peers.items():
@@ -96,7 +128,16 @@ class FusionPlanner:
                 owners[rid] = self.drone
         self.tasks = tasks; self.ownership = owners
         router = VoxelRouter if runtime.state.ndim == 3 else SparseTopology
-        sparse = router(runtime); costs = GraphCosts(self.graph, sparse, tasks, position)
+        sparse = self.graph.local_router if runtime.state.ndim == 3 else router(runtime)
+        costs = GraphCosts(self.graph, sparse, tasks, position)
+        view_attachments = None; excluded_cells = frozenset()
+        if anticipated_view is not None:
+            # History nodes still originate at the actual observed position.
+            # Only the next task/view route starts at the executing endpoint.
+            position = np.asarray(anticipated_view['position'], float); yaw = anticipated_view['yaw']
+            excluded_cells = visible_cells(runtime, position, yaw)
+            recent = list(recent)+[(position, yaw)]
+            view_attachments = self.graph.connect(position)
         feasible = {r: task for r, task in tasks.items()
                     if max(cooldown.get(r, 0), self.graph.services.get(r, {}).get('defer_until', 0)) <= now}
         owned = [r for r, owner in owners.items() if owner == self.drone and r in feasible]
@@ -108,6 +149,7 @@ class FusionPlanner:
                 bids[rid] = float(distance/.6+(0 if owners.get(rid) == self.drone else 10000))
         if active in bids:
             bids[active] = -1e6
+        stage('tour')
         # Select a fair interaction partner and solve a bounded exact two-vehicle
         # subproblem. Already executing regional services stay pinned.
         offer = None
@@ -133,7 +175,10 @@ class FusionPlanner:
             if (result['status'] == 'optimal_window' and
                     (not result.get('before_feasible', True) or result['after'] < result['before']-.2)):
                 break
-        local = copy.deepcopy(runtime); local.block_paths(reservations, radius=1.25)
+        stage('pair')
+        local = copy.deepcopy(runtime) if plan_view else None
+        if plan_view:
+            local.block_paths(reservations, radius=1.25)
         local_graph = router(local) if plan_view else None
         choices = ([active] if active in feasible else [])+[r for r in tour if r != active]
         # Global burden sharing: prioritize useful, nearby history regions when
@@ -159,9 +204,10 @@ class FusionPlanner:
                 task = feasible[rid]
                 if rid in local_tasks:
                     next_goal = feasible[choices[k+1]].entry if k+1 < len(choices) and choices[k+1] in feasible else None
-                    selection = planner.plan(local, local_graph, position, yaw, task, epoch+1, recent, next_goal=next_goal)
+                    selection = planner.plan(local, local_graph, position, yaw, task, epoch+1, recent,
+                                             next_goal=next_goal, excluded_cells=excluded_cells)
                 else:
-                    path = self.graph.route_to_region(rid)
+                    path = self.graph.route_to_region(rid, view_attachments)
                     if path is not None:
                         # Advance only the locally observed prefix of a remote
                         # corridor; new sensor frames validate the next prefix.
@@ -184,13 +230,23 @@ class FusionPlanner:
                 if selection:
                     selected = rid; break
                 rejected.append(rid)
+        stage('view')
+        if selection:
+            try:
+                selection['trajectory'] = optimize_trajectory(selection['pool'].active.path, local, yaw, selection['yaw'])
+                selection['trajectory_candidate'] = selection['pool'].active.id
+            except ValueError:
+                # The caller may revalidate another reserve against fresher data.
+                selection['trajectory'] = None
+        stage('trajectory')
         self.diagnostics = dict(engine='Hgrid+MR-DTG+GVP+pair-CVRP', hgrid_leaves=len(self.hierarchy.leaves),
             hgrid_splits=len(self.hierarchy.split), frontier_clusters=len(self.hierarchy.frontiers.clusters),
             reused_frontiers=self.hierarchy.frontiers.reused_clusters, history_nodes=len(self.graph.nodes),
             handshake_updates=self.graph.handshakes, delta_applied=self.graph.replica.applied,
             local_regions=sum(v == 'local' for v in tiers.values()), global_regions=sum(v == 'global' for v in tiers.values()),
             shared_deferred_regions=sum(v['defer_until'] > now for v in self.graph.services.values()),
-            pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin)
+            pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin,
+            stage_wall_s=stages, anticipatory_view=anticipated_view is not None)
         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
                     selection=selection, selected=selected, rejected=rejected, offer=offer,
                     wall=time.monotonic()-begin, position=position, version=runtime.version)

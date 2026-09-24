@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """One independently replaceable exploration agent. No truth map or fleet planner."""
 import copy
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 import json
 import os
 import time
@@ -15,10 +16,10 @@ from std_msgs.msg import String
 import planning_runtime  # installed core module location
 from core.exploration.decentralized import MapReplica, PeerLedger, remainder, tracking_recovery
 from core.exploration.sparse_graph import SparseTopology
-from core.exploration.fusion import FusionPlanner
+from core.exploration.fusion import FusionPlanner, reusable_trajectory
 from core.exploration.pairwise import PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory
-from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids
+from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
 from core.planning.path_quality import PathQualityEvaluator, RankedPathPool, Candidate
 
 
@@ -38,6 +39,7 @@ class ExplorationAgent(Node):
         self.bids = {}; self.tour = []; self.owners = {}; self.workload = 0.
         self.intent = None; self.selection = None; self.active = None; self.epoch = 0
         self.cached_pending = None; self.retiring = None; self.stop_epoch = None; self.stop_since = None; self.speed = 0.
+        self.preplanned = None
         self.sequence = 0; self.ready = False; self.available = True; self.done = False
         self.cooldown = {}; self.recent = []; self.graph = None; self.tasks = {}
         self.service_feedback = {}
@@ -58,7 +60,10 @@ class ExplorationAgent(Node):
         self.last_map_dump = -20.
         self.view_start_known = 0
         self.bytes = 0; self.peer_bytes = 0; self.commits = 0; self.observed_views = 0
-        self.worker = ThreadPoolExecutor(max_workers=1); self.future = None; self.future_epoch = None; self.last_submit = -10.
+        # CPU-bound graph/tour/trajectory work must not hold the ROS callback GIL.
+        # Spawn avoids inheriting DDS threads or sockets into the planning worker.
+        self.worker = ProcessPoolExecutor(max_workers=1, mp_context=get_context('spawn'))
+        self.future = None; self.future_epoch = None; self.last_submit = -10.
         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.state_pub = self.create_publisher(String, f'/drone_{self.id}/peer_state', q)
         self.command_pub = self.create_publisher(String, f'/drone_{self.id}/view_command', q)
@@ -167,6 +172,7 @@ class ExplorationAgent(Node):
         self.stop_epoch = self.epoch; self.stop_since = None
         self.publish(self.command_pub, dict(epoch=self.epoch, cancel=True, reason=reason))
         self.intent = None; self.selection = None; self.active = None
+        self.preplanned = None
         self.event('lease_cancellation_requested', region=previous, reason=reason)
 
     def state(self):
@@ -319,6 +325,8 @@ class ExplorationAgent(Node):
             selection['pool'].revalidate(self.position, runtime, PathQualityEvaluator(), runtime.version)
             if selection['pool'].active and self.owners.get(rid) == self.id and self.ledger.can_propose(selection['pool'].active.path, rid, t):
                 self.propose(rid, selection); self.event('cached_route_switched', region=rid)
+        if self.preplanned and not self.intent:
+            self.adopt_preplan(t)
         if not self.intent and not self.replica.map.safe_path([self.position]):
             runtime = self.reserved_map(); path = tracking_recovery(runtime, self.position, yaw=self.yaw)
             rid = -100-self.id
@@ -361,41 +369,76 @@ class ExplorationAgent(Node):
             self.publish(self.graph_pub, snapshot)
             if self.active not in self.tasks and not self.intent:
                 self.active = None
-            if self.future_epoch == self.epoch and not self.intent:
-                for rid in result['rejected']:
-                    self.cooldown[rid] = t+6
-                    if rid == self.active:
-                        self.event('region_yielded', region=rid); self.active = None
+            if self.future_epoch == self.epoch:
+                if not self.intent:
+                    for rid in result['rejected']:
+                        self.cooldown[rid] = t+6
+                        if rid == self.active:
+                            self.event('region_yielded', region=rid); self.active = None
                 selection = result['selection']; rid = result['selected']
-                # Work completed in the background is untrusted until current map,
-                # ownership, position and every live reservation have been checked.
-                if selection and self.owners.get(rid) == self.id and np.linalg.norm(result['position']-self.position) < .35:
-                    runtime = self.reserved_map()
-                    selection['pool'].revalidate(self.position, runtime, PathQualityEvaluator(), runtime.version)
-                    if selection['pool'].active and self.ledger.can_propose(selection['pool'].active.path, rid, t):
-                        self.propose(rid, selection)
+                if selection:
+                    self.preplanned = dict(epoch=self.epoch, position=result['position'], region=rid,
+                                           selection=selection, time=t, anticipatory=bool(self.intent))
+                    if self.intent:
+                        self.event('next_view_ready', region=rid, epoch=self.epoch, compute_wall_s=result['wall'])
+                    else:
+                        self.adopt_preplan(t)
         if t-self.last_submit < 2.:
+            return
+        if self.intent and (not self.intent.get('committed') or self.intent.get('recovery')):
+            return
+        # Retain a ready next view rather than continuously refitting it. Refresh
+        # periodically as sensing changes; final adoption always checks live data.
+        if self.preplanned and t-self.preplanned['time'] < 5.:
             return
         owned = [r for r, owner in self.owners.items() if owner == self.id]
         reservations = [p['intent']['path'] if p.get('intent') else [p['position']] for p in self.ledger.states.values()]
         reservations.extend(g['path'] for g in self.ledger.grants.values())
         recent = [(p, h) for stamp, p, h in self.recent if t-stamp < 60.]
-        # An executing aircraft updates allocation costs but need not generate an
-        # unrequested replacement view. The epoch fence rejects late worker output.
         active = self.active
+        anticipated = dict(position=self.intent['path'][-1], yaw=self.intent['yaw']) if self.intent else None
         self.last_submit = t
         self.future_epoch = self.epoch
         planner = copy.deepcopy(self.fusion)
         self.future = self.worker.submit(planner.compute, copy.deepcopy(self.replica.map), self.position.copy(), self.yaw,
-            active, recent, dict(self.cooldown), reservations, self.epoch, t, not bool(self.intent),
-            copy.deepcopy(self.ledger.states), dict(self.pair.overrides), dict(self.pair.last_success), copy.deepcopy(self.service_feedback))
+            active, recent, dict(self.cooldown), reservations, self.epoch, t, True,
+            copy.deepcopy(self.ledger.states), dict(self.pair.overrides), dict(self.pair.last_success),
+            copy.deepcopy(self.service_feedback), anticipated)
+
+    def adopt_preplan(self, t):
+        pending = self.preplanned
+        rid = pending['region']; selection = pending['selection']
+        if (pending['epoch'] != self.epoch or t-pending['time'] > 15. or
+                max(self.cooldown.get(rid, 0), self.fusion.graph.services.get(rid, {}).get('defer_until', 0)) > t or
+                np.linalg.norm(pending['position']-self.position) >= .35):
+            self.preplanned = None; return
+        if self.owners.get(rid) != self.id:
+            return  # Let the next heartbeat settle bids before requesting a lease.
+        self.preplanned = None
+        runtime = self.reserved_map()
+        selection['pool'].revalidate(self.position, runtime, PathQualityEvaluator(), runtime.version)
+        candidate = selection['pool'].active
+        if candidate is None:
+            return
+        if pending['anticipatory'] and not selection.get('transit'):
+            cells = visible_cells(runtime, candidate.path[-1], selection['yaw'])
+            if len(cells) < 5:
+                return
+            selection['gain'] = len(cells)*runtime.resolution**runtime.state.ndim
+        if self.ledger.can_propose(candidate.path, rid, t):
+            self.propose(rid, selection)
+            if self.intent and pending['anticipatory']:
+                self.event('next_view_adopted', region=rid, age_s=t-pending['time'])
 
     def propose(self, rid, selection):
         runtime = self.reserved_map()
         if rid < 0:
             runtime.clearance = .5; runtime.recovery_yaw = self.yaw
         try:
-            trajectory = optimize_trajectory(selection['pool'].active.path, runtime, self.yaw, selection['yaw'],
+            trajectory = reusable_trajectory(selection, runtime, self.position, self.yaw) if rid >= 0 else None
+            prepared = trajectory is not None
+            if trajectory is None:
+                trajectory = optimize_trajectory(selection['pool'].active.path, runtime, self.yaw, selection['yaw'],
                                              speed_limit=.15 if rid < 0 else .6, acceleration_limit=.2 if rid < 0 else .8)
         except ValueError as e:
             self.event('trajectory_rejected', region=rid, error=str(e)); self.cooldown[rid] = self.now()+3.; return
@@ -410,7 +453,8 @@ class ExplorationAgent(Node):
         self.event('path_proposed', token=self.intent['token'], region=rid,
                    tour=self.tour, workload=self.workload, objective=selection['objective'],
                    trajectory_method=trajectory.method, trajectory_limits=trajectory.limits(),
-                   trajectory_duration=trajectory.duration, contingency=self.intent['contingency'], voters=self.intent['voters'])
+                   trajectory_duration=trajectory.duration, prepared_trajectory=prepared,
+                   contingency=self.intent['contingency'], voters=self.intent['voters'])
         pool = selection['pool']
         self.paths.write(json.dumps(dict(time=self.now(), drone=self.id, epoch=self.epoch, region=rid,
             yaw=selection['yaw'], gain_m2=selection['gain'], paths=[dict(**p.metadata(), points=p.path.tolist())

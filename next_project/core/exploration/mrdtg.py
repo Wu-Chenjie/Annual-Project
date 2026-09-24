@@ -13,17 +13,23 @@ from .sparse_graph import length
 from .hierarchy import ExplorationRegion
 
 
-def grid_tree(runtime, start, radius=6.):
+def grid_tree(runtime, start, radius=6., router=None):
     root = tuple(runtime.indices(start))
     if not runtime.safe_path([start]):
         return {}, {}
+    if router is not None and router.node(start) >= 0:
+        distances, previous = router.search(start, limit=radius+1e-8)
+        reached = np.flatnonzero(np.isfinite(distances))
+        cells = [tuple(c) for c in router.cells[reached]]
+        return (dict(zip(cells, distances[reached])),
+                {c: tuple(router.cells[previous[i]]) for c, i in zip(cells, reached) if previous[i] >= 0})
     distances = {root: 0.}; previous = {}; queue = [(0., root)]
+    dimensions = runtime.state.ndim
+    shifts = [tuple(sign if j == axis else 0 for j in range(dimensions)) for axis in range(dimensions) for sign in (-1, 1)]
     while queue:
         cost, u = heapq.heappop(queue)
         if cost > distances[u]+1e-8:
             continue
-        dimensions = runtime.state.ndim
-        shifts = [tuple(sign if j == axis else 0 for j in range(dimensions)) for axis in range(dimensions) for sign in (-1, 1)]
         for shift in shifts:
             v = tuple(u[j]+shift[j] for j in range(dimensions))
             if any(v[j] < 0 or v[j] >= runtime.shape[j] for j in range(dimensions)) or not runtime.safe[v]:
@@ -142,6 +148,7 @@ class MultiRobotGraph:
         self.trees = {}; self.last_version = -1; self.free_cells = 0; self.version = 0
         self.handshakes = 0; self.attachments = {}; self.runtime = None
         self.services = {}
+        self.handshake_cache = {}
 
     def rebuild(self):
         nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}
@@ -177,6 +184,8 @@ class MultiRobotGraph:
 
     def update(self, runtime, position, hierarchy, now):
         self.runtime = runtime; self.free_cells = int(runtime.safe.sum()); self.version = runtime.version
+        from .voxel_mapping import VoxelRouter
+        self.local_router = VoxelRouter(runtime) if runtime.state.ndim == 3 else None
         self.rebuild()
         # A source observing an occupied edge vetoes all stale copies of that
         # edge. Its veto is cleared only after the entire corridor is locally
@@ -194,7 +203,7 @@ class MultiRobotGraph:
                 self.replica.put(veto_key, dict(kind='edge_block', u=key[0], v=key[1], blocked=True))
             elif self.replica.records.get(veto_key) and runtime.safe_path(p):
                 self.replica.put(veto_key, dict(kind='edge_block', u=key[0], v=key[1], blocked=False))
-        here, prev = grid_tree(runtime, position)
+        here, prev = grid_tree(runtime, position, router=self.local_router)
         nearby = [(here.get(tuple(runtime.indices(p)), np.inf), n) for n, p in self.nodes.items()]
         best = min(nearby, default=(np.inf, None))
         if here and best[0] > 2.5:
@@ -211,15 +220,26 @@ class MultiRobotGraph:
             if np.linalg.norm(point-position) > 8. or not runtime.safe_path([point]):
                 continue
             cached = self.trees.get(nid)
-            trees[nid] = cached if cached and cached[0] == runtime.version else (runtime.version, *grid_tree(runtime, point))
+            # A distant observation must not invalidate every history tree.
+            # Include occupied/unknown geometry and the inflated safe mask in
+            # the entire search envelope, including the clearance border.
+            root = runtime.indices(point); radius = int(np.ceil((6.+runtime.clearance)/runtime.resolution))+2
+            area = tuple(slice(max(0, int(c)-radius), min(s, int(c)+radius+1)) for c, s in zip(root, runtime.shape))
+            signature = (runtime.state[area].tobytes(), runtime.safe[area].tobytes())
+            trees[nid] = cached if cached and cached[0] == signature else (signature, *grid_tree(runtime, point, router=self.local_router))
         self.trees = trees
         ids = sorted(trees)
+        handshake_cache = {}
         for i, u in enumerate(ids):
             _, du, pu = trees[u]
             for v in ids[i+1:]:
                 _, dv, pv = trees[v]
-                common = du.keys() & dv.keys()
                 key = 'e:'+'|'.join(sorted((u, v)))
+                signature = (trees[u][0], trees[v][0])
+                handshake_cache[key] = signature
+                if self.handshake_cache.get(key) == signature:
+                    continue
+                common = du.keys() & dv.keys()
                 if not common:
                     self.replica.delete(key); continue
                 cell = min(common, key=lambda c: (du[c]+dv[c], c))
@@ -232,6 +252,7 @@ class MultiRobotGraph:
                 if self.replica.records.get(key) != record:
                     self.handshakes += 1
                 self.replica.put(key, record)
+        self.handshake_cache = handshake_cache
         # Each active EROI attaches to exactly one history node by its best view.
         for rid, state in hierarchy.states.items():
             if rid in hierarchy.split:
@@ -264,11 +285,11 @@ class MultiRobotGraph:
                 record = old or dict(kind='region', id=rid, unknown=0)
                 self.replica.put(key, dict(record, status='splitR', stamp=now))
         self.rebuild()
-        self.attachments = self.connect(position, runtime)
+        self.attachments = self.connect(position, runtime, tree=(here, prev))
 
-    def connect(self, position, runtime=None):
+    def connect(self, position, runtime=None, tree=None):
         runtime = runtime or self.runtime
-        d, prev = grid_tree(runtime, position)
+        d, prev = tree if tree is not None else grid_tree(runtime, position, router=getattr(self, 'local_router', None))
         result = {}
         for nid, point in self.nodes.items():
             cell = tuple(runtime.indices(point))
@@ -296,18 +317,19 @@ class MultiRobotGraph:
                     heapq.heappush(queue, (new, v))
         return costs, parents, roots
 
-    def route_to_region(self, rid):
+    def route_to_region(self, rid, attachments=None):
         task = self.regions.get(rid)
         if not task or task.get('node') not in self.nodes:
             return None
-        costs, previous, roots = self.search(self.attachments); node = task['node']
+        attachments = self.attachments if attachments is None else attachments
+        costs, previous, roots = self.search(attachments); node = task['node']
         if node not in costs:
             return None
         parts = [np.array(task['points'])]
         while node in previous:
             parent, idx, reverse = previous[node]; p = np.array(self.edges[idx]['points'])
             parts.append(p[::-1] if reverse else p); node = parent
-        parts.append(self.attachments[node][1])
+        parts.append(attachments[node][1])
         return np.vstack(parts[::-1])
 
     def snapshot(self):
