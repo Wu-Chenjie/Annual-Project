@@ -10,7 +10,7 @@ import sys
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess,GroupAction,OpaqueFunction
-from launch.utilities import perform_substitutions
+from launch.utilities import perform_substitutions,normalize_to_list_of_substitutions
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node,SetRemap
 
@@ -22,7 +22,7 @@ def generate_launch_description():
     base=importlib.util.module_from_spec(spec);spec.loader.exec_module(base)
     def setup(context):
         actions=base.setup(context);executor=actions[8]
-        if not isinstance(executor,Node) or perform_substitutions(context,executor.node_executable)!='view_executor_node.py':
+        if not isinstance(executor,Node) or perform_substitutions(context,normalize_to_list_of_substitutions(executor.node_executable))!='view_executor_node.py':
             raise RuntimeError('Frozen launch composition changed; do not remap an unknown node')
         remapped=GroupAction(actions=[SetRemap('/drone_2/estimated_odometry','/fault/safety/drone_2/estimated_odometry'),executor],scoped=True)
         relay=ExecuteProcess(cmd=[sys.executable,str(Path(__file__).with_name('safety_input_relay.py')),

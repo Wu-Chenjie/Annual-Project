@@ -18,7 +18,10 @@
     "candidate-3-none-900",
     "candidate-4-none-900",
     "candidate-5-none-900",
-    "candidate-6-video-900"
+    "candidate-6-video-900",
+    "candidate-6-native-faults-900",
+    "candidate-6-safety-input-900",
+    "candidate-6-safety-input-900-retry1"
   ],
   "groups": [
     "no_fault",

@@ -99,8 +99,20 @@ def main():
         cleanup=directory/'process-cleanup.json'
         if not cleanup.exists() or json.loads(cleanup.read_text()).get('remaining'):
             raise RuntimeError('Missing or failed process cleanup; do not start another sample')
+        # Audit only after all owned flight processes exit. Both policies use
+        # this same frozen analytic auditor, not their respective planner code.
+        audit_root=roots['combined']
+        audit_shell='source /opt/ros/jazzy/setup.bash && source '+shlex.quote(str(audit_root/'ros2_ws/install/setup.bash'))
+        audit_shell+=' && export PYTHONPATH='+shlex.quote(str(audit_root/'ros2_ws/install/annual_swarm/lib/annual_swarm'))+':${PYTHONPATH:-}'
+        audit_shell+=' && '+shlex.join(['python3',str(harness_root/'audit_todo_attempt.py'),str(directory)])
+        with (directory/'audit.log').open('w') as log:
+            subprocess.run(['bash','-lc',audit_shell],stdout=log,stderr=log,check=True)
         print(json.dumps(dict(job=name,**result)),flush=True)
         evidence['jobs'].append(dict(job=name,**result));header.write_text(json.dumps(evidence,indent=2)+'\n')
+        if result['outcome'].startswith('INFRASTRUCTURE'):
+            (output/'progress.json').write_text(json.dumps(dict(status='INFRASTRUCTURE_REVIEW_REQUIRED',job=name,
+                total_jobs=len(matrix),finished_jobs=len(evidence['jobs'])),indent=2)+'\n')
+            return
     (output/'progress.json').write_text(json.dumps(dict(status='COMPLETE',total_jobs=len(matrix)),indent=2)+'\n')
 
 

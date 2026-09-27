@@ -55,6 +55,8 @@ def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=Non
             selection['curve_budget_exhausted'] = True
             break
     selection['curve_alternatives'] = curves
+    selection['curve_qualities'] = {c.id:dict(quality=copy.deepcopy(c.quality),map_version=runtime.version,time=now)
+                                   for c in valid}
     if not valid:raise ValueError('No validated continuous reserve within the fit budget')
     valid.sort(key=lambda c:(c.quality['curve_quality_score'],c.id))
     selection['pool'].active,selection['pool'].backups=valid[0],valid[1:selection['pool'].backup_count+1]
@@ -717,9 +719,9 @@ class ExplorationAgent(Node):
     def adopt_preplan(self, t):
         pending = self.preplanned
         rid = pending['region']; selection = pending['selection']
-        if (pending['epoch'] != self.epoch or t-pending['time'] > 15. or
+        if (pending['epoch'] != self.epoch or t-pending['time'] > 60. or
                 max(self.cooldown.get(rid, 0), self.fusion.graph.services.get(rid, {}).get('defer_until', 0)) > t or
-                np.linalg.norm(pending['position']-self.position) >= .35):
+                self.fusion.graph.regions.get(rid,{}).get('status')=='splitR'):
             self.preplanned = None; return
         if self.owners.get(rid) != self.id:
             return  # Let the next heartbeat settle bids before requesting a lease.
@@ -729,6 +731,9 @@ class ExplorationAgent(Node):
         candidate = selection['pool'].active
         if candidate is None:
             return
+        if not selection.get('transit') and self.fusion.graph.regions.get(rid,{}).get('status')=='deadR':
+            services=self.fusion.graph.planning_regions(runtime,t,known_mask(runtime,self.fusion.graph.observed_mask(runtime)))
+            if not services.get(rid,{}).get('service_role'):return
         if not selection.get('transit'):
             cells = (visible_cells(runtime, candidate.path[-1], selection['yaw'])-
                      self.fusion.priority.committed_cells(runtime, self.ledger.states, t))
@@ -738,7 +743,20 @@ class ExplorationAgent(Node):
             selection['gain'] = information_count(cells, self.fusion.graph.observed_mask(runtime),
                 0.)*runtime.resolution**runtime.state.ndim
         if self.ledger.can_propose(candidate.path, rid, t):
+            refresh=(t-pending['time']>15. or np.linalg.norm(pending['position']-self.position)>=.35)
+            if refresh:
+                # A stale worker result is never executed. Its unexpired reserve
+                # can seed a NEW fit request after live geometry, team gain,
+                # task lifecycle and ownership checks at the actual state.
+                selection['trajectory']=None
+                if selection.get('priority'):
+                    selection['priority']=dict(selection['priority'],estimate_source='cached_task_revalidated_goal',
+                        prior_estimate_age_s=t-pending['time'],revalidated_team_gain_m3=selection['gain'])
             self.propose(rid, selection)
+            if refresh and self.fit_pending:
+                self.event('cached_preplan_refit_queued',region=rid,candidate=candidate.id,
+                    prior_request_id=pending['request_id'],prior_age_s=t-pending['time'],
+                    current_map_version=runtime.version,actual_start=self.position.tolist())
             if self.intent and pending['anticipatory']:
                 self.event('next_view_adopted', region=rid, age_s=t-pending['time'])
 
@@ -801,7 +819,13 @@ class ExplorationAgent(Node):
             curve=curves.get(candidate.id)
             if candidate is pool.active:curve=ContinuousTrajectory.from_dict(intent['trajectory'])
             if curve is None:continue
-            paths.append(dict(**candidate.metadata(),points=candidate.path.tolist(),trajectory=curve.to_dict()))
+            fitted=selection.get('curve_qualities',{}).get(candidate.id,{})
+            paths.append(dict(**candidate.metadata(),points=candidate.path.tolist(),trajectory=curve.to_dict(),
+                fitted_curve_quality=fitted.get('quality',{}).get('executed_curve'),
+                fitted_curve_score=fitted.get('quality',{}).get('curve_quality_score'),
+                fit_map_version=fitted.get('map_version'),fit_time=fitted.get('time'),
+                curve_validated_map_version=candidate.map_version if candidate is pool.active else fitted.get('map_version'),
+                reserve_reuse='Rejoin, revalidate and refit at actual state before a new authorization'))
         self.paths.write(json.dumps(dict(time=self.now(),drone=self.id,epoch=intent['epoch'],region=intent['region'],
             token=intent['token'],phase=phase,purpose=intent['purpose'],active_candidate=intent['candidate_id'],
             yaw=selection['yaw'],gain_m3=selection['gain'],paths=paths))+'\n');self.paths.flush()

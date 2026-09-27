@@ -57,3 +57,22 @@ def test_refitting_active_path_is_not_a_different_cached_backup(old_candidate):
                     origin=dict(token='old',time=2.5,candidate=old_candidate))]
     result=check(events,states,executions,2,30.,commands)
     assert result['passed']==(old_candidate=='other')
+
+
+@pytest.mark.parametrize('fault',['no_authorization','after_retirement'])
+def test_actual_execution_requires_a_live_authorization(fault):
+    events,states,executions,commands=trace()
+    executions.append(dict(token='rogue' if fault=='no_authorization' else 'old',drone=0,
+                           time=11.,trajectory_time=.2,reason='tracking_view'))
+    assert not check(events,states,executions,2,30.,commands)['passed']
+
+
+def test_absent_command_stream_cannot_receive_a_protocol_pass():
+    result=check([],[],[],2,30.)
+    assert not result['passed'] and result['status']=='INCOMPLETE_OBSERVABILITY'
+
+
+def test_same_curve_cannot_be_relabelled_as_another_region_under_the_token():
+    events,states,executions,commands=trace()
+    commands[0]['region']=99
+    assert not check(events,states,executions,2,30.,commands)['passed']

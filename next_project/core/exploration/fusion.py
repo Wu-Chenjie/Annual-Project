@@ -343,6 +343,8 @@ class FusionPlanner:
                     selection['curve_budget_exhausted'] = True
                     break
             selection['curve_alternatives'] = curves
+            selection['curve_qualities'] = {c.id:dict(quality=copy.deepcopy(c.quality),map_version=local.version,time=now)
+                                           for c in valid}
             if valid:
                 valid.sort(key=lambda c:(c.quality['curve_quality_score'],c.id))
                 selection['pool'].active, selection['pool'].backups = valid[0], valid[1:6]

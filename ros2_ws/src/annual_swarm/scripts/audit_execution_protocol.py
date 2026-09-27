@@ -30,6 +30,10 @@ def check(events,states,executions,fleet_size,end_time,commands=()):
         if not command.get('trajectory') or not command.get('token'):continue
         captured+=1;token=command['token'];digest=hashlib.sha256(json.dumps(command['trajectory'],sort_keys=True).encode()).hexdigest()
         record=intents.setdefault(token,dict(intent=command,drone=command['drone']))
+        require(record['drone']==command['drone'],f'Command source changed under token {token}')
+        for key in ('epoch','region','yaw','candidate_id','handoff'):
+            if key in record['intent'] and key in command:
+                require(record['intent'][key]==command[key],f'Command {key} changed under token {token}')
         if 'digest' in record:require(record['digest']==digest,f'Curve changed under token {token}')
         record['digest']=digest;record['intent']=dict(record['intent'],trajectory=command['trajectory'])
     for event in events:
@@ -81,6 +85,12 @@ def check(events,states,executions,fleet_size,end_time,commands=()):
         token=packet.get('token')
         if token and packet.get('trajectory_time',0.)>0 and packet.get('reason') in ('tracking_view','observation_dwell','view_observed'):
             actual.setdefault(token,packet)
+            leases=[lease for lease in intervals if lease['token']==token and lease['drone']==packet.get('drone',lease['drone'])]
+            require(bool(leases),f'Executed token has no recorded authorization {token}')
+            stamp=packet.get('time',packet.get('receipt_time'))
+            if stamp is not None:
+                require(any(lease['start']-.25<=stamp<=lease['end']+.25 for lease in leases),
+                        f'Executed outside authorized lease interval {token}')
     for handoff in handoffs:
         packet=actual.get(handoff['token'])
         if handoff['token'] in cancelled and packet is None:
@@ -98,7 +108,7 @@ def check(events,states,executions,fleet_size,end_time,commands=()):
         require(origin.get('candidate') is not None and origin['candidate']!=event['candidate'],f'Cached switch reused active candidate {token}')
         require(intents.get(token,{}).get('intent',{}).get('candidate_id')==event['candidate'],f'Executed cached candidate mismatch {token}')
         require(token in actual,f'Cached-route authorization never executed {token}')
-    return dict(passed=not errors,status='INCOMPLETE_OBSERVABILITY' if not captured else 'PASS' if not errors else 'FAIL',
+    return dict(passed=not errors and captured>0,status='INCOMPLETE_OBSERVABILITY' if not captured else 'PASS' if not errors else 'FAIL',
                 errors=errors,proposals=len(proposals),captured_curve_commands=captured,
                 lease_intervals=len(intervals),handoffs=handoffs,cached_route_chains=switches,
                 note='Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance.')

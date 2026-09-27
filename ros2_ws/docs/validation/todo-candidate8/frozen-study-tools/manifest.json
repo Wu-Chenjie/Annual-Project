@@ -1,0 +1,16 @@
+{
+  "audit_todo_evidence.py": "8d9131b298fe3febbeb4756245faac1e0cd5005f1bc05c95060b5e0037f96afa",
+  "audit_fusion_run.py": "60406836aedea0d93e2161d74f7fe166539c703150f32e2ca99bc4d318452736",
+  "summarize_todo_study.py": "901005b7c2609a9896de37b0984e8121012f36319d102e11c29ec2039e2cb9de",
+  "run_todo_study.py": "144668c546ef468afe907ff8d738eb06e666f61d883d5f4bfd96b91c1a6c1c87",
+  "audit_todo_attempt.py": "2e1777f31ef7b022744ecde40419b136751d5028007949c283e411a24338fc28",
+  "verify_todo_run.py": "cafa439d53df26d7d7da700e6a50a6ff91036989dc461ad785860d1ffe519821",
+  "record_todo_demo.py": "50ccd77aba3cbc256956455ff5bf682fe228dddfb09cfe04a68c2d3205865dd3",
+  "todo-protocol.json": "cfcae3658310e1377cc118ca108dfac7ee3f14fe29b15242ae8fb81162c8b32d",
+  "experiment_processes.py": "9e7643331076a79960b6b9f5bdc99a18ccf82bc5135229c80b5f7b374ed9dcdd",
+  "prepare_todo_ablations.py": "4e585ce27311c699692cde5bac3248b14cd21eed950941888a712f745ef8f74f",
+  "snapshot_map.py": "05e10cdd66b9c90644faa9973996017be637c647a12f02d889383e9b3d84c57b",
+  "run_todo_experiment.py": "88954d0ef9c18f307aa3f34a8100e175f0a11a293a29aa32c07148f12188d5ee",
+  "record_observation_evidence.py": "4d824b2db6a50f36199d869bf0c74c455a6635f12b9bb8bb0e231c7584377d7c",
+  "audit_execution_protocol.py": "dcfd9e96f25d7f7121865892b698ca9a2bcab5a7221738ebe2b9291889d83872"
+}

@@ -111,7 +111,8 @@ class ViewExecutor(Node):
             self.stop('experiment_complete' if self.done else 'experiment_pause')
 
     def report(self):
-        self.report_pub.publish(String(data=json.dumps(dict(drone=self.id, ready=self.ready, arrived=self.arrived,
+        self.report_pub.publish(String(data=json.dumps(dict(drone=self.id,time=self.get_clock().now().nanoseconds*1e-9,
+            ready=self.ready, arrived=self.arrived,
             epoch=self.epoch, reason=self.reason, traffic_wait_samples=self.waits, yaw_error=wrap(self.goal_yaw-self.actual_yaw),
             token=self.token, trajectory_duration=self.curve.duration if self.curve else 0., reference_yaw=self.heading,
             reference_yaw_rate=self.yaw_rate, pending_token=self.pending['token'] if self.pending else None,

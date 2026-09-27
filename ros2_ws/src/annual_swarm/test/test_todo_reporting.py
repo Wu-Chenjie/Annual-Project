@@ -1,5 +1,6 @@
 """Unfinished / failed paired trials must not become successful latency claims."""
 import json
+import pytest
 import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
@@ -26,7 +27,8 @@ def test_pending_and_all_failed_studies_do_not_pass(tmp_path):
     assert all(row['t95_difference_s'] is None for row in failed['comparisons'][0]['paired_results'])
 
 
-def test_contact_in_failed_attempt_is_not_hidden_by_successful_only_medians(tmp_path,monkeypatch):
+@pytest.mark.parametrize('fault',['contact','authorization'])
+def test_failed_safety_or_authorization_is_not_hidden_by_successful_only_medians(tmp_path,monkeypatch,fault):
     protocol=dict(seeds=list(range(900,905)),targeted_scenes={},groups=['no_fault'],ablations=[],
         gates=dict(tail_median_reduction_min=.2,planning_wait_median_reduction_min=.5,
                    distance_median_increase_max=.1,planning_wall_p95_deadline_s=12.))
@@ -37,7 +39,9 @@ def test_contact_in_failed_attempt_is_not_hidden_by_successful_only_medians(tmp_
             status='COMPLETE' if seed==900 else 'FAILED'
             (directory/'run-result.json').write_text(json.dumps(dict(outcome=status)))
             (directory/'summary.json').write_text(json.dumps(dict(status=status,min_separation_m=2.)))
-    def contact(directory):return directory.name=='main-no_fault-901-combined'
+            valid=not (fault=='authorization' and directory.name=='main-no_fault-901-combined')
+            (directory/'execution-protocol-audit.json').write_text(json.dumps(dict(passed=valid,status='PASS' if valid else 'FAIL')))
+    def contact(directory):return fault=='contact' and directory.name=='main-no_fault-901-combined'
     def fake_audit(directory):
         combined=directory.name.endswith('combined');finished='-900-' in directory.name
         return dict(thresholds=dict(t95=(2. if combined else 10.) if finished else None),tail_90_95_s=2. if combined else 10.,
@@ -51,5 +55,6 @@ def test_contact_in_failed_attempt_is_not_hidden_by_successful_only_medians(tmp_
     monkeypatch.setattr(reporting,'audit',fake_audit);monkeypatch.setattr(reporting,'verify',fake_verify)
     result=summarize(tmp_path);comparison=result['comparisons'][0]
     assert comparison['gates']['t95'] and comparison['gates']['success_rate']
-    assert comparison['gates']['safety'] is False and comparison['passed'] is False
+    assert comparison['gates']['safety' if fault=='contact' else 'authorization'] is False
+    assert comparison['passed'] is False
     assert len(result['attempts'])==10

@@ -137,6 +137,11 @@ def test_refitted_reserves_are_ranked_by_actual_continuous_curves(blocked):
         assert not pool.backups and len(selection['curve_alternatives'])==1
         assert pool.active.quality['curve_quality_score']>0.
     assert pool.active.quality['executed_curve']['duration_s']==selection['trajectory'].duration
+    before=selection['curve_qualities'][pool.active.id]
+    pool.revalidate(start,m,__import__('core.planning.path_quality',fromlist=['PathQualityEvaluator']).PathQualityEvaluator(),m.version,now=0.)
+    assert 'executed_curve' not in pool.active.quality
+    assert before['quality']['executed_curve']['duration_s']==selection['trajectory'].duration
+    assert before['map_version']==m.version
 
 
 def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path):

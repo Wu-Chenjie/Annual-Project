@@ -34,6 +34,9 @@ def main():
     start=time.monotonic()
     try:
         recorder=subprocess.Popen(['ffmpeg','-y','-loglevel','warning','-f','x11grab','-framerate','10','-video_size','1920x1080','-i',env['DISPLAY'],'-c:v','libx264','-preset','ultrafast','-crf','23','-threads','1','-pix_fmt','yuv420p',str(out/'gazebo-rviz-raw.mp4')],env=env,stdout=log,stderr=log)
+        (out/'recording-clock.json').write_text(json.dumps(dict(recording_launched_monotonic=start,
+            recorded_monotonic=time.monotonic(),recorded_wall_unix=time.time(),
+            note='FFmpeg startup precedes its first captured frame; verify clip anchors against the simulation HUD.'),indent=2)+'\n')
         observer=subprocess.Popen([sys.executable,str(Path(__file__).with_name('record_observation_evidence.py')),'--ros-args','-p','use_sim_time:=true','-p',f'output_dir:={out}'],env=env,stdout=log,stderr=log,start_new_session=True)
         command=['ros2','launch','annual_swarm','decentralized_search.launch.py','headless:=false','rviz:=true','visualize:=true',f'output_dir:={out}',f'map:={root}/next_project/maps/search_fusion_3d.json']
         if args.faults=='none':command+=['pause_after:=0','network_after:=0','restart_after:=0','dynamic_obstacle:=false']

@@ -29,6 +29,8 @@ def summarize(root):
                         contacts=a['contacts'],planning_p95_s=(a['planning_all_measured_requests_wall_s'] or {}).get('p95'),
                         moving_handoffs=a['moving_handoffs'],minimum_sampled_separation_m=s['min_separation_m'])
                     row['flight_safety_verified']=all(value for key,value in v['gates'].items() if key!='final_map_matches')
+                    packet=json.loads((directory/'execution-protocol-audit.json').read_text()) if (directory/'execution-protocol-audit.json').exists() else {}
+                    row['protocol_verified']=packet.get('passed') is True and packet.get('status')=='PASS'
                     row['low_duration_ratio']=a['exploration_low_yield_duration_s']/a['exploration_total_duration_s'] if a.get('exploration_total_duration_s',0)>0 else None
                     if s['status']!='COMPLETE':row['t95_s']=None
             except Exception as exc:row['audit_error']=repr(exc)
@@ -36,7 +38,7 @@ def summarize(root):
     fields=sorted({key for row in rows for key in row})
     with (root/'all-attempts.csv').open('w') as stream:
         writer=csv.DictWriter(stream,fieldnames=fields);writer.writeheader();writer.writerows(rows)
-    def successful(row):return row['outcome']=='COMPLETE' and row.get('safety_verified',False) and row.get('t95_s') is not None
+    def successful(row):return row['outcome']=='COMPLETE' and row.get('safety_verified',False) and row.get('protocol_verified',False) and row.get('t95_s') is not None
     def median(group,key):
         values=[row[key] for row in group if successful(row) and row.get(key) is not None]
         return float(np.median(values)) if values else None
@@ -57,6 +59,7 @@ def summarize(root):
             return None if bm[key] is None or cm[key] is None or bm[key]<=0 else cm[key]<=bm[key]*(1-fraction)
         gates=dict(success_rate=sum(successful(r) for r in c)>=sum(successful(r) for r in b),
             safety=all(r.get('flight_safety_verified',False) for r in c),
+            authorization=all(r.get('protocol_verified',False) for r in c),
             t95=None if bm['t95_s'] is None or cm['t95_s'] is None else cm['t95_s']<bm['t95_s'],
             tail=reduce('tail_s',protocol['gates']['tail_median_reduction_min']),
             planning_wait=reduce('planning_wait_fleet_s',protocol['gates']['planning_wait_median_reduction_min']),

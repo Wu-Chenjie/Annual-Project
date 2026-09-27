@@ -1,0 +1,3 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-09-27-19-27-47-901576-11e8f42d5067-23437
+[INFO] [launch]: Default logging verbosity is set to INFO
+[ERROR] [launch]: Caught exception in launch (see debug for traceback): 'str' object has no attribute 'perform'

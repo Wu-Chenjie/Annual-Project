@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "checks": {
+    "planning_deadline_heartbeat_responsive": true,
+    "planning_deadline_matching_request_failed": true,
+    "planning_deadline_recomputed_after_failure": true,
+    "planning_deadline_genuine_observations_after_failure": true,
+    "planning_deadline_within_budget": true,
+    "planning_worker_crash_heartbeat_responsive": true,
+    "planning_worker_crash_matching_request_failed": true,
+    "planning_worker_crash_recomputed_after_failure": true,
+    "planning_worker_crash_genuine_observations_after_failure": true,
+    "perception_update_loss_heartbeat_responsive": true,
+    "perception_loss_withdraws_exploration": true,
+    "perception_mapper_resumed": true,
+    "perception_restores_positive_service": true,
+    "all_three_native_signal_cases_executed": true,
+    "independent_flight_and_coverage": true,
+    "independent_authorization": true,
+    "reached_95": true
+  },
+  "cases": [
+    {
+      "case": "planning_deadline",
+      "drone": 0,
+      "injected_at": 61.00000000000001,
+      "ended_at": 72.5,
+      "maximum_heartbeat_gap_s": 0.402000000000001,
+      "failure": {
+        "type": "planning_timeout",
+        "drone": 0,
+        "time": 71.34400000000001,
+        "incarnation": "3b480bfb901a4f96809d4eb66e5a4193",
+        "request_id": "0:12",
+        "deadline_wall_s": 12.0,
+        "total_wall_s": 11.814551311001196,
+        "continued_token": "0:3b480bfb:1361010"
+      },
+      "original_worker_alive_after_window": false
+    },
+    {
+      "case": "planning_worker_crash",
+      "drone": 1,
+      "injected_at": 100.0,
+      "ended_at": 100.0,
+      "maximum_heartbeat_gap_s": 0.4899999999999949,
+      "failure": {
+        "type": "planning_failed",
+        "drone": 1,
+        "time": 100.16000000000001,
+        "incarnation": "99c86e499b104b0ead8c871f11d4b990",
+        "error": "A process in the process pool was terminated abruptly while the future was running or pending.",
+        "request_id": "1:19",
+        "total_wall_s": 0.7245947489991522
+      },
+      "original_worker_alive_after_window": false
+    },
+    {
+      "case": "perception_update_loss",
+      "drone": 2,
+      "injected_at": 150.0,
+      "ended_at": 153.0,
+      "maximum_heartbeat_gap_s": 0.40200000000001523
+    }
+  ],
+  "note": "These bounded inputs establish only the recorded cases. Planning, perception and neighbor safety are separate failure boundaries."
+}

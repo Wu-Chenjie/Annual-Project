@@ -1,0 +1,7 @@
+{
+  "outcome": "INFRASTRUCTURE_FAILURE",
+  "reason": "RuntimeError('Launch or evidence recorder exited')",
+  "wall_elapsed_s": 1.001160178999271,
+  "last_coverage": null,
+  "last_simulation_time": null
+}
