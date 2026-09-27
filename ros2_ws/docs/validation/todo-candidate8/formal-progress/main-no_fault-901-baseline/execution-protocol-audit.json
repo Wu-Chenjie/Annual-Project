@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 145,
+  "captured_curve_commands": 141,
+  "lease_intervals": 141,
+  "handoffs": [],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [
+    {
+      "type": "cached_route_switched",
+      "drone": 2,
+      "time": 283.5,
+      "incarnation": "952b9438e40d497b9944a0e77a7ea995",
+      "region": 194
+    }
+  ],
+  "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
+}

@@ -1,0 +1,19 @@
+{
+  "accounting": {
+    "completed": true,
+    "passed": null,
+    "status": "COMPLETE"
+  },
+  "flight_and_coverage": {
+    "completed": true,
+    "passed": true,
+    "status": null
+  },
+  "execution_protocol": {
+    "completed": true,
+    "passed": true,
+    "status": "PASS"
+  },
+  "outcome": "COMPLETE",
+  "complete_attempt_accepted": true
+}

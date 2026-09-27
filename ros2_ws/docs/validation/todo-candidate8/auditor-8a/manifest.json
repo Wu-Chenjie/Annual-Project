@@ -1,0 +1,8 @@
+{
+  "revision": "8a-read-only-baseline-log-compatibility",
+  "flight_policy_changed": false,
+  "files": {
+    "audit_todo_attempt.py": "2e1777f31ef7b022744ecde40419b136751d5028007949c283e411a24338fc28",
+    "audit_execution_protocol.py": "1e5fe00545c70fe606b8e7c341cef126b11d85cfa84ec248385b3e4a364f4d59"
+  }
+}

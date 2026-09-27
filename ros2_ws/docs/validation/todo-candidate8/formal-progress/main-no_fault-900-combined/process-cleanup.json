@@ -1,0 +1,14 @@
+{
+  "partition": "annual_todo_11f3cbf57de74049bf3818ba27e3a669",
+  "signals": [
+    {
+      "pid": 31668,
+      "signal": 15
+    },
+    {
+      "pid": 31668,
+      "signal": 9
+    }
+  ],
+  "remaining": []
+}
