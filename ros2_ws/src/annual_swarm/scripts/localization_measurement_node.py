@@ -5,6 +5,7 @@ Truth is used only here and in experiment evaluation, not in the estimator.
 This does not pretend that noisy truth measurements constitute visual SLAM.
 """
 import copy
+import os
 import numpy as np
 import rclpy
 from rclpy.node import Node
@@ -16,7 +17,7 @@ class Measurement(Node):
     def __init__(self):
         super().__init__('localization_measurement')
         self.id = int(self.declare_parameter('drone_id', 0).value)
-        self.rng = np.random.default_rng(900+self.id); self.last = -1.
+        self.rng = np.random.default_rng(int(os.environ.get('ANNUAL_EXPERIMENT_SEED', '900'))+self.id); self.last = -1.
         self.pub = self.create_publisher(Odometry, f'/drone_{self.id}/localization_measurement', qos_profile_sensor_data)
         self.create_subscription(Odometry, f'/drone_{self.id}/odometry', self.odom, qos_profile_sensor_data)
 

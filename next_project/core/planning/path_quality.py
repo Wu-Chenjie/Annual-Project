@@ -59,8 +59,11 @@ class Candidate:
     path: np.ndarray
     quality: dict
     map_version: int
+    created_at: float = None
+    expires_at: float = None
     def metadata(self):
-        return dict(id=self.id,planner=self.planner,variant=self.variant,quality=self.quality,map_version=self.map_version)
+        return dict(id=self.id,planner=self.planner,variant=self.variant,quality=self.quality,map_version=self.map_version,
+                    created_at=self.created_at, expires_at=self.expires_at)
 
 
 class RankedPathPool:
@@ -87,16 +90,25 @@ class RankedPathPool:
         for index in range(nearest,min(nearest+20,len(path))):
             if runtime.safe_path([position,path[index]]):return np.vstack([position,path[index:]])
         return None
-    def revalidate(self,position,runtime,evaluator,version):
+    def revalidate(self,position,runtime,evaluator,version,now=None):
         active_id=self.active.id if self.active else None
         valid=[]; rejected=[]
         for item in ([self.active] if self.active else [])+self.backups:
+            if now is not None and item.expires_at is not None and now > item.expires_at:
+                rejected.append(item.id); continue
             joined=self.connect(position,item.path,runtime)
             if joined is None:rejected.append(item.id);continue
-            valid.append(Candidate(item.id,item.planner,item.variant,joined,evaluator.evaluate(joined,runtime),version))
+            valid.append(Candidate(item.id,item.planner,item.variant,joined,evaluator.evaluate(joined,runtime),version,
+                                   item.created_at,item.expires_at))
         # Keep a still-safe active route; avoid score-noise induced switching.
         active=next((c for c in valid if c.id==active_id),None)
         alternatives=sorted([c for c in valid if c.id!=active_id],key=lambda c:(c.quality['score'],c.id))
         if active is None and alternatives:active=alternatives.pop(0)
-        self.active=active; self.backups=alternatives[:self.backup_count]
+        diverse=[]
+        for candidate in alternatives:
+            chosen=([active] if active else [])+diverse
+            if any(np.mean(np.linalg.norm(resample(candidate.path)-resample(other.path),axis=1))<self.diversity_m for other in chosen):continue
+            diverse.append(candidate)
+            if len(diverse)>=self.backup_count:break
+        self.active=active; self.backups=diverse
         return active_id!=(active.id if active else None),rejected

@@ -1,0 +1,22 @@
+"""Exact curve boundary checks; no controller or reservation side effects."""
+import math
+import numpy as np
+
+
+def continuity(old, new, progress):
+    left = old.sample(progress); right = new.sample(0.)
+    return dict(position=float(np.linalg.norm(left[0]-right[0])),
+                velocity=float(np.linalg.norm(left[1]-right[1])),
+                acceleration=float(np.linalg.norm(left[2]-right[2])),
+                yaw=abs(math.atan2(math.sin(left[3]-right[3]), math.cos(left[3]-right[3]))),
+                yaw_rate=abs(left[4]-right[4]),
+                yaw_acceleration=abs(old.yaw_acceleration(progress)-new.yaw_acceleration(0.)))
+
+
+def validate_handoff(old, new, progress, current_progress=0.):
+    if not np.isfinite(progress) or not current_progress+.05 < progress < old.duration:
+        raise ValueError('Handoff is outside the unconsumed curve')
+    errors = continuity(old, new, progress)
+    if any(value > 1e-5 for value in errors.values()):
+        raise ValueError('Handoff violates position / C2 / yaw boundary continuity')
+    return errors

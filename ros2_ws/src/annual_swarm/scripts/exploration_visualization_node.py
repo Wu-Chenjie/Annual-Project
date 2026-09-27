@@ -153,9 +153,18 @@ class Visualization(Node):
             if intent:
                 path = self.marker('committed_view_route', i, Marker.LINE_STRIP, color, 1. if intent.get('committed') else .35); path.scale.x = .14
                 self.points(path, intent['path']); out.markers.append(path)
+            pending = state.get('pending_intent')
+            if pending:
+                path = self.marker('authorized_handoff_route', i, Marker.LINE_LIST, color, .6); path.scale.x = .08
+                route = pending['path']; points = []
+                for a,b in zip(route[::2],route[1::2]):points.extend([a,b])
+                self.points(path,points);out.markers.append(path)
             label = self.marker('vehicle_labels', i, Marker.TEXT_VIEW_FACING, color); label.scale.z = .45
             label.pose.position.x = p.x; label.pose.position.y = p.y; label.pose.position.z = p.z+.6
             label.text = f'UAV {i} / '+('PAUSED' if not state.get('available', True) else f"R{state.get('active', '-')}" )
+            if intent:
+                label.text += '\n'+{'explore':'EXPLORE','transit_reobserve':'NAV RESENSE','safety_recovery':'SAFETY'}.get(intent.get('purpose'),'EXPLORE')
+            if pending: label.text += ' / HANDOFF ARMED' if pending.get('committed') else ' / HANDOFF ACK'
             out.markers.append(label)
         text = self.marker('live_status', 0, Marker.TEXT_VIEW_FACING, TEXT); text.scale.z = .43
         text.pose.position.x = 12.; text.pose.position.y = 22.5; text.pose.position.z = 1.
@@ -164,6 +173,7 @@ class Visualization(Node):
             f"Coverage {d.get('coverage', 0)*100:.1f}%  |  t={elapsed:.0f}s  |  {d.get('status', 'WAITING')}\n"
             f"Sparse graph: {len(graph.get('nodes', []))} nodes / {graph.get('free_cells', 0)} free cells\n"
             'Hgrid > MR-DTG > GVP + pair CVRP > continuous flight\n'
+            f"Moving handoffs: {sum(s.get('execution',{}).get('handoff_count',0) for s in self.states.values())} | dashed = pending reservation\n"
             f"{'Team unknown' if team_aligned else 'Local unknown'}: GOLD = higher priority / UAV {self.priority_source} estimate\n"
             f"LAVENDER DOTS = team observed, UAV {self.priority_source} unknown / slice 1.5m\n"
             'UAV 0 SKY BLUE | UAV 1 PINK | UAV 2 GREEN | thin gray = topology\n'

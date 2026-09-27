@@ -21,7 +21,7 @@ def setup(context):
     directory = tempfile.mkdtemp(prefix='annual_decentralized_')
     world, bridge = generate(share, file, directory, starts[0], starts=starts, dynamic=arg('dynamic_obstacle') == 'true', lidar=True)
     sim = IncludeLaunchDescription(PythonLaunchDescriptionSource(str(Path(get_package_share_directory('ros_gz_sim'))/'launch/gz_sim.launch.py')),
-        launch_arguments={'gz_args': f'-r -s --headless-rendering {world}'}.items())
+        launch_arguments={'gz_args': f'-r -s --headless-rendering --seed {int(os.environ.get("ANNUAL_EXPERIMENT_SEED", "900"))} {world}'}.items())
     common = {'use_sim_time': True}; output = arg('output_dir')
     nodes = [Node(package='ros_gz_bridge', executable='parameter_bridge', parameters=[{'config_file': bridge}], output='screen'),
         Node(package='annual_swarm', executable='exploration_experiment_node.py', parameters=[common, {'map_file': file,

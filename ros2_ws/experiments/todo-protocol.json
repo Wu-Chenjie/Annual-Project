@@ -1,0 +1,89 @@
+{
+  "schema": "annual.todo-protocol/1",
+  "phase": "preregistration_before_formal_runs",
+  "seeds": [
+    900,
+    901,
+    902,
+    903,
+    904
+  ],
+  "baseline_commit": "7693311f76bd05c457f273a7f2c2afd5443f07b4",
+  "baseline_adapter": "Seeds, measured-frame evidence fields and worker timing-only wrapper; exact patch baseline-observability.patch. Recorder is a read-only observer.",
+  "development_attempts": [
+    "baseline-none-900",
+    "baseline-none-900-retry1",
+    "candidate-1-video-900",
+    "candidate-2-none-900",
+    "candidate-3-none-900"
+  ],
+  "groups": [
+    "no_fault",
+    "recovery"
+  ],
+  "simulation_limit_s": 2400,
+  "wall_limit_s": 7200,
+  "coverage_target": 0.95,
+  "cpu": 6,
+  "memory_gib": 8,
+  "thread_limits": {
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "LP_NUM_THREADS": 2
+  },
+  "map": {
+    "file": "next_project/maps/search_fusion_3d.json",
+    "sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d"
+  },
+  "targeted_scenes": {
+    "search_todo_bottleneck": {
+      "file": "next_project/maps/search_todo_bottleneck.json",
+      "sha256": "c46e6d8f69e5bbf6d941b1eb973179812d1512b523c64ca3a86ba4fc7563a07e"
+    },
+    "search_todo_remnants": {
+      "file": "next_project/maps/search_todo_remnants.json",
+      "sha256": "5ee8f5851bdd8e48af9b9ec578b3ad55a3eb8334205e61f3d03c4395f4ce39f6"
+    },
+    "search_todo_vertical": {
+      "file": "next_project/maps/search_todo_vertical.json",
+      "sha256": "347a9b61ece1016ba84f0a8b9876d6ae433b546baf6939b0c3dd1bd318e627b7"
+    }
+  },
+  "close_radius_m": 2.0,
+  "low_team_yield_known_cells": 30,
+  "gates": {
+    "success_rate_at_least_baseline": true,
+    "coverage_target_unchanged": true,
+    "zero_contacts": true,
+    "t95_median_lower": true,
+    "tail_median_reduction_min": 0.2,
+    "planning_wait_median_reduction_min": 0.5,
+    "distance_median_increase_max": 0.1,
+    "planning_wall_p95_deadline_s": 12.0,
+    "low_team_yield_services_lower": true,
+    "sampled_min_separation_m": 1.2
+  },
+  "failure_policy": "All scheduled algorithm failures/timeouts stay in the denominator. Infrastructure attempts and retries are disclosed separately; successful-only latency is explicitly labeled.",
+  "pairing": "Same seed, map, 3 starts, native 3D sensor/noise, dynamics and resources; serialize all Gazebo runs.",
+  "ablations": [
+    "continuous_handoff",
+    "task_route_objective",
+    "incremental_cache",
+    "task_lifecycle",
+    "team_new_accounting",
+    "arrival_support_prediction"
+  ],
+  "ablation_policy": "Offline frozen-source mutants only, with patches and manifests. Deployment retains one combined entry.",
+  "recovery_rule": {
+    "pause": "UAV1, eligible after 60s, begin on next committed intent, duration25s",
+    "planning_partition": "UAV2,100s,duration18s; local safety sensing remains active",
+    "agent_restart": "UAV0,210s",
+    "dynamic_obstacle": "eligible after150s; first committed path point satisfying fixed safety/visibility rules; 22s passage"
+  },
+  "matrix": {
+    "main": 20,
+    "targeted": 30,
+    "offline_ablations": 30,
+    "total": 80
+  }
+}

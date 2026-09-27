@@ -6,6 +6,7 @@ or freezes a completed/failed experiment; it assigns no task, owner, route or ya
 """
 import csv
 import json
+import time
 from pathlib import Path
 import numpy as np
 import rclpy
@@ -45,6 +46,7 @@ class Experiment(Node):
         self.reference_writer.writerow(['time', 'drone', 'error_m', 'yaw_error_rad', 'vx', 'vy', 'vz', 'ax', 'ay', 'az', 'method'])
         self.contacts = 0; self.minimum = None; self.started = None; self.finished = None; self.status = 'WAITING'
         self.failure_reason = None
+        self.started_wall = None; self.created_wall = time.monotonic(); self.milestones = {}
         self.distances = {i: 0. for i in range(self.fleet_size)}; self.samples = {i: 0 for i in range(self.fleet_size)}; self.sequence = 0
         self.t90 = None; self.t95 = None; self.coverage = []; self.paused = []; self.pause_started = None; self.resumed = False
         self.coverage_details = {}
@@ -75,7 +77,7 @@ class Experiment(Node):
 
     def execution(self, i, m):
         p = json.loads(m.data); self.executions[i] = p
-        if self.started is not None and self.finished is None and p.get('reason') == 'tracking_view':
+        if self.started is not None and self.finished is None and p.get('reason') in ('tracking_view','observation_dwell','tracking_error_hold'):
             if i not in self.positions or 'reference' not in p:
                 return
             error = float(np.linalg.norm(self.positions[i]-np.asarray(p['reference'])))
@@ -172,6 +174,7 @@ class Experiment(Node):
             return
         if self.started is None and len(self.executions) == self.fleet_size and all(p.get('ready') for p in self.executions.values()):
             self.started = t; self.status = 'SEARCHING'
+            self.started_wall = time.monotonic()
         if self.started is not None and self.finished is None:
             elapsed = t-self.started
             if self.network_after > 0 and elapsed >= self.network_after and self.network_started is None:
@@ -190,6 +193,8 @@ class Experiment(Node):
             self.coverage_details = self.world.coverage_metrics(self.observed)
             coverage = self.coverage_details['coverage']; self.coverage.append([t, coverage])
             if self.started is not None:
+                for target in (.5,.8,.9,.95):
+                    if coverage >= target: self.milestones.setdefault(f't{int(target*100)}', t-self.started)
                 if coverage >= .9 and self.t90 is None:
                     self.t90 = t-self.started
                 if coverage >= .95 and self.t95 is None:
@@ -218,6 +223,8 @@ class Experiment(Node):
             return {i: sum(c.get(field, 0) for (drone, _), c in self.session_counters.items() if drone == i)
                     for i in range(self.fleet_size)}
         report = dict(fleet_size=self.fleet_size, agent_ages={i: t-p['time'] for i, p in self.states.items()}, status=self.status, failure_reason=self.failure_reason, simulation_time=t, start_time=self.started, finish_time=self.finished,
+            wall_elapsed_s=time.monotonic()-self.created_wall, milestones=self.milestones,
+            mission_real_time_factor=(t-self.started)/max(time.monotonic()-self.started_wall,1e-9) if self.started_wall is not None else None,
             architecture='fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight',
             coverage=self.coverage[-1][1] if self.coverage else 0., t90=self.t90, t95=self.t95, coverage_target=self.threshold,
             contacts_after_takeoff=self.contacts, min_separation_m=self.minimum, distances_m=self.distances,

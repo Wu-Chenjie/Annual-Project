@@ -94,7 +94,7 @@ def information_count(cells, observed_mask=None, history_weight=.1):
     return len(cells)-(1.-history_weight)*seen
 
 
-def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latency_weight=.5):
+def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latency_weight=.5, traffic_delays=None):
     """Joint travel and information-weighted completion time, without post-sorting.
 
     Rewards use information amounts, not information/time (which would count
@@ -106,27 +106,29 @@ def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latenc
     weights = {r: max(0., float((rewards or {}).get(r, 0.))) for r in ids}
     scale = latency_weight/max(sum(weights.values()), 1e-12) if rewards else 0.
     cache = {}
+    def service_time(r):
+        return 1.+tasks[r].unknown*.012+max(0., (traffic_delays or {}).get(r, 0.))
     def distance(a, b):
         key = (a, b)
         if key not in cache:
             cache[key] = graph.distance(start if a is None else tasks[a].entry, tasks[b].entry)/.6
         return cache[key]
     def cost(order):
-        return sum(distance(a, b)+1.+tasks[b].unknown*.012 for a, b in zip([None]+order, order))
+        return sum(distance(a, b)+service_time(b) for a, b in zip([None]+order, order))
     def objective(order):
         elapsed = 0.; weighted = 0.
         for a, b in zip([None]+order, order):
-            elapsed += distance(a, b)+1.+tasks[b].unknown*.012
+            elapsed += distance(a, b)+service_time(b)
             weighted += weights[b]*elapsed if weights[b] else 0.
         return elapsed+scale*weighted
     while remaining:
         base = objective(route) if scale else cost(route)
-        arrival = np.r_[0., np.cumsum([distance(a, b)+1.+tasks[b].unknown*.012
+        arrival = np.r_[0., np.cumsum([distance(a, b)+service_time(b)
                                       for a, b in zip([None]+route, route)])]
         suffix = np.r_[np.cumsum([weights[r] for r in route][::-1])[::-1], 0.]
         choices = []
         for r in remaining:
-            service = 1.+tasks[r].unknown*.012
+            service = service_time(r)
             for k in range(1 if route and route[0] == pinned else 0, len(route)+1):
                 a = route[k-1] if k else None
                 added = distance(a, r)+service
@@ -152,7 +154,7 @@ def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latenc
         finite_reverse = np.isfinite(reverse).all()
         changes = np.r_[0., np.cumsum(np.subtract(reverse, forward))] if finite_reverse else None
         if scale and finite_reverse:
-            service = np.array([1.+tasks[r].unknown*.012 for r in route])
+            service = np.array([service_time(r) for r in route])
             w = np.array([weights[r] for r in route])
             arrivals = np.cumsum([distance(a, b)+s for a, b, s in zip([None]+route, route, service)])
             reverse_time = np.r_[0., np.cumsum(np.asarray(reverse)+service[:-1])]
@@ -228,6 +230,9 @@ class ObservationPlanner:
                 if any(np.linalg.norm(point-p) < .65 and abs(angle_delta(heading, h)) < .7 for p, h in recent):
                     continue
                 cells = visible_cells(runtime, point, heading)-excluded_cells
+                if observed_mask is not None and history_weight == 0:
+                    from .team_evidence import team_new_cells
+                    cells = team_new_cells(cells, observed_mask)
                 if len(cells) < 5:
                     continue
                 rotation = abs(angle_delta(heading, yaw))/.65

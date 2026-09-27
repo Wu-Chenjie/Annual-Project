@@ -4,14 +4,47 @@ import math
 import time
 import numpy as np
 from .hierarchy import AdaptiveRegions, ExplorationRegion
-from .mrdtg import MultiRobotGraph, graph_voronoi
+from .mrdtg import MultiRobotGraph, graph_voronoi, observation_grid
 from .sparse_graph import SparseTopology, length
 from .voxel_mapping import VoxelRouter
 from .regions import ObservationPlanner, optimize_tour, visible_cells
 from .pairwise import solve_pair
 from .priority import ExplorationPriority
-from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
+from .team_evidence import known_mask, regional_evidence, intent_records, expected_traffic_delay
+from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator, resample
 from core.planning.continuous_trajectory import optimize_trajectory
+
+
+_WORKER_PLANNER = None
+
+
+def compute_worker(planner, *arguments, deadline_wall=None):
+    """Keep private geometry caches inside one persistent planning process.
+
+    The ROS process owns the transport replica and sends its latest source
+    fences. No geometry cache is authoritative; each validates its actual map
+    dependencies. Replacing the worker rebuilds caches from sensed data.
+    """
+    global _WORKER_PLANNER
+    worker_started = time.monotonic()
+    session = planner.graph.replica.session
+    if _WORKER_PLANNER is None or _WORKER_PLANNER.graph.replica.session != session:
+        _WORKER_PLANNER = planner
+    else:
+        _WORKER_PLANNER.graph.replica = planner.graph.replica
+        _WORKER_PLANNER.priority.config = planner.priority.config
+    result = _WORKER_PLANNER.compute(*arguments, deadline_wall=deadline_wall)
+    public = copy.copy(_WORKER_PLANNER); graph = copy.copy(public.graph)
+    graph.trees = {}; graph.handshake_cache = {}; graph.local_router = None; graph.runtime = None
+    public.graph = graph
+    public.priority = copy.copy(public.priority)
+    public.priority._views = {}; public.priority._signature = None; public.priority._geometry_cache = None
+    public.hierarchy = copy.copy(public.hierarchy)
+    public.hierarchy.frontiers = copy.copy(public.hierarchy.frontiers)
+    public.hierarchy.frontiers.previous = None; public.hierarchy.frontiers.clusters = {}
+    result['fusion'] = public; result['graph'] = graph
+    result['worker_started_wall'] = worker_started; result['worker_finished_wall'] = time.monotonic()
+    return result
 
 
 def reusable_trajectory(selection, runtime, position, yaw):
@@ -25,6 +58,10 @@ def reusable_trajectory(selection, runtime, position, yaw):
     if trajectory is None or active is None or selection.get('trajectory_candidate') != active.id:
         return None
     start = trajectory.sample(0.)[0]
+    # Ordinary adoption starts from a hold. Nonzero boundaries are accepted
+    # only by the separately authorized moving-handoff protocol.
+    if np.linalg.norm(trajectory.sample(0.)[1]) > .02 or np.linalg.norm(trajectory.sample(0.)[2]) > .02:
+        return None
     if np.linalg.norm(start-position) > .08 or abs(math.atan2(math.sin(yaw-trajectory.yaw), math.cos(yaw-trajectory.yaw))) > .12:
         return None
     if not runtime.safe_path([position, start]) or not runtime.safe_path(trajectory.path()):
@@ -79,7 +116,7 @@ class FusionPlanner:
         self.priority = ExplorationPriority(priority_config); self.priority_layer = {}
 
     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
-                peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True):
+                peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True, deadline_wall=None):
         plan_view = plan_view and can_move
         begin = time.monotonic(); stages = {}; mark = begin
         def stage(name):
@@ -90,12 +127,14 @@ class FusionPlanner:
         for rid, value in (service_feedback or {}).items():
             self.graph.replica.put(f's:{rid}', dict(kind='region_service', id=rid, **value))
         self.graph.record_observation(runtime)
+        self.graph.runtime = runtime
         self.graph.rebuild()
-        pinned = {int(p['active']): int(i) for i, p in peers.items() if p.get('active') is not None and p.get('intent')}
+        pinned = {int(intent['region']): int(i) for i, p in peers.items() for intent in intent_records(p)}
         if active is not None and can_move:
             pinned[active] = self.drone
         self.hierarchy.split.update(r for r, v in self.graph.regions.items() if v.get('status') == 'splitR')
-        local_tasks = self.hierarchy.update(runtime, pinned)
+        observed_mask = known_mask(runtime, self.graph.observed_mask(runtime))
+        local_tasks = self.hierarchy.update(runtime, pinned, observed_mask)
         stage('hierarchy')
         self.graph.update(runtime, position, self.hierarchy, now)
         stage('topology')
@@ -116,15 +155,18 @@ class FusionPlanner:
         tasks = dict(local_tasks)
         for rid in list(tasks):
             record = self.graph.regions.get(rid, {})
-            if record.get('status') in ('deadR', 'splitR'):
+            if record.get('status') == 'splitR':
                 del tasks[rid]
-            elif 'unknown' in record:
-                tasks[rid].unknown = min(tasks[rid].unknown, record['unknown'])
         for rid, record in self.graph.regions.items():
             if rid not in tasks and record.get('status') == 'activeR' and record.get('viewpoints'):
-                tasks[rid] = ExplorationRegion(rid, record['bounds'], record['unknown'],
+                evidence = regional_evidence(runtime, record['bounds'], observed_mask)
+                forecast = record.get('forecast_gain_cells',0) if now-record.get('forecast_stamp',-np.inf) < 12. else 0
+                if not evidence['team_unknown'] and not forecast:
+                    continue
+                tasks[rid] = ExplorationRegion(rid, record['bounds'], evidence['team_unknown'],
                     [np.array(p) for p in record['viewpoints']], np.array(record['entry']),
-                    record['level'], record['parent'], record['status'], tuple(record.get('view_states', [])))
+                    record['level'], record['parent'], record['status'], tuple(record.get('view_states', [])),
+                    remote_gain_cells=forecast)
         # Newly active local EROIs without an H-node connection still receive a
         # safe local view, so a narrow doorway cannot prevent graph bootstrapping.
         for rid in local_tasks:
@@ -142,29 +184,42 @@ class FusionPlanner:
             excluded_cells = visible_cells(runtime, position, yaw)
             recent = list(recent)+[(position, yaw)]
             view_attachments = self.graph.connect(position)
-        excluded_cells = excluded_cells | self.priority.committed_cells(runtime, peers, now)
-        observed_mask = self.graph.observed_mask(runtime)
+        # Promises are arrival-dependent utility estimates, never actual receipts.
         priorities = self.priority.rank(runtime, tasks, local_tasks, costs, position, now,
                                         self.graph.services, excluded_cells, observed_mask,
-                                        preferred=[r for r, owner in owners.items() if owner == self.drone])
+                                        preferred=[r for r, owner in owners.items() if owner == self.drone], team_only=True, peers=peers)
         for rid, row in priorities.items():
             row['deferred'] |= cooldown.get(rid, 0) > now
             row['committed_by_peer'] = rid in pinned and pinned[rid] != self.drone
+            record = self.graph.replica.records.get(f'r:{rid}')
+            if rid in local_tasks and record and record.get('status')=='activeR':
+                updated = dict(record, forecast_gain_cells=int(row['predicted_gain']/runtime.resolution**runtime.state.ndim),
+                               forecast_stamp=now, forecast_kind='private_ray_estimate', forecast_yaw=row.get('preview_yaw',0.))
+                if updated['forecast_gain_cells']!=record.get('forecast_gain_cells') or now-record.get('forecast_stamp',-np.inf)>=3.:
+                    self.graph.replica.put(f'r:{rid}', updated)
         self.priority_layer = self.priority.snapshot(runtime, now, owners, self.drone)
         stage('priority')
         feasible = {r: task for r, task in tasks.items()
-                    if max(cooldown.get(r, 0), self.graph.services.get(r, {}).get('defer_until', 0)) <= now}
+                    if cooldown.get(r, 0) <= now and not priorities[r]['deferred'] and priorities[r]['predicted_gain'] > 0}
         owned = [r for r, owner in owners.items() if owner == self.drone and r in feasible]
+        owned_count = len(owned)
+        if len(owned) > 24:
+            ordered = sorted(owned,key=lambda r:(-priorities[r]['score'],r))
+            # A rotating old task keeps bounded optimization from starving
+            # remote remnants. All tasks still receive bids and pair demand.
+            oldest = max(owned,key=lambda r:(priorities[r]['wait_s'],-r))
+            owned = ordered[:23]+([oldest] if oldest not in ordered[:23] else [ordered[23]])
         rewards = {r: p['information_reward'] for r, p in priorities.items()}
         # The ledger pins execution, while this route starts at its anticipated
         # endpoint. Do not pin a finished view or re-sort the optimized route.
         tour, workload = optimize_tour(position, owned, feasible, costs, rewards=rewards,
-                                      latency_weight=self.priority.config.route_latency_weight)
+                                      latency_weight=self.priority.config.route_latency_weight,
+                                      traffic_delays={r:p.get('traffic_delay_s',0.) for r,p in priorities.items()})
         bids = {}
         for rid, task in (feasible.items() if can_move else []):
             distance = costs.distance(position, task.entry)
             if np.isfinite(distance):
-                bids[rid] = float(distance/.6+(0 if owners.get(rid) == self.drone else 10000))
+                bids[rid] = float(distance/.6+priorities[rid].get('traffic_delay_s',0.)+(0 if owners.get(rid) == self.drone else 10000))
         if active in bids:
             bids[active] = -1e6
         stage('tour')
@@ -225,7 +280,7 @@ class FusionPlanner:
                     next_goal = feasible[choices[k+1]].entry if k+1 < len(choices) and choices[k+1] in feasible else None
                     selection = planner.plan(local, local_graph, position, yaw, task, epoch+1, recent,
                                              next_goal=next_goal, excluded_cells=excluded_cells,
-                                             observed_mask=observed_mask, history_weight=self.priority.config.history_weight)
+                                             observed_mask=observed_mask, history_weight=0.)
                 else:
                     path = self.graph.route_to_region(rid, view_attachments)
                     if path is not None:
@@ -243,22 +298,49 @@ class FusionPlanner:
                         route = np.array(points)
                         if length(route) > .4:
                             delta = path[-1]-route[-1]; heading = float(np.arctan2(delta[1], delta[0]))
+                            if np.linalg.norm(delta)<.25: heading = self.graph.regions[rid].get('forecast_yaw',heading)
                             pool = RankedPathPool(); pool.rank([Candidate(f'{rid}:{epoch}:mrdtg', 'mrdtg_transit', 0, route,
                                 PathQualityEvaluator().evaluate(route, local), runtime.version)])
                             selection = dict(pool=pool, yaw=heading, gain=len(visible_cells(local, route[-1], heading))*runtime.resolution**runtime.state.ndim,
-                                             objective=0., lookahead=None, transit=True)
+                                             objective=0., lookahead=None, transit=True, purpose='transit_reobserve',
+                                             navigation_target=rid, navigation_reason='private_map_corridor_prefix', team_gain=0.)
                 if selection:
+                    selection.setdefault('purpose', 'explore')
+                    selection['traffic_delay_s'] = expected_traffic_delay(selection['pool'].active.path, peers, now)
                     selection['priority'] = priorities[rid]
                     selected = rid; break
                 rejected.append(rid)
         stage('view')
         if selection:
-            try:
-                selection['trajectory'] = optimize_trajectory(selection['pool'].active.path, local, yaw, selection['yaw'])
-                selection['trajectory_candidate'] = selection['pool'].active.id
-            except ValueError:
-                # The caller may revalidate another reserve against fresher data.
-                selection['trajectory'] = None
+            for candidate in [selection['pool'].active]+selection['pool'].backups:
+                candidate.created_at = now; candidate.expires_at = now+60.
+            boundary = {k: anticipated_view[k] for k in ('start_velocity', 'start_acceleration', 'start_yaw_rate', 'start_yaw_acceleration')
+                        if anticipated_view and k in anticipated_view}
+            curves = {}; valid = []
+            for candidate in [selection['pool'].active]+selection['pool'].backups:
+                try:
+                    curve = optimize_trajectory(candidate.path, local, yaw, selection['yaw'], deadline_wall=deadline_wall, **boundary)
+                    clearance = min(float(np.linalg.norm(local.bounds[1]-local.bounds[0])),
+                                    min(local.signed_distance(p) for p in curve.path(.15)))
+                    candidate.quality['executed_curve'] = dict(duration_s=curve.duration, limits=curve.limits(),
+                        yaw_rate=curve.yaw_rate_limit(), jerk_integral=curve.jerk_cost(), method=curve.method,
+                        minimum_clearance_m=clearance)
+                    candidate.quality['curve_quality_score'] = curve.duration+.035*curve.jerk_cost()+.8/max(.25,clearance-local.clearance+.25)
+                    if any(np.mean(np.linalg.norm(resample(curve.path(.15))-resample(c.path(.15)),axis=1)) < selection['pool'].diversity_m for c in curves.values()):
+                        continue
+                    curves[candidate.id] = curve; valid.append(candidate)
+                except ValueError:
+                    continue
+                except TimeoutError:
+                    selection['curve_budget_exhausted'] = True
+                    break
+            selection['curve_alternatives'] = curves
+            if valid:
+                valid.sort(key=lambda c:(c.quality['curve_quality_score'],c.id))
+                selection['pool'].active, selection['pool'].backups = valid[0], valid[1:6]
+                selection['trajectory'] = curves[valid[0].id]; selection['trajectory_candidate'] = valid[0].id
+            else:
+                selection = None; selected = None
         stage('trajectory')
         self.diagnostics = dict(engine='Hgrid+MR-DTG+GVP+pair-CVRP', hgrid_leaves=len(self.hierarchy.leaves),
             hgrid_splits=len(self.hierarchy.split), frontier_clusters=len(self.hierarchy.frontiers.clusters),
@@ -271,6 +353,7 @@ class FusionPlanner:
             unknown_components=len(self.priority.components), reserved_gain_cells=len(excluded_cells),
             team_observed_cells=int(observed_mask.sum()), priority_compute=self.priority.diagnostics,
             route_objective='travel_plus_information_latency',
+            route_window_regions=len(owned), all_owned_regions=owned_count,
             selected_priority=priorities.get(selected))
         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
                     selection=selection, selected=selected, rejected=rejected, offer=offer,

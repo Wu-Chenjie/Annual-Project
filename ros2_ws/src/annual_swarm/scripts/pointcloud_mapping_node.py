@@ -86,6 +86,7 @@ class PointCloudMapper(Node):
             merged = {tuple(c): int(v) for c, v in zip(cells, values)}
             merged.update({tuple(c): 0 for c in ego})
             cells = np.array(list(merged)); values = np.array(list(merged.values()), np.int8)
+        measured_cells = cells.copy(); measured_values = values.copy(); full_snapshot = self.full_requested
         if self.full_requested:
             cells = np.argwhere(self.map.state != -1); values = self.map.state[tuple(cells.T)]
             self.full_requested = False
@@ -93,6 +94,8 @@ class PointCloudMapper(Node):
         self.sequence += 1; self.last = stamp
         packet = dict(schema='annual.observation/2', dimensions=3, resolution=self.map.resolution,
                       source=self.id, sensor_session=self.session, sequence=self.sequence, time=stamp, indices=cells.tolist(), values=values.tolist(),
+                      measured_indices=measured_cells.tolist(), measured_values=measured_values.tolist(), full_snapshot=full_snapshot,
+                      origin=self.map.origin.tolist(), shape=list(map(int, self.map.shape)),
                       sensor='gazebo_gpu_lidar', pose_source='estimated_odometry', point_count=n)
         self.pub.publish(String(data=json.dumps(packet, separators=(',', ':'))))
 

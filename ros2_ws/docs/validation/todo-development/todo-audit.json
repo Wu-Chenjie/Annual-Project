@@ -1,0 +1,153 @@
+{
+  "schema": "annual.todo-audit/1",
+  "status": "COMPLETE",
+  "thresholds": {
+    "t50": 204.001,
+    "t80": 415.00000000000006,
+    "t90": 517.0160000000001,
+    "t95": 551.0010000000001
+  },
+  "tail_90_95_s": 33.985000000000014,
+  "raw_frames": 4269,
+  "observed_known_cells": 70052,
+  "observed_free_cells": 65877,
+  "service_windows": 107,
+  "actual_team_new_known_in_windows": 49381,
+  "team_new_known_outside_completed_windows": 20671,
+  "exploration_low_team_yield": 17,
+  "exploration_zero_team_yield": 2,
+  "exploration_low_yield_duration_s": 111.18699999999993,
+  "exploration_low_yield_distance_m": 22.469646922418026,
+  "purpose_counts": {
+    "explore": 104,
+    "transit_reobserve": 0,
+    "safety_recovery": 3
+  },
+  "residence_s": {
+    "takeoff": 0.0,
+    "initial_yaw_scan": 11.193000000000012,
+    "idle": 852.8290000000005,
+    "tracking_view": 739.7950000000047,
+    "view_observed": 1.1990000000000194,
+    "peer_timeout": 44.589,
+    "lease_confirmation_hold": 3.3979999999999393
+  },
+  "close_radius_m": 2.0,
+  "close_pair_duration_s": {},
+  "residence_by_uav_s": {
+    "0": {
+      "takeoff": 0.0,
+      "observation": 11.193000000000012,
+      "allocation_wait": 55.59400000000011,
+      "planning_wait": 119.4419999999999,
+      "reservation_wait": 42.63800000000008,
+      "execution": 294.928,
+      "view_observed": 0.7980000000000089,
+      "peer_timeout": 15.001999999999995,
+      "lease_confirmation_hold": 3.1989999999999554,
+      "safety_recovery": 8.206999999999994
+    },
+    "1": {
+      "takeoff": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 62.59800000000036,
+      "planning_wait": 261.8159999999997,
+      "reservation_wait": 11.80699999999997,
+      "execution": 200.99200000000005,
+      "peer_timeout": 13.788000000000011,
+      "experiment_pause": 0.0
+    },
+    "2": {
+      "takeoff": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 57.19700000000003,
+      "planning_wait": 215.09899999999988,
+      "reservation_wait": 26.638000000000062,
+      "execution": 235.66800000000012,
+      "view_observed": 0.40100000000001046,
+      "peer_timeout": 15.798999999999992,
+      "lease_confirmation_hold": 0.19899999999998386
+    }
+  },
+  "planning_wait_fleet_s": 596.3569999999995,
+  "planning_wall_median_s": 7.632912490500075,
+  "planning_wall_p95_s": 11.650794006100066,
+  "planning_compute_wall_median_s": 5.114339831499819,
+  "planning_request_counts": {
+    "planning_submitted": 274,
+    "planning_result": 212,
+    "planning_timeout": 58,
+    "planning_failed": 0
+  },
+  "planning_all_measured_requests_wall_s": {
+    "p50": 7.632912490500075,
+    "p90": 10.591581907800084,
+    "p95": 11.650794006100066
+  },
+  "planning_queue_wall_s": null,
+  "planning_delivery_wall_s": null,
+  "planning_stage_wall_s": {
+    "hierarchy": {
+      "p50": 0.23296871799993824,
+      "p90": 0.4348043857999073,
+      "p95": 0.5034598213998833
+    },
+    "map": {
+      "p50": 2.1178000224608695e-05,
+      "p90": 3.215020014977199e-05,
+      "p95": 3.816959988398593e-05
+    },
+    "pair": {
+      "p50": 0.16394693200027177,
+      "p90": 0.3876684542000476,
+      "p95": 0.43334519759991963
+    },
+    "priority": {
+      "p50": 0.9289687529999355,
+      "p90": 1.2102935360001539,
+      "p95": 1.2941505027998572
+    },
+    "topology": {
+      "p50": 0.4975363520002247,
+      "p90": 0.7487955687996876,
+      "p95": 0.879052665600011
+    },
+    "tour": {
+      "p50": 0.35275020399967616,
+      "p90": 2.5845103777998704,
+      "p95": 2.822620080800152
+    },
+    "trajectory": {
+      "p50": 1.265883396999925,
+      "p90": 3.3915667174000195,
+      "p95": 3.6423439112498035
+    },
+    "view": {
+      "p50": 1.059160900000279,
+      "p90": 1.6778051756001333,
+      "p95": 1.9753298803999313
+    }
+  },
+  "rejected_planning_results": 40,
+  "planning_time_scope": "submitted_to_result_receipt",
+  "planning_timeout_count": 58,
+  "moving_handoffs": 4,
+  "moving_handoff_max_boundary_error": 3.580361673049448e-15,
+  "distances_m": {
+    "0": 76.1849440372909,
+    "1": 50.503908881487895,
+    "2": 68.4548941622183
+  },
+  "coverage": 0.9500759528239089,
+  "contacts": 0,
+  "completed_window_duplicate_ratio": {
+    "numerator": 14124,
+    "denominator": 63505,
+    "scope": "sum of actual local-new cells in completed/cancelled service windows"
+  },
+  "limitations": [
+    "Online regional estimates and offline full service-window gains have different spatial scopes.",
+    "Close duration is telemetry sampled; missing intervals are excluded.",
+    "First-free evidence does not replace final truth-free coverage acceptance."
+  ]
+}

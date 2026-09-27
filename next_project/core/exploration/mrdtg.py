@@ -136,6 +136,18 @@ class DeltaGraph:
                         any(c not in '0123456789abcdef' for c in value['bits']+value['grid'])):
                     raise ValueError('Invalid observed-cell receipt')
                 int(value['bits'], 16)
+            if value['kind'] == 'region':
+                if not isinstance(value.get('unknown'), int) or value['unknown'] < 0:
+                    raise ValueError('Invalid regional remaining volume')
+                if value.get('bounds') is not None:
+                    bounds = np.asarray(value['bounds'],float)
+                    if bounds.shape not in ((2,2),(2,3)) or not np.isfinite(bounds).all() or np.any(bounds[1]<=bounds[0]):
+                        raise ValueError('Invalid region bounds')
+                if value.get('grid') is not None and (len(value['grid'])!=64 or any(c not in '0123456789abcdef' for c in value['grid'])):
+                    raise ValueError('Invalid regional evidence grid')
+                if 'forecast_gain_cells' in value:
+                    if not isinstance(value['forecast_gain_cells'],int) or value['forecast_gain_cells']<0 or not np.isfinite([value.get('forecast_stamp',0.),value.get('forecast_yaw',0.)]).all():
+                        raise ValueError('Invalid regional forecast')
         self.remote[src] = target; self.received[src] = seq; self.sessions[src] = session
         self.needs_snapshot.discard(src); self.applied += 1
         return True
@@ -164,6 +176,7 @@ class MultiRobotGraph:
         self.services = {}
         self.coverage = {}; self.coverage_cache = None
         self.handshake_cache = {}
+        self.grid_id = None
 
     def record_observation(self, runtime):
         """Actual locally sensed cells, in 256-bit receipts; no occupancy values.
@@ -184,9 +197,14 @@ class MultiRobotGraph:
             if bits:
                 self.replica.put(key, dict(kind='observed_cells', grid=grid, block=block, bits=f'{bits:064x}'))
 
-    def observed_mask(self, runtime):
+    def observed_mask(self, runtime, exclude_sources=()):
         grid = observation_grid(runtime); blocks = self.coverage.get(grid, {})
-        key = (grid, tuple(sorted(blocks.items())))
+        if exclude_sources:
+            blocks = {}
+            for source, value in self.replica.values():
+                if source not in exclude_sources and value['kind']=='observed_cells' and value['grid']==grid:
+                    blocks[value['block']] = blocks.get(value['block'],0) | int(value['bits'],16)
+        key = (grid, tuple(exclude_sources), tuple(sorted(blocks.items())))
         if self.coverage_cache is None or self.coverage_cache[0] != key:
             mask = np.zeros(runtime.state.size, dtype=bool)
             for block, bits in blocks.items():
@@ -200,6 +218,7 @@ class MultiRobotGraph:
 
     def rebuild(self):
         nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}; coverage = {}
+        expected_grid = self.grid_id or (observation_grid(self.runtime) if self.runtime is not None else None)
         for source, v in self.replica.values():
             if v['kind'] == 'history':
                 nodes[v['id']] = np.array(v['position'])
@@ -210,10 +229,17 @@ class MultiRobotGraph:
             elif v['kind'] == 'edge_block' and v['blocked']:
                 blocked.add(tuple(sorted((v['u'], v['v']))))
             elif v['kind'] == 'region':
+                if expected_grid is not None and v.get('grid') not in (None,expected_grid):
+                    continue
                 rid = int(v['id'])
                 # Unknown volume only decreases. A less-informed peer cannot
                 # reopen a completed/split region by publishing a later stamp.
-                stamp = (v['status'] == 'splitR', v['status'] == 'deadR', -v['unknown'], v['stamp'], source)
+                # Modern reports carry an actual-evidence revision; a fresh
+                # doorway can reopen a view. Legacy reports remain monotone.
+                modern = bool(v.get('evidence_signature'))
+                stamp = (v['status'] == 'splitR', modern,
+                         v['stamp'] if modern else float(v['status'] == 'deadR'),
+                         -v['unknown'], v['stamp'], source)
                 if rid not in stamps or stamp > stamps[rid]:
                     regions[rid] = v; stamps[rid] = stamp
             elif v['kind'] == 'region_service':
@@ -237,6 +263,7 @@ class MultiRobotGraph:
 
     def update(self, runtime, position, hierarchy, now):
         self.runtime = runtime; self.free_cells = int(runtime.safe.sum()); self.version = runtime.version
+        self.grid_id = observation_grid(runtime)
         from .voxel_mapping import VoxelRouter
         self.local_router = VoxelRouter(runtime) if runtime.state.ndim == 3 else None
         self.rebuild()
@@ -307,6 +334,7 @@ class MultiRobotGraph:
                 self.replica.put(key, record)
         self.handshake_cache = handshake_cache
         # Each active EROI attaches to exactly one history node by its best view.
+        grid = observation_grid(runtime)
         for rid, state in hierarchy.states.items():
             if rid in hierarchy.split:
                 continue
@@ -318,13 +346,16 @@ class MultiRobotGraph:
                     for nid, (_, distances, previous) in trees.items():
                         if cell in distances:
                             options.append((distances[cell], nid, j, previous, cell))
-            record = dict(kind='region', id=rid, **state)
+            record = dict(kind='region', id=rid, grid=grid, **state)
             if options:
                 cost, nid, j, previous, cell = min(options, key=lambda x: x[:3])
                 p = simplify(tree_path(runtime, previous, cell), runtime)
                 record.update(task.descriptor(), node=nid, points=p.tolist(), length=length(p),
                               entry=task.viewpoints[j].tolist())
             old = self.replica.records.get(f'r:{rid}')
+            if old:
+                for key in ('forecast_gain_cells','forecast_stamp','forecast_kind','forecast_yaw'):
+                    if key in old: record[key]=old[key]
             if old and {k: v for k, v in old.items() if k != 'stamp'} == record:
                 continue
             record['stamp'] = now

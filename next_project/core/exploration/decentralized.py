@@ -7,6 +7,7 @@ partition: no new path may commit without every participant's reservation ACK.
 import numpy as np
 from scipy.spatial import cKDTree
 from .mapping import ObservedMap
+from .team_evidence import intent_records
 
 
 class MapReplica:
@@ -14,6 +15,7 @@ class MapReplica:
         from .voxel_mapping import VoxelMap
         self.drone = drone; self.map = VoxelMap(bounds, flight_limits=flight_limits) if volumetric else ObservedMap(bounds)
         self.stamps = np.full(self.map.shape, -1., float)
+        self.first_observed = np.full(self.map.shape,np.inf)
         self.sources = np.full(self.map.shape, -1, np.int8)
         self.sequences = {}; self.sensor_sessions = {}; self.retired_sensors = {}; self.sensor_stamps = {}
 
@@ -42,7 +44,16 @@ class MapReplica:
         self.sensor_sessions[source] = session; self.sensor_stamps[source] = stamp
         key = tuple(indices.T)
         accept = (stamp > self.stamps[key]) | ((stamp == self.stamps[key]) & (source > self.sources[key]))
-        changed = self.map.update(indices[accept], values[accept]) if accept.any() else False
+        accepted=indices[accept]
+        if len(accepted):
+            first=self.map.state[tuple(accepted.T)]==-1
+            fresh=accepted[first]
+            if len(fresh):self.first_observed[tuple(fresh.T)]=stamp
+            if packet.get('full_snapshot') and len(fresh):
+                measured={tuple(c) for c in packet.get('measured_indices',[])}
+                restored=np.array([c for c in fresh if tuple(c) not in measured],int).reshape(-1,self.map.state.ndim)
+                if len(restored):self.first_observed[tuple(restored.T)]=-np.inf
+        changed = self.map.update(accepted, values[accept]) if accept.any() else False
         self.stamps[tuple(indices[accept].T)] = stamp
         self.sources[tuple(indices[accept].T)] = source
         return changed
@@ -125,29 +136,24 @@ class PeerLedger:
         Grants remain reserved until explicit withdrawal, including during silence. A participant
         cannot grant intersecting intents and cannot propose across its grants.
         """
-        live = {p['intent']['token']: p for p in self.states.values()
-                if p.get('intent')}
+        live = {intent['token']: (p, intent) for p in self.states.values() for intent in intent_records(p)}
         self.grants = {k: v for k, v in self.grants.items() if k in live}
-        my_intent = own.get('intent')
-        for token, peer in sorted(live.items(), key=lambda kv: (kv[1]['intent']['created'], kv[1]['drone'])):
+        my_intents = intent_records(own)
+        for token, (peer, intent) in sorted(live.items(), key=lambda kv: (kv[1][1]['created'], kv[1][0]['drone'])):
             if token in self.grants:
                 # Refresh a moving path's consumed prefix, never change the lease ID.
-                self.grants[token] = peer['intent']; continue
-            intent = peer['intent']
+                self.grants[token] = dict(intent, _drone=peer['drone']); continue
             if not -.1 <= now-peer['time'] < self.timeout:
                 continue
             if intent.get('contingency') and (self.seeds is None or not inside_contingency_cell(intent['path'], peer['drone'], self.seeds)):
                 continue
             if paths_conflict(intent['path'], [own['position']]):
                 continue
-            if my_intent and (regions_conflict(my_intent, intent) or paths_conflict(my_intent['path'], intent['path'])):
-                if my_intent.get('committed') or (my_intent['created'], self.drone) < (intent['created'], peer['drone']):
-                    continue
-                # Own losing proposal must be withdrawn before acknowledging.
+            if any(regions_conflict(mine, intent) or paths_conflict(mine['path'], intent['path']) for mine in my_intents):
                 continue
-            if any(regions_conflict(g, intent) or paths_conflict(g['path'], intent['path']) for g in self.grants.values()):
+            if any(g.get('_drone') != peer['drone'] and (regions_conflict(g, intent) or paths_conflict(g['path'], intent['path'])) for g in self.grants.values()):
                 continue
-            self.grants[token] = intent
+            self.grants[token] = dict(intent, _drone=peer['drone'])
         return sorted(self.grants)
 
     def can_propose(self, path, region, now):
@@ -157,8 +163,7 @@ class PeerLedger:
         for p in self.states.values():
             if paths_conflict(path, [p['position']]):
                 return False
-            intent = p.get('intent')
-            if intent and (intent['region'] == region or paths_conflict(path, intent['path'])):
+            if any(intent['region'] == region or paths_conflict(path, intent['path']) for intent in intent_records(p)):
                 return False
         return not any(g['region'] == region or paths_conflict(path, g['path']) for g in self.grants.values())
 
@@ -169,10 +174,10 @@ class PeerLedger:
 
     def loses(self, intent):
         for p in self.states.values():
-            other = p.get('intent')
-            if other and (regions_conflict(other, intent) or paths_conflict(other['path'], intent['path'])):
-                if other.get('committed') or (other['created'], p['drone']) < (intent['created'], self.drone):
-                    return True
+            for other in intent_records(p):
+                if regions_conflict(other, intent) or paths_conflict(other['path'], intent['path']):
+                    if other.get('committed') or (other['created'], p['drone']) < (intent['created'], self.drone):
+                        return True
         return False
 
 
@@ -236,8 +241,8 @@ def fused_execution_lease(states, drone, token, now, seeds, timeout=3.):
     own = states.get(drone, {})
     if token is None or not -.1 <= now-own.get('time', -1e9) < timeout:
         return False
-    intent = own.get('intent') or {}
-    if intent.get('token') != token or not intent.get('committed') or intent.get('retiring'):
+    intent = next((i for i in intent_records(own) if i.get('token') == token), {})
+    if not intent.get('committed') or intent.get('retiring'):
         return False
     voters = intent.get('voters', [i for i in range(len(seeds)) if i != drone])
     if intent.get('contingency') and not inside_contingency_cell(intent['path'], drone, seeds):

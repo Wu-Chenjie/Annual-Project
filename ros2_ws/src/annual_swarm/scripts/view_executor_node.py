@@ -13,6 +13,7 @@ from std_msgs.msg import String
 import planning_runtime
 from core.exploration.decentralized import fused_execution_lease
 from core.planning.continuous_trajectory import ContinuousTrajectory
+from core.planning.handoff import validate_handoff
 
 
 def wrap(x):
@@ -30,6 +31,9 @@ class ViewExecutor(Node):
         self.path = None; self.token = None; self.index = 0; self.epoch = 0; self.goal_yaw = 0.
         self.ready = False; self.arrived = True; self.scanned = 0.; self.hold_since = None
         self.done = False; self.paused = False; self.last = None; self.waits = 0; self.reason = 'takeoff'
+        self.pending = None; self.handoff_count = 0; self.handoff_from_token = None; self.handoff_continuity = None
+        self.yaw_rate = 0.
+        self.handoff_time = None
         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         self.pub = self.create_publisher(PoseStamped, f'/drone_{self.id}/target', 1)
         self.trajectory_pub = self.create_publisher(MultiDOFJointTrajectory, f'/drone_{self.id}/trajectory_target', 1)
@@ -53,19 +57,24 @@ class ViewExecutor(Node):
             q = m.pose.pose.orientation
             self.actual_yaw = math.atan2(2*(q.w*q.z+q.x*q.y), 1-2*(q.y*q.y+q.z*q.z))
 
-    def stop(self):
+    def stop(self, reason='explicit_cancel'):
+        self.pending = None; self.token = None
+        self.reason = reason
         self.path = None; self.curve = None; self.velocity[:] = 0.; self.acceleration[:] = 0.; self.arrived = True
         if self.id in self.positions:
             self.ref = self.positions[self.id].copy()
 
     def command(self, m):
         p = json.loads(m.data)
+        if p.get('cancel_pending'):
+            if self.pending and self.pending['token'] == p['cancel_pending']: self.pending = None
+            return
         if p['epoch'] <= self.epoch:
             return
         if p.get('cancel'):
             initial_takeoff = not self.ready and self.epoch == 0
             takeoff_reference = self.ref.copy()
-            self.epoch = p['epoch']; self.stop()
+            self.epoch = p['epoch']; self.stop(p.get('reason','explicit_cancel'))
             if initial_takeoff:self.ref = takeoff_reference
             if p.get('scan'):
                 self.ready = False; self.scanned = 0.
@@ -73,12 +82,25 @@ class ViewExecutor(Node):
         path = np.asarray(p['path'], float)
         if path.ndim != 2 or path.shape[1] != 3 or not len(path) or not np.isfinite(path).all() or not np.isfinite(p['yaw']):
             return
-        if self.id not in self.positions or np.linalg.norm(path[0]-self.positions[self.id]) > .6:
+        if self.id not in self.positions:
             return
         try:
             curve = ContinuousTrajectory.from_dict(p['trajectory']) if p.get('trajectory') else None
         except (ValueError, KeyError, TypeError):
             return
+        if p.get('handoff'):
+            boundary = p['handoff']
+            if self.curve is None or curve is None or self.arrived or self.paused or self.done:
+                return
+            if boundary.get('from_epoch') != self.epoch or boundary.get('from_token') != self.token:
+                return
+            try: errors = validate_handoff(self.curve, curve, boundary['trajectory_time'], self.curve_time)
+            except (ValueError, KeyError): return
+            self.pending = dict(p, curve=curve, errors=errors)
+            return
+        if np.linalg.norm(path[0]-self.positions[self.id]) > .6:
+            return
+        self.pending = None
         self.curve = curve; self.curve_time = 0.
         self.epoch = p['epoch']; self.path = path; self.index = 0; self.arrived = False
         self.goal_yaw = p['yaw']; self.token = p['token']; self.hold_since = None
@@ -86,13 +108,18 @@ class ViewExecutor(Node):
     def control(self, m):
         p = json.loads(m.data); self.network_isolated = set(p.get('isolated', [])); self.done = p.get('done', False); self.paused = self.id in p.get('paused', [])
         if self.done or self.paused:
-            self.stop()
+            self.stop('experiment_complete' if self.done else 'experiment_pause')
 
     def report(self):
         self.report_pub.publish(String(data=json.dumps(dict(drone=self.id, ready=self.ready, arrived=self.arrived,
             epoch=self.epoch, reason=self.reason, traffic_wait_samples=self.waits, yaw_error=wrap(self.goal_yaw-self.actual_yaw),
+            token=self.token, trajectory_duration=self.curve.duration if self.curve else 0., reference_yaw=self.heading,
+            reference_yaw_rate=self.yaw_rate, pending_token=self.pending['token'] if self.pending else None,
+            handoff_count=self.handoff_count, handoff_from_token=self.handoff_from_token, handoff_continuity=self.handoff_continuity,
+            handoff_time=self.handoff_time,
             reference=self.ref.tolist(), reference_velocity=self.velocity.tolist(), reference_acceleration=self.acceleration.tolist(),
             tracking_error=float(np.linalg.norm(self.positions.get(self.id, self.ref)-self.ref)),
+            observation_dwell=bool(self.hold_since is not None and not self.arrived),
             trajectory_method=self.curve.method if self.curve else None, trajectory_time=self.curve_time))))
 
     def tick(self):
@@ -122,12 +149,13 @@ class ViewExecutor(Node):
                 advance = dt if error < .25 else 0.
                 if self.curve:
                     next_time = min(self.curve.duration, self.curve_time+advance)
-                    r, velocity, acceleration, heading, _ = self.curve.sample(next_time)
+                    r, velocity, acceleration, heading, rate = self.curve.sample(next_time)
                     index = len(self.path) if next_time >= self.curve.duration else 0
                 else:
                     next_time = self.curve_time
                     heading = wrap(self.heading+np.clip(wrap(self.goal_yaw-self.heading), -.65*dt, .65*dt))
                     velocity = np.zeros(3); acceleration = np.zeros(3)
+                    rate = 0.
                     remaining = .6*advance
                     while index < len(self.path) and remaining > 0:
                         d = self.path[index]-r; norm = np.linalg.norm(d)
@@ -139,10 +167,22 @@ class ViewExecutor(Node):
                 if conflict:
                     self.waits += 1; self.reason = 'separation_hold'
                 else:
+                    if (self.pending and self.curve and next_time >= self.pending['handoff']['trajectory_time'] and
+                            self.curve_time <= self.pending['handoff']['trajectory_time'] and
+                            error < .1 and fused_execution_lease(self.peers, self.id, self.pending['token'], t, self.seeds)):
+                        new_time = next_time-self.pending['handoff']['trajectory_time']
+                        self.handoff_from_token = self.token; self.handoff_continuity = self.pending['errors']; self.handoff_count += 1
+                        self.handoff_time=t
+                        self.curve = self.pending['curve']; self.path = np.asarray(self.pending['path'], float)
+                        self.token = self.pending['token']; self.epoch = self.pending['epoch']; self.goal_yaw = self.pending['yaw']
+                        r, velocity, acceleration, heading, rate = self.curve.sample(new_time)
+                        next_time = new_time; index = 0; self.hold_since = None; self.pending = None
                     self.ref = r; self.index = index; self.heading = heading; self.curve_time = next_time
                     if advance > 0:
                         self.velocity = velocity; self.acceleration = acceleration
-                    self.reason = 'tracking_view'
+                        self.yaw_rate = rate
+                    self.reason = 'tracking_view' if advance>0 else 'tracking_error_hold'
+                    if index>=len(self.path): self.reason='observation_dwell'
                 if index >= len(self.path) and error < .07 and abs(wrap(self.goal_yaw-self.actual_yaw)) < .12:
                     if self.hold_since is None:
                         self.hold_since = t

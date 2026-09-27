@@ -128,15 +128,17 @@ class ExplorationPriority:
             self.diagnostics['raycasts'] = self.diagnostics.get('raycasts', 0)+1
         return self._views[key][1]
 
-    def committed_cells(self, runtime, peers, now):
+    def committed_cells(self, runtime, peers, now, arrival=None):
+        from .team_evidence import intent_records, predicted_peer_completion
         cells = set()
         for peer in peers.values():
-            intent = peer.get('intent') or {}
-            if (not intent.get('committed') or intent.get('retiring') or intent.get('recovery') or
-                    not -.1 <= now-peer.get('time', -np.inf) < self.config.peer_fresh_s):
-                continue
-            if intent.get('path'):
-                cells.update(self.view(runtime, intent['path'][-1], intent.get('yaw', 0.)))
+            for intent in intent_records(peer):
+                if (not intent.get('committed') or intent.get('retiring') or intent.get('recovery') or
+                        not -.1 <= now-peer.get('time', -np.inf) < self.config.peer_fresh_s or
+                        (arrival is not None and predicted_peer_completion(peer, intent, now) > arrival)):
+                    continue
+                if intent.get('path'):
+                    cells.update(self.view(runtime, intent['path'][-1], intent.get('yaw', 0.)))
         return frozenset(cells)
 
     def utility(self, gain, volume, travel_s, wait_s, feedback, now):
@@ -155,7 +157,7 @@ class ExplorationPriority:
         return 1.+min(self.config.aging_bonus_max, self.config.aging_per_minute*max(0., wait_s)/60.)
 
     def rank(self, runtime, tasks, local_ids, costs, position, now, services, excluded_cells=frozenset(),
-             observed_mask=None, preferred=()):
+             observed_mask=None, preferred=(), team_only=False, peers=None):
         self.update_map(runtime)
         self._geometry_cache = {}; self.cycle += 1
         self.diagnostics = dict(raycasts=0, refined_regions=0, cached_regions=0, bound_regions=0)
@@ -163,7 +165,7 @@ class ExplorationPriority:
         excluded = np.array(sorted(excluded_cells), dtype=int)
         discount = np.zeros(runtime.state.size)
         if observed_mask is not None:
-            discount[observed_mask] = 1.-self.config.history_weight
+            discount[observed_mask] = 1. if team_only else 1.-self.config.history_weight
         discount[excluded] = 1.
         reserved = np.bincount(self.labels.ravel(), weights=discount, minlength=len(self.sizes))
         scores = {}
@@ -176,7 +178,9 @@ class ExplorationPriority:
             travel = costs.distance(position, task.entry)/self.config.speed
             travel_times[rid] = travel; waits[rid] = wait
             volume = task.unknown*unit
-            if observed_mask is not None:
+            if rid not in local_ids and team_only:
+                volume = max(volume,getattr(task,'remote_gain_cells',0)*unit)
+            if observed_mask is not None and not team_only:
                 low, high = np.asarray(task.bounds)[:, :runtime.state.ndim]
                 a = np.maximum(0, np.floor((low-runtime.origin)/runtime.resolution).astype(int))
                 b = np.minimum(runtime.shape, np.ceil((high-runtime.origin)/runtime.resolution).astype(int))
@@ -211,11 +215,12 @@ class ExplorationPriority:
                     self._refreshed[rid] = self.cycle
                     for point, yaw, _ in views:
                         raw = self.view(runtime, point, yaw, coarse=True)
-                        net = raw-excluded_cells
+                        forecast = self.committed_cells(runtime, peers or {}, now, now+travel)
+                        net = raw-excluded_cells-forecast
                         ids = sorted(set(self.labels.ravel()[list(net)])) if net else []
                         ids = [int(k) for k in ids if k]
                         volume = float(sum(max(0, self.sizes[k]-reserved[k]) for k in ids)*unit)
-                        gain = information_count(net, observed_mask, self.config.history_weight)*unit
+                        gain = information_count(net, observed_mask, 0. if team_only else self.config.history_weight)*unit
                         value, penalty = self.utility(gain, volume, travel, wait, feedback, now)
                         row = dict(score=value, predicted_gain=gain, raw_gain=len(raw)*unit,
                                    component_volume=volume, components=ids, repeat_factor=penalty,
@@ -237,6 +242,13 @@ class ExplorationPriority:
                 # for safe corridor transit, never a claimed local visible volume.
                 volume = volumes[rid]
                 gain = min(volume, self.config.remote_gain_cap)
+                if peers:
+                    from .team_evidence import intent_records, predicted_peer_completion
+                    for peer in peers.values():
+                        if not -.1 <= now-peer.get('time',-np.inf)<self.config.peer_fresh_s:continue
+                        if any(intent.get('region')==rid and intent.get('committed') and not intent.get('retiring') and
+                               predicted_peer_completion(peer,intent,now)<=now+travel for intent in intent_records(peer)):
+                            gain=0.;break
                 value, penalty = self.utility(gain, volume, travel, wait, feedback, now)
                 best = dict(score=value, predicted_gain=gain, raw_gain=gain,
                             component_volume=volume, components=[], repeat_factor=penalty)
@@ -247,6 +259,25 @@ class ExplorationPriority:
                               wait_s=wait, aging_multiplier=self.aging_multiplier(wait), gain_source=source,
                               information_reward=best['score']*(self.config.observation_s+travel) if np.isfinite(travel) else 0.,
                               deferred=feedback.get('defer_until', 0) > now)
+            if peers and hasattr(costs, 'graph'):
+                from .team_evidence import expected_traffic_delay
+                route = costs.graph.route_to_region(rid)
+                if route is None and runtime.safe_path([position, task.entry]): route = [position, task.entry]
+                delay = expected_traffic_delay(route, peers, now) if route is not None else 0.
+                scores[rid]['traffic_delay_s'] = delay
+                scores[rid]['score'] *= (self.config.observation_s+travel)/(self.config.observation_s+travel+delay) if np.isfinite(travel) else 0.
+                scores[rid]['information_reward'] = scores[rid]['score']*(self.config.observation_s+travel) if np.isfinite(travel) else 0.
+            if team_only:
+                from .team_evidence import regional_evidence, may_reactivate
+                failed = feedback.get('failed_view', {})
+                alternative = False
+                if failed and 'preview_position' in best:
+                    dh = math.atan2(math.sin(best['preview_yaw']-failed['yaw']), math.cos(best['preview_yaw']-failed['yaw']))
+                    alternative = (np.linalg.norm(np.array(best['preview_position'])-failed['position']) >= .65 or abs(dh) >= .7)
+                eligible, reason = may_reactivate(feedback, regional_evidence(runtime, task.bounds, observed_mask),
+                                                 now, best['predicted_gain']/unit, alternative)
+                scores[rid].update(deferred=not eligible, reactivation_reason=reason,
+                                   purpose=getattr(task, 'purpose', 'explore'))
         self._views = {k: v for k, v in self._views.items() if k in used_views}
         self._geometry_cache = None
         self._refreshed = {r: v for r, v in self._refreshed.items() if r in tasks}

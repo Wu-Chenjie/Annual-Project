@@ -57,10 +57,15 @@ class ExplorationRegion(RegionTask):
     parent: int = -1
     status: str = 'activeR'
     view_states: tuple = ()
+    purpose: str = 'explore'
+    local_unknown: int = 0
+    evidence_signature: str = ''
+    remote_gain_cells: int = 0
 
     def descriptor(self):
         return dict(super().descriptor(), level=self.level, parent=self.parent,
-                    status=self.status, view_states=list(self.view_states))
+                    status=self.status, view_states=list(self.view_states), purpose=self.purpose,
+                    local_unknown=self.local_unknown, evidence_signature=self.evidence_signature)
 
 
 class AdaptiveRegions:
@@ -78,15 +83,18 @@ class AdaptiveRegions:
         offset = sum(int(np.prod(np.ceil(extent/(self.root_size/2**l)))) for l in range(level))
         return offset+int(np.ravel_multi_index(tuple(cell), tuple(shape)))
 
-    def update(self, runtime, pinned=()):
+    def update(self, runtime, pinned=(), observed_mask=None):
+        from .team_evidence import known_mask, regional_evidence
         self.ndim = runtime.state.ndim
+        team_known = known_mask(runtime, observed_mask).reshape(runtime.shape)
         self.frontiers.update(runtime)
         front = self.frontiers.frontier
         near = distance_transform_edt(~front)*runtime.resolution if front.any() else np.full(runtime.shape, np.inf)
         candidates = np.argwhere(runtime.safe & (near < 1.6))
         xx, yy = np.ogrid[-10:11, -10:11]
-        gains = (convolve((runtime.state == -1).astype(float), (xx*xx+yy*yy <= 100).astype(float), mode='constant')
-                 if self.ndim == 2 else uniform_filter((runtime.state == -1).astype(float), size=15, mode='constant')*15**3)
+        unseen = (runtime.state == -1) & ~team_known
+        gains = (convolve(unseen.astype(float), (xx*xx+yy*yy <= 100).astype(float), mode='constant')
+                 if self.ndim == 2 else uniform_filter(unseen.astype(float), size=15, mode='constant')*15**3)
         if len(candidates):
             order = np.lexsort(tuple(candidates[:, k] for k in range(self.ndim-1, -1, -1))+
                                (-gains[tuple(candidates.T)],))
@@ -102,7 +110,8 @@ class AdaptiveRegions:
             a = np.maximum(0, runtime.indices(np.r_[low, runtime.altitude] if self.ndim == 2 else low))
             b = np.minimum(runtime.shape, np.ceil((high-runtime.origin)/runtime.resolution).astype(int))
             cells = runtime.state[tuple(slice(i, j) for i, j in zip(a, b))]
-            unknown = int(np.count_nonzero(cells == -1))
+            evidence = regional_evidence(runtime, [low, high], team_known)
+            unknown = evidence['team_unknown']
             known = 1-unknown/max(cells.size, 1)
             if level < self.levels-1 and rid not in pinned and (rid in self.split or .25 <= known < .98):
                 self.split.add(rid)
@@ -132,13 +141,20 @@ class AdaptiveRegions:
                     view['status'] = 'inactiveV'
                 else:
                     view['status'] = 'activeV' if near[cell] < 1.6 and gains[cell] >= 3 else 'deadV'
-            status = 'activeR' if points else 'deadR' if known >= .98 else 'inactiveR'
+            # A safe view inside a completed cell can observe an adjacent
+            # unfinished cell. Its ray gain, rather than cell volume, is live.
+            status = 'activeR' if points else 'deadR' if unknown == 0 else 'inactiveR'
             # A dead region can reopen on a changed map / newly discovered doorway.
             self.states[rid] = dict(status=status, unknown=unknown, level=level, parent=parent,
-                                    bounds=[low.tolist(), high.tolist()], views=list(catalog.values()))
+                                    bounds=[low.tolist(), high.tolist()], views=list(catalog.values()),
+                                    local_unknown=evidence['local_unknown'], evidence_signature=evidence['signature'],
+                                    completion_reason='team_observed' if status == 'deadR' else
+                                    'neighbor_frontier_service' if unknown==0 and points else 'remaining_team_information')
+            self.states[rid]['region_team_complete'] = unknown == 0
             if points:
                 tasks[rid] = ExplorationRegion(rid, [low.tolist(), high.tolist()], unknown, points, points[0],
-                                               level, parent, status, tuple('activeV' for _ in points))
+                                               level, parent, status, tuple('activeV' for _ in points),
+                                               local_unknown=evidence['local_unknown'], evidence_signature=evidence['signature'])
         shape = np.ceil((self.bounds[1, :self.ndim]-self.bounds[0, :self.ndim])/self.root_size).astype(int)
         for cell in np.ndindex(tuple(shape)):
             visit(0, cell)
