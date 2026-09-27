@@ -1,0 +1,16 @@
+{
+  "base_commit": "006ad6a",
+  "includes_uncommitted_changes": true,
+  "arguments": {
+    "seed": 900,
+    "faults": "recovery",
+    "source_root": "/tmp/annual-todo-candidate-6",
+    "manifest": "/workspace/artifacts/todo-execution/candidate-6-source-manifest.json",
+    "archive": "/workspace/artifacts/todo-execution/candidate-6-source.tar.gz",
+    "output_dir": "/workspace/artifacts/todo-execution/runs/candidate-6-video-900",
+    "simulation_limit": 2400.0,
+    "wall_limit": 7200.0,
+    "speed": 24.0
+  },
+  "comparison": "Development candidate: team-new utility, service lifecycle, deadline worker and authorized moving handoff; same native 3D sensor and map."
+}
