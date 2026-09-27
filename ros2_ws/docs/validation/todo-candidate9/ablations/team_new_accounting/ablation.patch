@@ -1,0 +1,25 @@
+--- next_project/core/exploration/mrdtg.py
++++ next_project/core/exploration/mrdtg.py
+@@ -205,7 +205,10 @@
+                 self.replica.put(key, dict(kind='observed_cells', grid=grid, block=block, bits=f'{bits:064x}'))
+ 
+     def observed_mask(self, runtime, exclude_sources=()):
+-        grid = observation_grid(runtime); blocks = self.coverage.get(grid, {})
++        grid = observation_grid(runtime); blocks = {}
++        for source,value in self.replica.values():
++            if source==self.source and value['kind']=='observed_cells' and value['grid']==grid:
++                blocks[value['block']]=blocks.get(value['block'],0)|int(value['bits'],16)
+         if exclude_sources:
+             blocks = {}
+             for source, value in self.replica.values():
+--- ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -610,7 +610,7 @@
+                    service_pose_source='consumed_curve_boundary' if observed_pose is not None else 'estimated_pose_at_feedback',
+                    **accounting)
+         if self.active is not None and self.active >= 0 and not self.selection.get('transit'):
+-            gained = accounting['team_new_cells']
++            gained = accounting['local_new_cells']
+             previous = max((self.service_feedback.get(self.active, {}), self.fusion.graph.services.get(self.active, {})),
+                            key=lambda v: v.get('stamp', -1.))
+             expected_team = int(np.count_nonzero(~self.view_team_before[self.view_start_cells]))

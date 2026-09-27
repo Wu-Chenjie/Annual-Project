@@ -1,0 +1,181 @@
+{
+  "schema": "annual.todo-audit/2",
+  "status": "COMPLETE",
+  "thresholds": {
+    "t50": 210.0,
+    "t80": 406.00100000000003,
+    "t90": 508.001,
+    "t95": 621.5
+  },
+  "tail_90_95_s": 113.49900000000002,
+  "service_window_definition": "Actual tracking of an authorized service, from commit/consumption until completion, cancellation request, process restart or task end; clipped to the common task window. Braking observations are outside the cancelled service.",
+  "service_window_terminations": {
+    "cancelled:path_or_tracking_invalidated": 5,
+    "completed": 206,
+    "task_end_censored": 1
+  },
+  "never_executed_authorizations": 0,
+  "legacy_executor_epoch_bindings": 6080,
+  "post_cancel_static_hold_packets": 0,
+  "actual_tracking_packets": 6055,
+  "raw_frames": 4766,
+  "observed_known_cells": 70098,
+  "observed_free_cells": 66927,
+  "service_windows": 212,
+  "actual_team_new_known_in_windows": 54150,
+  "team_new_known_outside_service_windows": 15948,
+  "exploration_low_team_yield": 100,
+  "exploration_zero_team_yield": 67,
+  "exploration_low_yield_duration_s": 583.3779999999997,
+  "exploration_total_duration_s": 1299.7239999999997,
+  "exploration_total_distance_m": 301.9236227462184,
+  "exploration_low_yield_distance_m": 126.48492121421843,
+  "purpose_counts": {
+    "explore": 208,
+    "transit_reobserve": 1,
+    "safety_recovery": 3
+  },
+  "residence_s": {
+    "takeoff": 0.0,
+    "initial_yaw_scan": 0.0,
+    "idle": 648.3959999999994,
+    "tracking_view": 1210.3260000000118,
+    "view_observed": 4.98300000000004,
+    "lease_confirmation_hold": 0.7949999999999591
+  },
+  "close_radius_m": 2.0,
+  "close_pair_duration_s": {},
+  "residence_by_uav_s": {
+    "0": {
+      "takeoff": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 59.3509999999997,
+      "planning_wait": 85.18799999999985,
+      "reservation_wait": 55.0070000000004,
+      "execution": 420.1630000000001,
+      "view_observed": 1.5900000000000034,
+      "lease_confirmation_hold": 0.20099999999996498
+    },
+    "1": {
+      "takeoff": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 68.51599999999989,
+      "planning_wait": 82.7670000000002,
+      "reservation_wait": 52.996999999999765,
+      "execution": 415.2210000000001,
+      "view_observed": 1.8030000000000612,
+      "lease_confirmation_hold": 0.19599999999999795
+    },
+    "2": {
+      "takeoff": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 63.139999999999795,
+      "planning_wait": 119.82300000000002,
+      "reservation_wait": 61.60699999999981,
+      "execution": 374.9420000000004,
+      "view_observed": 1.589999999999975,
+      "lease_confirmation_hold": 0.39799999999999613
+    }
+  },
+  "planning_wait_fleet_s": 287.7780000000001,
+  "planning_wall_median_s": 4.856985086498753,
+  "planning_wall_p95_s": 8.391474521200868,
+  "planning_compute_wall_median_s": 3.1265186074979283,
+  "planning_request_counts": {
+    "planning_submitted": 0,
+    "planning_result": 288,
+    "planning_timeout": 0,
+    "planning_failed": 0
+  },
+  "planning_all_measured_requests_wall_s": {
+    "p50": 4.856985086498753,
+    "p90": 7.754213942300339,
+    "p95": 8.391474521200868
+  },
+  "planning_queue_wall_s": {
+    "p50": 0.8736668594992807,
+    "p90": 1.4743387034999615,
+    "p95": 1.6547778720507267
+  },
+  "planning_delivery_wall_s": {
+    "p50": 0.7306018465005764,
+    "p90": 1.1573329807000845,
+    "p95": 1.2921854080008413
+  },
+  "planning_stage_wall_s": {
+    "hierarchy": {
+      "p50": 0.13156452549992537,
+      "p90": 0.22531662790061102,
+      "p95": 0.2699078702500627
+    },
+    "map": {
+      "p50": 1.7332999050267972e-05,
+      "p90": 2.5011600882862695e-05,
+      "p95": 3.072500003327146e-05
+    },
+    "pair": {
+      "p50": 0.08794123400184617,
+      "p90": 0.18434548249824728,
+      "p95": 0.2196851304488518
+    },
+    "priority": {
+      "p50": 0.4723978359998,
+      "p90": 0.6350409463000688,
+      "p95": 0.6857638804498492
+    },
+    "topology": {
+      "p50": 0.4402448329983599,
+      "p90": 0.7836872533993304,
+      "p95": 0.9706450583502371
+    },
+    "tour": {
+      "p50": 0.37946567600010894,
+      "p90": 2.674073246999979,
+      "p95": 3.6905316557005787
+    },
+    "trajectory": {
+      "p50": 0.57797623550141,
+      "p90": 1.556566133000524,
+      "p95": 1.6991819284479786
+    },
+    "view": {
+      "p50": 0.5845629850009573,
+      "p90": 0.8573933748000855,
+      "p95": 1.0988417230517367
+    }
+  },
+  "parent_geometry": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "rebuilds": null,
+    "note": "Legacy telemetry has no parent_geometry counter; missing is not zero."
+  },
+  "parent_proposal": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "calls": null,
+    "note": "Legacy telemetry has no parent_proposal counter; missing is not zero."
+  },
+  "rejected_planning_results": 0,
+  "planning_time_scope": "submitted_to_result_receipt",
+  "planning_timeout_count": 0,
+  "moving_handoffs": 0,
+  "moving_handoff_max_boundary_error": null,
+  "distances_m": {
+    "0": 117.54270537825435,
+    "1": 107.27546967854553,
+    "2": 90.89962533288133
+  },
+  "coverage": 0.950024748672959,
+  "contacts": 0,
+  "completed_window_duplicate_ratio": {
+    "numerator": 42464,
+    "denominator": 96614,
+    "scope": "sum of actual local-new cells in completed, cancelled, restarted and task-end service windows"
+  },
+  "limitations": [
+    "Online regional estimates and offline full service-window gains have different spatial scopes.",
+    "Close duration is telemetry sampled; missing intervals are excluded.",
+    "First-free evidence does not replace final truth-free coverage acceptance."
+  ]
+}

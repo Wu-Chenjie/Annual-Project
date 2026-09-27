@@ -26,7 +26,7 @@ from core.exploration.planning_budget import PlanningRequest, abort_worker
 from core.exploration.pairwise import PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory, ContinuousTrajectory
 from core.planning.handoff import future_boundary_time
-from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells, information_count
+from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
 from core.planning.path_quality import PathQualityEvaluator, RankedPathPool, Candidate, resample
 
 
@@ -40,8 +40,10 @@ def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=Non
             curve = optimize_trajectory(
                 candidate.path, runtime, yaw, selection['yaw'], speed_limit=.15 if rid < 0 else .6,
                 acceleration_limit=.2 if rid < 0 else .8, deadline_wall=deadline_wall)
-            clearance = min(float(np.linalg.norm(runtime.bounds[1]-runtime.bounds[0])),
-                            min(runtime.signed_distance(p) for p in curve.path(.15)))
+            points=curve.path(.15)
+            distances=(runtime.signed_distances(points) if hasattr(runtime,'signed_distances') else
+                       np.array([runtime.signed_distance(p) for p in points]))
+            clearance = min(float(np.linalg.norm(runtime.bounds[1]-runtime.bounds[0])),float(distances.min()))
             candidate.quality['executed_curve'] = dict(duration_s=curve.duration, limits=curve.limits(),
                 yaw_rate=curve.yaw_rate_limit(), jerk_integral=curve.jerk_cost(), method=curve.method,
                 minimum_clearance_m=clearance)
@@ -92,6 +94,8 @@ class ExplorationAgent(Node):
         self.service_feedback = {}
         self.graph_seq = 0; self.acks = []; self.events = []
         self.changed = False; self.last_plan = 0.; self.planner = ObservationPlanner()
+        self.parent_geometry_wall_s=0.;self.parent_geometry_count=0;self.parent_geometry_last_wall_s=0.
+        self.parent_proposal_wall_s=0.;self.parent_proposal_count=0
         self.output = Path(self.declare_parameter('output_dir', '/tmp/decentralized').value)/f'drone_{self.id}'
         self.output.mkdir(parents=True, exist_ok=True)
         previous_events = self.output/'events.jsonl'
@@ -177,6 +181,12 @@ class ExplorationAgent(Node):
     def sense(self, m):
         self.observation = json.loads(m.data)
         self.changed |= self.replica.merge(self.observation)
+
+    def update_local_geometry(self):
+        if not self.changed:return
+        begin=time.monotonic();self.replica.map.rebuild();self.changed=False
+        self.parent_geometry_last_wall_s=time.monotonic()-begin
+        self.parent_geometry_wall_s+=self.parent_geometry_last_wall_s;self.parent_geometry_count+=1
 
     def peer(self, m):
         packet = json.loads(m.data)
@@ -280,7 +290,10 @@ class ExplorationAgent(Node):
                     intent=intent, pending_intent=pending, retiring_intents=self.retiring_extra,
                     execution=self.execution, last_service=self.last_service, acks=self.acks, observation=None,
                     fusion=dict(self.fusion.diagnostics, map_clearance=self.replica.map.signed_distance(self.position),
-                                worker_running=self.future is not None and not self.future.done(), fit_queued=self.fit_pending is not None), graph_connections=self.fusion.connections,
+                                worker_running=self.future is not None and not self.future.done(), fit_queued=self.fit_pending is not None,
+                                parent_geometry_wall_s=self.parent_geometry_wall_s,parent_geometry_count=self.parent_geometry_count,
+                                parent_geometry_last_wall_s=self.parent_geometry_last_wall_s,
+                                parent_proposal_wall_s=self.parent_proposal_wall_s,parent_proposal_count=self.parent_proposal_count), graph_connections=self.fusion.connections,
                     graph_received=self.fusion.graph.replica.received, graph_missing=sorted(self.fusion.graph.replica.needs_snapshot),
                     graph_payload_bytes=self.graph_bytes, pair_transaction=self.pair.transaction, pair_commits=self.pair.commits,
                     graph=dict(nodes=len(self.graph.nodes),
@@ -327,8 +340,7 @@ class ExplorationAgent(Node):
         self.acks = self.ledger.acknowledge(self.state(), t)
         if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
             # Sensing can invalidate an intent while its ACKs are in flight.
-            if self.changed:
-                self.replica.map.rebuild(); self.changed = False
+            self.update_local_geometry()
             runtime = self.reserved_map()
             if self.intent.get('recovery'):
                 runtime.clearance = .5
@@ -401,8 +413,7 @@ class ExplorationAgent(Node):
             return
         if not self.ledger.fresh(t) and self.intent and not self.intent.get('committed'):
             self.withdraw('proposal_voter_timeout'); return
-        if self.changed:
-            self.replica.map.rebuild(); self.changed = False
+        self.update_local_geometry()
         if self.intent and self.intent.get('committed'):
             path = remainder(self.position, self.intent['path'])
             recovery = copy.copy(self.replica.map); recovery.clearance = .5
@@ -663,13 +674,17 @@ class ExplorationAgent(Node):
         if not intent.get('committed'):
             if progress >= boundary['trajectory_time']-.15 or t-intent['created'] > 6. or self.ledger.loses(intent):
                 self.cancel_pending('late_or_conflicting_authorization'); return
-            if self.owners.get(intent['region']) != self.id or not self.ledger.quorum(intent['token'], t, intent['voters']):
-                return
-            if self.changed: self.replica.map.rebuild(); self.changed = False
+            lifecycle=self.task_lifecycle_reason(intent['region'],self.pending_selection,t)
+            if lifecycle:
+                self.cancel_pending('latest_task_lifecycle:'+lifecycle);return
+            if not self.ledger.quorum(intent['token'], t, intent['voters']):return
+            self.update_local_geometry()
             runtime = self.reserved_map()
             if not runtime.safe_path(intent['path']):
                 self.cancel_pending('latest_geometry_invalid'); return
-            cells = team_new_cells(visible_cells(runtime, intent['path'][-1], intent['yaw']),
+            arrival=t+max(0.,boundary['trajectory_time']-progress)+intent['duration']
+            cells = team_new_cells(visible_cells(runtime, intent['path'][-1], intent['yaw'])-
+                                   self.fusion.priority.committed_cells(runtime,self.ledger.states,t,arrival),
                                    known_mask(runtime, self.fusion.graph.observed_mask(runtime)))
             if intent['purpose'] == 'explore' and not cells:
                 self.cancel_pending('latest_team_gain_empty'); return
@@ -691,6 +706,7 @@ class ExplorationAgent(Node):
             self.preplanned = None; return
         rid = pending['region']; selection = pending['selection']
         if self.owners.get(rid) != self.id: return
+        if self.task_lifecycle_reason(rid,selection,t):self.preplanned=None;return
         # Leaving early requires real sensor service of the old predicted cells.
         actual_known=known_mask(self.replica.map,self.fusion.graph.observed_mask(self.replica.map))
         delivered=int(np.count_nonzero(actual_known[self.view_target_cells]))
@@ -699,9 +715,10 @@ class ExplorationAgent(Node):
         if curve is None: self.preplanned = None; return
         runtime = self.reserved_map()
         if not runtime.safe_path(curve.path()) or not self.ledger.can_propose(curve.path(.15), rid, t): return
-        if not selection.get('transit') and len(team_new_cells(visible_cells(runtime, curve.path()[-1], selection['yaw']),
-                known_mask(runtime, self.fusion.graph.observed_mask(runtime)))) == 0:
-            self.preplanned = None; return
+        if not selection.get('transit'):
+            arrival=t+max(0.,boundary['trajectory_time']-self.execution.get('trajectory_time',0.))+curve.duration
+            cells=visible_cells(runtime,curve.path()[-1],selection['yaw'])-self.fusion.priority.committed_cells(runtime,self.ledger.states,t,arrival)
+            if not team_new_cells(cells,actual_known):self.preplanned=None;return
         self.epoch += 1
         self.pending_intent = dict(token=f'{self.id}:{self.fusion.graph.replica.session[:8]}:{self.epoch}', epoch=self.epoch,
             created=t, region=rid, candidate_id=selection['pool'].active.id,
@@ -726,46 +743,57 @@ class ExplorationAgent(Node):
         if self.owners.get(rid) != self.id:
             return  # Let the next heartbeat settle bids before requesting a lease.
         self.preplanned = None
-        runtime = self.reserved_map()
-        selection['pool'].revalidate(self.position, runtime, PathQualityEvaluator(), runtime.version, now=t)
         candidate = selection['pool'].active
         if candidate is None:
             return
-        if not selection.get('transit') and self.fusion.graph.regions.get(rid,{}).get('status')=='deadR':
-            services=self.fusion.graph.planning_regions(runtime,t,known_mask(runtime,self.fusion.graph.observed_mask(runtime)))
-            if not services.get(rid,{}).get('service_role'):return
-        if not selection.get('transit'):
-            cells = (visible_cells(runtime, candidate.path[-1], selection['yaw'])-
-                     self.fusion.priority.committed_cells(runtime, self.ledger.states, t))
-            cells = team_new_cells(cells, known_mask(runtime, self.fusion.graph.observed_mask(runtime)))
-            if not cells:
-                return
-            selection['gain'] = information_count(cells, self.fusion.graph.observed_mask(runtime),
-                0.)*runtime.resolution**runtime.state.ndim
-        if self.ledger.can_propose(candidate.path, rid, t):
-            refresh=(t-pending['time']>15. or np.linalg.norm(pending['position']-self.position)>=.35)
-            if refresh:
-                # A stale worker result is never executed. Its unexpired reserve
-                # can seed a NEW fit request after live geometry, team gain,
-                # task lifecycle and ownership checks at the actual state.
-                selection['trajectory']=None
-                if selection.get('priority'):
-                    selection['priority']=dict(selection['priority'],estimate_source='cached_task_revalidated_goal',
-                        prior_estimate_age_s=t-pending['time'],revalidated_team_gain_m3=selection['gain'])
-            self.propose(rid, selection)
-            if refresh and self.fit_pending:
-                self.event('cached_preplan_refit_queued',region=rid,candidate=candidate.id,
-                    prior_request_id=pending['request_id'],prior_age_s=t-pending['time'],
-                    current_map_version=runtime.version,actual_start=self.position.tolist())
-            if self.intent and pending['anticipatory']:
-                self.event('next_view_adopted', region=rid, age_s=t-pending['time'])
+        refresh=(t-pending['time']>15. or np.linalg.norm(pending['position']-self.position)>=.35)
+        if refresh:
+            selection['trajectory']=None
+        # The single proposal gate below performs live geometry/expiry and
+        # arrival-dependent team-gain validation. Do not validate the same
+        # reserve twice or subtract promises completing after our arrival.
+        self.propose(rid, selection)
+        if (refresh and self.fit_pending and self.fit_pending[0]==rid and self.fit_pending[1] is selection
+                and selection['pool'].active is not None):
+            if selection.get('priority'):
+                selection['priority']=dict(selection['priority'],estimate_source='cached_task_revalidated_goal',
+                    prior_estimate_age_s=t-pending['time'],revalidated_team_gain_m3=selection['gain'])
+            self.event('cached_preplan_refit_queued',region=rid,candidate=selection['pool'].active.id,
+                prior_request_id=pending['request_id'],prior_age_s=t-pending['time'],
+                current_map_version=self.replica.map.version,actual_start=self.position.tolist())
+        if self.intent and pending['anticipatory']:
+            self.event('next_view_adopted', region=rid, age_s=t-pending['time'])
 
     def propose(self, rid, selection):
+        begin=time.monotonic()
+        try:return self._propose(rid,selection)
+        finally:
+            self.parent_proposal_wall_s+=time.monotonic()-begin;self.parent_proposal_count+=1
+
+    def task_lifecycle_reason(self,rid,selection,now):
+        if rid<0:return None
+        record=self.fusion.graph.regions.get(rid,{})
+        if self.owners.get(rid)!=self.id:return 'ownership_changed'
+        if max(self.cooldown.get(rid,0),self.fusion.graph.services.get(rid,{}).get('defer_until',0))>now:
+            return 'service_deferred'
+        if record.get('status')=='splitR':return 'region_split'
+        if not selection.get('transit') and record.get('status')=='deadR':
+            runtime=self.replica.map
+            services=self.fusion.graph.planning_regions(runtime,now,known_mask(runtime,self.fusion.graph.observed_mask(runtime)))
+            if not services.get(rid,{}).get('service_role'):return 'region_complete_without_service'
+        return None
+
+    def _propose(self, rid, selection):
+        reason=self.task_lifecycle_reason(rid,selection,self.now())
+        if reason:
+            self.event('task_lifecycle_invalidated',region=rid,reason=reason)
+            return
         runtime = self.reserved_map()
         if rid < 0:
             runtime.clearance = .5; runtime.recovery_yaw = self.yaw
         selection['pool'].revalidate(self.position, runtime, PathQualityEvaluator(), runtime.version, now=self.now())
         if selection['pool'].active is None:return
+        if not self.ledger.can_propose(selection['pool'].active.path,rid,self.now()):return
         if rid>=0 and not selection.get('transit'):
             curve=selection.get('trajectory');arrival=self.now()+(curve.duration if curve else
                 np.linalg.norm(np.diff(selection['pool'].active.path,axis=0),axis=1).sum()/.6+1.5)

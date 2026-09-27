@@ -33,7 +33,8 @@ class PathQualityEvaluator:
         length=float(np.linalg.norm(np.diff(path,axis=0),axis=1).sum())
         canonical=resample(path,max(3,int(np.ceil(length/.1))+1))
         trajectory=TrajectoryOptimizer(nominal_speed=self.speed,sample_dt=.2).optimize(canonical,method='none')
-        distances=np.array([runtime.field.signed_distance(p) for p in canonical])
+        distances=(runtime.field.signed_distances(canonical) if hasattr(runtime.field,'signed_distances') else
+                   np.array([runtime.field.signed_distance(p) for p in canonical]))
         clearance=float(np.min(distances))
         # No obstacles is a valid map: represent unbounded obstacle distance by map diagonal.
         if not np.isfinite(clearance):clearance=float(np.linalg.norm(runtime.bounds[1]-runtime.bounds[0]))

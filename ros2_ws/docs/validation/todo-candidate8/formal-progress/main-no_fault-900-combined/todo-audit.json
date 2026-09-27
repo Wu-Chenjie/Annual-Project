@@ -1,5 +1,5 @@
 {
-  "schema": "annual.todo-audit/1",
+  "schema": "annual.todo-audit/2",
   "status": "COMPLETE",
   "thresholds": {
     "t50": 168.007,
@@ -8,21 +8,31 @@
     "t95": 411.002
   },
   "tail_90_95_s": 15.000999999999976,
+  "service_window_definition": "Actual tracking of an authorized service, from commit/consumption until completion, cancellation request, process restart or task end; clipped to the common task window. Braking observations are outside the cancelled service.",
+  "service_window_terminations": {
+    "cancelled:experiment_complete": 2,
+    "cancelled:path_or_tracking_invalidated": 12,
+    "completed": 135
+  },
+  "never_executed_authorizations": 0,
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "actual_tracking_packets": 3937,
   "raw_frames": 3193,
   "observed_known_cells": 70176,
   "observed_free_cells": 66091,
-  "service_windows": 135,
-  "actual_team_new_known_in_windows": 52546,
-  "team_new_known_outside_completed_windows": 17630,
-  "exploration_low_team_yield": 34,
-  "exploration_zero_team_yield": 8,
-  "exploration_low_yield_duration_s": 237.50100000000006,
-  "exploration_total_duration_s": 811.47,
-  "exploration_total_distance_m": 204.4383186395145,
-  "exploration_low_yield_distance_m": 56.50174284936478,
+  "service_windows": 149,
+  "actual_team_new_known_in_windows": 53558,
+  "team_new_known_outside_service_windows": 16618,
+  "exploration_low_team_yield": 41,
+  "exploration_zero_team_yield": 12,
+  "exploration_low_yield_duration_s": 254.76199999999994,
+  "exploration_total_duration_s": 845.8929999999999,
+  "exploration_total_distance_m": 211.66228674322406,
+  "exploration_low_yield_distance_m": 58.951767221419054,
   "purpose_counts": {
-    "explore": 122,
-    "transit_reobserve": 8,
+    "explore": 134,
+    "transit_reobserve": 10,
     "safety_recovery": 5
   },
   "residence_s": {
@@ -147,6 +157,18 @@
       "p95": 0.9868535318993962
     }
   },
+  "parent_geometry": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "rebuilds": null,
+    "note": "Legacy telemetry has no parent_geometry counter; missing is not zero."
+  },
+  "parent_proposal": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "calls": null,
+    "note": "Legacy telemetry has no parent_proposal counter; missing is not zero."
+  },
   "rejected_planning_results": 31,
   "planning_time_scope": "submitted_to_result_receipt",
   "planning_timeout_count": 0,
@@ -160,9 +182,9 @@
   "coverage": 0.9507416067862569,
   "contacts": 0,
   "completed_window_duplicate_ratio": {
-    "numerator": 24570,
-    "denominator": 77116,
-    "scope": "sum of actual local-new cells in completed/cancelled service windows"
+    "numerator": 25270,
+    "denominator": 78828,
+    "scope": "sum of actual local-new cells in completed, cancelled, restarted and task-end service windows"
   },
   "limitations": [
     "Online regional estimates and offline full service-window gains have different spatial scopes.",

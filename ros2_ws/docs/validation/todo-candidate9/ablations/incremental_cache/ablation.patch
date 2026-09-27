@@ -1,0 +1,10 @@
+--- next_project/core/exploration/fusion.py
++++ next_project/core/exploration/fusion.py
+@@ -26,6 +26,7 @@
+     dependencies. Replacing the worker rebuilds caches from sensed data.
+     """
+     global _WORKER_PLANNER
++    _WORKER_PLANNER = None
+     worker_started = time.monotonic()
+     session = planner.graph.replica.session
+     if _WORKER_PLANNER is None or _WORKER_PLANNER.graph.replica.session != session:

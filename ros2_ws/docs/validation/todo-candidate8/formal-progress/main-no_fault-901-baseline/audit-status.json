@@ -1,8 +1,8 @@
 {
   "accounting": {
     "completed": true,
-    "passed": null,
-    "status": "COMPLETE"
+    "status": "COMPLETE",
+    "auditor_revision": "8e-read-only-legacy-execution-and-complete-service-accounting"
   },
   "flight_and_coverage": {
     "completed": true,
@@ -13,7 +13,7 @@
     "completed": true,
     "passed": true,
     "status": "PASS",
-    "auditor_revision": "8a"
+    "auditor_revision": "8e-read-only-legacy-execution-and-complete-service-accounting"
   },
   "outcome": "COMPLETE",
   "complete_attempt_accepted": true

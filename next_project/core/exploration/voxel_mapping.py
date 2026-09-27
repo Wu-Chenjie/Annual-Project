@@ -81,18 +81,48 @@ class VoxelMap:
         occupied = np.argwhere(np.pad(self.state != 0, 1, constant_values=True))-1
         self.obstacle_centers = self.points(occupied)
         self.obstacle_tree = cKDTree(self.obstacle_centers*self.metric)
-        self.distance = np.full(self.shape, -1.)
-        free = np.argwhere(self.state == 0)
-        if len(free):
-            points = self.points(free)
-            _, indices = self.obstacle_tree.query(points*self.metric, k=min(16, len(occupied)))
-            delta = np.maximum(np.abs(points[:, None]-self.obstacle_centers[indices])-self.resolution/2, 0.)
-            self.distance[tuple(free.T)] = np.min(np.linalg.norm(delta*self.metric, axis=2), axis=1)
-        self.safe = self.distance >= self.clearance
+        # Online envelope checks need the obstacle tree, not a distance for
+        # every free voxel. Materialize the navigation grid only on demand.
+        self._physical_distance = None; self._navigation_dirty = True
+        self._navigation_reservations = []
+        for name in ('_distance','_safe','_grid'):
+            self.__dict__.pop(name,None)
+
+    def _ensure_navigation(self):
+        if not self._navigation_dirty:
+            return
+        if self._physical_distance is None:
+            self._physical_distance = np.full(self.shape, -1.)
+            free = np.argwhere(self.state == 0)
+            if len(free):
+                points = self.points(free)
+                _, indices = self.obstacle_tree.query(points*self.metric, k=min(16, len(self.obstacle_centers)))
+                delta = np.maximum(np.abs(points[:, None]-self.obstacle_centers[indices])-self.resolution/2, 0.)
+                self._physical_distance[tuple(free.T)] = np.min(np.linalg.norm(delta*self.metric, axis=2), axis=1)
+        self._distance = self._physical_distance.copy()
+        self._safe = self._distance >= self.clearance
         heights = self.origin[2]+(np.arange(self.shape[2])+.5)*self.resolution
-        self.safe &= (heights[None, None, :] >= self.flight_limits[0]) & (heights[None, None, :] <= self.flight_limits[1])
-        self.grid = OccupancyGrid(self.origin+self.resolution/2, self.resolution, self.shape)
-        self.grid.data[:] = ~self.safe
+        self._safe &= (heights[None, None, :] >= self.flight_limits[0]) & (heights[None, None, :] <= self.flight_limits[1])
+        for tree, radius in self._navigation_reservations:
+            cells = np.argwhere(self._safe)
+            if len(cells):
+                blocked = tree.query(self.points(cells))[0] < radius
+                key = tuple(cells[blocked].T); self._safe[key] = False; self._distance[key] = 0.
+        self._grid = OccupancyGrid(self.origin+self.resolution/2, self.resolution, self.shape)
+        self._grid.data[:] = ~self._safe
+        self._navigation_dirty = False
+
+    @property
+    def distance(self):
+        self._ensure_navigation(); return self._distance
+
+    @property
+    def safe(self):
+        self._ensure_navigation(); return self._safe
+
+    @property
+    def grid(self):
+        self._ensure_navigation(); return self._grid
 
     def signed_distance(self, p):
         idx = self.indices(p)
@@ -167,13 +197,10 @@ class VoxelMap:
         if not chunks:
             return
         self._built_signature = None
-        cells = np.argwhere(self.safe)
-        if not len(cells):
-            return
         # Full 3D reservation distance, conservative isotropic downwash margin.
         self.reserved_points = cKDTree(np.vstack(chunks)); self.reserved_radius = radius
-        blocked = self.reserved_points.query(self.points(cells))[0] < radius
-        key = tuple(cells[blocked].T); self.safe[key] = False; self.distance[key] = 0.; self.grid.data[key] = True
+        self._navigation_reservations.append((self.reserved_points, radius))
+        self._navigation_dirty = True
 
 
 class VoxelRouter:

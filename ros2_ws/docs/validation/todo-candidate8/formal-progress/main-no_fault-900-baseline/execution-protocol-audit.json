@@ -8,5 +8,7 @@
   "handoffs": [],
   "cached_route_chains": [],
   "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 4717,
+  "post_cancel_static_hold_packets": 2,
   "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
 }

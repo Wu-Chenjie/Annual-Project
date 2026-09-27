@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import sys
 
 
 def reaudit(root, revision):
@@ -13,9 +14,20 @@ def reaudit(root, revision):
     manifest = json.loads((revision/'manifest.json').read_text())
     for name, digest in manifest['files'].items():
         if hashlib.sha256((revision/name).read_bytes()).hexdigest() != digest: raise ValueError('Auditor revision changed')
+    if manifest.get('module_files'):
+        import planning_runtime
+        import core.exploration
+        for module_name,name in manifest['module_files'].items():
+            spec=importlib.util.spec_from_file_location(module_name,revision/name)
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            sys.modules[module_name]=module;setattr(core.exploration,module_name.rsplit('.',1)[-1],module)
     cleanup = json.loads((root/'process-cleanup.json').read_text())
     if cleanup.get('remaining'): raise ValueError('Wait for verified owned-process cleanup')
     status = json.loads((root/'audit-status.json').read_text())
+    previous=status.get('execution_protocol',{}).get('auditor_revision','original-frozen')
+    history=root/'protocol-audit-history'/previous;history.mkdir(parents=True,exist_ok=True)
+    for name in ('audit-status.json','execution-protocol-audit.json'):
+        if (root/name).exists() and not (history/name).exists():shutil.copy2(root/name,history/name)
     original = root/'original-frozen-audit'; original.mkdir(exist_ok=True)
     for name in ['audit-status.json', 'execution-protocol-audit.json']:
         if (root/name).exists() and not (original/name).exists(): shutil.copy2(root/name, original/name)

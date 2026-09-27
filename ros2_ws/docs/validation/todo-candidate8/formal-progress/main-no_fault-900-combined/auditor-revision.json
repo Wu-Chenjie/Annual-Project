@@ -1,8 +1,24 @@
 {
-  "revision": "8a-read-only-baseline-log-compatibility",
+  "revision": "8e-read-only-legacy-execution-and-complete-service-accounting",
   "flight_policy_changed": false,
+  "explanation": "Bind legacy epochs only to one captured curve command; reject missing/ambiguous or mismatched identities and missing modern tokens. Legacy cancel holds retain an old tracking label/time: classify separately only with a captured cancel, arrived status, no active curve and zero reference velocity/acceleration. Forty-two regression checks passed. Both policies receive the same complete/interrupted service accounting. Keep8a, failed8c and8d results.",
+  "module_files": {
+    "core.exploration.service_windows": "service_windows.py",
+    "core.exploration.timing_evidence": "timing_evidence.py",
+    "core.exploration.evidence_audit": "evidence_audit.py",
+    "core.exploration.execution_identity": "execution_identity.py"
+  },
   "files": {
-    "audit_todo_attempt.py": "2e1777f31ef7b022744ecde40419b136751d5028007949c283e411a24338fc28",
-    "audit_execution_protocol.py": "1e5fe00545c70fe606b8e7c341cef126b11d85cfa84ec248385b3e4a364f4d59"
+    "audit_todo_evidence.py": "c6f07a2880a718ae15e711a23f19588ca8c8e5d49a1c4c7ce3b029ba52414452",
+    "audit_execution_protocol.py": "b5b45deb6db1c07e4ebdb646a52c9a2dce43f6be1c8df515143d20c30e83c9d9",
+    "service_windows.py": "2bef8e9a6741a03e60e1a78f036100fa0cca2500bee1d4f5e8dc76b0dd914e44",
+    "timing_evidence.py": "2bdc91bd64fc78438747ba6f76b25e60ce44b10943319181361a14f229b21360",
+    "evidence_audit.py": "eb56122089cba0f953fa15777886150956bfe34f568b61390c6524849c67a403",
+    "execution_identity.py": "7f76c4002970a466aea4dce354ab870132b29f00feeb7f2523e3768e86c721bc",
+    "test_service_windows.py": "553c2cf4f21bfcaddd90cb250428efa6794f6bebb53ad691687fa7434ca9fd42",
+    "test_timing_evidence.py": "70126ec4754c345f815ba391156d508c2d43ea50998fc25ccf3101f74408a6eb",
+    "test_interrupted_accounting.py": "1a8dada92337158fa728baf55b8c1d4e25c81dc2a7b68356db035c916cbdd580",
+    "test_execution_identity.py": "6321f52553bd4890cc49f1cb2a43093a6e60c1f32b0361f9dc3746b34d995e0a",
+    "test_execution_protocol_audit.py": "b0e0397ecd15d428fc6dfdc0e05c68ee6d6ee071e98bcda7ff87f74dc3295212"
   }
 }

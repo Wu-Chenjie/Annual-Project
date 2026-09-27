@@ -126,6 +126,8 @@ class FusionPlanner:
             nonlocal mark
             stamp = time.monotonic(); stages[name] = stamp-mark; mark = stamp
         runtime.rebuild()
+        # Charge deferred navigation materialization to the worker map stage.
+        _ = runtime.grid
         stage('map')
         for rid, value in (service_feedback or {}).items():
             self.graph.replica.put(f's:{rid}', dict(kind='region_service', id=rid, **value))
@@ -328,8 +330,10 @@ class FusionPlanner:
             for candidate in [selection['pool'].active]+selection['pool'].backups:
                 try:
                     curve = optimize_trajectory(candidate.path, local, yaw, selection['yaw'], deadline_wall=deadline_wall, **boundary)
-                    clearance = min(float(np.linalg.norm(local.bounds[1]-local.bounds[0])),
-                                    min(local.signed_distance(p) for p in curve.path(.15)))
+                    points=curve.path(.15)
+                    distances=(local.signed_distances(points) if hasattr(local,'signed_distances') else
+                               np.array([local.signed_distance(p) for p in points]))
+                    clearance = min(float(np.linalg.norm(local.bounds[1]-local.bounds[0])),float(distances.min()))
                     candidate.quality['executed_curve'] = dict(duration_s=curve.duration, limits=curve.limits(),
                         yaw_rate=curve.yaw_rate_limit(), jerk_integral=curve.jerk_cost(), method=curve.method,
                         minimum_clearance_m=clearance)

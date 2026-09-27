@@ -144,7 +144,8 @@ def test_refitted_reserves_are_ranked_by_actual_continuous_curves(blocked):
     assert before['map_version']==m.version
 
 
-def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path):
+@pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
     from core.planning.continuous_trajectory import interpolate
     from core.planning.path_quality import Candidate,RankedPathPool
     rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
@@ -156,7 +157,7 @@ def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(
         new=interpolate(np.array([p,[7.,3.,1.5]]),[16.],h,.4-h,start_velocity=v,start_acceleration=a,
                         start_yaw_rate=rate,start_yaw_acceleration=old.yaw_acceleration(12.))
         node.position=old.sample(4.)[0];node.yaw=old.sample(4.)[3]
-        node.epoch=1;node.execution=dict(trajectory_time=4.)
+        node.epoch=1;node.execution=dict(trajectory_time=4.,epoch=1);node.now=lambda:5.
         node.intent=dict(token='old',purpose='explore',recovery=False)
         node.selection=dict(gain=100*node.replica.map.resolution**3);node.owners={8:node.id}
         node.replica.map.state[:]=0;node.replica.map.state.ravel()[100:200]=-1;node.replica.map.rebuild()
@@ -166,14 +167,33 @@ def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(
         pool=RankedPathPool();pool.rank([Candidate('reserve','test',0,new.path(.15),{'score':0.},0)])
         node.preplanned=dict(epoch=1,time=5.,region=8,boundary=boundary,request_id='early',
                              selection=dict(trajectory=new,pool=pool,gain=0.,transit=True,purpose='transit_reobserve',yaw=.4))
+        if peer_case!='transit':
+            import decentralized_agent_node as agent_module
+            monkeypatch.setattr(agent_module,'visible_cells',lambda *args,**kwargs:frozenset(range(180,200)))
+            node.preplanned['selection'].update(transit=False,purpose='explore')
+            def promises(runtime,peers,now,arrival=None):
+                assert arrival==pytest.approx(29.)  # Includes the remaining old prefix and the new curve.
+                return frozenset(range(180,200)) if peer_case=='earlier' else frozenset()
+            node.fusion.priority.committed_cells=promises
         node.adopt_moving_preplan(5.)
         assert node.pending_intent is None and node.epoch==1 and node.preplanned is not None
         node.replica.map.state.ravel()[100:161]=0;node.replica.map.rebuild()
         node.adopt_moving_preplan(5.)
+        if peer_case=='earlier':
+            assert node.pending_intent is None and node.preplanned is None and node.intent['token']=='old'
+            return
         assert node.pending_intent and not node.pending_intent['committed']
         assert node.intent['token']=='old' and node.epoch==2
         recorded=__import__('json').loads((tmp_path/'drone_0/candidates.jsonl').read_text())
         assert recorded['phase']=='handoff_proposed' and recorded['active_candidate']=='reserve'
         assert recorded['paths'][0]['trajectory']==new.to_dict()
+        if peer_case in ('changes_before_authorization','split_before_authorization'):
+            if peer_case=='changes_before_authorization':
+                node.fusion.priority.committed_cells=lambda *args,**kwargs:frozenset(range(180,200))
+            else:node.fusion.graph.regions[8]=dict(status='splitR')
+            node.manage_pending(5.)
+            assert node.pending_intent is None and node.intent['token']=='old'
+            assert node.events[-1]['type']=='handoff_cancelled'
+            assert node.replica.map.state.ravel()[180:200].tolist()==[-1]*20
     finally:
         node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()

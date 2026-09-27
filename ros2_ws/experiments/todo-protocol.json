@@ -1,6 +1,6 @@
 {
   "schema": "annual.todo-protocol/1",
-  "phase": "preregistration_before_formal_runs",
+  "phase": "preregistration_before_formal_candidate9_runs",
   "seeds": [
     900,
     901,
@@ -9,7 +9,7 @@
     904
   ],
   "baseline_commit": "7693311f76bd05c457f273a7f2c2afd5443f07b4",
-  "baseline_adapter": "Seeds, measured-frame evidence fields and worker timing-only wrapper; exact patch baseline-observability.patch. Recorder is a read-only observer.",
+  "baseline_adapter": "Same frozen early strategy seed/measured-sensor/worker timing adapter, plus parent geometry and proposal wall counters only. Exact legacy baseline-observability.patch and baseline9 timing patch are frozen separately; recorder/auditor remains read-only.",
   "development_attempts": [
     "baseline-none-900",
     "baseline-none-900-retry1",
@@ -98,6 +98,12 @@
       "completed_jobs": 2,
       "pending_jobs": 78,
       "reason": "Independent support-lifecycle bug; both completed samples also had development Gazebo residue. Preserve original raw logs and source manifests; final study restarts with fixed lifecycle and cleanup."
+    },
+    {
+      "study": "formal-8",
+      "completed_jobs": 10,
+      "pending_jobs": 70,
+      "reason": "Five main no-fault pairs all completed and individually verified. Total T95 improved in all pairs, but median tail 97.502s versus 54.501s and planning wait 159.684 versus 183.384 fleet-seconds failed fixed gates. Preserve every source and raw record. Accounting correction uniformly adds interrupted services; final study restarts with arrival-aware moving adoption and authorization, live post-fit lifecycle fences and reduced parent geometry work."
     }
   ]
 }

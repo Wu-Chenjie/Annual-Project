@@ -12,7 +12,7 @@ import time
 
 
 def source_manifest(root):
-    files = [p for folder in ('next_project/core','next_project/maps','ros2_ws/src') for p in (root/folder).rglob('*')
+    files = [p for folder in ('next_project/core','next_project/cpp','next_project/maps','ros2_ws/src','docker') for p in (root/folder).rglob('*')
              if p.is_file() and '__pycache__' not in str(p)]
     return {str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)}
 

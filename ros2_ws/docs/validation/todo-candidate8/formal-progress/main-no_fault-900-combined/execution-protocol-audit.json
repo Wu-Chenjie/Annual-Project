@@ -82,7 +82,7 @@
       "authorized_at": 151.672,
       "continuity": {
         "position": 0.0,
-        "velocity": 1.9658130532490998e-16,
+        "velocity": 1.9658130532490996e-16,
         "acceleration": 7.443978427365837e-16,
         "yaw": 0.0,
         "yaw_rate": 0.0,
@@ -341,5 +341,7 @@
     }
   ],
   "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
   "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
 }

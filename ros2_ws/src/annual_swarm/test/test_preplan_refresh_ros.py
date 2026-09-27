@@ -13,7 +13,8 @@ from core.exploration.regions import RegionTask
 
 
 @pytest.mark.parametrize('now',[20.,35.])
-def test_live_reserve_is_refitted_at_rest_with_fresh_request_and_new_authorization(tmp_path,now):
+@pytest.mark.parametrize('after_fit_change',['none','cooldown','split','completed','owner'])
+def test_live_reserve_is_refitted_at_rest_with_fresh_request_and_new_authorization(tmp_path,now,after_fit_change):
     rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
                     '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
     node=ExplorationAgent()
@@ -29,15 +30,30 @@ def test_live_reserve_is_refitted_at_rest_with_fresh_request_and_new_authorizati
         node.fusion.graph.regions[8]=dict(status='activeR');node.owners={8:0}
         node.preplanned=dict(epoch=2,time=5.,position=start,region=8,selection=selection,
                              request_id='old-result',anticipatory=True)
+        arrivals=[]
+        def promises(runtime,peers,time,arrival=None):
+            arrivals.append(arrival)
+            assert arrival is not None  # A later peer promise must not erase this earlier service.
+            return frozenset()
+        node.fusion.priority.committed_cells=promises
         node.adopt_preplan(now)
         assert node.preplanned is None and node.intent is None
         assert node.fit_pending and node.fit_pending[0]==8 and selection['trajectory'] is None
         assert node.events[-1]['type']=='cached_preplan_refit_queued'
         result=fit_selection(selection,node.reserved_map(),node.position,node.yaw,8,now)
+        if after_fit_change=='cooldown':node.cooldown[8]=now+1.
+        elif after_fit_change=='split':node.fusion.graph.regions[8]['status']='splitR'
+        elif after_fit_change=='completed':node.fusion.graph.regions[8]['status']='deadR'
+        elif after_fit_change=='owner':node.owners[8]=1
         node.propose(8,result['selection'])
+        assert node.parent_proposal_count>=2 and node.parent_proposal_wall_s>0
+        if after_fit_change!='none':
+            assert node.intent is None and node.events[-1]['type']=='task_lifecycle_invalidated'
+            return
         assert node.intent and not node.intent['committed'] and node.intent['epoch']==3
         np.testing.assert_allclose(node.intent['path'][0],node.position,atol=1e-9)
         assert node.replica.map.safe_path(node.intent['path'])
+        assert len(arrivals)>=2 and all(t>now for t in arrivals)
     finally:
         node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()
 

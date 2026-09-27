@@ -1,0 +1,69 @@
+--- a/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -58,6 +58,8 @@
+         self.service_feedback = {}
+         self.graph_seq = 0; self.acks = []; self.events = []
+         self.changed = False; self.last_plan = 0.; self.planner = ObservationPlanner()
++        self.parent_geometry_wall_s=0.;self.parent_geometry_count=0;self.parent_geometry_last_wall_s=0.
++        self.parent_proposal_wall_s=0.;self.parent_proposal_count=0
+         self.output = Path(self.declare_parameter('output_dir', '/tmp/decentralized').value)/f'drone_{self.id}'
+         self.output.mkdir(parents=True, exist_ok=True)
+         previous_events = self.output/'events.jsonl'
+@@ -115,6 +117,12 @@
+         self.observation = json.loads(m.data)
+         self.changed |= self.replica.merge(self.observation)
+ 
++    def update_local_geometry(self):
++        if not self.changed:return
++        begin=time.monotonic();self.replica.map.rebuild();self.changed=False
++        self.parent_geometry_last_wall_s=time.monotonic()-begin
++        self.parent_geometry_wall_s+=self.parent_geometry_last_wall_s;self.parent_geometry_count+=1
++
+     def peer(self, m):
+         packet = json.loads(m.data)
+         if self.id in self.network_isolated or packet['drone'] in self.network_isolated:
+@@ -206,7 +214,10 @@
+                     tour=self.tour, workload=self.workload, owners=self.owners, active=self.active,
+                     intent=intent, acks=self.acks, observation=None,
+                     fusion=dict(self.fusion.diagnostics, map_clearance=self.replica.map.signed_distance(self.position),
+-                                worker_running=self.future is not None and not self.future.done()), graph_connections=self.fusion.connections,
++                                worker_running=self.future is not None and not self.future.done(),
++                                parent_geometry_wall_s=self.parent_geometry_wall_s,parent_geometry_count=self.parent_geometry_count,
++                                parent_geometry_last_wall_s=self.parent_geometry_last_wall_s,
++                                parent_proposal_wall_s=self.parent_proposal_wall_s,parent_proposal_count=self.parent_proposal_count), graph_connections=self.fusion.connections,
+                     graph_received=self.fusion.graph.replica.received, graph_missing=sorted(self.fusion.graph.replica.needs_snapshot),
+                     graph_payload_bytes=self.graph_bytes, pair_transaction=self.pair.transaction, pair_commits=self.pair.commits,
+                     graph=dict(nodes=len(self.graph.nodes),
+@@ -251,8 +262,7 @@
+         self.acks = self.ledger.acknowledge(self.state(), t)
+         if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
+             # Sensing can invalidate an intent while its ACKs are in flight.
+-            if self.changed:
+-                self.replica.map.rebuild(); self.changed = False
++            self.update_local_geometry()
+             runtime = self.reserved_map()
+             if self.intent.get('recovery'):
+                 runtime.clearance = .5
+@@ -327,8 +337,7 @@
+             return
+         if not self.ledger.fresh(t) and self.intent and not self.intent.get('committed'):
+             self.withdraw('proposal_voter_timeout'); return
+-        if self.changed:
+-            self.replica.map.rebuild(); self.changed = False
++        self.update_local_geometry()
+         if self.intent and self.intent.get('committed'):
+             path = remainder(self.position, self.intent['path'])
+             recovery = copy.copy(self.replica.map); recovery.clearance = .5
+@@ -482,6 +491,12 @@
+                 self.event('next_view_adopted', region=rid, age_s=t-pending['time'])
+ 
+     def propose(self, rid, selection):
++        begin=time.monotonic()
++        try:return self._propose(rid,selection)
++        finally:
++            self.parent_proposal_wall_s+=time.monotonic()-begin;self.parent_proposal_count+=1
++
++    def _propose(self, rid, selection):
+         runtime = self.reserved_map()
+         if rid < 0:
+             runtime.clearance = .5; runtime.recovery_yaw = self.yaw

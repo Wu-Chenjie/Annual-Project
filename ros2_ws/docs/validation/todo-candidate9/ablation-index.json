@@ -1,0 +1,32 @@
+{
+  "continuous_handoff": {
+    "source_root": "/tmp/annual-todo-ablations-9d/continuous_handoff",
+    "description": "Remove only the named contribution; keep fused pipeline and safety gates.",
+    "patch_sha256": "5299c1ec4335e990c3d737c04964b22d90e712c542fced2a6b74de5ba839f0a8"
+  },
+  "task_route_objective": {
+    "source_root": "/tmp/annual-todo-ablations-9d/task_route_objective",
+    "description": "Remove only the named contribution; keep fused pipeline and safety gates.",
+    "patch_sha256": "e9ac7edc80d9966e25ceb600cd677e7a8a69542002f4f5e0952ac54291d75c90"
+  },
+  "incremental_cache": {
+    "source_root": "/tmp/annual-todo-ablations-9d/incremental_cache",
+    "description": "Recreate private planner caches on every request; same geometry and information rules.",
+    "patch_sha256": "74c548f3b94517eec9cbd8dd59ffba08fc5d0484b5553e8f2d9d7fdbbdddbdfa"
+  },
+  "task_lifecycle": {
+    "source_root": "/tmp/annual-todo-ablations-9d/task_lifecycle",
+    "description": "Disable low-yield retirement/reactivation penalties. Actual observed-union and collision checks remain.",
+    "patch_sha256": "59d3e2a77ef937eae3933140ace3191db6408b5556b99dc993d8dff0d67f578c"
+  },
+  "team_new_accounting": {
+    "source_root": "/tmp/annual-todo-ablations-9d/team_new_accounting",
+    "description": "Local-novelty planning and service rewards; raw independent team evidence remains recorded.",
+    "patch_sha256": "e76333a7317346843b94131582a409ab50e622bc48faa1dcc891bad9ac96bd92"
+  },
+  "arrival_support_prediction": {
+    "source_root": "/tmp/annual-todo-ablations-9d/arrival_support_prediction",
+    "description": "Remove only the named contribution; keep fused pipeline and safety gates.",
+    "patch_sha256": "a91c649f0b573f3292e9d3cc8de0a52985845dad71afc70bc0e7c7ef38adf526"
+  }
+}
