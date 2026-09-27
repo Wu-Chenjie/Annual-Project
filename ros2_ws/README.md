@@ -1,6 +1,8 @@
 # ROS 2 / Gazebo 使用说明
 
-最新[新配色完整录像（1080p，62.47 秒）](docs/validation/palette-video/palette-exploration.mp4)已录制：本次 **890.5 s 达到 95% 三维覆盖**，最终覆盖率 95.07%，总航程 402.4 m，零接触。[本次数据与独立审计](docs/validation/palette-video/README.md)。本轮只更新显示配色，规划与控制算法保持一致。
+本轮按[工程TODO执行记录](TODO_EXECUTION.md)实现团队新增信息账本、运动中授权交接、规划墙钟预算、私有缓存复用与生命周期。一套融合入口保持不变；正式重复与消融尚未全部验收。[原生开发录像及完整证据](docs/validation/todo-development/README.md)单独保留。
+
+历史[配色录像](docs/validation/palette-video/palette-exploration.mp4)的890.5 s、402.4 m及零接触属于当次飞行，[原数据](docs/validation/palette-video/README.md)不覆盖本轮新实现。
 
 此前联合路线/观测收益改进的一次同条件 Gazebo 飞行为 **820.0 s 达到 95% 三维覆盖**，总航程 327.1 m，零接触。[原录像、三版本对照及独立审计](docs/validation/fusion-integrated/README.md)完整保留；各次运行的异步调度和路线不同，单次实测不能保证每次复现相同耗时。
 
