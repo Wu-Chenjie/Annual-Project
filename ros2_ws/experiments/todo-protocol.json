@@ -15,7 +15,8 @@
     "baseline-none-900-retry1",
     "candidate-1-video-900",
     "candidate-2-none-900",
-    "candidate-3-none-900"
+    "candidate-3-none-900",
+    "candidate-4-none-900"
   ],
   "groups": [
     "no_fault",
@@ -85,5 +86,13 @@
     "targeted": 30,
     "offline_ablations": 30,
     "total": 80
-  }
+  },
+  "superseded_studies": [
+    {
+      "study": "formal-3",
+      "completed_jobs": 2,
+      "pending_jobs": 78,
+      "reason": "Independent support-lifecycle bug; both completed samples also had development Gazebo residue. Preserve original raw logs and source manifests; final study restarts with fixed lifecycle and cleanup."
+    }
+  ]
 }

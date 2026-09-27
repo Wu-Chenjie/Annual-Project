@@ -46,7 +46,7 @@
 ```
 R = repeat_factor × net_visible_volume × (1 + 0.35 × log(1 + component_volume / 8))
     × (1 + min(0.5, 0.15 × waiting_seconds / 60))
-P = R / (1.5 + route_distance / 0.6)
+P = R / (1.5 + route_distance / 0.6 + expected_corridor_wait)
 E(route) = physical_time + 0.5 × sum(R_i × completion_time_i) / sum(R_i)
 ```
 
@@ -64,7 +64,7 @@ P 用于区域候选、双机交换窗口及无人认领时的分担选择。主
 
 等待奖励最多将原收益乘以 1.5，不能独立产生收益或无限压过大区域；零预测收益、不可达区域不能靠等待变成可执行任务。服务后重新计时。当前已提交飞行继续执行，下一视点决策重新联合优化收益与路线，不因优先级变化中途抢占飞行。未知体素、机体净空、动态障碍及多机预约仍是硬约束。
 
-参数集中在 `config/exploration_priority.yaml`，启动时可通过 `priority_config:=/absolute/path/to/config.yaml` 替换。`/drone_i/topology.exploration_priority` 仅向诊断/RViz 发布组件体积、优先级、等待时间和观测切片，`graph_delta` 不传这张地图。RViz 默认显示 UAV 0 的收益估计（参数 `priority_source`）：全队仍未知的区域用金色强调，越明亮表示相对优先级越高；全队已观测为自由、但本机仍未知的位置用淡紫色小格点显示。底图未知为深蓝灰、已观测自由空间为灰蓝、障碍为灰白。三架机在 Gazebo 与 RViz 中统一为天蓝、粉紫、翠绿；拓扑使用细灰蓝线，飞行轨迹与执行路线使用更粗的机体同色线。组件标签中的 `Local C` 体积仍属于指定无人机的局部未知组件，不能相加当成全局未知量。全队观测并集仅在可视化节点中用于颜色分类，不传入规划器；地图尚未收到或网格不匹配时图例明确显示 `Local unknown`。
+参数集中在 `config/exploration_priority.yaml`，启动时可通过 `priority_config:=/absolute/path/to/config.yaml` 替换。`/drone_i/topology.exploration_priority` 仅向诊断/RViz 发布组件体积、优先级、等待时间和观测切片，`graph_delta` 不传这张地图。RViz 默认显示 UAV 0 的收益估计（参数 `priority_source`）：全队仍未知的区域用金色强调，越明亮表示相对优先级越高；全队已观测为自由、但本机仍未知的位置用淡紫色小格点显示。底图未知为深蓝灰、已观测自由空间为灰蓝、障碍为灰白。三架机在 Gazebo 与 RViz 中统一为天蓝、粉紫、翠绿；拓扑使用细灰蓝线，飞行轨迹与执行路线使用更粗的机体同色线。组件标签中的 `Local C` 体积仍属于指定无人机的局部未知组件，不能相加当成全局未知量。可视化自由格并集用于颜色分类，不传入规划器；规划器只收到观测存在性位，并独立维护本机几何；地图尚未收到或网格不匹配时图例明确显示 `Local unknown`。
 
 [当前原生 Gazebo/RViz 配色预览与图例](docs/validation/display-palette/README.md)。
 
@@ -146,6 +146,8 @@ python3 src/annual_swarm/scripts/audit_fusion_run.py /tmp/fused_video
 录像来源是实时 X11 捕获，后处理只做倍速及标题。RViz 的飞行轨迹来自 Gazebo 真值，地图显示 1.5 m 切片，拓扑与参考保留实际三维坐标。画面中的仿真时间与标题中的录屏倍速共同说明时间尺度。
 
 ## 任务轨迹质量及证据
+
+区域的实际完成状态与观测服务入口分别维护。完成的区域仍可提供观测相邻未知空间的入口；共享射线预测携带网格范围及时间，实际观测回执扣除已知目标，陈旧预测明确标为上界。入口用于任务/路线优化和必要通行补图，不能重写区域完成状态、私有自由格或实际覆盖。公共图中的 `observation_services` 与 `regions` 分别展示这两种语义。
 
 任务层记录未知空间工作量、区域访问顺序、协商前后代价、容量/负载、转交及实例恢复；路径层记录长度、净空、转弯、离散平滑度及联合观测运动代价；连续参考层记录真实多项式导数极值、时长和回退方法；执行层记录 Gazebo 真值与参考位置的 RMS/P95/最大误差、实际里程、偏航、高度变化、机间距离及接触。
 

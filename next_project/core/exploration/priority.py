@@ -130,6 +130,7 @@ class ExplorationPriority:
 
     def committed_cells(self, runtime, peers, now, arrival=None):
         from .team_evidence import intent_records, predicted_peer_completion
+        from .mrdtg import observation_grid
         cells = set()
         for peer in peers.values():
             for intent in intent_records(peer):
@@ -137,6 +138,9 @@ class ExplorationPriority:
                         not -.1 <= now-peer.get('time', -np.inf) < self.config.peer_fresh_s or
                         (arrival is not None and predicted_peer_completion(peer, intent, now) > arrival)):
                     continue
+                footprint=intent.get('expected_observation_cells')
+                if intent.get('observation_grid')==observation_grid(runtime) and isinstance(footprint,list) and len(footprint)<=2048:
+                    cells.update(c for c in footprint if type(c) is int and 0<=c<runtime.state.size)
                 if intent.get('path'):
                     cells.update(self.view(runtime, intent['path'][-1], intent.get('yaw', 0.)))
         return frozenset(cells)
@@ -242,6 +246,11 @@ class ExplorationPriority:
                 # for safe corridor transit, never a claimed local visible volume.
                 volume = volumes[rid]
                 gain = min(volume, self.config.remote_gain_cap)
+                record=getattr(costs,'regions',{}).get(rid,{})
+                if record.get('forecast_cells') is not None:
+                    footprint=set(record['forecast_cells'])-excluded_cells-self.committed_cells(runtime,peers or {},now,now+travel)
+                    if observed_mask is not None:footprint={c for c in footprint if not observed_mask[c]}
+                    gain=min(len(footprint)*unit,self.config.remote_gain_cap)
                 if peers:
                     from .team_evidence import intent_records, predicted_peer_completion
                     for peer in peers.values():
@@ -251,7 +260,9 @@ class ExplorationPriority:
                             gain=0.;break
                 value, penalty = self.utility(gain, volume, travel, wait, feedback, now)
                 best = dict(score=value, predicted_gain=gain, raw_gain=gain,
-                            component_volume=volume, components=[], repeat_factor=penalty)
+                            component_volume=volume, components=[], repeat_factor=penalty,
+                            service_role=record.get('service_role'),forecast_age_s=record.get('forecast_age_s'),
+                            forecast_scope_kind=record.get('forecast_scope_kind'))
                 source = 'remote_proxy'
             if best is None:
                 best = dict(score=0., predicted_gain=0., raw_gain=0., component_volume=0., components=[], repeat_factor=1.)
@@ -261,7 +272,7 @@ class ExplorationPriority:
                               deferred=feedback.get('defer_until', 0) > now)
             if peers and hasattr(costs, 'graph'):
                 from .team_evidence import expected_traffic_delay
-                route = costs.graph.route_to_region(rid)
+                route = costs.route_to_region(rid) if hasattr(costs,'route_to_region') else costs.graph.route_to_region(rid)
                 if route is None and runtime.safe_path([position, task.entry]): route = [position, task.entry]
                 delay = expected_traffic_delay(route, peers, now) if route is not None else 0.
                 scores[rid]['traffic_delay_s'] = delay

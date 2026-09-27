@@ -28,7 +28,7 @@ def main():
         'task_lifecycle':[(agent,"feedback = service_result(previous, t, gained, expected_team, self.fusion.priority.config)\n", "feedback = service_result(previous, t, gained, expected_team, self.fusion.priority.config)\n            feedback['defer_until']=t;feedback['low_yield_streak']=0\n")],
         'team_new_accounting':[(graph,"grid = observation_grid(runtime); blocks = self.coverage.get(grid, {})\n", "grid = observation_grid(runtime); blocks = {}\n        for source,value in self.replica.values():\n            if source==self.source and value['kind']=='observed_cells' and value['grid']==grid:\n                blocks[value['block']]=blocks.get(value['block'],0)|int(value['bits'],16)\n"),
             (agent,"gained = accounting['team_new_cells']","gained = accounting['local_new_cells']")],
-        'arrival_support_prediction':[(priority,'from .team_evidence import intent_records, predicted_peer_completion\n        cells = set()', 'from .team_evidence import intent_records, predicted_peer_completion\n        return frozenset()\n        cells = set()'),
+        'arrival_support_prediction':[(priority,'def committed_cells(self, runtime, peers, now, arrival=None):', 'def committed_cells(self, runtime, peers, now, arrival=None):\n        return frozenset()'),
             (priority,"if any(intent.get('region')==rid", "if False and any(intent.get('region')==rid")]
     }
     descriptions=dict(task_lifecycle='Disable low-yield retirement/reactivation penalties. Actual observed-union and collision checks remain.',

@@ -1,0 +1,1 @@
+{"driver_pid": 11972, "wall_unix": 1790531298.3430593, "reason": "Synthetic peer-known/private-unknown support test found lifecycle descriptor overwrites a still-needed neighbor-frontier entry. Let current paired trial finish; no source hot replacement. Unscheduled jobs remain pending."}

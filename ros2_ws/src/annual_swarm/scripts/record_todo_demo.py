@@ -2,6 +2,7 @@
 """Record exactly one baseline attempt, including incomplete/failed outcomes."""
 import argparse,hashlib,json,os,signal,subprocess,sys,tarfile,time,uuid,shutil,platform
 from pathlib import Path
+from experiment_processes import terminate_partition
 
 def main():
     p=argparse.ArgumentParser();p.add_argument("--seed",type=int,default=900);p.add_argument("--faults",choices=["none","recovery"],default="recovery");p.add_argument('--source-root',required=True);p.add_argument('--manifest',required=True);p.add_argument('--archive',required=True);p.add_argument('--output-dir',required=True);p.add_argument('--simulation-limit',type=float,default=2400.);p.add_argument('--wall-limit',type=float,default=14400.);p.add_argument('--speed',type=float,default=24.)
@@ -101,18 +102,9 @@ def main():
             try:observer.wait(timeout=15)
             except subprocess.TimeoutExpired:os.killpg(observer.pid,signal.SIGKILL);observer.wait()
         # Limit cleanup to the unique transport partition of this attempt.
-        marker=('GZ_PARTITION='+env['GZ_PARTITION']).encode()
-        owned=[]
-        for entry in Path('/proc').iterdir():
-            if not entry.name.isdigit():continue
-            try:
-                if marker in (entry/'environ').read_bytes().split(b'\0'):owned.append(int(entry.name))
-            except (FileNotFoundError,PermissionError,ProcessLookupError):pass
-        for sig in (signal.SIGTERM,signal.SIGKILL):
-            for pid in owned:
-                try:os.kill(pid,sig)
-                except ProcessLookupError:pass
-            time.sleep(.3)
+        cleanup=terminate_partition(env['GZ_PARTITION'])
+        (out/'process-cleanup.json').write_text(json.dumps(cleanup,indent=2)+'\n')
+        if cleanup['remaining']:raise RuntimeError('Owned experiment processes survived cleanup')
         for server in reversed(servers):server.terminate()
         log.close()
     final=out/'todo-exploration.mp4'

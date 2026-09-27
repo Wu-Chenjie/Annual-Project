@@ -1,0 +1,1479 @@
+{
+  "schema": "annual.todo-study-report/1",
+  "complete": false,
+  "attempts": [
+    {
+      "run": "main-no_fault-900-baseline",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "baseline",
+      "outcome": "COMPLETE",
+      "reason": null,
+      "t95_s": 461.999,
+      "tail_s": 27.001000000000033,
+      "planning_wait_fleet_s": 195.9090000000002,
+      "distance_m": 234.61926521103675,
+      "low_services": 48,
+      "zero_services": 17,
+      "low_duration_s": 254.921,
+      "coverage": 0.9511341719435389,
+      "safety_verified": true,
+      "contacts": 0,
+      "planning_p95_s": 7.491565222399004,
+      "moving_handoffs": 0,
+      "minimum_sampled_separation_m": 2.054155534171728,
+      "flight_safety_verified": true,
+      "low_duration_ratio": 0.2837616865342852
+    },
+    {
+      "run": "main-no_fault-900-combined",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "combined",
+      "outcome": "COMPLETE",
+      "reason": null,
+      "t95_s": 575.0,
+      "tail_s": 21.49899999999991,
+      "planning_wait_fleet_s": 445.95800000000054,
+      "distance_m": 319.28170016520073,
+      "low_services": 28,
+      "zero_services": 5,
+      "low_duration_s": 197.464,
+      "coverage": 0.9517998259058867,
+      "safety_verified": true,
+      "contacts": 0,
+      "planning_p95_s": 11.329964268799996,
+      "moving_handoffs": 11,
+      "minimum_sampled_separation_m": 1.6300346523303024,
+      "flight_safety_verified": true,
+      "low_duration_ratio": 0.22057816537106892
+    },
+    {
+      "run": "main-no_fault-900-continuous_handoff",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "continuous_handoff",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-900-task_route_objective",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "task_route_objective",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-900-incremental_cache",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "incremental_cache",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-900-task_lifecycle",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "task_lifecycle",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-900-team_new_accounting",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "team_new_accounting",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-900-arrival_support_prediction",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "arrival_support_prediction",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-baseline",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-combined",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-continuous_handoff",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "continuous_handoff",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-task_route_objective",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "task_route_objective",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-incremental_cache",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "incremental_cache",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-task_lifecycle",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "task_lifecycle",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-team_new_accounting",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "team_new_accounting",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-901-arrival_support_prediction",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "arrival_support_prediction",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-baseline",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-combined",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-continuous_handoff",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "continuous_handoff",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-task_route_objective",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "task_route_objective",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-incremental_cache",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "incremental_cache",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-task_lifecycle",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "task_lifecycle",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-team_new_accounting",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "team_new_accounting",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-902-arrival_support_prediction",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "arrival_support_prediction",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-baseline",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-combined",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-continuous_handoff",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "continuous_handoff",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-task_route_objective",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "task_route_objective",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-incremental_cache",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "incremental_cache",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-task_lifecycle",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "task_lifecycle",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-team_new_accounting",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "team_new_accounting",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-903-arrival_support_prediction",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "arrival_support_prediction",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-baseline",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-combined",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-continuous_handoff",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "continuous_handoff",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-task_route_objective",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "task_route_objective",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-incremental_cache",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "incremental_cache",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-task_lifecycle",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "task_lifecycle",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-team_new_accounting",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "team_new_accounting",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-no_fault-904-arrival_support_prediction",
+      "scene": "main",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "arrival_support_prediction",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-900-baseline",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 900,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-900-combined",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 900,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-901-baseline",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 901,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-901-combined",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 901,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-902-baseline",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 902,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-902-combined",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 902,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-903-baseline",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 903,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-903-combined",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 903,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-904-baseline",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 904,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "main-recovery-904-combined",
+      "scene": "main",
+      "group": "recovery",
+      "seed": 904,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-900-baseline",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-900-combined",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-901-baseline",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-901-combined",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-902-baseline",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-902-combined",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-903-baseline",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-903-combined",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-904-baseline",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_bottleneck-no_fault-904-combined",
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-900-baseline",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-900-combined",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-901-baseline",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-901-combined",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-902-baseline",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-902-combined",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-903-baseline",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-903-combined",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-904-baseline",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_remnants-no_fault-904-combined",
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-900-baseline",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-900-combined",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 900,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-901-baseline",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-901-combined",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 901,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-902-baseline",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-902-combined",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 902,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-903-baseline",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-903-combined",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 903,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-904-baseline",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "baseline",
+      "outcome": "PENDING",
+      "reason": null
+    },
+    {
+      "run": "search_todo_vertical-no_fault-904-combined",
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "seed": 904,
+      "variant": "combined",
+      "outcome": "PENDING",
+      "reason": null
+    }
+  ],
+  "aggregates": [
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "arrival_support_prediction",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "baseline",
+      "scheduled": 5,
+      "finished": 1,
+      "verified_successes": 1,
+      "success_rate_all_scheduled": 0.2,
+      "successful_only_medians": {
+        "t95_s": 461.999,
+        "tail_s": 27.001000000000033,
+        "planning_wait_fleet_s": 195.9090000000002,
+        "distance_m": 234.61926521103675,
+        "low_services": 48.0,
+        "zero_services": 17.0,
+        "low_duration_s": 254.921,
+        "low_duration_ratio": 0.2837616865342852,
+        "planning_p95_s": 7.491565222399004
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "combined",
+      "scheduled": 5,
+      "finished": 1,
+      "verified_successes": 1,
+      "success_rate_all_scheduled": 0.2,
+      "successful_only_medians": {
+        "t95_s": 575.0,
+        "tail_s": 21.49899999999991,
+        "planning_wait_fleet_s": 445.95800000000054,
+        "distance_m": 319.28170016520073,
+        "low_services": 28.0,
+        "zero_services": 5.0,
+        "low_duration_s": 197.464,
+        "low_duration_ratio": 0.22057816537106892,
+        "planning_p95_s": 11.329964268799996
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "continuous_handoff",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "incremental_cache",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "task_lifecycle",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "task_route_objective",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "variant": "team_new_accounting",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "recovery",
+      "variant": "baseline",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "main",
+      "group": "recovery",
+      "variant": "combined",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "variant": "baseline",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "variant": "combined",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "variant": "baseline",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "variant": "combined",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "variant": "baseline",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    },
+    {
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "variant": "combined",
+      "scheduled": 5,
+      "finished": 0,
+      "verified_successes": 0,
+      "success_rate_all_scheduled": 0.0,
+      "successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_s": null,
+        "low_duration_ratio": null,
+        "planning_p95_s": null
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "scene": "main",
+      "group": "no_fault",
+      "complete": false,
+      "gates": {
+        "success_rate": true,
+        "safety": false,
+        "t95": false,
+        "tail": true,
+        "planning_wait": false,
+        "distance": false,
+        "low_services": true,
+        "zero_services": true,
+        "low_duration_ratio": true,
+        "planning_p95": false
+      },
+      "passed": false,
+      "evidence_strength": {
+        "verified_pairs": 1,
+        "t95_improved_pairs": 0,
+        "median_difference_s": 113.00099999999998,
+        "paired_difference_range_s": [
+          113.00099999999998,
+          113.00099999999998
+        ]
+      },
+      "baseline_successful_only_medians": {
+        "t95_s": 461.999,
+        "tail_s": 27.001000000000033,
+        "planning_wait_fleet_s": 195.9090000000002,
+        "distance_m": 234.61926521103675,
+        "low_services": 48.0,
+        "zero_services": 17.0,
+        "low_duration_ratio": 0.2837616865342852
+      },
+      "combined_successful_only_medians": {
+        "t95_s": 575.0,
+        "tail_s": 21.49899999999991,
+        "planning_wait_fleet_s": 445.95800000000054,
+        "distance_m": 319.28170016520073,
+        "low_services": 28.0,
+        "zero_services": 5.0,
+        "low_duration_ratio": 0.22057816537106892
+      },
+      "paired_results": [
+        {
+          "seed": 900,
+          "baseline_outcome": "COMPLETE",
+          "combined_outcome": "COMPLETE",
+          "paired_verified_success": true,
+          "t95_difference_s": 113.00099999999998
+        },
+        {
+          "seed": 901,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 902,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 903,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 904,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        }
+      ]
+    },
+    {
+      "scene": "main",
+      "group": "recovery",
+      "complete": false,
+      "gates": {
+        "success_rate": true,
+        "safety": false,
+        "t95": null,
+        "tail": null,
+        "planning_wait": null,
+        "distance": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null,
+        "planning_p95": false
+      },
+      "passed": false,
+      "evidence_strength": {
+        "verified_pairs": 0,
+        "t95_improved_pairs": 0,
+        "median_difference_s": null,
+        "paired_difference_range_s": null
+      },
+      "baseline_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "combined_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "paired_results": [
+        {
+          "seed": 900,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 901,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 902,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 903,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 904,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        }
+      ]
+    },
+    {
+      "scene": "search_todo_bottleneck",
+      "group": "no_fault",
+      "complete": false,
+      "gates": {
+        "success_rate": true,
+        "safety": false,
+        "t95": null,
+        "tail": null,
+        "planning_wait": null,
+        "distance": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null,
+        "planning_p95": false
+      },
+      "passed": false,
+      "evidence_strength": {
+        "verified_pairs": 0,
+        "t95_improved_pairs": 0,
+        "median_difference_s": null,
+        "paired_difference_range_s": null
+      },
+      "baseline_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "combined_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "paired_results": [
+        {
+          "seed": 900,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 901,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 902,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 903,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 904,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        }
+      ]
+    },
+    {
+      "scene": "search_todo_remnants",
+      "group": "no_fault",
+      "complete": false,
+      "gates": {
+        "success_rate": true,
+        "safety": false,
+        "t95": null,
+        "tail": null,
+        "planning_wait": null,
+        "distance": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null,
+        "planning_p95": false
+      },
+      "passed": false,
+      "evidence_strength": {
+        "verified_pairs": 0,
+        "t95_improved_pairs": 0,
+        "median_difference_s": null,
+        "paired_difference_range_s": null
+      },
+      "baseline_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "combined_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "paired_results": [
+        {
+          "seed": 900,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 901,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 902,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 903,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 904,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        }
+      ]
+    },
+    {
+      "scene": "search_todo_vertical",
+      "group": "no_fault",
+      "complete": false,
+      "gates": {
+        "success_rate": true,
+        "safety": false,
+        "t95": null,
+        "tail": null,
+        "planning_wait": null,
+        "distance": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null,
+        "planning_p95": false
+      },
+      "passed": false,
+      "evidence_strength": {
+        "verified_pairs": 0,
+        "t95_improved_pairs": 0,
+        "median_difference_s": null,
+        "paired_difference_range_s": null
+      },
+      "baseline_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "combined_successful_only_medians": {
+        "t95_s": null,
+        "tail_s": null,
+        "planning_wait_fleet_s": null,
+        "distance_m": null,
+        "low_services": null,
+        "zero_services": null,
+        "low_duration_ratio": null
+      },
+      "paired_results": [
+        {
+          "seed": 900,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 901,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 902,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 903,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        },
+        {
+          "seed": 904,
+          "baseline_outcome": "PENDING",
+          "combined_outcome": "PENDING",
+          "paired_verified_success": false,
+          "t95_difference_s": null
+        }
+      ]
+    }
+  ],
+  "note": "All scheduled attempts remain visible. PENDING is unfinished, never success. Latency medians use verified successes and are explicitly successful-only; failed or censored runs have no invented T95. Development attempts are excluded by protocol."
+}

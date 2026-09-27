@@ -21,6 +21,7 @@ from core.exploration.sparse_graph import SparseTopology
 from core.exploration.fusion import FusionPlanner, reusable_trajectory, compute_worker
 from core.exploration.priority import PriorityConfig, service_cells, service_result
 from core.exploration.team_evidence import known_mask, service_accounting, regional_evidence, team_new_cells, intent_records
+from core.exploration.mrdtg import observation_grid
 from core.exploration.planning_budget import PlanningRequest, abort_worker
 from core.exploration.pairwise import PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory, ContinuousTrajectory
@@ -685,6 +686,8 @@ class ExplorationAgent(Node):
             path=curve.path(.15).tolist(), yaw=selection['yaw'], duration=curve.duration, trajectory=curve.to_dict(),
             purpose=selection.get('purpose', 'explore'), handoff=boundary, contingency=False,
             voters=[i for i in self.ledger.members if i != self.id])
+        self.pending_intent.update(observation_grid=observation_grid(runtime),
+            expected_observation_cells=sorted(visible_cells(runtime,curve.path()[-1],selection['yaw'])))
         self.pending_selection = selection; self.preplanned = None
         self.event('handoff_proposed', token=self.pending_intent['token'], old_token=self.intent['token'],
                    region=rid, boundary=boundary, request_id=pending['request_id'])
@@ -754,7 +757,9 @@ class ExplorationAgent(Node):
                            committed=False, path=trajectory.path(.15).tolist(), yaw=selection['yaw'], trajectory=trajectory.to_dict(),
                            bounds=self.tasks[rid].bounds if rid in self.tasks else None,
                            contingency=not self.ledger.fresh(self.now()),
-                           voters=[i for i, p in self.ledger.states.items() if -.1 <= self.now()-p['time'] < 3.])
+                           voters=[i for i, p in self.ledger.states.items() if -.1 <= self.now()-p['time'] < 3.],
+                           observation_grid=observation_grid(runtime),
+                           expected_observation_cells=sorted(visible_cells(runtime,trajectory.path()[-1],selection['yaw'])))
         self.event('path_proposed', token=self.intent['token'], region=rid,
                    tour=self.tour, workload=self.workload, objective=selection['objective'],
                    trajectory_method=trajectory.method, trajectory_limits=trajectory.limits(),

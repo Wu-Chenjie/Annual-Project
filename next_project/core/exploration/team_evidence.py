@@ -85,10 +85,10 @@ def intent_records(peer):
 
 def predicted_peer_completion(peer, intent, now):
     execution = peer.get('execution', {})
-    if execution.get('token') == intent.get('token'):
+    if execution.get('token') is not None and execution.get('token') == intent.get('token'):
         return now+max(0., execution.get('trajectory_duration', 0.)-execution.get('trajectory_time', 0.))+.65
     boundary = intent.get('handoff') or {}
-    if execution.get('token') == boundary.get('from_token') and boundary:
+    if execution.get('token') is not None and execution.get('token') == boundary.get('from_token') and boundary:
         return now+max(0., boundary['trajectory_time']-execution.get('trajectory_time', 0.))+intent.get('duration',0.)+.65
     return max(now, intent.get('committed_at', intent.get('created', now))+intent.get('duration', 0.)+.65)
 

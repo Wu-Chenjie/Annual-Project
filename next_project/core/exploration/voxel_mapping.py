@@ -102,6 +102,19 @@ class VoxelMap:
         delta = np.maximum(np.abs(np.asarray(p)-self.obstacle_centers[ids])-self.resolution/2, 0.)
         return float(np.min(np.linalg.norm(delta*self.metric, axis=1)))
 
+    def signed_distances(self, points):
+        """Batch the scalar obstacle-box distance; retain the same 16 neighbors."""
+        p=np.asarray(points,float).reshape(-1,3);idx=self.indices(p)
+        valid=np.all((idx>=0)&(idx<self.shape),axis=1)
+        result=np.full(len(p),-1.)
+        if valid.any():
+            k=min(16,len(self.obstacle_centers))
+            _,ids=self.obstacle_tree.query(p[valid]*self.metric,k=k)
+            if k==1:ids=ids[:,None]
+            delta=np.maximum(np.abs(p[valid,None]-self.obstacle_centers[ids])-self.resolution/2,0.)
+            result[valid]=np.min(np.linalg.norm(delta*self.metric,axis=2),axis=1)
+        return result
+
     def safe_path(self, path):
         p = np.asarray(path, float)
         if p.ndim != 2 or p.shape[1] != 3 or len(p) == 0 or not np.isfinite(p).all():

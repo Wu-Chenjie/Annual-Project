@@ -9,6 +9,7 @@ import signal
 import subprocess
 import time
 import uuid
+from experiment_processes import terminate_partition
 
 
 def main():
@@ -92,16 +93,9 @@ def main():
                 try: process.wait(timeout=15.)
                 except subprocess.TimeoutExpired:
                     os.killpg(process.pid, signal.SIGKILL); process.wait()
-        marker = ('GZ_PARTITION='+env['GZ_PARTITION']).encode()
-        owned = []
-        for entry in Path('/proc').iterdir():
-            if not entry.name.isdigit(): continue
-            try:
-                if marker in (entry/'environ').read_bytes().split(b'\0'): owned.append(int(entry.name))
-            except (OSError, PermissionError): pass
-        for pid in owned:
-            try: os.kill(pid, signal.SIGTERM)
-            except ProcessLookupError: pass
+        cleanup=terminate_partition(env['GZ_PARTITION'])
+        (output/'process-cleanup.json').write_text(json.dumps(cleanup,indent=2)+'\n')
+        if cleanup['remaining']:raise RuntimeError('Owned experiment processes survived cleanup')
         log.close()
     print(json.dumps(result), flush=True)
 

@@ -148,6 +148,12 @@ class DeltaGraph:
                 if 'forecast_gain_cells' in value:
                     if not isinstance(value['forecast_gain_cells'],int) or value['forecast_gain_cells']<0 or not np.isfinite([value.get('forecast_stamp',0.),value.get('forecast_yaw',0.)]).all():
                         raise ValueError('Invalid regional forecast')
+                if 'forecast_cells' in value:
+                    shape=value.get('forecast_grid_shape');cells=value['forecast_cells']
+                    if (not isinstance(shape,list) or len(shape) not in (2,3) or
+                        any(type(n) is not int or n<=0 for n in shape) or not isinstance(cells,list) or
+                        len(cells)>2048 or any(type(c) is not int or not 0<=c<math.prod(shape) for c in cells) or len(set(cells))!=len(cells)):
+                        raise ValueError('Invalid regional forecast footprint')
         self.remote[src] = target; self.received[src] = seq; self.sessions[src] = session
         self.needs_snapshot.discard(src); self.applied += 1
         return True
@@ -177,6 +183,7 @@ class MultiRobotGraph:
         self.coverage = {}; self.coverage_cache = None
         self.handshake_cache = {}
         self.grid_id = None
+        self.service_anchors = {}
 
     def record_observation(self, runtime):
         """Actual locally sensed cells, in 256-bit receipts; no occupancy values.
@@ -217,7 +224,7 @@ class MultiRobotGraph:
         return self.coverage_cache[1]
 
     def rebuild(self):
-        nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}; coverage = {}
+        nodes = {}; edge_records = {}; regions = {}; stamps = {}; blocked = set(); services = {}; coverage = {}; anchors = {}
         expected_grid = self.grid_id or (observation_grid(self.runtime) if self.runtime is not None else None)
         for source, v in self.replica.values():
             if v['kind'] == 'history':
@@ -232,6 +239,8 @@ class MultiRobotGraph:
                 if expected_grid is not None and v.get('grid') not in (None,expected_grid):
                     continue
                 rid = int(v['id'])
+                if v.get('status')=='activeR' and v.get('viewpoints') and 'node' in v and v.get('forecast_gain_cells',0)>0:
+                    anchors.setdefault(rid,[]).append(dict(v,forecast_source=source))
                 # Unknown volume only decreases. A less-informed peer cannot
                 # reopen a completed/split region by publishing a later stamp.
                 # Modern reports carry an actual-evidence revision; a fresh
@@ -260,6 +269,41 @@ class MultiRobotGraph:
                 self.adj[edge['u']].append((edge['v'], edge['length'], index, False))
                 self.adj[edge['v']].append((edge['u'], edge['length'], index, True))
         self.regions = regions; self.region_stamps = stamps; self.services = services; self.coverage = coverage
+        self.service_anchors = anchors
+
+    def planning_regions(self,runtime,now,observed_mask,local_ids=()):
+        """Actual region completion and observation-service entrances are separate.
+
+        A completed leaf can host a view of its unfinished neighbor. Retaining
+        that entrance never reopens collision geometry or changes its lifecycle.
+        Scoped old forecasts are uncertain bounds, not permanent observations;
+        real receipts remove them when their target cells are actually known.
+        """
+        records=dict(self.regions);local_ids=set(local_ids)
+        for rid in local_ids:
+            own=self.replica.records.get(f'r:{rid}',{})
+            if own.get('status')=='activeR' and 'node' in own:records[rid]=own
+        for rid,choices in self.service_anchors.items():
+            if rid in local_ids or records.get(rid,{}).get('status')=='splitR':continue
+            eligible=[]
+            for record in choices:
+                if record['node'] not in self.nodes:continue
+                age=now-record.get('forecast_stamp',-np.inf)
+                if age<-.1:continue
+                cells=record.get('forecast_cells')
+                if cells is not None:
+                    if tuple(record.get('forecast_grid_shape',()))!=tuple(runtime.shape):continue
+                    remaining=sum(not observed_mask[c] for c in cells)
+                    if not remaining:continue
+                else:
+                    if age>=12.:continue
+                    remaining=record['forecast_gain_cells']
+                eligible.append(dict(record,forecast_remaining_cells=remaining,forecast_age_s=age,
+                    forecast_scope_kind='fresh_ray_footprint' if age<12. else 'stale_footprint_bound',
+                    service_role='neighbor_observation_entry'))
+            if eligible:
+                records[rid]=max(eligible,key=lambda r:(r['forecast_remaining_cells'],-r['forecast_age_s'],-r['forecast_source']))
+        return records
 
     def update(self, runtime, position, hierarchy, now):
         self.runtime = runtime; self.free_cells = int(runtime.safe.sum()); self.version = runtime.version
@@ -354,7 +398,7 @@ class MultiRobotGraph:
                               entry=task.viewpoints[j].tolist())
             old = self.replica.records.get(f'r:{rid}')
             if old:
-                for key in ('forecast_gain_cells','forecast_stamp','forecast_kind','forecast_yaw'):
+                for key in ('forecast_gain_cells','forecast_stamp','forecast_kind','forecast_yaw','forecast_cells','forecast_grid_shape'):
                     if key in old: record[key]=old[key]
             if old and {k: v for k, v in old.items() if k != 'stamp'} == record:
                 continue
@@ -401,8 +445,8 @@ class MultiRobotGraph:
                     heapq.heappush(queue, (new, v))
         return costs, parents, roots
 
-    def route_to_region(self, rid, attachments=None):
-        task = self.regions.get(rid)
+    def route_to_region(self, rid, attachments=None,regions=None):
+        task = (self.regions if regions is None else regions).get(rid)
         if not task or task.get('node') not in self.nodes:
             return None
         attachments = self.attachments if attachments is None else attachments
@@ -419,10 +463,11 @@ class MultiRobotGraph:
     def snapshot(self):
         return dict(version=self.version, free_cells=self.free_cells, type='MR-DTG',
                     nodes=[dict(id=n, position=p.tolist()) for n, p in sorted(self.nodes.items())],
-                    edges=self.edges, regions=list(self.regions.values()), handshakes=self.handshakes)
+                    edges=self.edges, regions=list(self.regions.values()),
+                    observation_services=getattr(self,'observation_services',[]),handshakes=self.handshakes)
 
 
-def graph_voronoi(graph, connections, available, local_radius=6.):
+def graph_voronoi(graph, connections, available, local_radius=6.,regions=None):
     """Two graph Voronoi partitions. Costs include actual traversable edges."""
     costs = {i: graph.search(c)[0] for i, c in connections.items() if i in available}
     global_owner = {}
@@ -431,7 +476,7 @@ def graph_voronoi(graph, connections, available, local_radius=6.):
         if options and np.isfinite(min(options)[0]):
             global_owner[node] = min(options)[1]
     owners = {}; tiers = {}; region_costs = {}
-    for rid, task in graph.regions.items():
+    for rid, task in (graph.regions if regions is None else regions).items():
         if task.get('status') != 'activeR' or 'node' not in task:
             continue
         values = {i: d.get(task['node'], np.inf)+task['length'] for i, d in costs.items()}

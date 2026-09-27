@@ -56,6 +56,22 @@ class ContinuousTrajectory:
         rate = float(np.polynomial.polynomial.polyval(z, np.polynomial.polynomial.polyder(self.yaw_coefficients)))/self.duration
         return p, v, a, yaw, rate
 
+    def sample_many(self, times):
+        """Evaluate the same piecewise polynomial at a batch of times."""
+        t=np.clip(np.asarray(times,float).reshape(-1),0.,self.duration)
+        segments=np.minimum(len(self.durations)-1,np.searchsorted(self.knots,t,side='right')-1)
+        durations=self.durations[segments];u=(t-self.knots[segments])/durations
+        values=[]
+        for order in range(3):
+            coefficients=np.stack([derivative(c,order) for c in self.coefficients])[segments]
+            value=np.zeros((len(t),3))
+            for coefficient in np.moveaxis(coefficients[:,::-1],1,0):value=value*u[:,None]+coefficient
+            values.append(value/durations[:,None]**order)
+        z=t/self.duration
+        heading=np.polynomial.polynomial.polyval(z,self.yaw_coefficients)
+        rate=np.polynomial.polynomial.polyval(z,np.polynomial.polynomial.polyder(self.yaw_coefficients))/self.duration
+        return (*values,heading,rate)
+
     def limits(self):
         return {name: max(maximum_norm(derivative(c, k))/T**k for c, T in zip(self.coefficients, self.durations))
                 for k, name in [(1, 'speed'), (2, 'acceleration'), (3, 'jerk')]}
@@ -77,7 +93,7 @@ class ContinuousTrajectory:
         return maximum_norm(np.polynomial.polynomial.polyder(self.yaw_coefficients)[:, None])/self.duration
 
     def path(self, dt=.08):
-        return np.array([self.sample(t)[0] for t in np.linspace(0, self.duration, max(2, int(np.ceil(self.duration/dt))+1))])
+        return self.sample_many(np.linspace(0,self.duration,max(2,int(np.ceil(self.duration/dt))+1)))[0]
 
     def to_dict(self):
         return dict(schema='annual.trajectory/1', durations=self.durations.tolist(), coefficients=self.coefficients.tolist(),
@@ -145,10 +161,12 @@ def optimize_trajectory(path, runtime, yaw, target_yaw, speed_limit=.6, accelera
         check_budget()
         trajectory = interpolate(points, np.exp(log_times), yaw, delta, **boundary)
         times = np.linspace(0., trajectory.duration, 40)
-        samples = [trajectory.sample(t) for t in times]
-        speed = max(np.linalg.norm(s[1]) for s in samples)
-        accel = max(np.linalg.norm(s[2]) for s in samples)
-        collision = sum(max(0., runtime.clearance-runtime.signed_distance(s[0]))**2 for s in samples)
+        positions,velocities,accelerations,_,_=trajectory.sample_many(times)
+        speed = float(np.linalg.norm(velocities,axis=1).max())
+        accel = float(np.linalg.norm(accelerations,axis=1).max())
+        distances=(runtime.signed_distances(positions) if hasattr(runtime,'signed_distances') else
+                   np.array([runtime.signed_distance(p) for p in positions]))
+        collision = float(np.maximum(0.,runtime.clearance-distances).dot(np.maximum(0.,runtime.clearance-distances)))
         return trajectory.duration+.035*trajectory.jerk_cost()+3000*(max(speed-.6, 0)**2+max(accel-.8, 0)**2+collision)
     optimized = minimize(objective, np.log(initial), method='L-BFGS-B',
                          bounds=[(np.log(max(.4, d/.7)), np.log(max(3., d/.15))) for d in distances],

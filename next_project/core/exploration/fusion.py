@@ -70,9 +70,12 @@ def reusable_trajectory(selection, runtime, position, yaw):
 
 
 class GraphCosts:
-    def __init__(self, graph, sparse, tasks, position):
+    def __init__(self, graph, sparse, tasks, position,regions=None):
         self.graph = graph; self.sparse = sparse; self.tasks = tasks; self.position = position
         self.cache = {}; self.searches = {}; self.attachments = {}
+        self.regions=getattr(graph,'regions',{}) if regions is None else regions
+
+    def route_to_region(self,rid):return self.graph.route_to_region(rid,regions=self.regions)
 
     def attachment(self, point):
         key = tuple(np.round(point, 4))
@@ -85,7 +88,7 @@ class GraphCosts:
             return {n: c[0] for n, c in self.graph.attachments.items()}
         for rid, task in self.tasks.items():
             if np.linalg.norm(point-task.entry) < 1e-5:
-                r = self.graph.regions.get(rid, {})
+                r = self.regions.get(rid, {})
                 if 'node' in r:
                     return {r['node']: r['length']}
         return {n: p[0] for n, p in self.graph.connect(point).items()}
@@ -138,6 +141,8 @@ class FusionPlanner:
         stage('hierarchy')
         self.graph.update(runtime, position, self.hierarchy, now)
         stage('topology')
+        planning_regions=self.graph.planning_regions(runtime,now,observed_mask,local_tasks)
+        self.graph.observation_services=[r for r in planning_regions.values() if r.get('service_role')]
         connections = {self.drone: {n: value[0] for n, value in self.graph.attachments.items()}}
         available = {self.drone} if can_move else set()
         for i, peer in peers.items():
@@ -145,7 +150,7 @@ class FusionPlanner:
             if peer.get('available') and now-peer['time'] < 3.:
                 available.add(i)
         self.connections = connections[self.drone]
-        owners, global_owners, tiers, region_costs = graph_voronoi(self.graph, connections, available)
+        owners, global_owners, tiers, region_costs = graph_voronoi(self.graph, connections, available,regions=planning_regions)
         self.partition = dict(owners); self.global_partition = global_owners; self.tiers = tiers
         # Committed pair decisions refine (rather than replace) the graph partition.
         for rid, owner in overrides.items():
@@ -157,10 +162,10 @@ class FusionPlanner:
             record = self.graph.regions.get(rid, {})
             if record.get('status') == 'splitR':
                 del tasks[rid]
-        for rid, record in self.graph.regions.items():
+        for rid, record in planning_regions.items():
             if rid not in tasks and record.get('status') == 'activeR' and record.get('viewpoints'):
                 evidence = regional_evidence(runtime, record['bounds'], observed_mask)
-                forecast = record.get('forecast_gain_cells',0) if now-record.get('forecast_stamp',-np.inf) < 12. else 0
+                forecast = record.get('forecast_remaining_cells',record.get('forecast_gain_cells',0) if now-record.get('forecast_stamp',-np.inf) < 12. else 0)
                 if not evidence['team_unknown'] and not forecast:
                     continue
                 tasks[rid] = ExplorationRegion(rid, record['bounds'], evidence['team_unknown'],
@@ -175,7 +180,7 @@ class FusionPlanner:
         self.tasks = tasks; self.ownership = owners
         router = VoxelRouter if runtime.state.ndim == 3 else SparseTopology
         sparse = self.graph.local_router if runtime.state.ndim == 3 else router(runtime)
-        costs = GraphCosts(self.graph, sparse, tasks, position)
+        costs = GraphCosts(self.graph, sparse, tasks, position,planning_regions)
         view_attachments = None; excluded_cells = frozenset()
         if anticipated_view is not None:
             # History nodes still originate at the actual observed position.
@@ -192,10 +197,13 @@ class FusionPlanner:
             row['deferred'] |= cooldown.get(rid, 0) > now
             row['committed_by_peer'] = rid in pinned and pinned[rid] != self.drone
             record = self.graph.replica.records.get(f'r:{rid}')
-            if rid in local_tasks and record and record.get('status')=='activeR':
-                updated = dict(record, forecast_gain_cells=int(row['predicted_gain']/runtime.resolution**runtime.state.ndim),
-                               forecast_stamp=now, forecast_kind='private_ray_estimate', forecast_yaw=row.get('preview_yaw',0.))
-                if updated['forecast_gain_cells']!=record.get('forecast_gain_cells') or now-record.get('forecast_stamp',-np.inf)>=3.:
+            if (rid in local_tasks and record and record.get('status')=='activeR' and
+                    'entry' in record and 'node' in record and row['gain_source']=='local_rays'):
+                heading=row.get('preview_yaw',0.)
+                footprint={c for c in self.priority.view(runtime,np.array(record['entry']),heading,coarse=True) if not observed_mask[c]}
+                updated = dict(record, forecast_gain_cells=len(footprint),forecast_cells=sorted(footprint),forecast_grid_shape=list(map(int,runtime.shape)),
+                               forecast_stamp=now, forecast_kind='private_ray_estimate', forecast_yaw=heading)
+                if updated['forecast_cells']!=record.get('forecast_cells') or now-record.get('forecast_stamp',-np.inf)>=3.:
                     self.graph.replica.put(f'r:{rid}', updated)
         self.priority_layer = self.priority.snapshot(runtime, now, owners, self.drone)
         stage('priority')
@@ -282,7 +290,7 @@ class FusionPlanner:
                                              next_goal=next_goal, excluded_cells=excluded_cells,
                                              observed_mask=observed_mask, history_weight=0.)
                 else:
-                    path = self.graph.route_to_region(rid, view_attachments)
+                    path = self.graph.route_to_region(rid, view_attachments,planning_regions)
                     if path is not None:
                         # Advance only the locally observed prefix of a remote
                         # corridor; new sensor frames validate the next prefix.
@@ -298,7 +306,7 @@ class FusionPlanner:
                         route = np.array(points)
                         if length(route) > .4:
                             delta = path[-1]-route[-1]; heading = float(np.arctan2(delta[1], delta[0]))
-                            if np.linalg.norm(delta)<.25: heading = self.graph.regions[rid].get('forecast_yaw',heading)
+                            if np.linalg.norm(delta)<.25: heading = planning_regions[rid].get('forecast_yaw',heading)
                             pool = RankedPathPool(); pool.rank([Candidate(f'{rid}:{epoch}:mrdtg', 'mrdtg_transit', 0, route,
                                 PathQualityEvaluator().evaluate(route, local), runtime.version)])
                             selection = dict(pool=pool, yaw=heading, gain=len(visible_cells(local, route[-1], heading))*runtime.resolution**runtime.state.ndim,
@@ -354,6 +362,7 @@ class FusionPlanner:
             team_observed_cells=int(observed_mask.sum()), priority_compute=self.priority.diagnostics,
             route_objective='travel_plus_information_latency',
             route_window_regions=len(owned), all_owned_regions=owned_count,
+            observation_service_entries=len(self.graph.observation_services),
             selected_priority=priorities.get(selected))
         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
                     selection=selection, selected=selected, rejected=rejected, offer=offer,

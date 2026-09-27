@@ -28,6 +28,8 @@ def summarize(root):
                         low_duration_s=a['exploration_low_yield_duration_s'],coverage=a['coverage'],safety_verified=v['passed'],
                         contacts=a['contacts'],planning_p95_s=(a['planning_all_measured_requests_wall_s'] or {}).get('p95'),
                         moving_handoffs=a['moving_handoffs'],minimum_sampled_separation_m=s['min_separation_m'])
+                    row['flight_safety_verified']=all(value for key,value in v['gates'].items() if key!='final_map_matches')
+                    row['low_duration_ratio']=a['exploration_low_yield_duration_s']/a['exploration_total_duration_s'] if a.get('exploration_total_duration_s',0)>0 else None
                     if s['status']!='COMPLETE':row['t95_s']=None
             except Exception as exc:row['audit_error']=repr(exc)
             rows.append(row)
@@ -47,19 +49,21 @@ def summarize(root):
             aggregates.append(dict(scene=scene,group=group,variant=variant,scheduled=len(r),
                 finished=sum(row['outcome']!='PENDING' for row in r),verified_successes=sum(successful(row) for row in r),
                 success_rate_all_scheduled=sum(successful(row) for row in r)/len(r),
-                successful_only_medians={k:median(r,k) for k in ('t95_s','tail_s','planning_wait_fleet_s','distance_m','low_services','zero_services','low_duration_s','planning_p95_s')}))
+                successful_only_medians={k:median(r,k) for k in ('t95_s','tail_s','planning_wait_fleet_s','distance_m','low_services','zero_services','low_duration_s','low_duration_ratio','planning_p95_s')}))
         b=[r for r in selected if r['variant']=='baseline'];c=[r for r in selected if r['variant']=='combined']
-        bm={k:median(b,k) for k in ('t95_s','tail_s','planning_wait_fleet_s','distance_m','low_services')};cm={k:median(c,k) for k in bm}
+        bm={k:median(b,k) for k in ('t95_s','tail_s','planning_wait_fleet_s','distance_m','low_services','zero_services','low_duration_ratio')};cm={k:median(c,k) for k in bm}
         ready=all(r['outcome']!='PENDING' and 'audit_error' not in r for r in b+c)
         def reduce(key,fraction):
             return None if bm[key] is None or cm[key] is None or bm[key]<=0 else cm[key]<=bm[key]*(1-fraction)
         gates=dict(success_rate=sum(successful(r) for r in c)>=sum(successful(r) for r in b),
-            safety=all(r.get('safety_verified',False) for r in c if r['outcome']=='COMPLETE'),
+            safety=all(r.get('flight_safety_verified',False) for r in c),
             t95=None if bm['t95_s'] is None or cm['t95_s'] is None else cm['t95_s']<bm['t95_s'],
             tail=reduce('tail_s',protocol['gates']['tail_median_reduction_min']),
             planning_wait=reduce('planning_wait_fleet_s',protocol['gates']['planning_wait_median_reduction_min']),
             distance=None if bm['distance_m'] is None or cm['distance_m'] is None else cm['distance_m']<=bm['distance_m']*(1+protocol['gates']['distance_median_increase_max']),
             low_services=None if bm['low_services'] is None or cm['low_services'] is None else cm['low_services']<bm['low_services'],
+            zero_services=None if bm['zero_services'] is None or cm['zero_services'] is None else cm['zero_services']<bm['zero_services'],
+            low_duration_ratio=None if bm['low_duration_ratio'] is None or cm['low_duration_ratio'] is None else cm['low_duration_ratio']<bm['low_duration_ratio'],
             planning_p95=all(r.get('planning_p95_s') is not None and r['planning_p95_s']<=protocol['gates']['planning_wall_p95_deadline_s'] for r in c))
         pairs=[]
         for seed in protocol['seeds']:
@@ -67,7 +71,11 @@ def summarize(root):
             pairs.append(dict(seed=seed,baseline_outcome=left['outcome'],combined_outcome=right['outcome'],
                 paired_verified_success=successful(left) and successful(right),
                 t95_difference_s=right['t95_s']-left['t95_s'] if successful(left) and successful(right) else None))
-        comparisons.append(dict(scene=scene,group=group,complete=ready,gates=gates,passed=ready and all(v is True for v in gates.values()),
+        differences=[row['t95_difference_s'] for row in pairs if row['paired_verified_success']]
+        evidence_strength=dict(verified_pairs=len(differences),t95_improved_pairs=sum(d<0 for d in differences),
+            median_difference_s=float(np.median(differences)) if differences else None,
+            paired_difference_range_s=[min(differences),max(differences)] if differences else None)
+        comparisons.append(dict(scene=scene,group=group,complete=ready,gates=gates,passed=ready and all(v is True for v in gates.values()),evidence_strength=evidence_strength,
             baseline_successful_only_medians=bm,combined_successful_only_medians=cm,paired_results=pairs))
     report=dict(schema='annual.todo-study-report/1',complete=all(r['outcome']!='PENDING' for r in rows),
         attempts=rows,aggregates=aggregates,comparisons=comparisons,

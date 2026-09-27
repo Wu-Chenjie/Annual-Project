@@ -124,6 +124,8 @@ def audit(directory):
         exploration_low_team_yield=sum(w['low_team_yield'] for w in windows if w['purpose']=='explore'),
         exploration_zero_team_yield=sum(w['zero_team_yield'] for w in windows if w['purpose']=='explore'),
         exploration_low_yield_duration_s=sum(w['duration_s'] for w in windows if w['purpose']=='explore' and w['low_team_yield']),
+        exploration_total_duration_s=sum(w['duration_s'] for w in windows if w['purpose']=='explore'),
+        exploration_total_distance_m=sum(w['distance_m'] for w in windows if w['purpose']=='explore'),
         exploration_low_yield_distance_m=sum(w['distance_m'] for w in windows if w['purpose']=='explore' and w['low_team_yield']),
         purpose_counts={p:sum(w['purpose']==p for w in windows) for p in ('explore','transit_reobserve','safety_recovery')},
         residence_s=residence, close_radius_m=2., close_pair_duration_s=close,
