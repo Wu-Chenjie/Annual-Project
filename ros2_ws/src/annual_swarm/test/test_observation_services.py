@@ -11,6 +11,21 @@ from core.exploration.fusion import FusionPlanner
 from core.exploration.mrdtg import DeltaGraph, observation_grid
 from core.exploration.priority import ExplorationPriority
 from core.exploration.voxel_mapping import VoxelMap
+from core.exploration.voxel_mapping import VoxelRouter
+from core.exploration.hierarchy import AdaptiveRegions,ExplorationRegion
+from core.exploration.regions import ObservationPlanner,visible_cells
+
+
+def test_one_observable_voxel_is_not_permanently_discarded_as_too_small():
+    m=VoxelMap([[0,0,0],[12,12,4]]);m.state[:]=0;m.state[20,20,6]=-1;m.rebuild()
+    point=np.array([4.65,6.15,1.65]);start=np.array([3.15,6.15,1.65])
+    assert len(visible_cells(m,point,0.))==1
+    hierarchy=AdaptiveRegions(m.bounds);assert hierarchy.update(m)
+    task=ExplorationRegion(1,m.bounds.tolist(),1,[point],point,0,-1,'activeR')
+    selection=ObservationPlanner().plan(m,VoxelRouter(m),start,0.,task,1,history_weight=0.)
+    assert selection and selection['gain']==pytest.approx(m.resolution**3)
+    assert m.safe_path(selection['pool'].active.path)
+    assert not hierarchy.update(m,observed_mask=np.ones(m.state.size,bool))
 
 
 def support_case():

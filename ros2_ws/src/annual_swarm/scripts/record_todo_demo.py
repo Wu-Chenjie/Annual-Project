@@ -13,6 +13,10 @@ def main():
     if mismatches:raise RuntimeError('Frozen source mismatch: '+str(mismatches))
     shutil.copy2(args.manifest,out/'source-manifest.json');shutil.copy2(args.archive,out/'recorded-source.tar.gz')
     shutil.copy2(__file__,out/'record-run.py')
+    harness_files={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+                   for name in ('record_todo_demo.py','experiment_processes.py','snapshot_map.py','record_observation_evidence.py')}
+    (out/'recorder-manifest.json').write_text(json.dumps(harness_files,indent=2)+'\n')
+    for name in ('experiment_processes.py','snapshot_map.py','record_observation_evidence.py'):shutil.copy2(Path(__file__).with_name(name),out/name)
     (out/'environment.json').write_text(json.dumps(dict(platform=platform.platform(),python=platform.python_version(),cpu_count=os.cpu_count(),ros_distro=os.environ.get('ROS_DISTRO'),colima_profile='annual-fusion',cpu_assignment=6,memory_assignment_gib=8,frozen_source_root=str(root)),indent=2))
     env=dict(os.environ,OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1',LP_NUM_THREADS='2',DISPLAY=':97',LIBGL_ALWAYS_SOFTWARE='1',QT_X11_NO_MITSHM='1',PYTHONDONTWRITEBYTECODE='1',
         ANNUAL_EXPERIMENT_SEED=str(args.seed),GZ_PARTITION='annual_todo_video_'+uuid.uuid4().hex,ROS_DOMAIN_ID=str(20+int(uuid.uuid4().hex[:4],16)%180))
@@ -30,7 +34,7 @@ def main():
     start=time.monotonic()
     try:
         recorder=subprocess.Popen(['ffmpeg','-y','-loglevel','warning','-f','x11grab','-framerate','10','-video_size','1920x1080','-i',env['DISPLAY'],'-c:v','libx264','-preset','ultrafast','-crf','23','-threads','1','-pix_fmt','yuv420p',str(out/'gazebo-rviz-raw.mp4')],env=env,stdout=log,stderr=log)
-        observer=subprocess.Popen([sys.executable,str(root/'ros2_ws/src/annual_swarm/scripts/record_observation_evidence.py'),'--ros-args','-p','use_sim_time:=true','-p',f'output_dir:={out}'],env=env,stdout=log,stderr=log,start_new_session=True)
+        observer=subprocess.Popen([sys.executable,str(Path(__file__).with_name('record_observation_evidence.py')),'--ros-args','-p','use_sim_time:=true','-p',f'output_dir:={out}'],env=env,stdout=log,stderr=log,start_new_session=True)
         command=['ros2','launch','annual_swarm','decentralized_search.launch.py','headless:=false','rviz:=true','visualize:=true',f'output_dir:={out}',f'map:={root}/next_project/maps/search_fusion_3d.json']
         if args.faults=='none':command+=['pause_after:=0','network_after:=0','restart_after:=0','dynamic_obstacle:=false']
         proc=subprocess.Popen(command,env=env,stdout=log,stderr=log,start_new_session=True)

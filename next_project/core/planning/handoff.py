@@ -3,6 +3,18 @@ import math
 import numpy as np
 
 
+def future_boundary_time(curve, progress, lead):
+    """Earliest future boundary with enough planning/authorization lead.
+
+    Actual old-service gain is checked separately before adoption. Choosing a
+    boundary does not authorize leaving, release a lease, or complete a task.
+    """
+    if not np.isfinite([progress,lead]).all() or progress<0 or lead<=0:
+        raise ValueError('Invalid handoff progress or lead')
+    boundary=progress+lead
+    return float(boundary) if boundary<curve.duration-.4 else None
+
+
 def continuity(old, new, progress):
     left = old.sample(progress); right = new.sample(0.)
     return dict(position=float(np.linalg.norm(left[0]-right[0])),

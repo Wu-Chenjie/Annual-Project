@@ -17,11 +17,19 @@ class EvidenceRecorder(Node):
         output.mkdir(parents=True, exist_ok=True)
         self.stream = gzip.open(output/'observations.jsonl.gz', 'wt', compresslevel=2)
         self.execution_stream = (output/'execution-evidence.jsonl').open('w')
+        self.command_stream = (output/'command-evidence.jsonl').open('w')
         self.identities = set()
         q = QoSProfile(depth=30, durability=DurabilityPolicy.TRANSIENT_LOCAL)
         for i in range(int(self.declare_parameter('fleet_size', 3).value)):
             self.create_subscription(String, f'/drone_{i}/observation', self.observation, q)
             self.create_subscription(String, f'/drone_{i}/view_execution', self.execution, q)
+            self.create_subscription(String, f'/drone_{i}/view_command', lambda m,i=i:self.command(i,m), q)
+
+    def command(self, drone, message):
+        packet=json.loads(message.data);packet['drone']=drone
+        packet['receipt_time']=self.get_clock().now().nanoseconds*1e-9
+        packet['receipt_wall_time']=time.monotonic()
+        self.command_stream.write(json.dumps(packet)+'\n');self.command_stream.flush()
 
     def execution(self, message):
         packet = json.loads(message.data)
@@ -47,7 +55,7 @@ def main():
     except KeyboardInterrupt:
         pass
     finally:
-        node.stream.close(); node.execution_stream.close(); node.destroy_node()
+        node.stream.close(); node.execution_stream.close(); node.command_stream.close(); node.destroy_node()
         if rclpy.ok(): rclpy.shutdown()
 
 

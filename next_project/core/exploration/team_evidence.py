@@ -71,7 +71,7 @@ def may_reactivate(feedback, evidence, now, predicted_cells=0, verified_alternat
         return True, 'legacy_feedback_recheck'
     if evidence['signature'] != previous:
         return True, 'actual_evidence_changed'
-    if verified_alternative and predicted_cells >= 5:
+    if verified_alternative and predicted_cells >= 1:
         return True, 'different_view_with_verified_ray_gain'
     # Expiry requests a re-evaluation. Only a proven improvement can authorize
     # another unchanged exploration service; waiting alone cannot do that.

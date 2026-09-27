@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Serialized paired-seed study; failures are records, never silently skipped."""
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -29,6 +30,8 @@ def main():
     if set(ablations)!=set(protocol['ablations']):raise ValueError('Missing preregistered ablation')
     roots.update({name:Path(value['source_root']).resolve() for name,value in ablations.items()})
     output=Path(args.output_root).resolve();output.mkdir(parents=True,exist_ok=True)
+    lock=(output/'study.lock').open('a')
+    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     frozen={variant:source_manifest(root) for variant,root in roots.items()}
     harness_root=Path(args.harness_root).resolve()
     harness_files={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in harness_root.glob('*.py')}
@@ -58,11 +61,17 @@ def main():
             return
         name=f'{scene}-{group}-{seed}-{variant}'; directory=output/name
         if (directory/'run-result.json').exists():
+            cleanup=directory/'process-cleanup.json'
+            if not cleanup.exists() or json.loads(cleanup.read_text()).get('remaining'):
+                raise RuntimeError('Resume requires verified cleanup for every completed attempt')
             if not any(job['job']==name for job in evidence['jobs']):
                 evidence['jobs'].append(dict(job=name,**json.loads((directory/'run-result.json').read_text())))
                 header.write_text(json.dumps(evidence,indent=2)+'\n')
             continue
         if directory.exists():
+            cleanup=directory/'process-cleanup.json'
+            if not cleanup.exists() or json.loads(cleanup.read_text()).get('remaining'):
+                raise RuntimeError('Interrupted attempt needs owned-process cleanup before resume')
             (directory/'run-result.json').write_text(json.dumps(dict(outcome='INFRASTRUCTURE_INTERRUPTED',reason='Unfinished attempt found on resume'),indent=2)+'\n')
             continue
         root=roots[variant]
@@ -87,6 +96,9 @@ def main():
             directory.mkdir(parents=True,exist_ok=True)
             (directory/'run-result.json').write_text(json.dumps(dict(outcome='INFRASTRUCTURE_FAILURE',reason=f'Harness exit {completed.returncode} without result'),indent=2)+'\n')
         result=json.loads((directory/'run-result.json').read_text())
+        cleanup=directory/'process-cleanup.json'
+        if not cleanup.exists() or json.loads(cleanup.read_text()).get('remaining'):
+            raise RuntimeError('Missing or failed process cleanup; do not start another sample')
         print(json.dumps(dict(job=name,**result)),flush=True)
         evidence['jobs'].append(dict(job=name,**result));header.write_text(json.dumps(evidence,indent=2)+'\n')
     (output/'progress.json').write_text(json.dumps(dict(status='COMPLETE',total_jobs=len(matrix)),indent=2)+'\n')

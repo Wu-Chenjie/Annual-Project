@@ -91,3 +91,84 @@ def test_agent_feedback_persists_streak_and_success_across_restart(tmp_path):
     finally:
         restored.worker.shutdown(); restored.log.close(); restored.paths.close(); restored.destroy_node()
         rclpy.shutdown()
+
+
+def test_moving_service_feedback_records_consumed_pose_and_not_unvisited_goal(tmp_path):
+    rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                    '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+    node=ExplorationAgent()
+    try:
+        node.now=lambda:20.;node.position=np.array([3.1,3.,1.5]);node.yaw=.25
+        node.replica.map.state[:]=0;node.replica.map.state.ravel()[100:200]=-1;node.replica.map.rebuild()
+        node.service_start=0.;node.view_start_cells=np.arange(100,200)
+        node.view_team_before=np.zeros(node.replica.map.state.size,bool)
+        node.view_start_known=int(np.count_nonzero(node.replica.map.state!=-1))
+        node.intent=dict(token='old',path=[[2.,2.,1.5],[6.,2.,1.5]],yaw=.8,purpose='explore',epoch=1)
+        node.selection=dict(transit=False);node.active=7
+        node.finish_service('moving_sensor_service_complete',15.,([3.,3.,1.5],.2))
+        assert node.service_feedback[7]['failed_view']==dict(position=[3.,3.,1.5],yaw=.2)
+        np.testing.assert_allclose(node.recent[-1][1],[3.,3.,1.5]);assert node.recent[-1][2]==.2
+        event=next(e for e in node.events if e['type']=='view_observed')
+        assert event['service_end']==15. and event['service_pose_source']=='consumed_curve_boundary'
+    finally:
+        node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()
+
+
+@pytest.mark.parametrize('blocked',[False,True])
+def test_refitted_reserves_are_ranked_by_actual_continuous_curves(blocked):
+    from decentralized_agent_node import fit_selection
+    from core.planning.path_quality import Candidate,RankedPathPool
+    m=VoxelMap([[0.,0.,0.],[12.,12.,4.]]);m.state[:]=0
+    if blocked:m.state[13:16,7:9,:]=1
+    m.rebuild()
+    start=np.array([2.25,2.25,1.65]);goal=np.array([6.25,2.25,1.65])
+    pool=RankedPathPool()
+    pool.rank([Candidate('long','test',0,np.array([start,[3.25,5.25,1.65],goal]),{'score':-100.},0),
+               Candidate('short','test',1,np.array([start,[4.25,1.05,1.65],goal]),{'score':100.},0)])
+    assert pool.active.id=='long'
+    selection=dict(pool=pool,yaw=0.)
+    fit_selection(selection,m,start,0.,7,0.)
+    if blocked:
+        assert pool.active.id=='short' and selection['trajectory_candidate']=='short'
+        assert selection['trajectory'].duration < selection['curve_alternatives']['long'].duration
+        assert pool.active.quality['curve_quality_score'] < pool.backups[0].quality['curve_quality_score']
+    else:
+        # Distinct geometric paths can collapse into the same valid spline.
+        assert not pool.backups and len(selection['curve_alternatives'])==1
+        assert pool.active.quality['curve_quality_score']>0.
+    assert pool.active.quality['executed_curve']['duration_s']==selection['trajectory'].duration
+
+
+def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path):
+    from core.planning.continuous_trajectory import interpolate
+    from core.planning.path_quality import Candidate,RankedPathPool
+    rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                    '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+    node=ExplorationAgent()
+    try:
+        old=interpolate(np.array([[2.,2.,1.5],[6.,2.,1.5]]),[24.],0.,.4)
+        p,v,a,h,rate=old.sample(12.)
+        new=interpolate(np.array([p,[7.,3.,1.5]]),[16.],h,.4-h,start_velocity=v,start_acceleration=a,
+                        start_yaw_rate=rate,start_yaw_acceleration=old.yaw_acceleration(12.))
+        node.position=old.sample(4.)[0];node.yaw=old.sample(4.)[3]
+        node.epoch=1;node.execution=dict(trajectory_time=4.)
+        node.intent=dict(token='old',purpose='explore',recovery=False)
+        node.selection=dict(gain=100*node.replica.map.resolution**3);node.owners={8:node.id}
+        node.replica.map.state[:]=0;node.replica.map.state.ravel()[100:200]=-1;node.replica.map.rebuild()
+        node.view_start_cells=np.arange(100,200);node.view_target_cells=np.arange(100,200)
+        node.view_team_before=np.zeros(node.replica.map.state.size,bool)
+        boundary=dict(from_token='old',from_epoch=1,trajectory_time=12.,position=p.tolist(),yaw=h)
+        pool=RankedPathPool();pool.rank([Candidate('reserve','test',0,new.path(.15),{'score':0.},0)])
+        node.preplanned=dict(epoch=1,time=5.,region=8,boundary=boundary,request_id='early',
+                             selection=dict(trajectory=new,pool=pool,gain=0.,transit=True,purpose='transit_reobserve',yaw=.4))
+        node.adopt_moving_preplan(5.)
+        assert node.pending_intent is None and node.epoch==1 and node.preplanned is not None
+        node.replica.map.state.ravel()[100:161]=0;node.replica.map.rebuild()
+        node.adopt_moving_preplan(5.)
+        assert node.pending_intent and not node.pending_intent['committed']
+        assert node.intent['token']=='old' and node.epoch==2
+        recorded=__import__('json').loads((tmp_path/'drone_0/candidates.jsonl').read_text())
+        assert recorded['phase']=='handoff_proposed' and recorded['active_candidate']=='reserve'
+        assert recorded['paths'][0]['trajectory']==new.to_dict()
+    finally:
+        node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()

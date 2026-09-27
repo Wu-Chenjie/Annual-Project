@@ -122,7 +122,7 @@ class AdaptiveRegions:
             points = []
             local_candidates = candidates[np.all((candidates >= a) & (candidates < b), axis=1)]
             for cell in local_candidates:
-                if gains[tuple(cell)] < 3:
+                if gains[tuple(cell)] < .5:
                     continue
                 p = runtime.points([cell])[0]
                 if all(np.linalg.norm(p-q) >= .65 for q in points):
@@ -140,7 +140,7 @@ class AdaptiveRegions:
                 elif runtime.state[cell] == -1 or not runtime.safe[cell]:
                     view['status'] = 'inactiveV'
                 else:
-                    view['status'] = 'activeV' if near[cell] < 1.6 and gains[cell] >= 3 else 'deadV'
+                    view['status'] = 'activeV' if near[cell] < 1.6 and gains[cell] >= .5 else 'deadV'
             # A safe view inside a completed cell can observe an adjacent
             # unfinished cell. Its ray gain, rather than cell volume, is live.
             status = 'activeR' if points else 'deadR' if unknown == 0 else 'inactiveR'

@@ -233,7 +233,7 @@ class ObservationPlanner:
                 if observed_mask is not None and history_weight == 0:
                     from .team_evidence import team_new_cells
                     cells = team_new_cells(cells, observed_mask)
-                if len(cells) < 5:
+                if not cells:
                     continue
                 rotation = abs(angle_delta(heading, yaw))/.65
                 # Coupled information/time utility, penalizing needlessly long routes.

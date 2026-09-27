@@ -13,6 +13,7 @@ from core.exploration.hierarchy import AdaptiveRegions
 from core.exploration.priority import ExplorationPriority
 from core.planning.continuous_trajectory import interpolate, optimize_trajectory, ContinuousTrajectory
 from core.planning.handoff import validate_handoff
+from core.planning.handoff import future_boundary_time
 from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
 
 
@@ -104,6 +105,16 @@ def test_moving_curve_preserves_c2_and_yaw_boundary_after_time_optimization():
     assert restored.yaw_rate_limit()<=.651 and m.safe_path(restored.path())
     bad=interpolate(np.array([p,[6.,3.,1.5]]),[12.],h,.8-h)
     with pytest.raises(ValueError):validate_handoff(old,bad,8.,6.)
+
+
+def test_future_handoff_does_not_wait_for_terminal_deceleration_or_complete_the_task():
+    old=interpolate(np.array([[2.,2.,1.5],[8.,2.,1.5]]),[24.],0.,.4)
+    boundary=future_boundary_time(old,8.,4.)
+    assert boundary==12. and boundary<old.duration-1.5
+    assert np.linalg.norm(old.sample(boundary)[1])>.3
+    assert future_boundary_time(old,21.,4.) is None
+    assert old.duration==24.
+    with pytest.raises(ValueError):future_boundary_time(old,np.nan,4.)
 
 
 def test_expired_curve_budget_cannot_produce_an_unvalidated_curve():

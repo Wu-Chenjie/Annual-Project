@@ -397,7 +397,7 @@ class MultiRobotGraph:
                 record.update(task.descriptor(), node=nid, points=p.tolist(), length=length(p),
                               entry=task.viewpoints[j].tolist())
             old = self.replica.records.get(f'r:{rid}')
-            if old:
+            if old and old.get('entry')==record.get('entry'):
                 for key in ('forecast_gain_cells','forecast_stamp','forecast_kind','forecast_yaw','forecast_cells','forecast_grid_shape'):
                     if key in old: record[key]=old[key]
             if old and {k: v for k, v in old.items() if k != 'stamp'} == record:
