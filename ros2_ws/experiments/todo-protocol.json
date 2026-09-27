@@ -1,6 +1,6 @@
 {
   "schema": "annual.todo-protocol/1",
-  "phase": "preregistration_before_formal_candidate9_runs",
+  "phase": "preregistration_before_formal_candidate10_runs",
   "seeds": [
     900,
     901,
@@ -21,7 +21,8 @@
     "candidate-6-video-900",
     "candidate-6-native-faults-900",
     "candidate-6-safety-input-900",
-    "candidate-6-safety-input-900-retry1"
+    "candidate-6-safety-input-900-retry1",
+    "candidate-9d-dynamic-demo-900"
   ],
   "groups": [
     "no_fault",

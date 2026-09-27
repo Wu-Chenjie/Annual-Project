@@ -329,7 +329,8 @@ class FusionPlanner:
             curves = {}; valid = []
             for candidate in [selection['pool'].active]+selection['pool'].backups:
                 try:
-                    curve = optimize_trajectory(candidate.path, local, yaw, selection['yaw'], deadline_wall=deadline_wall, **boundary)
+                    curve = optimize_trajectory(candidate.path, local, yaw, selection['yaw'], deadline_wall=deadline_wall,
+                                                preserve_route=candidate is not selection['pool'].active, **boundary)
                     points=curve.path(.15)
                     distances=(local.signed_distances(points) if hasattr(local,'signed_distances') else
                                np.array([local.signed_distance(p) for p in points]))

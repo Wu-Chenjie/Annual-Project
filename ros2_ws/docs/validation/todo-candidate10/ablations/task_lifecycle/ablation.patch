@@ -1,0 +1,10 @@
+--- ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -616,6 +616,7 @@
+                            key=lambda v: v.get('stamp', -1.))
+             expected_team = int(np.count_nonzero(~self.view_team_before[self.view_start_cells]))
+             feedback = service_result(previous, t, gained, expected_team, self.fusion.priority.config)
++            feedback['defer_until']=t;feedback['low_yield_streak']=0
+             evidence = regional_evidence(self.replica.map, self.tasks[self.active].bounds,
+                                         self.fusion.graph.observed_mask(self.replica.map)) if self.active in self.tasks else {}
+             feedback.update(accounting, expected_team_cells=expected_team, purpose='explore',

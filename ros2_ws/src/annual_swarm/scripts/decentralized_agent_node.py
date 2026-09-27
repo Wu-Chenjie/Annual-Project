@@ -39,7 +39,8 @@ def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=Non
         try:
             curve = optimize_trajectory(
                 candidate.path, runtime, yaw, selection['yaw'], speed_limit=.15 if rid < 0 else .6,
-                acceleration_limit=.2 if rid < 0 else .8, deadline_wall=deadline_wall)
+                acceleration_limit=.2 if rid < 0 else .8, deadline_wall=deadline_wall,
+                preserve_route=candidate is not selection['pool'].active)
             points=curve.path(.15)
             distances=(runtime.signed_distances(points) if hasattr(runtime,'signed_distances') else
                        np.array([runtime.signed_distance(p) for p in points]))

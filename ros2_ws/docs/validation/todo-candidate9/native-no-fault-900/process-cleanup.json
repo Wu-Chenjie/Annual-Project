@@ -1,0 +1,14 @@
+{
+  "partition": "annual_todo_video_b9cdab58ab1147f19e2d10394ff85188",
+  "signals": [
+    {
+      "pid": 40012,
+      "signal": 15
+    },
+    {
+      "pid": 40046,
+      "signal": 15
+    }
+  ],
+  "remaining": []
+}

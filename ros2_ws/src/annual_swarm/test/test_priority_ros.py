@@ -117,7 +117,7 @@ def test_moving_service_feedback_records_consumed_pose_and_not_unvisited_goal(tm
 @pytest.mark.parametrize('blocked',[False,True])
 def test_refitted_reserves_are_ranked_by_actual_continuous_curves(blocked):
     from decentralized_agent_node import fit_selection
-    from core.planning.path_quality import Candidate,RankedPathPool
+    from core.planning.path_quality import Candidate,RankedPathPool,resample
     m=VoxelMap([[0.,0.,0.],[12.,12.,4.]]);m.state[:]=0
     if blocked:m.state[13:16,7:9,:]=1
     m.rebuild()
@@ -133,9 +133,13 @@ def test_refitted_reserves_are_ranked_by_actual_continuous_curves(blocked):
         assert selection['trajectory'].duration < selection['curve_alternatives']['long'].duration
         assert pool.active.quality['curve_quality_score'] < pool.backups[0].quality['curve_quality_score']
     else:
-        # Distinct geometric paths can collapse into the same valid spline.
-        assert not pool.backups and len(selection['curve_alternatives'])==1
-        assert pool.active.quality['curve_quality_score']>0.
+        # The certified reserve keeps a genuine bypass even in open space.
+        assert pool.active.id=='long' and [c.id for c in pool.backups]==['short']
+        assert len(selection['curve_alternatives'])==2
+        active=selection['curve_alternatives']['long'].path(.15)
+        reserve=selection['curve_alternatives']['short'].path(.15)
+        assert np.mean(np.linalg.norm(resample(active)-resample(reserve),axis=1))>=pool.diversity_m
+        assert pool.active.quality['curve_quality_score'] < pool.backups[0].quality['curve_quality_score']
     assert pool.active.quality['executed_curve']['duration_s']==selection['trajectory'].duration
     before=selection['curve_qualities'][pool.active.id]
     pool.revalidate(start,m,__import__('core.planning.path_quality',fromlist=['PathQualityEvaluator']).PathQualityEvaluator(),m.version,now=0.)

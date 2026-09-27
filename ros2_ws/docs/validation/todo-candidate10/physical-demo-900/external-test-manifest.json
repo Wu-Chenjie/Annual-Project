@@ -1,0 +1,25 @@
+{
+  "test_case": "physical_dynamic_cached_backup",
+  "flight_policy": "Unmodified frozen combined snapshot",
+  "difference": "Keep the physical cylinder and Gazebo pose adapter enabled even without stock faults. Disable only the stock obstacle schedule; the external injector places one visible cylinder ahead of an active curve with a distinct existing reserve.",
+  "files": {
+    "audit_todo_evidence.py": "c6f07a2880a718ae15e711a23f19588ca8c8e5d49a1c4c7ce3b029ba52414452",
+    "audit_fusion_run.py": "60406836aedea0d93e2161d74f7fe166539c703150f32e2ca99bc4d318452736",
+    "summarize_todo_study.py": "901005b7c2609a9896de37b0984e8121012f36319d102e11c29ec2039e2cb9de",
+    "run_todo_study.py": "016a8634b8757ac743314d7293290c5a102e04fc25b9e0c394ea9bdce931add5",
+    "dynamic_backup_probe.py": "2fbfd3e96ef56bdcc7bbe8ba441b765fa4dbf5e67c538a4c689f7715240f9692",
+    "audit_todo_attempt.py": "2e1777f31ef7b022744ecde40419b136751d5028007949c283e411a24338fc28",
+    "verify_todo_run.py": "cafa439d53df26d7d7da700e6a50a6ff91036989dc461ad785860d1ffe519821",
+    "record_todo_demo.py": "8ee6ea6eaa1870b5a4b1c53a89303fcec480718d12aa0a52e13b37e31c7f2ad6",
+    "experiment_processes.py": "9e7643331076a79960b6b9f5bdc99a18ccf82bc5135229c80b5f7b374ed9dcdd",
+    "dynamic_backup_fault.launch.py": "e3fc2071aa40542487d4fecd9d9ef2771413020bbea69af3b398587597a55d9a",
+    "prepare_todo_ablations.py": "4e585ce27311c699692cde5bac3248b14cd21eed950941888a712f745ef8f74f",
+    "snapshot_map.py": "05e10cdd66b9c90644faa9973996017be637c647a12f02d889383e9b3d84c57b",
+    "test_dynamic_backup_probe.py": "f1b4eb1f1aaed1c3c74097270c2ca013f2c8dfac07d02142983b380ce052666d",
+    "run_todo_experiment.py": "88954d0ef9c18f307aa3f34a8100e175f0a11a293a29aa32c07148f12188d5ee",
+    "record_observation_evidence.py": "4d824b2db6a50f36199d869bf0c74c455a6635f12b9bb8bb0e231c7584377d7c",
+    "audit_dynamic_backup.py": "bf78cdcbf0d56e8f3bdc7a1537b0f02610ffe23a38b9684b0287a587719063aa",
+    "test_dynamic_launch.py": "84306c0646d30263961571ba3843c8b30f670e6b26e6e94bfe8436c68ba6fc28",
+    "audit_execution_protocol.py": "b5b45deb6db1c07e4ebdb646a52c9a2dce43f6be1c8df515143d20c30e83c9d9"
+  }
+}

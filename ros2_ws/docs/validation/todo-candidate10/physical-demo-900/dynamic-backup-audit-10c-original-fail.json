@@ -1,0 +1,225 @@
+{
+  "passed": false,
+  "checks": {
+    "physical_obstacle_requested": true,
+    "gazebo_acknowledged": true,
+    "physical_obstacle_removed": true,
+    "physical_cylinder_intersects_active_future_curve": true,
+    "actual_lidar_hit": true,
+    "actual_route_invalidated": true,
+    "different_preexisting_reserve": true,
+    "validated_authorized_execution_chain": true,
+    "positive_actual_team_gain_after_switch": false,
+    "independent_flight_and_coverage": true,
+    "independent_authorization": true,
+    "reached_95": true
+  },
+  "details": {
+    "invalidation": {
+      "type": "lease_cancellation_requested",
+      "drone": 0,
+      "time": 198.0,
+      "incarnation": "3590df75bc0b4a8bbff7bce1344124d7",
+      "region": 139,
+      "reason": "path_or_tracking_invalidated"
+    },
+    "selected": {
+      "type": "cached_route_selected",
+      "drone": 0,
+      "time": 202.59,
+      "incarnation": "3590df75bc0b4a8bbff7bce1344124d7",
+      "region": 139,
+      "token": "0:3590df75:2500024",
+      "candidate": "139:2500022:1"
+    },
+    "proposal": {
+      "type": "path_proposed",
+      "drone": 0,
+      "time": 202.59,
+      "incarnation": "3590df75bc0b4a8bbff7bce1344124d7",
+      "token": "0:3590df75:2500024",
+      "region": 139,
+      "tour": [
+        139,
+        145,
+        166,
+        165,
+        184
+      ],
+      "workload": 51.34488310252405,
+      "objective": 0.02026799981317459,
+      "trajectory_method": "minimum_jerk_bspline",
+      "trajectory_limits": {
+        "speed": 0.5911330049261084,
+        "acceleration": 0.24169877735050513,
+        "jerk": 0.419463524708939
+      },
+      "trajectory_duration": 30.8918282932907,
+      "prepared_trajectory": true,
+      "contingency": false,
+      "voters": [
+        2,
+        1
+      ]
+    },
+    "authorization": {
+      "type": "path_committed",
+      "drone": 0,
+      "time": 203.601,
+      "incarnation": "3590df75bc0b4a8bbff7bce1344124d7",
+      "token": "0:3590df75:2500024",
+      "region": 139,
+      "quorum": [
+        2,
+        1
+      ],
+      "predicted_frontier_volume_m3": 0.10799999999999998,
+      "lookahead": {
+        "position": [
+          10.049999999999999,
+          1.95,
+          0.75
+        ],
+        "yaw": -2.356194490192345
+      },
+      "exploration_priority": {
+        "score": 0.01606561019180037,
+        "predicted_gain": 0.08099999999999999,
+        "raw_gain": 0.6209999999999999,
+        "component_volume": 1014.0119999999998,
+        "components": [
+          1
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          1.95,
+          0.75
+        ],
+        "preview_yaw": -3.141592653589793,
+        "region": 139,
+        "travel_s": 12.298373876248842,
+        "wait_s": 68.49499999999999,
+        "aging_multiplier": 1.1712375,
+        "gain_source": "local_rays",
+        "information_reward": 0.2216792959765354,
+        "deferred": false,
+        "traffic_delay_s": 2.1310150748556334,
+        "reactivation_reason": "new_or_successful_task",
+        "purpose": "explore",
+        "committed_by_peer": false
+      }
+    },
+    "first_actual_execution": {
+      "drone": 0,
+      "time": 203.8,
+      "ready": true,
+      "arrived": false,
+      "epoch": 2500024,
+      "reason": "tracking_view",
+      "traffic_wait_samples": 0,
+      "yaw_error": -1.825761144611979,
+      "token": "0:3590df75:2500024",
+      "trajectory_duration": 30.8918282932907,
+      "reference_yaw": 0.25495670821861827,
+      "reference_yaw_rate": -2.6546946271537252e-05,
+      "pending_token": null,
+      "handoff_count": 2,
+      "handoff_from_token": "0:3590df75:2500019",
+      "handoff_continuity": {
+        "position": 3.233018248352212e-15,
+        "velocity": 3.866572931979755e-15,
+        "acceleration": 1.7925552903950566e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 6.938893903907228e-18
+      },
+      "handoff_time": 168.58,
+      "reference": [
+        5.073883418268337,
+        5.434791953720024,
+        0.7568275623189691
+      ],
+      "reference_velocity": [
+        -0.0010258565349380501,
+        -0.0007487611458383614,
+        -6.496498827672807e-06
+      ],
+      "reference_acceleration": [
+        -0.01686939593391804,
+        -0.012349784487869376,
+        -0.0001066310584962648
+      ],
+      "tracking_error": 0.015369773258811718,
+      "observation_dwell": false,
+      "trajectory_method": "minimum_jerk_bspline",
+      "trajectory_time": 0.12000000000000455,
+      "receipt_time": 203.806,
+      "receipt_wall_time": 27678.574290654
+    },
+    "completion": null,
+    "switch": {
+      "type": "cached_route_switched",
+      "drone": 0,
+      "time": 203.601,
+      "incarnation": "3590df75bc0b4a8bbff7bce1344124d7",
+      "region": 139,
+      "token": "0:3590df75:2500024",
+      "candidate": "139:2500022:1",
+      "origin": {
+        "token": "0:3590df75:2500022",
+        "candidate": "139:2500022:sparse",
+        "time": 198.0,
+        "map_version": 466
+      },
+      "actual_start": [
+        5.088704171387106,
+        5.426202232910264,
+        0.7525534918546884
+      ],
+      "actual_speed": 0.03699771072293305,
+      "map_version": 479,
+      "team_gain_estimate": 0.10799999999999998
+    },
+    "actual_curve_limits": {
+      "speed": 0.5911330049261084,
+      "acceleration": 0.24169877735050513,
+      "jerk": 0.419463524708939
+    },
+    "sensor_hit_to_authorized_execution_s": 6.0,
+    "trial": {
+      "center": [
+        7.216789299484249,
+        4.3263329941475055
+      ],
+      "active_time": 11.97999999999999,
+      "visible_distance_m": 2.648567610287141,
+      "active_center_distance_m": 0.4,
+      "reserve_candidate": "139:2500022:3",
+      "reserve_center_clearance_m": 1.4765860409528233,
+      "drone": 0,
+      "token": "0:3590df75:2500022",
+      "candidate": "139:2500022:sparse",
+      "region": 139,
+      "epoch": 2500022,
+      "pool_time": 189.996,
+      "current_position": [
+        4.8783094623868255,
+        5.569885340352097,
+        0.7465038762935574
+      ],
+      "active_progress": 6.47999999999999,
+      "eligible_elapsed_s": 181.5
+    },
+    "obstacle_start": 197.70100000000002,
+    "obstacle_end": 222.20100000000002,
+    "first_actual_lidar_hit": 197.8,
+    "cached_candidates_at_injection": [
+      "139:2500022:1",
+      "139:2500022:2",
+      "139:2500022:3",
+      "139:2500022:4"
+    ]
+  },
+  "note": "This is one externally targeted physical-obstacle case. It is separate from the preregistered efficiency and stock recovery groups."
+}

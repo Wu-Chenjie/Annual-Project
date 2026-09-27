@@ -6,4 +6,6 @@
 
 [260项源码及压缩快照](source-manifest.json)、[ROS编译记录](candidate-build.txt)、[289项ROS环境测试](candidate-tests.txt)和[133项安装资源及二进制哈希核对](candidate-install-verification.json)已保存。旧策略只加入种子、传感和耗时观测适配；其[源码快照](baseline-source-manifest.json)、[父进程计时补丁](baseline-parent-timing.patch)、[163项测试](baseline-tests.txt)及[111项安装资源核对](baseline-install-verification.json)也已保存。六份消融由独立源码副本编译，[补丁及源码清单](ablations)与[索引](ablation-index.json)可检查，不是部署模式选择。
 
-真实Gazebo圆柱障碍专项、同次原生视频、新五组配对和其余正式矩阵仍待实际结果；E01–E10完整验收暂不勾选。失败或超时运行将保留原始记录，不用候选8已经较快的样本填补候选9。
+候选9的[原生Gazebo/RViz完整录像、24倍播放版与截图](native-no-fault-900)已保存：种子900同次运行实际覆盖95.1305%，独立飞行/覆盖和授权审核通过。外部动态障碍注入器未找到既有备选与主曲线足够分离的安全位置，[专项审计](native-no-fault-900/dynamic-backup-audit.json)因此失败；这段视频只证明无障碍探索，不能算E07动态切换视频。冻结的原记账审核把实时融合遥测中的非累计字段误判为父进程计时回退；原失败状态保留，只读9a修订仅检查两项累计计时字段，44项回归检查与同次162个完整/中断服务窗口复核通过，未改飞行策略。
+
+后续候选将增加真正绕障的备选空间分离度，并防止连续拟合把已生成的绕路拉直。新五组配对和其余正式矩阵仍待独立冻结与实际结果；E01–E10完整验收暂不勾选。失败或超时运行将保留原始记录，不用候选8已经较快的样本填补新批次。

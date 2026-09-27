@@ -1,0 +1,21 @@
+--- next_project/core/exploration/priority.py
++++ next_project/core/exploration/priority.py
+@@ -129,6 +129,7 @@
+         return self._views[key][1]
+ 
+     def committed_cells(self, runtime, peers, now, arrival=None):
++        return frozenset()
+         from .team_evidence import intent_records, predicted_peer_completion
+         from .mrdtg import observation_grid
+         cells = set()
+--- next_project/core/exploration/priority.py
++++ next_project/core/exploration/priority.py
+@@ -256,7 +256,7 @@
+                     from .team_evidence import intent_records, predicted_peer_completion
+                     for peer in peers.values():
+                         if not -.1 <= now-peer.get('time',-np.inf)<self.config.peer_fresh_s:continue
+-                        if any(intent.get('region')==rid and intent.get('committed') and not intent.get('retiring') and
++                        if False and any(intent.get('region')==rid and intent.get('committed') and not intent.get('retiring') and
+                                predicted_peer_completion(peer,intent,now)<=now+travel for intent in intent_records(peer)):
+                             gain=0.;break
+                 value, penalty = self.utility(gain, volume, travel, wait, feedback, now)

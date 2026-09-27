@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "gates": {
+    "all_truth_streams_recorded": true,
+    "no_recorded_unexpected_landings": true,
+    "zero_contacts": true,
+    "sampled_separation": true,
+    "reference_speed": true,
+    "reference_acceleration": true,
+    "final_map_matches": true
+  },
+  "task_start": 15.500000000000002,
+  "task_end": 468.00100000000003,
+  "truth_pose": {
+    "0": {
+      "samples": 45227,
+      "first_time": 15.501,
+      "last_time": 467.991,
+      "min_height_m": 1.0280104444781721,
+      "max_height_m": 2.858556403645051,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.04000000000000625,
+      "maximum_pose_difference_speed_mps": 0.6481141056725078
+    },
+    "1": {
+      "samples": 45226,
+      "first_time": 15.501,
+      "last_time": 467.991,
+      "min_height_m": 0.7447147699218337,
+      "max_height_m": 2.9047924484646734,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.04000000000000625,
+      "maximum_pose_difference_speed_mps": 0.6389223905782201
+    },
+    "2": {
+      "samples": 45225,
+      "first_time": 15.501,
+      "last_time": 467.991,
+      "min_height_m": 0.7504571819664579,
+      "max_height_m": 2.853668756976945,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.04000000000000625,
+      "maximum_pose_difference_speed_mps": 0.6463467744065288
+    }
+  },
+  "tracking": {
+    "0": {
+      "samples": 1759,
+      "p95_error_m": 0.033491522550839266,
+      "maximum_error_m": 0.05334612839599246
+    },
+    "1": {
+      "samples": 1780,
+      "p95_error_m": 0.029908462063373775,
+      "maximum_error_m": 0.0485492205537375
+    },
+    "2": {
+      "samples": 1419,
+      "p95_error_m": 0.030551383016308994,
+      "maximum_error_m": 0.044045620428346706
+    }
+  },
+  "max_logged_reference_speed_mps": 0.5986139698248274,
+  "max_logged_reference_acceleration_mps2": 0.6814105895022367,
+  "sensor_map": {
+    "recomputed": {
+      "coverage": 0.9527727047739337,
+      "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+      "legacy_center_free_coverage": 0.900870954854175,
+      "truth_free_voxels": 58589,
+      "observed_free_voxels": 55822,
+      "unobserved_free_voxels": 2360,
+      "falsely_occupied_free_voxels": 407
+    },
+    "difference_from_summary": 0.0,
+    "passed": true
+  },
+  "note": "Sampled truth and active-reference checks; finite-difference true speed is distinct from reference limits. Incomplete runs need not have a final map."
+}

@@ -128,29 +128,41 @@ def interpolate(points, durations, yaw, delta, start_velocity=None, start_accele
     return ContinuousTrajectory(durations, coefficients, yaw, delta, yaw_coefficients=c)
 
 
-def simplify_path(path, runtime):
+def simplify_path(path, runtime, preserve_route=False):
     p = np.asarray(path, float); p = p[np.r_[True, np.linalg.norm(np.diff(p, axis=0), axis=1) > 1e-6]]
     if len(p) == 1:
         return np.vstack([p, p])
-    result = [p[0]]; k = 0
-    while k < len(p)-1:
-        j = len(p)-1
-        while j > k+1 and not runtime.safe_path([p[k], p[j]]):
-            j -= 1
-        result.append(p[j]); k = j
-    return np.array(result)
+    def shortcut(segment):
+        result = [segment[0]]; k = 0
+        while k < len(segment)-1:
+            j = len(segment)-1
+            while j > k+1 and not runtime.safe_path([segment[k], segment[j]]):
+                j -= 1
+            result.append(segment[j]); k = j
+        return np.array(result)
+    if preserve_route and len(p)>2:
+        direction=p[-1,:2]-p[0,:2]
+        extent=float(np.dot(direction,direction))
+        if extent>1e-8:
+            fraction=np.clip(((p[:,:2]-p[0,:2])@direction)/extent,0.,1.)
+            lateral=np.linalg.norm(p[:,:2]-(p[0,:2]+fraction[:,None]*direction),axis=1)
+            anchor=int(np.argmax(lateral))
+            if 0<anchor<len(p)-1 and lateral[anchor]>.6:
+                left=shortcut(p[:anchor+1]);right=shortcut(p[anchor:])
+                return np.vstack([left,right[1:]])
+    return shortcut(p)
 
 
 def optimize_trajectory(path, runtime, yaw, target_yaw, speed_limit=.6, acceleration_limit=.8,
                         start_velocity=None, start_acceleration=None, start_yaw_rate=0., start_yaw_acceleration=0.,
-                        deadline_wall=None):
+                        deadline_wall=None, preserve_route=False):
     def check_budget():
         if deadline_wall is not None and time.monotonic() >= deadline_wall:
             raise TimeoutError('Trajectory fitting wall budget exhausted')
     check_budget()
     if not runtime.safe_path(path):
         raise ValueError('Unsafe input route')
-    points = simplify_path(path, runtime)
+    points = simplify_path(path, runtime, preserve_route)
     distances = np.linalg.norm(np.diff(points, axis=0), axis=1)
     delta = math.atan2(math.sin(target_yaw-yaw), math.cos(target_yaw-yaw))
     initial = np.maximum(distances/.4, .6)

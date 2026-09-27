@@ -1,0 +1,24 @@
+{
+  "revision": "10a-read-only-task-end-handoff-censor",
+  "flight_policy_changed": false,
+  "explanation": "A pending authorized handoff may be right-censored when task completion stops the executor before the old trajectory reaches the handoff boundary. Require an actual experiment_complete executor packet, recent old-token tracking and old progress strictly before the boundary; still fail missing execution otherwise. Preserve original failed audit and unchanged flight raw data.",
+  "module_files": {
+    "core.exploration.service_windows": "service_windows.py",
+    "core.exploration.timing_evidence": "timing_evidence.py",
+    "core.exploration.evidence_audit": "evidence_audit.py",
+    "core.exploration.execution_identity": "execution_identity.py"
+  },
+  "files": {
+    "audit_todo_evidence.py": "c6f07a2880a718ae15e711a23f19588ca8c8e5d49a1c4c7ce3b029ba52414452",
+    "audit_execution_protocol.py": "d001006f20f04a45a0ba9dfb0bbac1eb732e6dd54c4b7d84e0725245b5ebbefc",
+    "service_windows.py": "2bef8e9a6741a03e60e1a78f036100fa0cca2500bee1d4f5e8dc76b0dd914e44",
+    "timing_evidence.py": "a91a26868ec39e0caf53fdd0e1766b48bc5ec5424cfe99ad68837985ea458e3a",
+    "evidence_audit.py": "eb56122089cba0f953fa15777886150956bfe34f568b61390c6524849c67a403",
+    "execution_identity.py": "7f76c4002970a466aea4dce354ab870132b29f00feeb7f2523e3768e86c721bc",
+    "test_service_windows.py": "553c2cf4f21bfcaddd90cb250428efa6794f6bebb53ad691687fa7434ca9fd42",
+    "test_timing_evidence.py": "510f7a51555aa0496814651cdc6d767146d865767d1d88ecbe510340eae10253",
+    "test_interrupted_accounting.py": "1a8dada92337158fa728baf55b8c1d4e25c81dc2a7b68356db035c916cbdd580",
+    "test_execution_identity.py": "6321f52553bd4890cc49f1cb2a43093a6e60c1f32b0361f9dc3746b34d995e0a",
+    "test_execution_protocol_audit.py": "66a27bcad6715c150d79cbe94f47b1a6ce9b95f413c2b2eca0632d4387a53afe"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "recording_launched_monotonic": 24934.980243836,
+  "recorded_monotonic": 24934.980478536,
+  "recorded_wall_unix": 1790547088.971021,
+  "note": "FFmpeg startup precedes its first captured frame; verify clip anchors against the simulation HUD."
+}

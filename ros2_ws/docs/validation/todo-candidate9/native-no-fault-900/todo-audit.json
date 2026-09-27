@@ -1,0 +1,231 @@
+{
+  "schema": "annual.todo-audit/2",
+  "status": "COMPLETE",
+  "thresholds": {
+    "t50": 162.5,
+    "t80": 380.50100000000003,
+    "t90": 413.0,
+    "t95": 436.502
+  },
+  "tail_90_95_s": 23.50200000000001,
+  "service_window_definition": "Actual tracking of an authorized service, from commit/consumption until completion, cancellation request, process restart or task end; clipped to the common task window. Braking observations are outside the cancelled service.",
+  "service_window_terminations": {
+    "cancelled:experiment_complete": 2,
+    "cancelled:path_or_tracking_invalidated": 8,
+    "completed": 152
+  },
+  "never_executed_authorizations": 0,
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "actual_tracking_packets": 4124,
+  "raw_frames": 3413,
+  "observed_known_cells": 70517,
+  "observed_free_cells": 65949,
+  "service_windows": 162,
+  "actual_team_new_known_in_windows": 54096,
+  "team_new_known_outside_service_windows": 16421,
+  "exploration_low_team_yield": 36,
+  "exploration_zero_team_yield": 9,
+  "exploration_low_yield_duration_s": 215.08799999999997,
+  "exploration_total_duration_s": 922.8330000000001,
+  "exploration_total_distance_m": 222.1507399786467,
+  "exploration_low_yield_distance_m": 47.66106247708905,
+  "purpose_counts": {
+    "explore": 144,
+    "transit_reobserve": 15,
+    "safety_recovery": 3
+  },
+  "residence_s": {
+    "takeoff": 0.0,
+    "incarnation_start": 0.0,
+    "initial_yaw_scan": 0.0,
+    "idle": 389.98400000000004,
+    "tracking_view": 824.5480000000039,
+    "observation_dwell": 91.18499999999985,
+    "view_observed": 3.7889999999998807,
+    "experiment_complete": 0.0
+  },
+  "close_radius_m": 2.0,
+  "close_pair_duration_s": {},
+  "residence_by_uav_s": {
+    "0": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 36.78900000000028,
+      "planning_wait": 48.40199999999997,
+      "reservation_wait": 35.445999999999906,
+      "execution": 279.074,
+      "observation_dwell": 27.804999999999872,
+      "view_observed": 1.1949999999999221,
+      "safety_recovery": 7.791000000000054,
+      "experiment_complete": 0.0
+    },
+    "1": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 33.57500000000027,
+      "planning_wait": 56.20799999999984,
+      "reservation_wait": 35.035999999999866,
+      "execution": 245.07700000000003,
+      "observation_dwell": 28.597999999999903,
+      "view_observed": 1.2019999999999982,
+      "navigation_reobserve": 36.8060000000001,
+      "experiment_complete": 0.0
+    },
+    "2": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 42.83799999999998,
+      "planning_wait": 58.488000000000085,
+      "reservation_wait": 43.20199999999981,
+      "execution": 255.8000000000001,
+      "observation_dwell": 34.78200000000007,
+      "view_observed": 1.3919999999999604,
+      "experiment_complete": 0.0
+    }
+  },
+  "planning_wait_fleet_s": 163.0979999999999,
+  "planning_wall_median_s": 4.404384864999884,
+  "planning_wall_p95_s": 6.963036381648633,
+  "planning_compute_wall_median_s": 3.867248639000536,
+  "planning_request_counts": {
+    "planning_submitted": 276,
+    "planning_result": 274,
+    "planning_timeout": 0,
+    "planning_failed": 0
+  },
+  "planning_all_measured_requests_wall_s": {
+    "p50": 4.404384864999884,
+    "p90": 6.404193595698598,
+    "p95": 6.963036381648633
+  },
+  "planning_queue_wall_s": {
+    "p50": 0.34587614300107816,
+    "p90": 0.5643255214999954,
+    "p95": 0.6102219443995636
+  },
+  "planning_delivery_wall_s": {
+    "p50": 0.17456894950009882,
+    "p90": 0.3019163323006069,
+    "p95": 0.3243288105011741
+  },
+  "planning_stage_wall_s": {
+    "hierarchy": {
+      "p50": 0.19658428500042646,
+      "p90": 0.32843272220015934,
+      "p95": 0.37578250340066
+    },
+    "map": {
+      "p50": 0.22965376950014615,
+      "p90": 0.37568056720083404,
+      "p95": 0.444737830998747
+    },
+    "pair": {
+      "p50": 0.12927060350011743,
+      "p90": 0.2794996839980741,
+      "p95": 0.31676255439979284
+    },
+    "priority": {
+      "p50": 0.8673636319999787,
+      "p90": 1.1279108490994987,
+      "p95": 1.1869859154499862
+    },
+    "topology": {
+      "p50": 0.6242020080007933,
+      "p90": 1.1666443728008744,
+      "p95": 1.3290325282516278
+    },
+    "tour": {
+      "p50": 0.12498181399860187,
+      "p90": 0.31131165260012494,
+      "p95": 0.34293601380086325
+    },
+    "trajectory": {
+      "p50": 0.8290478170001734,
+      "p90": 1.9110933198007842,
+      "p95": 2.5086324672007305
+    },
+    "view": {
+      "p50": 0.7226225059985154,
+      "p90": 1.0044811313000537,
+      "p95": 1.0911287611495935
+    }
+  },
+  "parent_geometry": {
+    "status": "RECORDED",
+    "wall_s": 191.6377265359588,
+    "rebuilds": 2544,
+    "sessions": [
+      {
+        "drone": 0,
+        "session": "8850da57861c4ae895044d5ff5af2e51",
+        "wall_s": 64.38890686193554,
+        "rebuilds": 851
+      },
+      {
+        "drone": 1,
+        "session": "56faf624fffa4811a301b2db273aed3f",
+        "wall_s": 61.990016414943966,
+        "rebuilds": 836
+      },
+      {
+        "drone": 2,
+        "session": "62f47f432f3349aba554ba4630ab8e7f",
+        "wall_s": 65.25880325907929,
+        "rebuilds": 857
+      }
+    ],
+    "note": "Cumulative parent callback counters differenced over the task window. Worker map timing is separate; parallel durations are not end-to-end latency."
+  },
+  "parent_proposal": {
+    "status": "RECORDED",
+    "wall_s": 20.881653514996287,
+    "calls": 170,
+    "sessions": [
+      {
+        "drone": 0,
+        "session": "8850da57861c4ae895044d5ff5af2e51",
+        "wall_s": 6.899368379992666,
+        "calls": 57
+      },
+      {
+        "drone": 1,
+        "session": "56faf624fffa4811a301b2db273aed3f",
+        "wall_s": 6.486025399008213,
+        "calls": 52
+      },
+      {
+        "drone": 2,
+        "session": "62f47f432f3349aba554ba4630ab8e7f",
+        "wall_s": 7.496259735995409,
+        "calls": 61
+      }
+    ],
+    "note": "Cumulative parent callback counters differenced over the task window. Worker map timing is separate; parallel durations are not end-to-end latency."
+  },
+  "rejected_planning_results": 28,
+  "planning_time_scope": "submitted_to_result_receipt",
+  "planning_timeout_count": 0,
+  "moving_handoffs": 12,
+  "moving_handoff_max_boundary_error": 5.895520708056648e-15,
+  "distances_m": {
+    "0": 90.30465111557173,
+    "1": 81.51074859705848,
+    "2": 70.15843927729063
+  },
+  "coverage": 0.951304852446705,
+  "contacts": 0,
+  "completed_window_duplicate_ratio": {
+    "numerator": 25155,
+    "denominator": 79251,
+    "scope": "sum of actual local-new cells in completed, cancelled, restarted and task-end service windows"
+  },
+  "limitations": [
+    "Online regional estimates and offline full service-window gains have different spatial scopes.",
+    "Close duration is telemetry sampled; missing intervals are excluded.",
+    "First-free evidence does not replace final truth-free coverage acceptance."
+  ]
+}
