@@ -1,0 +1,1784 @@
+{
+  "previous": {
+    "status": "COMPLETE",
+    "coverage": 0.9524654798682346,
+    "observed_elapsed_s": 1636.124,
+    "t90_s": 1136.0030000000002,
+    "t95_s": 1631.005,
+    "tail_90_to_95_s": 495.00199999999995,
+    "time_limit_reached": null,
+    "contacts": 0,
+    "min_separation_m": 1.7443277962802688,
+    "distance_m": 652.625140527426,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589,
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "phases": {
+      "whole": {
+        "begin": 15.500000000000002,
+        "end": 1646.505,
+        "duration_s": 1631.005,
+        "event_counts": {
+          "path_proposed": 419,
+          "path_committed": 395,
+          "next_view_ready": 268,
+          "view_observed": 370,
+          "next_view_adopted": 153,
+          "region_low_yield": 103,
+          "pair_cvrp_prepared": 106,
+          "pair_cvrp_committed": 148,
+          "availability_pause": 1,
+          "lease_cancellation_requested": 46,
+          "region_reassigned": 95,
+          "reservation_retired": 22,
+          "tracking_recovery": 12,
+          "availability_resume": 1,
+          "region_yielded": 17,
+          "network_partition": 3,
+          "network_recovered": 3,
+          "process_restart_requested": 1,
+          "incarnation_ready": 1,
+          "peer_rejoined": 2,
+          "motion_suspended": 17,
+          "motion_resumed": 17,
+          "cached_route_switched": 3
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 1631.0,
+            "distance_m": 240.60167835942883,
+            "moving_fraction": 0.4263274064990797
+          },
+          "1": {
+            "sampled_duration_s": 1631.0,
+            "distance_m": 185.18912999889054,
+            "moving_fraction": 0.3148068669527896
+          },
+          "2": {
+            "sampled_duration_s": 1631.0,
+            "distance_m": 221.64897972950791,
+            "moving_fraction": 0.3953341508277126
+          }
+        },
+        "planning_wall_s": {
+          "count": 648,
+          "median": 4.366884498499985,
+          "p95": 8.948032568100047,
+          "maximum": 17.43512492299942
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 648,
+            "median": 2.0405500208653393e-05,
+            "p95": 5.4979749984340734e-05,
+            "maximum": 0.008394027999656828
+          },
+          "hierarchy": {
+            "count": 648,
+            "median": 0.2585423319999336,
+            "p95": 0.4671629859499717,
+            "maximum": 0.7366866600000321
+          },
+          "topology": {
+            "count": 648,
+            "median": 1.0546001625000372,
+            "p95": 3.4609096415998235,
+            "maximum": 6.456070883999928
+          },
+          "tour": {
+            "count": 648,
+            "median": 0.5884960804996808,
+            "p95": 2.584382254899856,
+            "maximum": 3.2188969789999646
+          },
+          "pair": {
+            "count": 648,
+            "median": 0.09851306499990642,
+            "p95": 0.2562214967001636,
+            "maximum": 0.41983364499992604
+          },
+          "view": {
+            "count": 648,
+            "median": 0.8553533799999968,
+            "p95": 2.1032907645497287,
+            "maximum": 9.770037414999933
+          },
+          "trajectory": {
+            "count": 648,
+            "median": 0.9154166680002618,
+            "p95": 2.835479730799966,
+            "maximum": 4.498829958999522
+          }
+        },
+        "between_views_wait_s": {
+          "count": 369,
+          "median": 2.4890000000000327,
+          "p95": 16.243999999999865,
+          "maximum": 40.06000000000017
+        },
+        "commits_per_region": {
+          "50": 4,
+          "39": 2,
+          "58": 6,
+          "42": 1,
+          "41": 1,
+          "60": 3,
+          "70": 7,
+          "57": 1,
+          "56": 2,
+          "81": 2,
+          "89": 2,
+          "55": 1,
+          "77": 5,
+          "-100": 3,
+          "62": 4,
+          "76": 2,
+          "43": 3,
+          "69": 2,
+          "78": 3,
+          "97": 2,
+          "71": 6,
+          "75": 1,
+          "63": 7,
+          "98": 4,
+          "64": 1,
+          "73": 6,
+          "118": 7,
+          "100": 3,
+          "-102": 1,
+          "114": 3,
+          "99": 1,
+          "101": 4,
+          "113": 1,
+          "116": 6,
+          "141": 6,
+          "94": 2,
+          "4": 8,
+          "92": 3,
+          "124": 6,
+          "95": 2,
+          "117": 5,
+          "123": 2,
+          "186": 2,
+          "121": 6,
+          "189": 7,
+          "-101": 6,
+          "190": 7,
+          "120": 2,
+          "115": 6,
+          "140": 11,
+          "159": 4,
+          "49": 1,
+          "185": 2,
+          "160": 2,
+          "162": 3,
+          "211": 1,
+          "187": 1,
+          "192": 1,
+          "182": 3,
+          "169": 2,
+          "181": 1,
+          "163": 4,
+          "150": 2,
+          "40": 2,
+          "148": 4,
+          "44": 1,
+          "144": 3,
+          "84": 7,
+          "147": 2,
+          "164": 3,
+          "104": 3,
+          "146": 4,
+          "179": 1,
+          "103": 6,
+          "184": 5,
+          "204": 5,
+          "119": 7,
+          "161": 4,
+          "222": 5,
+          "219": 6,
+          "203": 2,
+          "246": 8,
+          "122": 1,
+          "240": 3,
+          "220": 2,
+          "260": 2,
+          "228": 4,
+          "261": 2,
+          "221": 2,
+          "226": 1,
+          "85": 4,
+          "245": 7,
+          "259": 2,
+          "262": 1,
+          "225": 1,
+          "243": 2,
+          "227": 1,
+          "86": 5,
+          "244": 2,
+          "268": 4,
+          "88": 2,
+          "250": 6,
+          "111": 5,
+          "248": 3,
+          "112": 1,
+          "110": 1,
+          "205": 2,
+          "108": 1,
+          "107": 1,
+          "223": 2,
+          "206": 1,
+          "87": 2,
+          "209": 6,
+          "263": 2,
+          "224": 2,
+          "72": 1,
+          "207": 1,
+          "210": 2,
+          "91": 2,
+          "208": 5,
+          "153": 4,
+          "143": 1,
+          "154": 1,
+          "195": 1,
+          "216": 1
+        },
+        "repeated_region_commits": 270,
+        "committed_priority": {
+          "count": 0,
+          "remote_proxy_count": 0,
+          "predicted_gain_m3": {
+            "count": 0
+          },
+          "waiting_s": {
+            "count": 0
+          },
+          "aging_fraction_of_score": {
+            "count": 0
+          },
+          "aging_over_80_percent_count": 0
+        },
+        "regional_feedback": {
+          "count": 0,
+          "low_yield": 0,
+          "zero_gain": 0,
+          "observed_local_cells": {
+            "count": 0
+          }
+        }
+      },
+      "before_90": {
+        "begin": 15.500000000000002,
+        "end": 1151.5030000000002,
+        "duration_s": 1136.0030000000002,
+        "event_counts": {
+          "path_proposed": 334,
+          "path_committed": 320,
+          "next_view_ready": 230,
+          "view_observed": 302,
+          "next_view_adopted": 140,
+          "region_low_yield": 74,
+          "pair_cvrp_prepared": 88,
+          "pair_cvrp_committed": 122,
+          "availability_pause": 1,
+          "lease_cancellation_requested": 29,
+          "region_reassigned": 70,
+          "reservation_retired": 15,
+          "tracking_recovery": 9,
+          "availability_resume": 1,
+          "region_yielded": 12,
+          "network_partition": 3,
+          "network_recovered": 3,
+          "process_restart_requested": 1,
+          "incarnation_ready": 1,
+          "peer_rejoined": 2,
+          "motion_suspended": 13,
+          "motion_resumed": 12,
+          "cached_route_switched": 1
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 1136.0,
+            "distance_m": 167.5667553819003,
+            "moving_fraction": 0.4252288732394362
+          },
+          "1": {
+            "sampled_duration_s": 1136.0,
+            "distance_m": 141.73873732703242,
+            "moving_fraction": 0.3490404929577467
+          },
+          "2": {
+            "sampled_duration_s": 1136.0,
+            "distance_m": 144.41939190688555,
+            "moving_fraction": 0.3728609154929569
+          }
+        },
+        "planning_wall_s": {
+          "count": 512,
+          "median": 3.8671295169997393,
+          "p95": 8.240987623749652,
+          "maximum": 11.745870255999762
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 512,
+            "median": 2.038500019807543e-05,
+            "p95": 5.269924981803341e-05,
+            "maximum": 0.008394027999656828
+          },
+          "hierarchy": {
+            "count": 512,
+            "median": 0.2198901609999666,
+            "p95": 0.4390047593499275,
+            "maximum": 0.7366866600000321
+          },
+          "topology": {
+            "count": 512,
+            "median": 0.7762194375000036,
+            "p95": 2.6542057678498847,
+            "maximum": 4.693550479999885
+          },
+          "tour": {
+            "count": 512,
+            "median": 0.46652012299978196,
+            "p95": 2.6424097879501915,
+            "maximum": 3.2188969789999646
+          },
+          "pair": {
+            "count": 512,
+            "median": 0.0939968290001616,
+            "p95": 0.27303415724993557,
+            "maximum": 0.41983364499992604
+          },
+          "view": {
+            "count": 512,
+            "median": 0.8412089575001573,
+            "p95": 1.7593061060000081,
+            "maximum": 4.917793462000191
+          },
+          "trajectory": {
+            "count": 512,
+            "median": 0.9203599504999147,
+            "p95": 2.8077860530500858,
+            "maximum": 4.455675560000145
+          }
+        },
+        "between_views_wait_s": {
+          "count": 302,
+          "median": 2.033999999999992,
+          "p95": 11.178399999999998,
+          "maximum": 23.600000000000023
+        },
+        "commits_per_region": {
+          "50": 4,
+          "39": 2,
+          "58": 6,
+          "42": 1,
+          "41": 1,
+          "60": 3,
+          "70": 3,
+          "57": 1,
+          "56": 2,
+          "81": 2,
+          "89": 2,
+          "55": 1,
+          "77": 4,
+          "-100": 3,
+          "62": 4,
+          "76": 2,
+          "43": 3,
+          "69": 2,
+          "78": 2,
+          "97": 2,
+          "71": 6,
+          "75": 1,
+          "63": 7,
+          "98": 3,
+          "64": 1,
+          "73": 6,
+          "118": 7,
+          "100": 3,
+          "-102": 1,
+          "114": 3,
+          "99": 1,
+          "101": 4,
+          "113": 1,
+          "116": 6,
+          "141": 6,
+          "94": 2,
+          "4": 8,
+          "92": 3,
+          "124": 6,
+          "95": 2,
+          "117": 5,
+          "123": 2,
+          "186": 2,
+          "121": 6,
+          "189": 2,
+          "-101": 3,
+          "190": 6,
+          "120": 2,
+          "115": 6,
+          "140": 11,
+          "159": 4,
+          "49": 1,
+          "185": 1,
+          "160": 2,
+          "162": 3,
+          "211": 1,
+          "187": 1,
+          "192": 1,
+          "182": 3,
+          "169": 2,
+          "181": 1,
+          "163": 3,
+          "150": 2,
+          "40": 2,
+          "148": 4,
+          "44": 1,
+          "144": 3,
+          "84": 7,
+          "147": 2,
+          "164": 3,
+          "104": 3,
+          "146": 4,
+          "179": 1,
+          "103": 6,
+          "184": 5,
+          "204": 4,
+          "119": 7,
+          "161": 4,
+          "222": 4,
+          "219": 6,
+          "203": 2,
+          "246": 8,
+          "122": 1,
+          "240": 3,
+          "220": 1,
+          "260": 1,
+          "228": 4,
+          "261": 2,
+          "221": 2,
+          "226": 1,
+          "85": 4,
+          "245": 5,
+          "259": 2,
+          "262": 1,
+          "225": 1,
+          "243": 2,
+          "227": 1,
+          "86": 5,
+          "244": 2,
+          "268": 4,
+          "88": 2,
+          "250": 2,
+          "111": 1
+        },
+        "repeated_region_commits": 217,
+        "committed_priority": {
+          "count": 0,
+          "remote_proxy_count": 0,
+          "predicted_gain_m3": {
+            "count": 0
+          },
+          "waiting_s": {
+            "count": 0
+          },
+          "aging_fraction_of_score": {
+            "count": 0
+          },
+          "aging_over_80_percent_count": 0
+        },
+        "regional_feedback": {
+          "count": 0,
+          "low_yield": 0,
+          "zero_gain": 0,
+          "observed_local_cells": {
+            "count": 0
+          }
+        }
+      },
+      "after_600": {
+        "begin": 615.5,
+        "end": 1646.505,
+        "duration_s": 1031.005,
+        "event_counts": {
+          "path_proposed": 219,
+          "view_observed": 193,
+          "path_committed": 203,
+          "next_view_ready": 103,
+          "pair_cvrp_prepared": 62,
+          "next_view_adopted": 55,
+          "pair_cvrp_committed": 84,
+          "region_low_yield": 61,
+          "region_yielded": 10,
+          "lease_cancellation_requested": 26,
+          "reservation_retired": 10,
+          "cached_route_switched": 3,
+          "motion_suspended": 16,
+          "region_reassigned": 73,
+          "motion_resumed": 16,
+          "tracking_recovery": 5
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 1031.0,
+            "distance_m": 153.02184055506177,
+            "moving_fraction": 0.4270514064015511
+          },
+          "1": {
+            "sampled_duration_s": 1031.0,
+            "distance_m": 105.2546483852793,
+            "moving_fraction": 0.26870029097963105
+          },
+          "2": {
+            "sampled_duration_s": 1031.0,
+            "distance_m": 127.58968469864513,
+            "moving_fraction": 0.36596508244422843
+          }
+        },
+        "planning_wall_s": {
+          "count": 341,
+          "median": 5.637547409000035,
+          "p95": 10.092498190000242,
+          "maximum": 17.43512492299942
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 341,
+            "median": 2.059400003417977e-05,
+            "p95": 7.145200015656883e-05,
+            "maximum": 0.008394027999656828
+          },
+          "hierarchy": {
+            "count": 341,
+            "median": 0.34627342500061786,
+            "p95": 0.49862844000017503,
+            "maximum": 0.6052948299993659
+          },
+          "topology": {
+            "count": 341,
+            "median": 1.7747966639999504,
+            "p95": 4.045367591000286,
+            "maximum": 6.456070883999928
+          },
+          "tour": {
+            "count": 341,
+            "median": 1.0224012380003842,
+            "p95": 2.797122239000146,
+            "maximum": 3.2188969789999646
+          },
+          "pair": {
+            "count": 341,
+            "median": 0.11568981599975814,
+            "p95": 0.300045823000346,
+            "maximum": 0.41983364499992604
+          },
+          "view": {
+            "count": 341,
+            "median": 0.8936056210000061,
+            "p95": 2.223146851999445,
+            "maximum": 9.770037414999933
+          },
+          "trajectory": {
+            "count": 341,
+            "median": 0.9149804710004901,
+            "p95": 2.8971941659997356,
+            "maximum": 4.498829958999522
+          }
+        },
+        "between_views_wait_s": {
+          "count": 192,
+          "median": 3.9435000000000286,
+          "p95": 17.064149999999994,
+          "maximum": 40.06000000000017
+        },
+        "commits_per_region": {
+          "144": 3,
+          "148": 2,
+          "84": 7,
+          "147": 2,
+          "164": 3,
+          "104": 3,
+          "146": 4,
+          "179": 1,
+          "103": 6,
+          "140": 7,
+          "184": 5,
+          "204": 5,
+          "119": 7,
+          "161": 4,
+          "222": 5,
+          "219": 6,
+          "203": 2,
+          "121": 3,
+          "246": 8,
+          "122": 1,
+          "240": 3,
+          "220": 2,
+          "260": 2,
+          "228": 4,
+          "261": 2,
+          "221": 2,
+          "226": 1,
+          "85": 4,
+          "245": 7,
+          "259": 2,
+          "262": 1,
+          "225": 1,
+          "243": 2,
+          "227": 1,
+          "86": 5,
+          "244": 2,
+          "268": 4,
+          "88": 2,
+          "250": 6,
+          "111": 5,
+          "-101": 3,
+          "248": 3,
+          "112": 1,
+          "110": 1,
+          "205": 2,
+          "108": 1,
+          "107": 1,
+          "223": 2,
+          "206": 1,
+          "87": 2,
+          "70": 4,
+          "209": 6,
+          "263": 2,
+          "224": 2,
+          "72": 1,
+          "207": 1,
+          "210": 2,
+          "91": 2,
+          "208": 5,
+          "189": 5,
+          "77": 1,
+          "78": 1,
+          "185": 1,
+          "98": 1,
+          "190": 1,
+          "163": 1,
+          "153": 4,
+          "143": 1,
+          "154": 1,
+          "195": 1,
+          "216": 1
+        },
+        "repeated_region_commits": 132,
+        "committed_priority": {
+          "count": 0,
+          "remote_proxy_count": 0,
+          "predicted_gain_m3": {
+            "count": 0
+          },
+          "waiting_s": {
+            "count": 0
+          },
+          "aging_fraction_of_score": {
+            "count": 0
+          },
+          "aging_over_80_percent_count": 0
+        },
+        "regional_feedback": {
+          "count": 0,
+          "low_yield": 0,
+          "zero_gain": 0,
+          "observed_local_cells": {
+            "count": 0
+          }
+        }
+      },
+      "tail_90_to_end": {
+        "begin": 1151.5030000000002,
+        "end": 1646.505,
+        "duration_s": 495.00199999999995,
+        "event_counts": {
+          "view_observed": 68,
+          "path_proposed": 85,
+          "next_view_adopted": 13,
+          "pair_cvrp_committed": 26,
+          "motion_resumed": 5,
+          "path_committed": 75,
+          "motion_suspended": 4,
+          "next_view_ready": 38,
+          "pair_cvrp_prepared": 18,
+          "tracking_recovery": 3,
+          "region_low_yield": 29,
+          "lease_cancellation_requested": 17,
+          "reservation_retired": 7,
+          "region_reassigned": 25,
+          "region_yielded": 5,
+          "cached_route_switched": 2
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 494.99,
+            "distance_m": 73.03486244692559,
+            "moving_fraction": 0.4288571486292643
+          },
+          "1": {
+            "sampled_duration_s": 494.99,
+            "distance_m": 43.45023396967228,
+            "moving_fraction": 0.23624719691306814
+          },
+          "2": {
+            "sampled_duration_s": 494.99,
+            "distance_m": 77.22942959563335,
+            "moving_fraction": 0.4469181195579714
+          }
+        },
+        "planning_wall_s": {
+          "count": 136,
+          "median": 6.153292778500145,
+          "p95": 12.072840638249772,
+          "maximum": 17.43512492299942
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 136,
+            "median": 2.0718499854410766e-05,
+            "p95": 6.056174970581196e-05,
+            "maximum": 0.007041310999738926
+          },
+          "hierarchy": {
+            "count": 136,
+            "median": 0.37465900749975845,
+            "p95": 0.5010090985001625,
+            "maximum": 0.6052948299993659
+          },
+          "topology": {
+            "count": 136,
+            "median": 2.3265726230001746,
+            "p95": 4.968091973000128,
+            "maximum": 6.456070883999928
+          },
+          "tour": {
+            "count": 136,
+            "median": 1.0247784885000328,
+            "p95": 1.8307698964999872,
+            "maximum": 2.3506574500006536
+          },
+          "pair": {
+            "count": 136,
+            "median": 0.11574736549982845,
+            "p95": 0.21988593974947435,
+            "maximum": 0.3111494140002833
+          },
+          "view": {
+            "count": 136,
+            "median": 0.9458831634997296,
+            "p95": 4.981455579500562,
+            "maximum": 9.770037414999933
+          },
+          "trajectory": {
+            "count": 136,
+            "median": 0.9066044300002432,
+            "p95": 3.072692006750003,
+            "maximum": 4.498829958999522
+          }
+        },
+        "between_views_wait_s": {
+          "count": 67,
+          "median": 6.850999999999885,
+          "p95": 17.672099999999954,
+          "maximum": 40.06000000000017
+        },
+        "commits_per_region": {
+          "111": 4,
+          "250": 4,
+          "-101": 3,
+          "248": 3,
+          "112": 1,
+          "110": 1,
+          "205": 2,
+          "108": 1,
+          "245": 2,
+          "107": 1,
+          "223": 2,
+          "206": 1,
+          "87": 2,
+          "70": 4,
+          "209": 6,
+          "263": 2,
+          "224": 2,
+          "72": 1,
+          "207": 1,
+          "210": 2,
+          "91": 2,
+          "208": 5,
+          "222": 1,
+          "189": 5,
+          "204": 1,
+          "77": 1,
+          "78": 1,
+          "185": 1,
+          "98": 1,
+          "190": 1,
+          "163": 1,
+          "153": 4,
+          "220": 1,
+          "143": 1,
+          "154": 1,
+          "195": 1,
+          "260": 1,
+          "216": 1
+        },
+        "repeated_region_commits": 37,
+        "committed_priority": {
+          "count": 0,
+          "remote_proxy_count": 0,
+          "predicted_gain_m3": {
+            "count": 0
+          },
+          "waiting_s": {
+            "count": 0
+          },
+          "aging_fraction_of_score": {
+            "count": 0
+          },
+          "aging_over_80_percent_count": 0
+        },
+        "regional_feedback": {
+          "count": 0,
+          "low_yield": 0,
+          "zero_gain": 0,
+          "observed_local_cells": {
+            "count": 0
+          }
+        }
+      }
+    }
+  },
+  "current": {
+    "status": "COMPLETE",
+    "coverage": 0.9504514499308744,
+    "observed_elapsed_s": 2384.127,
+    "t90_s": 2119.502,
+    "t95_s": 2379.999,
+    "tail_90_to_95_s": 260.49699999999984,
+    "time_limit_reached": "COMPLETE",
+    "contacts": 0,
+    "min_separation_m": 1.5927297278982382,
+    "distance_m": 916.1482175447994,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589,
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "phases": {
+      "whole": {
+        "begin": 14.501000000000001,
+        "end": 2394.5,
+        "duration_s": 2379.999,
+        "event_counts": {
+          "path_proposed": 290,
+          "path_committed": 265,
+          "next_view_ready": 240,
+          "view_observed": 221,
+          "region_service": 180,
+          "next_view_adopted": 87,
+          "pair_cvrp_prepared": 97,
+          "pair_cvrp_committed": 114,
+          "lease_cancellation_requested": 66,
+          "reservation_retired": 42,
+          "tracking_recovery": 22,
+          "region_low_yield": 22,
+          "availability_pause": 1,
+          "region_reassigned": 72,
+          "availability_resume": 1,
+          "network_partition": 3,
+          "network_recovered": 3,
+          "process_restart_requested": 1,
+          "incarnation_ready": 1,
+          "peer_rejoined": 2,
+          "cached_route_switched": 12,
+          "motion_suspended": 2,
+          "motion_resumed": 2,
+          "region_yielded": 2
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 2379.98,
+            "distance_m": 303.9352188282415,
+            "moving_fraction": 0.4302136992747835
+          },
+          "1": {
+            "sampled_duration_s": 2379.9799999999996,
+            "distance_m": 255.82144543113725,
+            "moving_fraction": 0.29166211480768756
+          },
+          "2": {
+            "sampled_duration_s": 2379.98,
+            "distance_m": 351.0271258877488,
+            "moving_fraction": 0.40552861788754485
+          }
+        },
+        "planning_wall_s": {
+          "count": 609,
+          "median": 8.524326914000085,
+          "p95": 18.92759065640021,
+          "maximum": 25.31507320699984
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 609,
+            "median": 2.351100010855589e-05,
+            "p95": 5.609040017588998e-05,
+            "maximum": 0.006531060000042999
+          },
+          "hierarchy": {
+            "count": 609,
+            "median": 0.3744600919999357,
+            "p95": 0.5941398525998012,
+            "maximum": 0.8767462499999965
+          },
+          "topology": {
+            "count": 609,
+            "median": 1.9076848519998748,
+            "p95": 4.724457205599902,
+            "maximum": 6.344093667999914
+          },
+          "priority": {
+            "count": 609,
+            "median": 1.1608213289996456,
+            "p95": 1.95748418279984,
+            "maximum": 3.174861598000007
+          },
+          "tour": {
+            "count": 609,
+            "median": 1.162527480000108,
+            "p95": 3.4815362907998875,
+            "maximum": 6.161862605999886
+          },
+          "pair": {
+            "count": 609,
+            "median": 0.10962866199997734,
+            "p95": 0.26180109259985335,
+            "maximum": 0.4474029350003548
+          },
+          "view": {
+            "count": 609,
+            "median": 1.2216795770000317,
+            "p95": 6.490306992400021,
+            "maximum": 11.170727797999916
+          },
+          "trajectory": {
+            "count": 609,
+            "median": 1.5990291100006289,
+            "p95": 5.2448201707995405,
+            "maximum": 8.247760097000537
+          }
+        },
+        "between_views_wait_s": {
+          "count": 219,
+          "median": 3.229000000000042,
+          "p95": 63.390800000000006,
+          "maximum": 267.106
+        },
+        "commits_per_region": {
+          "77": 5,
+          "49": 5,
+          "42": 3,
+          "76": 3,
+          "64": 1,
+          "75": 2,
+          "91": 2,
+          "65": 3,
+          "-102": 4,
+          "115": 4,
+          "92": 2,
+          "93": 3,
+          "117": 5,
+          "47": 2,
+          "50": 2,
+          "155": 3,
+          "94": 1,
+          "113": 1,
+          "73": 1,
+          "177": 3,
+          "176": 2,
+          "74": 1,
+          "196": 1,
+          "8": 1,
+          "7": 3,
+          "96": 1,
+          "58": 3,
+          "95": 1,
+          "118": 4,
+          "88": 3,
+          "116": 1,
+          "135": 1,
+          "85": 2,
+          "72": 2,
+          "154": 1,
+          "104": 1,
+          "43": 2,
+          "153": 2,
+          "152": 1,
+          "151": 2,
+          "61": 2,
+          "171": 1,
+          "81": 1,
+          "79": 1,
+          "172": 1,
+          "90": 1,
+          "190": 1,
+          "70": 1,
+          "169": 2,
+          "170": 1,
+          "229": 3,
+          "87": 2,
+          "71": 1,
+          "-101": 4,
+          "230": 2,
+          "108": 1,
+          "251": 3,
+          "110": 3,
+          "231": 1,
+          "112": 4,
+          "252": 1,
+          "111": 1,
+          "233": 1,
+          "57": 4,
+          "234": 2,
+          "257": 1,
+          "258": 2,
+          "218": 1,
+          "55": 1,
+          "97": 2,
+          "249": 3,
+          "136": 2,
+          "41": 2,
+          "213": 2,
+          "157": 1,
+          "-100": 12,
+          "109": 1,
+          "217": 2,
+          "193": 1,
+          "158": 8,
+          "237": 8,
+          "178": 1,
+          "63": 2,
+          "78": 4,
+          "44": 2,
+          "137": 2,
+          "39": 1,
+          "98": 2,
+          "197": 2,
+          "3": 2,
+          "69": 2,
+          "253": 2,
+          "103": 1,
+          "89": 8,
+          "147": 1,
+          "276": 1,
+          "138": 2,
+          "275": 1,
+          "198": 2,
+          "107": 1,
+          "238": 3,
+          "277": 1,
+          "250": 1,
+          "209": 2,
+          "210": 2,
+          "187": 1,
+          "129": 2,
+          "148": 2,
+          "102": 1,
+          "181": 1,
+          "161": 1,
+          "101": 1,
+          "273": 4,
+          "100": 1,
+          "162": 1,
+          "180": 2,
+          "188": 1,
+          "128": 2,
+          "159": 1,
+          "182": 7,
+          "6": 2,
+          "179": 2,
+          "127": 1
+        },
+        "repeated_region_commits": 142,
+        "committed_priority": {
+          "count": 245,
+          "remote_proxy_count": 27,
+          "predicted_gain_m3": {
+            "count": 245,
+            "median": 0.8099999999999998,
+            "p95": 1.3499999999999999,
+            "maximum": 1.5119999999999998
+          },
+          "waiting_s": {
+            "count": 245,
+            "median": 499.505,
+            "p95": 1949.1102,
+            "maximum": 2135.362
+          },
+          "aging_fraction_of_score": {
+            "count": 244,
+            "median": 0.8727185130256916,
+            "p95": 0.9975771893482015,
+            "maximum": 0.9996312246355458
+          },
+          "aging_over_80_percent_count": 136
+        },
+        "regional_feedback": {
+          "count": 180,
+          "low_yield": 22,
+          "zero_gain": 13,
+          "observed_local_cells": {
+            "count": 180,
+            "median": 75.0,
+            "p95": 348.7499999999984,
+            "maximum": 3048.0
+          }
+        }
+      },
+      "before_90": {
+        "begin": 14.501000000000001,
+        "end": 2134.003,
+        "duration_s": 2119.502,
+        "event_counts": {
+          "path_proposed": 266,
+          "path_committed": 242,
+          "next_view_ready": 230,
+          "view_observed": 201,
+          "region_service": 174,
+          "next_view_adopted": 82,
+          "pair_cvrp_prepared": 86,
+          "pair_cvrp_committed": 96,
+          "lease_cancellation_requested": 62,
+          "reservation_retired": 39,
+          "tracking_recovery": 20,
+          "region_low_yield": 21,
+          "availability_pause": 1,
+          "region_reassigned": 72,
+          "availability_resume": 1,
+          "network_partition": 3,
+          "network_recovered": 3,
+          "process_restart_requested": 1,
+          "incarnation_ready": 1,
+          "peer_rejoined": 2,
+          "cached_route_switched": 12,
+          "motion_suspended": 2,
+          "motion_resumed": 2,
+          "region_yielded": 1
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 2119.4900000000002,
+            "distance_m": 285.1403782355384,
+            "moving_fraction": 0.44425781673893194
+          },
+          "1": {
+            "sampled_duration_s": 2119.4900000000002,
+            "distance_m": 230.70921465122268,
+            "moving_fraction": 0.2947501521592455
+          },
+          "2": {
+            "sampled_duration_s": 2119.4900000000002,
+            "distance_m": 336.5884385982396,
+            "moving_fraction": 0.44023798177863543
+          }
+        },
+        "planning_wall_s": {
+          "count": 554,
+          "median": 8.276679582499924,
+          "p95": 17.22918081320006,
+          "maximum": 22.291431678000208
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 554,
+            "median": 2.321800002391683e-05,
+            "p95": 5.980604994704212e-05,
+            "maximum": 0.006531060000042999
+          },
+          "hierarchy": {
+            "count": 554,
+            "median": 0.35552981350008395,
+            "p95": 0.5861011729500435,
+            "maximum": 0.8767462499999965
+          },
+          "topology": {
+            "count": 554,
+            "median": 1.747553436999965,
+            "p95": 4.388839179099887,
+            "maximum": 6.344093667999914
+          },
+          "priority": {
+            "count": 554,
+            "median": 1.1459737089996906,
+            "p95": 1.9710404803000077,
+            "maximum": 3.174861598000007
+          },
+          "tour": {
+            "count": 554,
+            "median": 1.1649130600000035,
+            "p95": 3.4160633206500166,
+            "maximum": 5.018977217000156
+          },
+          "pair": {
+            "count": 554,
+            "median": 0.10986780199993973,
+            "p95": 0.26137190234993574,
+            "maximum": 0.4474029350003548
+          },
+          "view": {
+            "count": 554,
+            "median": 1.196172302500031,
+            "p95": 5.8882189059001355,
+            "maximum": 10.221263392999845
+          },
+          "trajectory": {
+            "count": 554,
+            "median": 1.579287623499937,
+            "p95": 5.068540601249879,
+            "maximum": 7.035330088000023
+          }
+        },
+        "between_views_wait_s": {
+          "count": 199,
+          "median": 3.133000000000038,
+          "p95": 61.898499999999956,
+          "maximum": 267.106
+        },
+        "commits_per_region": {
+          "77": 5,
+          "49": 5,
+          "42": 3,
+          "76": 3,
+          "64": 1,
+          "75": 2,
+          "91": 2,
+          "65": 3,
+          "-102": 4,
+          "115": 4,
+          "92": 2,
+          "93": 3,
+          "117": 5,
+          "47": 2,
+          "50": 2,
+          "155": 3,
+          "94": 1,
+          "113": 1,
+          "73": 1,
+          "177": 3,
+          "176": 2,
+          "74": 1,
+          "196": 1,
+          "8": 1,
+          "7": 3,
+          "96": 1,
+          "58": 3,
+          "95": 1,
+          "118": 4,
+          "88": 3,
+          "116": 1,
+          "135": 1,
+          "85": 2,
+          "72": 2,
+          "154": 1,
+          "104": 1,
+          "43": 2,
+          "153": 2,
+          "152": 1,
+          "151": 2,
+          "61": 2,
+          "171": 1,
+          "81": 1,
+          "79": 1,
+          "172": 1,
+          "90": 1,
+          "190": 1,
+          "70": 1,
+          "169": 2,
+          "170": 1,
+          "229": 3,
+          "87": 2,
+          "71": 1,
+          "-101": 3,
+          "230": 2,
+          "108": 1,
+          "251": 1,
+          "110": 3,
+          "231": 1,
+          "112": 4,
+          "252": 1,
+          "111": 1,
+          "233": 1,
+          "57": 4,
+          "234": 2,
+          "257": 1,
+          "258": 2,
+          "218": 1,
+          "55": 1,
+          "97": 2,
+          "249": 3,
+          "136": 2,
+          "41": 2,
+          "213": 2,
+          "157": 1,
+          "-100": 11,
+          "109": 1,
+          "217": 2,
+          "193": 1,
+          "158": 4,
+          "237": 8,
+          "178": 1,
+          "63": 2,
+          "78": 4,
+          "44": 2,
+          "137": 2,
+          "39": 1,
+          "98": 2,
+          "197": 2,
+          "3": 2,
+          "69": 2,
+          "253": 2,
+          "103": 1,
+          "89": 8,
+          "147": 1,
+          "276": 1,
+          "138": 2,
+          "275": 1,
+          "198": 2,
+          "107": 1,
+          "238": 3,
+          "277": 1,
+          "250": 1,
+          "209": 2,
+          "210": 2,
+          "187": 1,
+          "129": 2,
+          "148": 2,
+          "102": 1,
+          "181": 1,
+          "161": 1,
+          "101": 1,
+          "273": 4,
+          "100": 1,
+          "162": 1,
+          "180": 2,
+          "188": 1
+        },
+        "repeated_region_commits": 125,
+        "committed_priority": {
+          "count": 224,
+          "remote_proxy_count": 14,
+          "predicted_gain_m3": {
+            "count": 224,
+            "median": 0.8099999999999998,
+            "p95": 1.3499999999999999,
+            "maximum": 1.5119999999999998
+          },
+          "waiting_s": {
+            "count": 224,
+            "median": 414.0,
+            "p95": 1517.5751500000001,
+            "maximum": 1964.22
+          },
+          "aging_fraction_of_score": {
+            "count": 223,
+            "median": 0.8188078442080765,
+            "p95": 0.9966977785539728,
+            "maximum": 0.9995931580663571
+          },
+          "aging_over_80_percent_count": 115
+        },
+        "regional_feedback": {
+          "count": 174,
+          "low_yield": 21,
+          "zero_gain": 12,
+          "observed_local_cells": {
+            "count": 174,
+            "median": 75.0,
+            "p95": 254.5999999999999,
+            "maximum": 3048.0
+          }
+        }
+      },
+      "after_600": {
+        "begin": 614.501,
+        "end": 2394.5,
+        "duration_s": 1779.999,
+        "event_counts": {
+          "path_committed": 145,
+          "view_observed": 111,
+          "region_service": 76,
+          "path_proposed": 164,
+          "next_view_adopted": 31,
+          "next_view_ready": 135,
+          "pair_cvrp_prepared": 42,
+          "lease_cancellation_requested": 54,
+          "reservation_retired": 34,
+          "tracking_recovery": 18,
+          "pair_cvrp_committed": 44,
+          "region_low_yield": 19,
+          "motion_suspended": 2,
+          "region_reassigned": 52,
+          "motion_resumed": 2,
+          "cached_route_switched": 10,
+          "region_yielded": 2
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 1779.99,
+            "distance_m": 211.51779605971103,
+            "moving_fraction": 0.4198225832729391
+          },
+          "1": {
+            "sampled_duration_s": 1779.99,
+            "distance_m": 168.60484944314703,
+            "moving_fraction": 0.25714751206467434
+          },
+          "2": {
+            "sampled_duration_s": 1779.99,
+            "distance_m": 250.08914217974703,
+            "moving_fraction": 0.39721571469502587
+          }
+        },
+        "planning_wall_s": {
+          "count": 387,
+          "median": 10.601473270000042,
+          "p95": 19.809236866800347,
+          "maximum": 25.31507320699984
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 387,
+            "median": 2.5928000013664132e-05,
+            "p95": 5.9747999875980856e-05,
+            "maximum": 0.006531060000042999
+          },
+          "hierarchy": {
+            "count": 387,
+            "median": 0.4396502180002244,
+            "p95": 0.6162269665000167,
+            "maximum": 0.8767462499999965
+          },
+          "topology": {
+            "count": 387,
+            "median": 2.8525465739999163,
+            "p95": 4.956562499399661,
+            "maximum": 6.344093667999914
+          },
+          "priority": {
+            "count": 387,
+            "median": 1.214860293999891,
+            "p95": 1.9105716026002026,
+            "maximum": 2.5921810580002784
+          },
+          "tour": {
+            "count": 387,
+            "median": 1.29630689699934,
+            "p95": 3.7848376711999663,
+            "maximum": 6.161862605999886
+          },
+          "pair": {
+            "count": 387,
+            "median": 0.14497081099989373,
+            "p95": 0.2721360013000321,
+            "maximum": 0.4474029350003548
+          },
+          "view": {
+            "count": 387,
+            "median": 1.611989700000322,
+            "p95": 8.49055579459991,
+            "maximum": 11.170727797999916
+          },
+          "trajectory": {
+            "count": 387,
+            "median": 2.315259094999874,
+            "p95": 5.57379374839952,
+            "maximum": 8.247760097000537
+          }
+        },
+        "between_views_wait_s": {
+          "count": 110,
+          "median": 7.522000000000048,
+          "p95": 84.3797,
+          "maximum": 267.106
+        },
+        "commits_per_region": {
+          "249": 2,
+          "117": 3,
+          "213": 2,
+          "157": 1,
+          "-100": 12,
+          "109": 1,
+          "217": 2,
+          "193": 1,
+          "158": 8,
+          "237": 8,
+          "178": 1,
+          "63": 2,
+          "78": 4,
+          "44": 2,
+          "137": 2,
+          "41": 1,
+          "39": 1,
+          "98": 2,
+          "42": 1,
+          "88": 2,
+          "77": 1,
+          "197": 2,
+          "110": 2,
+          "57": 2,
+          "-102": 2,
+          "3": 2,
+          "69": 2,
+          "253": 2,
+          "103": 1,
+          "58": 1,
+          "89": 8,
+          "-101": 2,
+          "147": 1,
+          "276": 1,
+          "138": 2,
+          "177": 1,
+          "275": 1,
+          "198": 2,
+          "107": 1,
+          "238": 3,
+          "277": 1,
+          "250": 1,
+          "229": 1,
+          "209": 2,
+          "210": 2,
+          "187": 1,
+          "129": 2,
+          "148": 2,
+          "102": 1,
+          "92": 1,
+          "181": 1,
+          "112": 2,
+          "161": 1,
+          "101": 1,
+          "273": 4,
+          "100": 1,
+          "162": 1,
+          "118": 2,
+          "97": 1,
+          "180": 2,
+          "188": 1,
+          "128": 2,
+          "159": 1,
+          "182": 7,
+          "6": 2,
+          "179": 2,
+          "127": 1,
+          "251": 2
+        },
+        "repeated_region_commits": 77,
+        "committed_priority": {
+          "count": 129,
+          "remote_proxy_count": 24,
+          "predicted_gain_m3": {
+            "count": 129,
+            "median": 0.6479999999999999,
+            "p95": 1.3229999999999997,
+            "maximum": 1.4579999999999997
+          },
+          "waiting_s": {
+            "count": 129,
+            "median": 1104.9660000000001,
+            "p95": 1999.1814,
+            "maximum": 2135.362
+          },
+          "aging_fraction_of_score": {
+            "count": 128,
+            "median": 0.9819861744542582,
+            "p95": 0.9990353864149539,
+            "maximum": 0.9996312246355458
+          },
+          "aging_over_80_percent_count": 117
+        },
+        "regional_feedback": {
+          "count": 76,
+          "low_yield": 19,
+          "zero_gain": 13,
+          "observed_local_cells": {
+            "count": 76,
+            "median": 39.5,
+            "p95": 641.25,
+            "maximum": 1592.0
+          }
+        }
+      },
+      "tail_90_to_end": {
+        "begin": 2134.003,
+        "end": 2394.5,
+        "duration_s": 260.49699999999984,
+        "event_counts": {
+          "view_observed": 20,
+          "region_service": 6,
+          "pair_cvrp_prepared": 11,
+          "path_proposed": 24,
+          "pair_cvrp_committed": 18,
+          "path_committed": 23,
+          "region_low_yield": 1,
+          "next_view_ready": 10,
+          "lease_cancellation_requested": 4,
+          "next_view_adopted": 5,
+          "reservation_retired": 3,
+          "tracking_recovery": 2,
+          "region_yielded": 1
+        },
+        "motion": {
+          "0": {
+            "sampled_duration_s": 260.48,
+            "distance_m": 18.794793492356305,
+            "moving_fraction": 0.31595515970516036
+          },
+          "1": {
+            "sampled_duration_s": 260.48,
+            "distance_m": 25.106710514460428,
+            "moving_fraction": 0.266507985257989
+          },
+          "2": {
+            "sampled_duration_s": 260.48,
+            "distance_m": 14.434626791173796,
+            "moving_fraction": 0.12308046683046311
+          }
+        },
+        "planning_wall_s": {
+          "count": 55,
+          "median": 10.583561131999886,
+          "p95": 23.816064002200026,
+          "maximum": 25.31507320699984
+        },
+        "stage_wall_s": {
+          "map": {
+            "count": 55,
+            "median": 2.5178000214509666e-05,
+            "p95": 4.9430600029154434e-05,
+            "maximum": 5.477400009112898e-05
+          },
+          "hierarchy": {
+            "count": 55,
+            "median": 0.48879115900035686,
+            "p95": 0.6037308969003788,
+            "maximum": 0.6317223480000393
+          },
+          "topology": {
+            "count": 55,
+            "median": 2.989981679000266,
+            "p95": 5.780095765500027,
+            "maximum": 6.229286975999457
+          },
+          "priority": {
+            "count": 55,
+            "median": 1.2327420029996574,
+            "p95": 1.8268619213000874,
+            "maximum": 1.9561321499995756
+          },
+          "tour": {
+            "count": 55,
+            "median": 1.1372613740004454,
+            "p95": 3.759616422199996,
+            "maximum": 6.161862605999886
+          },
+          "pair": {
+            "count": 55,
+            "median": 0.1082780630003981,
+            "p95": 0.2621038551998026,
+            "maximum": 0.2780921120001949
+          },
+          "view": {
+            "count": 55,
+            "median": 2.5885729860001447,
+            "p95": 10.34385081150008,
+            "maximum": 11.170727797999916
+          },
+          "trajectory": {
+            "count": 55,
+            "median": 1.6518792520000716,
+            "p95": 6.607548068799951,
+            "maximum": 8.247760097000537
+          }
+        },
+        "between_views_wait_s": {
+          "count": 19,
+          "median": 6.699000000000069,
+          "p95": 137.34350000000012,
+          "maximum": 139.5260000000003
+        },
+        "commits_per_region": {
+          "128": 2,
+          "159": 1,
+          "182": 7,
+          "6": 2,
+          "-100": 1,
+          "158": 4,
+          "-101": 1,
+          "179": 2,
+          "127": 1,
+          "251": 2
+        },
+        "repeated_region_commits": 13,
+        "committed_priority": {
+          "count": 21,
+          "remote_proxy_count": 13,
+          "predicted_gain_m3": {
+            "count": 21,
+            "median": 0.9449999999999998,
+            "p95": 1.0259999999999998,
+            "maximum": 1.2419999999999998
+          },
+          "waiting_s": {
+            "count": 21,
+            "median": 1952.791,
+            "p95": 2125.362,
+            "maximum": 2135.362
+          },
+          "aging_fraction_of_score": {
+            "count": 21,
+            "median": 0.993510974493833,
+            "p95": 0.9992207716558743,
+            "maximum": 0.9996312246355458
+          },
+          "aging_over_80_percent_count": 21
+        },
+        "regional_feedback": {
+          "count": 6,
+          "low_yield": 1,
+          "zero_gain": 1,
+          "observed_local_cells": {
+            "count": 6,
+            "median": 134.0,
+            "p95": 1506.0,
+            "maximum": 1592.0
+          }
+        }
+      }
+    }
+  },
+  "change": {
+    "t90_s": {
+      "before": 1136.0030000000002,
+      "after": 2119.502,
+      "reduction_percent": -86.57538756499761
+    },
+    "t95_s": {
+      "before": 1631.005,
+      "after": 2379.999,
+      "reduction_percent": -45.92223812925158
+    },
+    "tail_90_to_95_s": {
+      "before": 495.00199999999995,
+      "after": 260.49699999999984,
+      "reduction_percent": 47.374556062399776
+    },
+    "distance_m": {
+      "before": 652.625140527426,
+      "after": 916.1482175447994,
+      "reduction_percent": -40.37893434574165
+    }
+  },
+  "scope": "One native Gazebo run per version, not a statistical significance claim. Equal physical scene, coverage denominator, sensor model, limits and fault-trigger rules. Asynchronous planning and geometry-dependent fault times can differ.",
+  "phase_note": "Tail begins at the first sampled crossing of 90%. Region revisits can be productive and are not automatically wasted work. Local service feedback is not global unique coverage gain. Planning times are deduplicated telemetry samples, not an exhaustive profiler.",
+  "units": "Mission/coverage times: simulation seconds. Planning stage times: wall seconds. Video: 24x wall-clock recording playback."
+}

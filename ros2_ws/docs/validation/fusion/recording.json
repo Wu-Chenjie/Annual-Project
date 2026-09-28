@@ -1,0 +1,22 @@
+{
+  "source": "live X11 capture of native Gazebo and RViz",
+  "wall_start_unix": 1790195264.2482476,
+  "arranged_wall_unix": 1790195269.3209372,
+  "screen": [
+    1920,
+    1080
+  ],
+  "capture_fps": 10,
+  "playback_speed": 24.0,
+  "speed_basis": "wall clock recording; simulation clock remains visible in RViz",
+  "command": [
+    "python3",
+    "/workspace/ros2_ws/src/annual_swarm/scripts/decentralized_smoke.py",
+    "--output-dir",
+    "/tmp/annual-fusion-native-tenth",
+    "--timeout",
+    "14400.0",
+    "--gui",
+    "--record"
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "historical_event_counts": {
+    "task_assigned": 156,
+    "viewpoint_observed": 127,
+    "task_released": 154,
+    "task_replanned": 9,
+    "task_transferred": 13
+  },
+  "recorded_backup_switches": 0,
+  "dynamic_response": {
+    "trial_start": 2364.502,
+    "first_cancellation_delay_s": 1.0,
+    "first_replacement_authorization_delay_s": 7.998000000000047
+  },
+  "policy_steps": 523,
+  "median_compute_wall_s": 6.9106874529998095,
+  "p95_compute_wall_s": 16.434182213799883,
+  "maximum_full_grid_nodes": 9591,
+  "event_counts": {
+    "client_session": 4,
+    "policy_step": 523,
+    "historical_policy_event": 459,
+    "central_authorization": 150,
+    "lease_cancellation_requested": 19,
+    "reservation_retired": 19,
+    "live_validation_rejected": 6
+  },
+  "cancellation_reasons": {
+    "path_or_tracking_invalidated": 18,
+    "experiment_control": 1
+  },
+  "per_drone": {
+    "0": {
+      "assignments": 108,
+      "unique_tasks": 22,
+      "assignments_after_300": 85,
+      "repeatedly_assigned_tasks": [
+        {
+          "task": 28411,
+          "count": 40
+        },
+        {
+          "task": 31085,
+          "count": 37
+        },
+        {
+          "task": 33171,
+          "count": 3
+        },
+        {
+          "task": 28414,
+          "count": 2
+        },
+        {
+          "task": 32262,
+          "count": 1
+        }
+      ]
+    },
+    "1": {
+      "assignments": 23,
+      "unique_tasks": 14,
+      "assignments_after_300": 7,
+      "repeatedly_assigned_tasks": [
+        {
+          "task": 33171,
+          "count": 4
+        },
+        {
+          "task": 22279,
+          "count": 1
+        },
+        {
+          "task": 21972,
+          "count": 1
+        },
+        {
+          "task": 12731,
+          "count": 1
+        }
+      ]
+    },
+    "2": {
+      "assignments": 25,
+      "unique_tasks": 17,
+      "assignments_after_300": 13,
+      "repeatedly_assigned_tasks": [
+        {
+          "task": 11023,
+          "count": 3
+        },
+        {
+          "task": 22279,
+          "count": 2
+        },
+        {
+          "task": 33171,
+          "count": 1
+        },
+        {
+          "task": 26098,
+          "count": 1
+        },
+        {
+          "task": 22282,
+          "count": 1
+        }
+      ]
+    }
+  },
+  "coverage_after_300": {
+    "first_percent": 46.92519073546229,
+    "last_percent": 53.528819402959606,
+    "min_percent": 46.89105463482907,
+    "max_percent": 53.528819402959606
+  },
+  "note": "Counts are from recorded historical-policy events. Repeat assignment does not alone prove cause; compute time is wall clock, coverage time is simulation clock. Fixed final adapter only."
+}

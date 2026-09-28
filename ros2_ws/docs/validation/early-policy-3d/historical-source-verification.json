@@ -1,0 +1,13 @@
+{
+  "next_project/core/exploration/coordinator.py": true,
+  "next_project/core/exploration/graph.py": true,
+  "next_project/core/exploration/__init__.py": true,
+  "next_project/core/exploration/allocation.py": true,
+  "next_project/core/exploration/mapping.py": true,
+  "ros2_ws/src/annual_swarm/scripts/search_node.py": true,
+  "ros2_ws/src/annual_swarm/scripts/search_smoke.py": true,
+  "ros2_ws/src/annual_swarm/scripts/search_executor_node.py": true,
+  "ros2_ws/src/annual_swarm/launch/search.launch.py": true,
+  "next_project/maps/search_office.json": true,
+  "next_project/maps/search_maze.json": true
+}

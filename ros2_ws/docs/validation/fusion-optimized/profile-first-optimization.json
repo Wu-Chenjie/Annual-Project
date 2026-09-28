@@ -1,0 +1,92 @@
+[
+  {
+    "wall": 1.2167870406992733,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 0,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 1.2167848329991102,
+      "stage_wall_s": {
+        "map": 1.3082753866910934e-05,
+        "hierarchy": 0.028231500182300806,
+        "topology": 0.03347733290866017,
+        "tour": 0.8763990420848131,
+        "pair": 4.58303838968277e-06,
+        "view": 0.15222587483003736,
+        "trajectory": 0.12641533417627215
+      },
+      "anticipatory_view": false
+    }
+  },
+  {
+    "wall": 1.1968809999525547,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 50,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 1.1968787498772144,
+      "stage_wall_s": {
+        "map": 7.62520357966423e-06,
+        "hierarchy": 0.026662458665668964,
+        "topology": 0.019533458165824413,
+        "tour": 0.874247542116791,
+        "pair": 3.874767571687698e-06,
+        "view": 0.15340291615575552,
+        "trajectory": 0.12300416687503457
+      },
+      "anticipatory_view": false
+    }
+  },
+  {
+    "wall": 1.1940711252391338,
+    "tasks": 68,
+    "nodes": 1,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 80,
+      "hgrid_splits": 13,
+      "frontier_clusters": 50,
+      "reused_frontiers": 50,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 17,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 1.194069417193532,
+      "stage_wall_s": {
+        "map": 8.083879947662354e-06,
+        "hierarchy": 0.026056583039462566,
+        "topology": 0.019810083322227,
+        "tour": 0.8804070837795734,
+        "pair": 3.3332034945487976e-06,
+        "view": 0.15186379197984934,
+        "trajectory": 0.11590745765715837
+      },
+      "anticipatory_view": false
+    }
+  }
+]

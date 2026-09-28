@@ -1,0 +1,27 @@
+{
+  "objective": "Improve overall time to 95% while retaining tail cleanup, coverage, physical and protocol safety",
+  "references": {
+    "optimized": "artifacts/fusion/optimized-final",
+    "tail_priority": "artifacts/tail-priority/final"
+  },
+  "implementation": "joint travel/information-completion route, bounded age, distributed observation-presence receipts, budgeted coarse previews",
+  "primary_metric": "t95 simulation seconds from initial scan completion",
+  "secondary_metrics": [
+    "t90",
+    "t95-t90",
+    "distance",
+    "planning wall time",
+    "post-view wait",
+    "actual contact",
+    "tracking",
+    "dynamic response",
+    "communication bytes"
+  ],
+  "time_limits": {
+    "simulation_s": 2400,
+    "wall_s": 14400
+  },
+  "source_manifest": "frozen-source-manifest.json",
+  "no_midrun_source_changes": true,
+  "caveats": "One run per version; asynchronous timing and geometry-dependent fault-trigger times differ. Runtime source includes pre-existing user changes plus current improvement; base HEAD alone is not the runtime identity."
+}

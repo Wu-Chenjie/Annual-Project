@@ -1,0 +1,20 @@
+{
+  "accounting": {
+    "completed": true,
+    "status": "COMPLETE",
+    "auditor_revision": "8c-read-only-interrupted-service-accounting"
+  },
+  "flight_and_coverage": {
+    "completed": true,
+    "passed": true,
+    "status": null
+  },
+  "execution_protocol": {
+    "completed": true,
+    "passed": false,
+    "status": "FAIL",
+    "auditor_revision": "8d-read-only-epoch-bound-execution-and-interrupted-accounting"
+  },
+  "outcome": "COMPLETE",
+  "complete_attempt_accepted": false
+}

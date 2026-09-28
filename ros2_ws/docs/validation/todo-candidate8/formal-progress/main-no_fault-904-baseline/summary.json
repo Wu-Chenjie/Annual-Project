@@ -1,0 +1,298 @@
+{
+  "fleet_size": 3,
+  "agent_ages": {
+    "2": 0.1209999999999809,
+    "0": 0.1209999999999809,
+    "1": 0.12000000000000455
+  },
+  "status": "COMPLETE",
+  "failure_reason": null,
+  "simulation_time": 591.721,
+  "start_time": 16.5,
+  "finish_time": 591.0,
+  "architecture": "fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight",
+  "coverage": 0.9505367901824574,
+  "t90": 394.5,
+  "t95": 574.5,
+  "coverage_target": 0.95,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 2.743675708015071,
+  "distances_m": {
+    "0": 92.63810280832686,
+    "1": 100.65835716463775,
+    "2": 85.82247162248851
+  },
+  "odometry_samples": {
+    "0": 59129,
+    "1": 59127,
+    "2": 59128
+  },
+  "pause_resumed": false,
+  "paused": [],
+  "graph": {
+    "2": {
+      "nodes": 46,
+      "edges": 247,
+      "free_cells": 7066
+    },
+    "0": {
+      "nodes": 46,
+      "edges": 247,
+      "free_cells": 9706
+    },
+    "1": {
+      "nodes": 46,
+      "edges": 247,
+      "free_cells": 7784
+    }
+  },
+  "commits": {
+    "0": 66,
+    "1": 63,
+    "2": 64
+  },
+  "views": {
+    "0": 57,
+    "1": 61,
+    "2": 56
+  },
+  "peer_payload_bytes": {
+    "0": 19101257,
+    "1": 17474268,
+    "2": 18554367
+  },
+  "graph_payload_bytes": {
+    "0": 9210788,
+    "1": 8035951,
+    "2": 8441665
+  },
+  "fusion": {
+    "2": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 240,
+      "hgrid_splits": 39,
+      "frontier_clusters": 55,
+      "reused_frontiers": 47,
+      "history_nodes": 45,
+      "handshake_updates": 296,
+      "delta_applied": 176,
+      "local_regions": 25,
+      "global_regions": 109,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 4.687941213000158,
+      "stage_wall_s": {
+        "map": 1.7334001313429326e-05,
+        "hierarchy": 0.21382178400017438,
+        "topology": 1.4824193390013534,
+        "priority": 0.32695414000045275,
+        "tour": 2.059627330996591,
+        "pair": 3.5000011848751456e-06,
+        "view": 0.5312853940013156,
+        "trajectory": 0.07374814099966898
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 6,
+      "reserved_gain_cells": 54,
+      "team_observed_cells": 69716,
+      "priority_compute": {
+        "raycasts": 80,
+        "refined_regions": 13,
+        "cached_regions": 15,
+        "bound_regions": 63
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.0,
+        "predicted_gain": 0.0,
+        "raw_gain": 0.0,
+        "component_volume": 0.0,
+        "components": [],
+        "repeat_factor": 1.0,
+        "region": 152,
+        "travel_s": 0.0,
+        "wait_s": 451.0010000000001,
+        "aging_multiplier": 1.5,
+        "gain_source": "region_bound",
+        "information_reward": 0.0,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.7428098991877835,
+      "worker_running": true
+    },
+    "0": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 240,
+      "hgrid_splits": 39,
+      "frontier_clusters": 61,
+      "reused_frontiers": 57,
+      "history_nodes": 46,
+      "handshake_updates": 182,
+      "delta_applied": 164,
+      "local_regions": 44,
+      "global_regions": 82,
+      "shared_deferred_regions": 0,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 2.6197966930012626,
+      "stage_wall_s": {
+        "map": 2.9375001759035513e-05,
+        "hierarchy": 0.17768951099787955,
+        "topology": 0.48026938299881294,
+        "priority": 0.49929690200224286,
+        "tour": 0.44618754199836985,
+        "pair": 0.15419475000089733,
+        "view": 0.5705839000002015,
+        "trajectory": 0.2914991219986405
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 142,
+      "team_observed_cells": 69782,
+      "priority_compute": {
+        "raycasts": 104,
+        "refined_regions": 16,
+        "cached_regions": 45,
+        "bound_regions": 44
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.3904523018572313,
+        "predicted_gain": 0.45899999999999996,
+        "raw_gain": 1.2149999999999999,
+        "component_volume": 88.91099999999999,
+        "components": [
+          9
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          22.349999999999998,
+          4.05,
+          1.3499999999999999
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 263,
+        "travel_s": 1.802775637731993,
+        "wait_s": 396.0,
+        "aging_multiplier": 1.5,
+        "gain_source": "local_rays",
+        "information_reward": 1.2895763502704416,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.9086907763159611,
+      "worker_running": false
+    },
+    "1": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 240,
+      "hgrid_splits": 39,
+      "frontier_clusters": 39,
+      "reused_frontiers": 37,
+      "history_nodes": 45,
+      "handshake_updates": 327,
+      "delta_applied": 173,
+      "local_regions": 24,
+      "global_regions": 105,
+      "shared_deferred_regions": 0,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 3.0662537370008067,
+      "stage_wall_s": {
+        "map": 1.966700074262917e-05,
+        "hierarchy": 0.2621032319984806,
+        "topology": 0.4511410380000598,
+        "priority": 0.3434094730000652,
+        "tour": 1.6156044300005306,
+        "pair": 0.07505827600107295,
+        "view": 0.29748695899979793,
+        "trajectory": 0.018754641998384614
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 6,
+      "reserved_gain_cells": 100,
+      "team_observed_cells": 69716,
+      "priority_compute": {
+        "raycasts": 120,
+        "refined_regions": 16,
+        "cached_regions": 15,
+        "bound_regions": 38
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.17248383393421493,
+        "predicted_gain": 0.0783,
+        "raw_gain": 0.702,
+        "component_volume": 240.68339999936615,
+        "components": [
+          2
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          16.05,
+          5.85,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 184,
+        "travel_s": 0.0,
+        "wait_s": 298.299,
+        "aging_multiplier": 1.5,
+        "gain_source": "local_rays",
+        "information_reward": 0.2587257509013224,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.8273457940607666,
+      "worker_running": false
+    }
+  },
+  "pair_commits": {
+    "0": 21,
+    "1": 39,
+    "2": 34
+  },
+  "tracking": {
+    "0": {
+      "samples": 1797,
+      "rms_m": 0.018084291119787207,
+      "p95_m": 0.031808330764752674,
+      "max_m": 0.05440045081452334
+    },
+    "1": {
+      "samples": 1940,
+      "rms_m": 0.01665972007395541,
+      "p95_m": 0.030076494541184464,
+      "max_m": 0.04850241904416241
+    },
+    "2": {
+      "samples": 1921,
+      "rms_m": 0.016430942986045097,
+      "p95_m": 0.030116431681602825,
+      "max_m": 0.04909436609519352
+    }
+  },
+  "observation_frames": {
+    "0": 1474,
+    "1": 1474,
+    "2": 1474
+  },
+  "mapping_dimensions": 3,
+  "isolated": [],
+  "network_started": null,
+  "network_resumed": false,
+  "dynamic_trial": null,
+  "dynamic_finished": false,
+  "restart_trial": null,
+  "restart_recovered": false,
+  "tracking_reference": "Gazebo truth position versus executed reference at telemetry receipt",
+  "assumptions": "3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations",
+  "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+  "legacy_center_free_coverage": 0.9022772672792648,
+  "truth_free_voxels": 58589,
+  "observed_free_voxels": 55691,
+  "unobserved_free_voxels": 2382,
+  "falsely_occupied_free_voxels": 516
+}

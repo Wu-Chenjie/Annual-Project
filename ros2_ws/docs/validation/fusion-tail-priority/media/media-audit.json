@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "full_decode": true,
+  "codec": "h264",
+  "width": 1920,
+  "height": 1080,
+  "frame_rate": "30/1",
+  "frames": "5373",
+  "duration_s": 179.1,
+  "bytes": 17690928,
+  "sha256": "ca6985a59f7123f8d6e39c62aca926f151a544137345a31d28a61b55e24b9945",
+  "inspection_frames": {
+    "early-frame.png": {
+      "video_time_s": 5.0,
+      "sha256": "cb09b15fc107aba1c575718c57deea92bdda0a23e88d939a592896429c96f8d2"
+    },
+    "middle-frame.png": {
+      "video_time_s": 89.55,
+      "sha256": "f53b84b1455e13655867f2df5eb68c32fb0aaeda1d801e8c69077a181774423d"
+    },
+    "last-frame.png": {
+      "video_time_s": 179.0,
+      "sha256": "0b59e8ed621852e751929772dc844fc6af83d3669fc4e39bc202b6750b550d66"
+    }
+  },
+  "playback": "24x native X11 wall-clock recording; mission metrics use the separate Gazebo simulation clock.",
+  "visual_inspection": {
+    "passed": true,
+    "checked": [
+      "early-frame.png",
+      "middle-frame.png",
+      "last-frame.png"
+    ],
+    "last_frame": "Native RViz HUD reads 95.0% and COMPLETE; Gazebo and RViz windows visible."
+  }
+}

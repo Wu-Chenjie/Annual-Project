@@ -1,0 +1,103 @@
+{
+  "attempts": [
+    {
+      "directory": "adapter-check3",
+      "source": "pre-f056ae7",
+      "purpose": "60 s interface smoke test; not a performance run",
+      "excluded_from_final_performance_comparison": true,
+      "run_result": {
+        "outcome": "SIMULATION_TIME_LIMIT",
+        "reason": "Did not reach 95% within the preregistered limit",
+        "wall_elapsed_s": 119.44024620999994,
+        "last_coverage": 0.22550308078308215,
+        "last_simulation_time": 76.00800000000001
+      },
+      "run_note": null,
+      "coverage": 0.22550308078308215,
+      "elapsed_s": 60.93000000000001,
+      "t95": null,
+      "contact_counter": 0
+    },
+    {
+      "directory": "stopped-adapter-review",
+      "source": "f056ae7",
+      "purpose": "Stopped after discovering historical cancel commands were not relayed",
+      "excluded_from_final_performance_comparison": true,
+      "run_result": {
+        "wall_elapsed_s": 140.93638325000006,
+        "last_coverage": 0.3567905238184642,
+        "last_simulation_time": 84.004
+      },
+      "run_note": {
+        "classification": "INTENTIONALLY_STOPPED_ADAPTER_REVIEW",
+        "source": "f056ae7",
+        "reason": "Coordinator adapter did not forward archived policy None cancellation commands. Corrected before the performance run; this attempt is excluded from the comparison."
+      },
+      "coverage": 0.3571660209254297,
+      "elapsed_s": 68.06700000000001,
+      "t95": null,
+      "contact_counter": 0
+    },
+    {
+      "directory": "failed-execution-v2",
+      "source": "87489a4",
+      "purpose": "Failed flight; all aircraft fell near restart; contact counter did not flag it; cause not proven",
+      "excluded_from_final_performance_comparison": true,
+      "run_result": {
+        "outcome": "INTERRUPTED",
+        "reason": "KeyboardInterrupt()",
+        "wall_elapsed_s": 730.946669655,
+        "last_coverage": 0.5941217634709587,
+        "last_simulation_time": 431.002
+      },
+      "run_note": {
+        "classification": "EXECUTION_FAILURE",
+        "source": "87489a4",
+        "first_truth_altitude_below_point5": {
+          "2": 232.591,
+          "0": 232.671,
+          "1": 232.801
+        },
+        "contact_counter": 0,
+        "reason": "All aircraft lost tracking near the command-client restart. Original contact telemetry did not flag impact. Do not use the zero contact count as proof of safe flight or this failed attempt as a completed performance result."
+      },
+      "coverage": 0.5940876273703255,
+      "elapsed_s": 414.90100000000007,
+      "t95": null,
+      "contact_counter": 0
+    },
+    {
+      "directory": "reservation-diagnostic-v3",
+      "source": "2668f5e",
+      "purpose": "Stopped after finding 3D reservations disagreed with historical and executor horizontal separation",
+      "excluded_from_final_performance_comparison": true,
+      "run_result": {
+        "outcome": "INTERRUPTED",
+        "reason": "KeyboardInterrupt()",
+        "wall_elapsed_s": 1004.660507731,
+        "last_coverage": 0.8263667241291027,
+        "last_simulation_time": 649.0
+      },
+      "run_note": {
+        "classification": "INTENTIONALLY_STOPPED_ADAPTER_RESERVATION_MISMATCH",
+        "source": "2668f5e",
+        "reason": "3D-distance reservations allowed paths with horizontal separation below the common executors safety interlock. The historical policy used horizontal reservations. Corrected before the final comparison; this attempt is diagnostic only."
+      },
+      "coverage": 0.8262301797265699,
+      "elapsed_s": 634.005,
+      "t95": null,
+      "contact_counter": 0
+    }
+  ],
+  "earlier_startup_checks": [
+    {
+      "name": "adapter-check",
+      "result": "Infrastructure failure before flight: PYTHONPATH overwrote ROS Python environment"
+    },
+    {
+      "name": "adapter-check2",
+      "result": "60 s check revealed transient completion-event loss; replaced with persistent epoch completion contract"
+    }
+  ],
+  "note": "These are all retained diagnostic/failed attempts before fixed source 964c451. The final comparison shows one cold start of the final fixed adapter, not the first attempt overall."
+}

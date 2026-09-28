@@ -1,0 +1,315 @@
+{
+  "fleet_size": 3,
+  "agent_ages": {
+    "1": 0.16200000000003456,
+    "2": 0.5620000000000118,
+    "0": 0.16200000000003456
+  },
+  "status": "COMPLETE",
+  "failure_reason": null,
+  "simulation_time": 839.7620000000001,
+  "start_time": 15.501000000000001,
+  "finish_time": 835.5010000000001,
+  "architecture": "fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight",
+  "coverage": 0.9509122872894229,
+  "t90": 752.999,
+  "t95": 820.0000000000001,
+  "coverage_target": 0.95,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 1.8001876941043462,
+  "distances_m": {
+    "0": 111.64462337163943,
+    "1": 100.97025703964346,
+    "2": 114.49402380494259
+  },
+  "odometry_samples": {
+    "0": 83872,
+    "1": 83871,
+    "2": 83868
+  },
+  "pause_resumed": true,
+  "paused": [],
+  "graph": {
+    "1": {
+      "nodes": 46,
+      "edges": 232,
+      "free_cells": 8192
+    },
+    "2": {
+      "nodes": 46,
+      "edges": 232,
+      "free_cells": 9362
+    },
+    "0": {
+      "nodes": 46,
+      "edges": 232,
+      "free_cells": 10676
+    }
+  },
+  "commits": {
+    "0": 73,
+    "1": 63,
+    "2": 86
+  },
+  "views": {
+    "0": 71,
+    "1": 54,
+    "2": 81
+  },
+  "peer_payload_bytes": {
+    "0": 26784861,
+    "1": 25082517,
+    "2": 28003497
+  },
+  "graph_payload_bytes": {
+    "0": 12884351,
+    "1": 13146541,
+    "2": 15454554
+  },
+  "fusion": {
+    "1": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 226,
+      "hgrid_splits": 37,
+      "frontier_clusters": 61,
+      "reused_frontiers": 51,
+      "history_nodes": 45,
+      "handshake_updates": 368,
+      "delta_applied": 216,
+      "local_regions": 20,
+      "global_regions": 79,
+      "shared_deferred_regions": 2,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 7.7744276490000175,
+      "stage_wall_s": {
+        "map": 1.83000001925393e-05,
+        "hierarchy": 0.36276716799989117,
+        "topology": 0.6790824560000601,
+        "priority": 0.6831812949999403,
+        "tour": 2.9382340510001086,
+        "pair": 0.16683124899986979,
+        "view": 0.44509718700010126,
+        "trajectory": 2.499162083000101
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 9,
+      "reserved_gain_cells": 168,
+      "team_observed_cells": 68063,
+      "priority_compute": {
+        "raycasts": 124,
+        "refined_regions": 16,
+        "cached_regions": 52,
+        "bound_regions": 22
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.0,
+        "predicted_gain": 0.0,
+        "raw_gain": 0.0,
+        "component_volume": 0.0,
+        "components": [],
+        "repeat_factor": 1.0,
+        "region": 236,
+        "travel_s": 1.1180339887498967,
+        "wait_s": 266.49699999999996,
+        "aging_multiplier": 1.5,
+        "gain_source": "region_bound",
+        "information_reward": 0.0,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.945099379192044,
+      "worker_running": false
+    },
+    "2": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 233,
+      "hgrid_splits": 38,
+      "frontier_clusters": 57,
+      "reused_frontiers": 42,
+      "history_nodes": 46,
+      "handshake_updates": 392,
+      "delta_applied": 204,
+      "local_regions": 31,
+      "global_regions": 68,
+      "shared_deferred_regions": 1,
+      "pair_status": "no_pair",
+      "compute_wall_s": 7.091278120000197,
+      "stage_wall_s": {
+        "map": 2.1385000081863836e-05,
+        "hierarchy": 0.35677133900003355,
+        "topology": 1.6892348629999105,
+        "priority": 0.7958151249999901,
+        "tour": 2.542533048999985,
+        "pair": 4.419000106281601e-06,
+        "view": 0.9766510819999894,
+        "trajectory": 0.7301898299999721
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 7,
+      "reserved_gain_cells": 95,
+      "team_observed_cells": 69589,
+      "priority_compute": {
+        "raycasts": 125,
+        "refined_regions": 18,
+        "cached_regions": 41,
+        "bound_regions": 43
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.31234117125286126,
+        "predicted_gain": 0.702,
+        "raw_gain": 1.1069999999999998,
+        "component_volume": 182.70359999974772,
+        "components": [
+          1
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          21.45,
+          4.05,
+          2.55
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 244,
+        "travel_s": 3.640054944640261,
+        "wait_s": 33.55899999999997,
+        "aging_multiplier": 1.0838975,
+        "gain_source": "local_rays",
+        "information_reward": 1.605450781713,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.784768310523297,
+      "worker_running": true
+    },
+    "0": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 226,
+      "hgrid_splits": 37,
+      "frontier_clusters": 57,
+      "reused_frontiers": 52,
+      "history_nodes": 45,
+      "handshake_updates": 351,
+      "delta_applied": 150,
+      "local_regions": 28,
+      "global_regions": 51,
+      "shared_deferred_regions": 0,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 12.518386862999932,
+      "stage_wall_s": {
+        "map": 1.8675999854167458e-05,
+        "hierarchy": 0.37717391000001044,
+        "topology": 1.3855317540001124,
+        "priority": 0.8013172920000216,
+        "tour": 6.295202448000055,
+        "pair": 0.2051427699998385,
+        "view": 0.8867880059999607,
+        "trajectory": 2.567163441000048
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "unknown_components": 11,
+      "reserved_gain_cells": 4,
+      "team_observed_cells": 67460,
+      "priority_compute": {
+        "raycasts": 84,
+        "refined_regions": 13,
+        "cached_regions": 45,
+        "bound_regions": 42
+      },
+      "route_objective": "travel_plus_information_latency",
+      "selected_priority": {
+        "score": 0.09894507044250592,
+        "predicted_gain": 0.11069999999999998,
+        "raw_gain": 0.13499999999999998,
+        "component_volume": 259.2728999999607,
+        "components": [
+          3
+        ],
+        "repeat_factor": 0.6685941203602603,
+        "preview_position": [
+          3.4499999999999997,
+          18.75,
+          2.25
+        ],
+        "preview_yaw": 1.5707963267948966,
+        "region": 78,
+        "travel_s": 1.0000000000000084,
+        "wait_s": 421.09999999999997,
+        "aging_multiplier": 1.5,
+        "gain_source": "local_rays",
+        "information_reward": 0.24736267610626564,
+        "deferred": false,
+        "committed_by_peer": false
+      },
+      "map_clearance": 0.7687129541877361,
+      "worker_running": false
+    }
+  },
+  "pair_commits": {
+    "0": 22,
+    "1": 34,
+    "2": 36
+  },
+  "tracking": {
+    "0": {
+      "samples": 2376,
+      "rms_m": 0.0167331194615032,
+      "p95_m": 0.030488288745478327,
+      "max_m": 0.04426704534224711
+    },
+    "1": {
+      "samples": 1931,
+      "rms_m": 0.016833549103782458,
+      "p95_m": 0.029715949685500266,
+      "max_m": 0.05032650125097593
+    },
+    "2": {
+      "samples": 2339,
+      "rms_m": 0.01649875958394656,
+      "p95_m": 0.030552963765673194,
+      "max_m": 0.050250317174072204
+    }
+  },
+  "observation_frames": {
+    "0": 2095,
+    "1": 2097,
+    "2": 2093
+  },
+  "mapping_dimensions": 3,
+  "isolated": [],
+  "network_started": 115.504,
+  "network_resumed": true,
+  "dynamic_trial": {
+    "start": 216.50300000000001,
+    "drone": 2,
+    "center": [
+      11.032873470095435,
+      18.210593964257896
+    ],
+    "side": [
+      0.22076949588379377,
+      0.7689348669992899
+    ],
+    "token": "2:df62c0c0:1601031"
+  },
+  "dynamic_finished": true,
+  "restart_trial": {
+    "drone": 0,
+    "session": "ef65b794409e498a87d145980a0a024f",
+    "start": 225.501,
+    "recovered_session": "308cb5f4671f4eaf861e7e93980bdeaf"
+  },
+  "restart_recovered": true,
+  "tracking_reference": "Gazebo truth position versus executed reference at telemetry receipt",
+  "assumptions": "3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations",
+  "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+  "legacy_center_free_coverage": 0.900791050739113,
+  "truth_free_voxels": 58589,
+  "observed_free_voxels": 55713,
+  "unobserved_free_voxels": 2392,
+  "falsely_occupied_free_voxels": 484
+}

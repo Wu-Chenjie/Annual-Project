@@ -1,0 +1,25 @@
+{
+  "public_files": {
+    "run-configuration.json": "4ee81899104ba7bf7dea1a7507d1579ba9eb6725a17efa2ea601c394d632918a",
+    "summary.json": "b6d641ff9bb4ef55051296bc3d54632f6e8b6067af503b6746ddf5ab80a7bc24",
+    "independent-acceptance.json": "6051e572187c06559a89b28d6ce77d43ef3a68f4cfed38d2ac49be694150ec60",
+    "auditor-revision.json": "79efbcd9bef25df8fffbdfa816c0c321e082d56b9b9e5083a46fb9968a7700a3",
+    "dynamic-backup-audit.json": "47ca12692f9f7f570971ab3fade23cf53747d580489228c964e9f83217ce9d10",
+    "execution-protocol-audit.json": "c331c2d369e71dcd9344d815765d89ee4ce9fb22ab14d753ed48906ee8433939",
+    "audit-status.json": "12aafd7974ab4941fced154f8ef11cff0e3e08d14b5bd751126625593dcc1d9c",
+    "external-test-manifest.json": "80bc814574593d45be801a5545f35777f6113519d1572407613767575d1c687c",
+    "original-protocol-audit-status.json": "cddfed142ebd2573cf059e6fada018034988b6069d410bd612be3ae37b479d88",
+    "process-cleanup.json": "12a568d69f032ab1da55619dafe7da5d776ba9d25b68657b1efceed2b89eea01",
+    "run-result.json": "3c30241b6f0da6c0f5e93b305703cfd5c321ebc49a15fe1b4be3bb63c40d4c1b",
+    "todo-exploration.mp4": "a9777158c4b0936096cb1138be2fc657be53f179e5272bdbb7fbe61f5f5983d3"
+  },
+  "retained_raw": {
+    "observations.jsonl.gz": "959f988534f1ce3885752810f5e4bdbc0e9c150521a6e10e4b8bf7053697cc9b",
+    "trajectory.csv": "c622e4d3efd826ce40e717ceaf543da52835003bf466e5da5700913a0df74d11",
+    "tracking.csv": "d2c56a6d6518454146d89b04d2fd7cd9f030cb66b299c03b723f6a90caf4b5d7",
+    "command-evidence.jsonl": "26ec89c8b87027bb3ee09ac01b555cdc3905aa3b6f97d17bcba8a88ce03966c7",
+    "execution-evidence.jsonl": "abb304659a258ce58f447b386d290e74db7a68b6ae3f3eb3f761d8d0c66a7509",
+    "peer_states.jsonl": "ba6411512e0de88a7b1935d5b11618381fcb1949b56aacbc6b540a4ce4fc1823",
+    "gazebo-rviz-raw.mp4": "da5842071850b94740c78812f2960368f39e85aa42fb0e7b417299875cec9efc"
+  }
+}

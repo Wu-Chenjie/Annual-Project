@@ -1,0 +1,14 @@
+{
+  "base_commit": "25084e2957d1746ee539d40c050e284e9e8dce8d",
+  "includes_uncommitted_changes": true,
+  "arguments": {
+    "source_root": "/tmp/annual-tail-20260924-1411",
+    "manifest": "/workspace/artifacts/tail-priority/frozen-source-manifest.json",
+    "archive": "/workspace/artifacts/tail-priority/source-workspace.tar.gz",
+    "output_dir": "/tmp/annual-tail-priority-v1",
+    "simulation_limit": 2400.0,
+    "wall_limit": 14400.0,
+    "speed": 24.0
+  },
+  "comparison": "Same 3D scene, sensors, estimation, physical limits and fault-trigger rules as optimized-final. Frozen current priority changes; primary metric is t95 minus t90."
+}

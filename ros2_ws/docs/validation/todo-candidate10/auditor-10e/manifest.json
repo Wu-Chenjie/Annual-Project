@@ -1,0 +1,13 @@
+{
+  "kind": "read_only_execution_protocol_auditor",
+  "flight_policy_changed": false,
+  "source_flight": "candidate-10a",
+  "tests_passed": 33,
+  "files": {
+    "test_execution_protocol_audit.py": "9b6acc723e032a5edad35a1137875a45f09190c3ba8e7eb1a5b39fb81f0ba4bf",
+    "summarize_todo_study.py": "56e8322c9f88f1713b7a83711bf79a4e7ac2d0c5af348b765c86c61f6f8fdf64",
+    "reaudit_execution_revision.py": "d4ecfb23e05ae126eec886e7a7d41accadcaa978bf35b4e45024d395800a17a0",
+    "audit_execution_protocol.py": "730764d619a6e280173f1c7c60781b149937a9ee47333801826e6aa46416ef3d",
+    "test_todo_reporting.py": "22aa1c8edecb80c5af6a6e5a979bbf5a00c6559da459aa0679797a47954aa7be"
+  }
+}

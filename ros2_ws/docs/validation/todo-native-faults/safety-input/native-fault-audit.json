@@ -1,0 +1,42 @@
+{
+  "passed": true,
+  "checks": {
+    "neighbor_safety_input_was_suppressed": true,
+    "neighbor_safety_watchdog_holds": true,
+    "neighbor_safety_no_curve_advance": true,
+    "neighbor_safety_resumes_motion": true,
+    "neighbor_safety_restores_positive_service": true,
+    "independent_flight_and_coverage": true,
+    "independent_authorization": true,
+    "reached_95": true
+  },
+  "cases": [
+    {
+      "case": "neighbor_safety_input_loss",
+      "start": {
+        "type": "safety_input_outage_started",
+        "time": 130.0,
+        "received": 12845,
+        "suppressed": 0,
+        "input_topic": "/drone_2/estimated_odometry",
+        "output_topic": "/fault/safety/drone_2/estimated_odometry",
+        "affected_node": "/drone_0/view_executor",
+        "duration_s": 3.0,
+        "last_input_stamp": 129.99
+      },
+      "end": {
+        "type": "safety_input_outage_ended",
+        "time": 133.0,
+        "received": 13144,
+        "suppressed": 299,
+        "input_topic": "/drone_2/estimated_odometry",
+        "output_topic": "/fault/safety/drone_2/estimated_odometry",
+        "affected_node": "/drone_0/view_executor",
+        "duration_s": 3.0,
+        "last_input_stamp": 132.99
+      },
+      "note": "Only executor0 drone2 safety odometry was suppressed. Own control/EKF and planning peer topics were unchanged."
+    }
+  ],
+  "note": "These bounded inputs establish only the recorded cases. Planning, perception and neighbor safety are separate failure boundaries."
+}

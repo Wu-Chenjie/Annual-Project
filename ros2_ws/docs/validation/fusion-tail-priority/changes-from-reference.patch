@@ -1,0 +1,858 @@
+--- previous/next_project/core/exploration/fusion.py
++++ recorded/next_project/core/exploration/fusion.py
+@@ -9,6 +9,7 @@
+ from .voxel_mapping import VoxelRouter
+ from .regions import ObservationPlanner, optimize_tour, visible_cells
+ from .pairwise import solve_pair
++from .priority import ExplorationPriority
+ from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
+ from core.planning.continuous_trajectory import optimize_trajectory
+ 
+@@ -71,10 +72,11 @@
+ 
+ 
+ class FusionPlanner:
+-    def __init__(self, drone, bounds):
++    def __init__(self, drone, bounds, priority_config=None):
+         self.drone = drone; self.hierarchy = AdaptiveRegions(bounds); self.graph = MultiRobotGraph(drone, bounds)
+         self.partition = {}; self.global_partition = {}; self.tiers = {}; self.tasks = {}
+         self.diagnostics = {}; self.connections = {}; self.ownership = {}
++        self.priority = ExplorationPriority(priority_config); self.priority_layer = {}
+ 
+     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
+                 peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True):
+@@ -139,10 +141,24 @@
+             excluded_cells = visible_cells(runtime, position, yaw)
+             recent = list(recent)+[(position, yaw)]
+             view_attachments = self.graph.connect(position)
++        excluded_cells = excluded_cells | self.priority.committed_cells(runtime, peers, now)
++        priorities = self.priority.rank(runtime, tasks, local_tasks, costs, position, now,
++                                        self.graph.services, excluded_cells)
++        for rid, row in priorities.items():
++            row['deferred'] |= cooldown.get(rid, 0) > now
++            row['committed_by_peer'] = rid in pinned and pinned[rid] != self.drone
++        self.priority_layer = self.priority.snapshot(runtime, now, owners, self.drone)
++        stage('priority')
+         feasible = {r: task for r, task in tasks.items()
+                     if max(cooldown.get(r, 0), self.graph.services.get(r, {}).get('defer_until', 0)) <= now}
+         owned = [r for r, owner in owners.items() if owner == self.drone and r in feasible]
+         tour, workload = optimize_tour(position, owned, feasible, costs, active)
++        # Priority applies at every next-view decision. A current committed flight
++        # remains untouched; its regional ID need not monopolize subsequent views.
++        order = {r: k for k, r in enumerate(tour)}
++        tour.sort(key=lambda r: (-priorities[r]['score'], order[r]))
++        workload = sum(costs.distance(position if k == 0 else tasks[tour[k-1]].entry, tasks[r].entry)/.6+
++                       1.+tasks[r].unknown*.012 for k, r in enumerate(tour))
+         bids = {}
+         for rid, task in (feasible.items() if can_move else []):
+             distance = costs.distance(position, task.entry)
+@@ -161,7 +177,8 @@
+             # owners absent from the peer's auction revision, so prepare can
+             # never be accepted after the fleet has serviced boundary regions.
+             ids = [r for r, owner in owners.items() if owner in (self.drone, other) and r in feasible and r in region_costs]
+-            ids.sort(key=lambda r: (abs(region_costs[r].get(self.drone, np.inf)-region_costs[r].get(other, np.inf)), r))
++            ids.sort(key=lambda r: (-priorities[r]['score'],
++                abs(region_costs[r].get(self.drone, np.inf)-region_costs[r].get(other, np.inf)), r))
+             ids = ids[:10]
+             if len(ids) < 2:
+                 continue
+@@ -181,7 +198,7 @@
+         if plan_view:
+             local.block_paths(reservations, radius=1.25)
+         local_graph = router(local) if plan_view else None
+-        choices = ([active] if active in feasible else [])+[r for r in tour if r != active]
++        choices = list(tour)
+         # Global burden sharing: prioritize useful, nearby history regions when
+         # all locally partitioned work has disappeared. The region lease still
+         # arbitrates exclusivity before any motion starts.
+@@ -189,8 +206,7 @@
+             fallback = []
+             for rid, task in feasible.items():
+                 d = costs.distance(position, task.entry)/.6
+-                users = sum(p.get('active') == rid for p in peers.values())
+-                gain = task.unknown*runtime.resolution**runtime.state.ndim*math.exp(-.08*d)/(users+1) if np.isfinite(d) else 0
++                gain = priorities[rid]['score'] if np.isfinite(d) else 0
+                 if gain > 0 and rid not in pinned:
+                     fallback.append((-gain, rid))
+             choices = [r for _, r in sorted(fallback)]
+@@ -229,6 +245,7 @@
+                             selection = dict(pool=pool, yaw=heading, gain=len(visible_cells(local, route[-1], heading))*runtime.resolution**runtime.state.ndim,
+                                              objective=0., lookahead=None, transit=True)
+                 if selection:
++                    selection['priority'] = priorities[rid]
+                     selected = rid; break
+                 rejected.append(rid)
+         stage('view')
+@@ -247,7 +264,9 @@
+             local_regions=sum(v == 'local' for v in tiers.values()), global_regions=sum(v == 'global' for v in tiers.values()),
+             shared_deferred_regions=sum(v['defer_until'] > now for v in self.graph.services.values()),
+             pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin,
+-            stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move)
++            stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move,
++            unknown_components=len(self.priority.components), reserved_gain_cells=len(excluded_cells),
++            selected_priority=priorities.get(selected))
+         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
+                     selection=selection, selected=selected, rejected=rejected, offer=offer,
+                     wall=time.monotonic()-begin, position=position, version=runtime.version)
+--- previous/next_project/core/exploration/mrdtg.py
++++ recorded/next_project/core/exploration/mrdtg.py
+@@ -170,8 +170,10 @@
+                     regions[rid] = v; stamps[rid] = stamp
+             elif v['kind'] == 'region_service':
+                 rid = int(v['id'])
+-                if v['defer_until'] > services.get(rid, {}).get('defer_until', -1.):
+-                    services[rid] = v
++                # New successful sensing clears an older deferral. Selecting by
++                # retry deadline would make a stale failure override that success.
++                if (v['stamp'], source) > services.get(rid, {}).get('_order', (-1., -1)):
++                    services[rid] = dict(v, _order=(v['stamp'], source))
+         self.nodes = nodes; self.edges = []; self.adj = {n: [] for n in nodes}
+         for key, edge in edge_records.items():
+             if key in blocked:
+--- previous/next_project/core/exploration/priority.py
++++ recorded/next_project/core/exploration/priority.py
+@@ -0,0 +1,201 @@
++"""从观测地图构造探索收益层；不改变碰撞代价或未知空间的通行条件。"""
++from dataclasses import dataclass
++import hashlib
++import math
++import numpy as np
++from scipy.ndimage import label, find_objects
++from .regions import visible_cells
++
++
++@dataclass(frozen=True)
++class PriorityConfig:
++    speed: float = .6
++    observation_s: float = 1.5
++    region_weight: float = .35
++    region_reference_volume: float = 8.
++    aging_per_minute: float = .15
++    repeat_decay_s: float = 600.
++    low_yield_cells: int = 30
++    retry_base_s: float = 15.
++    retry_max_s: float = 120.
++    peer_fresh_s: float = 3.
++    preview_points: int = 2
++    preview_headings: int = 4
++    preview_azimuth_samples: int = 21
++    preview_pitch_samples: int = 5
++    remote_gain_cap: float = 1.
++
++    def __post_init__(self):
++        for name in ('speed', 'observation_s', 'region_reference_volume', 'repeat_decay_s',
++                     'low_yield_cells', 'retry_base_s', 'retry_max_s', 'peer_fresh_s',
++                     'preview_points', 'preview_headings', 'preview_azimuth_samples', 'preview_pitch_samples', 'remote_gain_cap'):
++            if not np.isfinite(getattr(self, name)) or getattr(self, name) <= 0:
++                raise ValueError(f'{name} must be finite and positive')
++        for name in ('region_weight', 'aging_per_minute'):
++            if not np.isfinite(getattr(self, name)) or getattr(self, name) < 0:
++                raise ValueError(f'{name} must be finite and nonnegative')
++        for name in ('low_yield_cells', 'preview_points', 'preview_headings', 'preview_azimuth_samples', 'preview_pitch_samples'):
++            if not isinstance(getattr(self, name), int):
++                raise ValueError(f'{name} must be an integer')
++
++
++def service_result(previous, now, new_cells, expected_cells, config=None):
++    """短期退避随连续低收益递增；成功观测清除旧惩罚，小残片按比例判定。"""
++    config = config or PriorityConfig()
++    threshold = min(config.low_yield_cells, max(1, math.ceil(expected_cells*.2)))
++    low = new_cells < threshold
++    streak = int((previous or {}).get('low_yield_streak', 0))+1 if low else 0
++    delay = min(config.retry_max_s, config.retry_base_s*2**min(streak-1, 16)) if low else 0.
++    return dict(stamp=float(now), defer_until=float(now+delay), observed_new_cells=int(new_cells),
++                expected_cells=int(expected_cells), low_yield_streak=streak)
++
++
++def service_cells(runtime, task, point, yaw):
++    """观测前记下区域内及跨区域可见的未知格，排除途中无关区域的新信息。"""
++    cells = set(visible_cells(runtime, point, yaw))
++    if task is not None:
++        low, high = np.asarray(task.bounds)
++        a = np.maximum(0, np.floor((low-runtime.origin)/runtime.resolution).astype(int))
++        b = np.minimum(runtime.shape, np.ceil((high-runtime.origin)/runtime.resolution).astype(int))
++        unknown = np.argwhere(runtime.state[tuple(slice(i, j) for i, j in zip(a, b))] == -1)+a
++        if len(unknown):
++            cells.update(np.ravel_multi_index(tuple(unknown.T), runtime.shape).tolist())
++    return np.array(sorted(cells), dtype=int)
++
++
++class ExplorationPriority:
++    def __init__(self, config=None):
++        self.config = config or PriorityConfig()
++        self.labels = None; self.sizes = None; self.components = {}
++        self.first_seen = {}; self.scores = {}; self._signature = None
++        self._views = {}
++
++    def update_map(self, runtime):
++        signature = (runtime.state.shape, runtime.resolution, tuple(runtime.origin), runtime.state.tobytes())
++        if signature == self._signature:
++            return
++        self._signature = signature
++        # Face connectivity avoids joining pockets across occupied diagonal corners.
++        self.labels, _ = label(runtime.state == -1)
++        self.sizes = np.bincount(self.labels.ravel())
++        self.sizes[0] = 0
++        unit = runtime.resolution**runtime.state.ndim
++        self.components = {}
++        for ident, slices in enumerate(find_objects(self.labels), 1):
++            if slices is None:
++                continue
++            low = runtime.origin+np.array([s.start for s in slices])*runtime.resolution
++            high = np.minimum(runtime.bounds[1, :runtime.state.ndim],
++                              runtime.origin+np.array([s.stop for s in slices])*runtime.resolution)
++            self.components[ident] = dict(id=ident, cells=int(self.sizes[ident]),
++                volume=float(self.sizes[ident]*unit), bounds=[low.tolist(), high.tolist()])
++
++    def view(self, runtime, point, yaw, coarse=False):
++        # Cache against actual nearby occupancy, including the elevated 3D sensor.
++        # A direct map edit (without a version bump) must also invalidate the ray gain.
++        sensor = np.asarray(point)[:runtime.state.ndim].copy()
++        if runtime.state.ndim == 3:
++            sensor[2] += .4
++        a = np.maximum(0, np.floor((sensor-4.5-runtime.origin)/runtime.resolution).astype(int))
++        b = np.minimum(runtime.shape, np.ceil((sensor+4.5-runtime.origin)/runtime.resolution).astype(int)+1)
++        # A compact digest avoids copying each ray window into the spawned worker
++        # once per heading; cached cell sets remain exact for this sampling mode.
++        geometry = (hashlib.blake2b(runtime.state[tuple(slice(i, j) for i, j in zip(a, b))].tobytes(), digest_size=16).digest(),
++                    tuple(a), tuple(b), runtime.shape, runtime.resolution, tuple(runtime.origin))
++        key = (tuple(np.asarray(point, float)), float(yaw), coarse)
++        old = self._views.get(key)
++        if old is None or old[0] != geometry:
++            sampling = dict(azimuth_samples=self.config.preview_azimuth_samples,
++                            pitch_samples=self.config.preview_pitch_samples) if coarse else {}
++            self._views[key] = (geometry, visible_cells(runtime, point, yaw, **sampling))
++        return self._views[key][1]
++
++    def committed_cells(self, runtime, peers, now):
++        cells = set()
++        for peer in peers.values():
++            intent = peer.get('intent') or {}
++            if (not intent.get('committed') or intent.get('retiring') or intent.get('recovery') or
++                    not -.1 <= now-peer.get('time', -np.inf) < self.config.peer_fresh_s):
++                continue
++            if intent.get('path'):
++                cells.update(self.view(runtime, intent['path'][-1], intent.get('yaw', 0.)))
++        return frozenset(cells)
++
++    def utility(self, gain, volume, travel_s, wait_s, feedback, now):
++        if gain <= 0 or not np.isfinite(travel_s):
++            return 0., 1.
++        streak = feedback.get('low_yield_streak', 1 if feedback.get('defer_until', 0) > now else 0)
++        age = max(0., now-feedback.get('stamp', now))
++        repeat = 1/(1+streak*math.exp(-age/self.config.repeat_decay_s))
++        bonus = 1+self.config.region_weight*math.log1p(volume/self.config.region_reference_volume)
++        score = repeat*gain*bonus/(self.config.observation_s+travel_s)
++        # Additive, uncapped aging permits a small useful region to overtake large
++        # fresh regions. Zero-gain and unreachable regions cannot age into flight.
++        return score+self.config.aging_per_minute*wait_s/60., repeat
++
++    def rank(self, runtime, tasks, local_ids, costs, position, now, services, excluded_cells=frozenset()):
++        self.update_map(runtime)
++        unit = runtime.resolution**runtime.state.ndim
++        excluded = np.array(sorted(excluded_cells), dtype=int)
++        reserved = np.bincount(self.labels.ravel()[excluded], minlength=len(self.sizes)) if len(excluded) else np.zeros_like(self.sizes)
++        scores = {}
++        used_views = set()
++        for rid, task in tasks.items():
++            self.first_seen.setdefault(rid, self.first_seen.get(getattr(task, 'parent', -1), now))
++            feedback = services.get(rid, {})
++            wait = max(0., now-max(self.first_seen[rid], feedback.get('stamp', -np.inf)))
++            travel = costs.distance(position, task.entry)/self.config.speed
++            best = None
++            if rid in local_ids:
++                for point in task.viewpoints[:self.config.preview_points]:
++                    cell = runtime.indices(point)
++                    if np.any(cell < 0) or np.any(cell >= runtime.shape) or not runtime.safe[tuple(cell)]:
++                        continue
++                    for yaw in np.linspace(-np.pi, np.pi, self.config.preview_headings, endpoint=False):
++                        used_views.add((tuple(np.asarray(point, float)), float(yaw), True))
++                        raw = self.view(runtime, point, yaw, coarse=True)
++                        net = raw-excluded_cells
++                        ids = sorted(set(self.labels.ravel()[list(net)])) if net else []
++                        ids = [int(k) for k in ids if k]
++                        volume = float(sum(max(0, self.sizes[k]-reserved[k]) for k in ids)*unit)
++                        gain = len(net)*unit
++                        value, penalty = self.utility(gain, volume, travel, wait, feedback, now)
++                        row = dict(score=value, predicted_gain=gain, raw_gain=len(raw)*unit,
++                                   component_volume=volume, components=ids, repeat_factor=penalty,
++                                   preview_position=np.asarray(point).tolist(), preview_yaw=float(yaw))
++                        if best is None or (value, gain, row['raw_gain']) > (best['score'], best['predicted_gain'], best['raw_gain']):
++                            best = row
++                source = 'local_rays'
++            else:
++                # Remote maps are not shared. This is an explicitly marked proxy
++                # for safe corridor transit, never a claimed local visible volume.
++                volume = task.unknown*unit
++                gain = min(volume, self.config.remote_gain_cap)
++                value, penalty = self.utility(gain, volume, travel, wait, feedback, now)
++                best = dict(score=value, predicted_gain=gain, raw_gain=gain,
++                            component_volume=volume, components=[], repeat_factor=penalty)
++                source = 'remote_proxy'
++            if best is None:
++                best = dict(score=0., predicted_gain=0., raw_gain=0., component_volume=0., components=[], repeat_factor=1.)
++            scores[rid] = dict(best, region=rid, travel_s=float(travel) if np.isfinite(travel) else None,
++                              wait_s=wait, gain_source=source, deferred=feedback.get('defer_until', 0) > now)
++        self._views = {k: v for k, v in self._views.items() if k in used_views}
++        self.scores = scores
++        return scores
++
++    def snapshot(self, runtime, now, owners, source):
++        """诊断专用：单机观测切片及组件，绝不通过 graph_delta 作为全局真值共享。"""
++        components = {k: dict(v, priority=0., regions=[]) for k, v in self.components.items()}
++        for rid, row in self.scores.items():
++            for ident in row['components']:
++                components[ident]['regions'].append(rid)
++                if not row['deferred']:
++                    components[ident]['priority'] = max(components[ident]['priority'], row['score'])
++        cells = self.labels
++        if cells.ndim == 3:
++            z = int(np.clip((runtime.altitude-runtime.origin[2])/runtime.resolution, 0, cells.shape[2]-1))
++            cells = cells[:, :, z]
++        return dict(source=source, time=now, unit='m3' if runtime.state.ndim == 3 else 'm2',
++                    resolution=runtime.resolution, origin=runtime.origin[:2].tolist(), shape=list(cells.shape),
++                    slice_labels=cells.ravel().tolist(), components=list(components.values()),
++                    regions=[dict(row, owner=owners.get(rid)) for rid, row in self.scores.items()])
+--- previous/next_project/core/exploration/regions.py
++++ recorded/next_project/core/exploration/regions.py
+@@ -12,17 +12,18 @@
+     return math.atan2(math.sin(a-b), math.cos(a-b))
+ 
+ 
+-def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5):
++def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5, *, azimuth_samples=None, pitch_samples=13):
+     """Predicted view: count the first unknown surface on each ray; do not see through it.
+ 
+     This function never receives simulator truth. Its predicted gain is corrected
+     by the next actual observation, including previously unknown occluders.
+     """
+-    angles = np.linspace(yaw-fov/2, yaw+fov/2, 61 if runtime.state.ndim == 3 else 121)
++    count = azimuth_samples if azimuth_samples is not None else (61 if runtime.state.ndim == 3 else 121)
++    angles = np.linspace(yaw-fov/2, yaw+fov/2, count)
+     ranges = np.arange(0., radius+runtime.resolution/2, runtime.resolution/2)
+     if runtime.state.ndim == 3:
+         position = np.asarray(position)+np.array([0., 0., .4])
+-        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, 13))
++        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, pitch_samples))
+         directions = np.column_stack([np.cos(pitch.ravel())*np.cos(headings.ravel()),
+                                       np.cos(pitch.ravel())*np.sin(headings.ravel()), np.sin(pitch.ravel())])
+         coordinates = np.asarray(position)+directions[:, None, :]*ranges[None, :, None]
+--- previous/ros2_ws/src/annual_swarm/CMakeLists.txt
++++ recorded/ros2_ws/src/annual_swarm/CMakeLists.txt
+@@ -36,6 +36,8 @@
+ if(BUILD_TESTING)
+   find_package(ament_cmake_pytest REQUIRED)
+   ament_add_pytest_test(fusion_test test/test_fusion.py TIMEOUT 180)
++  ament_add_pytest_test(exploration_priority_test test/test_exploration_priority.py TIMEOUT 180)
++  ament_add_pytest_test(priority_ros_test test/test_priority_ros.py TIMEOUT 60)
+   ament_add_pytest_test(decentralized_test test/test_decentralized.py TIMEOUT 180)
+   ament_add_pytest_test(exploration_test test/test_exploration.py TIMEOUT 180)
+   ament_add_pytest_test(scene_test test/test_scene.py)
+--- previous/ros2_ws/src/annual_swarm/config/exploration.rviz
++++ recorded/ros2_ws/src/annual_swarm/config/exploration.rviz
+@@ -23,6 +23,8 @@
+         regional_tasks: true
+         sparse_corridors: true
+         sparse_junctions: true
++        unknown_region_priority: true
++        unknown_region_labels: true
+         vehicle_labels: true
+       Topic:
+         Depth: 1
+--- previous/ros2_ws/src/annual_swarm/config/exploration_priority.yaml
++++ recorded/ros2_ws/src/annual_swarm/config/exploration_priority.yaml
+@@ -0,0 +1,15 @@
++/**:
++  ros__parameters:
++    exploration_priority:
++      region_weight: 0.35
++      region_reference_volume: 8.0
++      aging_per_minute: 0.15
++      repeat_decay_s: 600.0
++      low_yield_cells: 30
++      retry_base_s: 15.0
++      retry_max_s: 120.0
++      preview_points: 2
++      preview_headings: 4
++      preview_azimuth_samples: 21
++      preview_pitch_samples: 5
++      remote_gain_cap: 1.0
+--- previous/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
++++ recorded/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
+@@ -38,7 +38,7 @@
+             Node(package='annual_swarm', executable='pointcloud_mapping_node.py', namespace=namespace,
+                 parameters=[common, {'drone_id': i, 'bounds': json.dumps(data['bounds'])}], output='screen'),
+             Node(package='annual_swarm', executable='decentralized_agent_node.py', namespace=namespace, respawn=True, respawn_delay=2.,
+-                parameters=[common, {'drone_id': i, 'bounds': json.dumps(data['bounds']), 'fleet_starts': json.dumps(starts), 'output_dir': output}], output='screen'),
++                parameters=[arg('priority_config'), common, {'drone_id': i, 'bounds': json.dumps(data['bounds']), 'fleet_starts': json.dumps(starts), 'output_dir': output}], output='screen'),
+             Node(package='annual_swarm', executable='view_executor_node.py', namespace=namespace,
+                 parameters=[common, {'drone_id': i, 'start': json.dumps(starts[i]), 'fleet_starts': json.dumps(starts)}], output='screen'),
+             Node(package='annual_swarm', executable='controller_node', namespace=namespace,
+@@ -63,6 +63,7 @@
+         DeclareLaunchArgument('headless', default_value='false', choices=['true', 'false']),
+         DeclareLaunchArgument('map', default_value=str(share/'maps/search_fusion_3d.json')),
+         DeclareLaunchArgument('output_dir', default_value='/tmp/annual_decentralized'),
++        DeclareLaunchArgument('priority_config', default_value=str(share/'config/exploration_priority.yaml')),
+         DeclareLaunchArgument('coverage_target', default_value='0.95'),
+         DeclareLaunchArgument('pause_after', default_value='60.0'),
+         DeclareLaunchArgument('pause_duration', default_value='25.0'),
+--- previous/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ recorded/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+ """One independently replaceable exploration agent. No truth map or fleet planner."""
+ import copy
++from dataclasses import fields
+ from concurrent.futures import ProcessPoolExecutor
+ from multiprocessing import get_context
+ import json
+@@ -17,6 +18,7 @@
+ from core.exploration.decentralized import MapReplica, PeerLedger, remainder, tracking_recovery
+ from core.exploration.sparse_graph import SparseTopology
+ from core.exploration.fusion import FusionPlanner, reusable_trajectory
++from core.exploration.priority import PriorityConfig, service_cells, service_result
+ from core.exploration.pairwise import PairExchange
+ from core.planning.continuous_trajectory import optimize_trajectory
+ from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
+@@ -32,7 +34,9 @@
+         self.network_isolated = set()
+         self.replica = MapReplica(bounds, self.id, volumetric=True, flight_limits=(.7, min(3.1, bounds[1][2]-.3))); self.ledger = PeerLedger(self.id, members=tuple(range(len(self.seeds))))
+         self.ledger.seeds = self.seeds
+-        self.fusion = FusionPlanner(self.id, bounds); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
++        priority_config = PriorityConfig(**{f.name: self.declare_parameter('exploration_priority.'+f.name, f.default).value
++                                           for f in fields(PriorityConfig)})
++        self.fusion = FusionPlanner(self.id, bounds, priority_config); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
+         self.bootstrapped = False; self.rejoin_ready = False; self.join_stopped_since = None
+         self.last_graph_full = -30.; self.graph_bytes = 0; self.last_pair_commits = 0
+         self.position = None; self.yaw = 0.; self.observation = None; self.execution = {}
+@@ -53,13 +57,16 @@
+             for line in previous_events.read_text().splitlines():
+                 try:
+                     e = json.loads(line)
+-                    if e.get('type') == 'region_low_yield':
++                    if e.get('type') == 'region_service':
++                        self.service_feedback[int(e['region'])] = e['feedback']
++                    elif e.get('type') == 'region_low_yield':
+                         self.service_feedback[int(e['region'])] = dict(stamp=e['time'], defer_until=e['retry_after'], observed_new_cells=e['new_cells'])
+                 except (ValueError, KeyError):
+                     continue
+         self.log = (self.output/'events.jsonl').open('a'); self.paths = (self.output/'candidates.jsonl').open('a')
+         self.last_map_dump = -20.
+         self.view_start_known = 0
++        self.view_start_cells = np.empty(0, dtype=int)
+         self.bytes = 0; self.peer_bytes = 0; self.commits = 0; self.observed_views = 0
+         # CPU-bound graph/tour/trajectory work must not hold the ROS callback GIL.
+         # Spawn avoids inheriting DDS threads or sockets into the planning worker.
+@@ -247,24 +254,32 @@
+         if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
+             self.intent['committed'] = True; self.commits += 1
+             self.view_start_known = int(np.count_nonzero(self.replica.map.state != -1))
++            self.view_start_cells = service_cells(self.replica.map, self.tasks.get(self.active),
++                                                 self.intent['path'][-1], self.intent['yaw'])
+             self.publish(self.command_pub, dict(epoch=self.epoch, path=self.intent['path'], yaw=self.intent['yaw'],
+                                                region=self.active, token=self.intent['token'], trajectory=self.intent.get('trajectory')))
+             self.event('path_committed', token=self.intent['token'], region=self.active, quorum=self.intent['voters'],
+-                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'])
++                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'],
++                       exploration_priority=self.selection.get('priority'))
+         if self.intent and self.intent.get('committed') and self.execution.get('arrived') and self.execution.get('epoch') == self.epoch:
+             self.observed_views += 1
+             new_cells = max(0, int(np.count_nonzero(self.replica.map.state != -1))-self.view_start_known)
+             self.recent.append((t+(240. if new_cells < 3 else 0.), self.position.copy(), self.intent['yaw']))
+             self.event('view_observed', region=self.active, epoch=self.epoch, token=self.intent['token'], new_cells=new_cells,
+                        observed_volume=new_cells*self.replica.map.resolution**self.replica.map.state.ndim)
+-            if self.active is not None and self.active >= 0 and new_cells < 30:
+-                # A noisy wall fringe can remain an apparent frontier after a
+-                # successful view. Measured low yield ends the current regional
+-                # service, allowing the coverage tour to advance before retry.
+-                self.cooldown[self.active] = t+600.
+-                self.service_feedback[self.active] = dict(stamp=t, defer_until=t+600., observed_new_cells=new_cells)
+-                self.event('region_low_yield', region=self.active, new_cells=new_cells, retry_after=t+600.)
+-                self.active = None
++            if self.active is not None and self.active >= 0 and not self.selection.get('transit'):
++                gained = int(np.count_nonzero(self.replica.map.state.ravel()[self.view_start_cells] != -1))
++                previous = max((self.service_feedback.get(self.active, {}), self.fusion.graph.services.get(self.active, {})),
++                               key=lambda v: v.get('stamp', -1.))
++                feedback = service_result(previous, t, gained, len(self.view_start_cells), self.fusion.priority.config)
++                self.service_feedback[self.active] = feedback
++                self.cooldown[self.active] = feedback['defer_until']
++                if feedback['low_yield_streak']:
++                    self.event('region_low_yield', region=self.active, new_cells=gained, retry_after=feedback['defer_until'])
++                # Write last so restart replay restores streaks and successful resets.
++                self.event('region_service', region=self.active, feedback=feedback)
++                if feedback['low_yield_streak']:
++                    self.active = None
+             # Retain the regional service priority while selecting its next view.
+             self.intent = None; self.selection = None
+         if self.intent and not self.intent.get('committed') and t-self.intent['created'] > 6:
+@@ -375,6 +390,7 @@
+             self.last_plan = result['wall']; self.graph = result['graph']; self.tasks = result['tasks']
+             self.bids, self.tour, self.workload = result['bids'], result['tour'], result['workload']
+             self.graph_seq += 1; snapshot = self.graph.snapshot(); snapshot['sequence'] = self.graph_seq
++            snapshot['exploration_priority'] = self.fusion.priority_layer
+             self.publish(self.graph_pub, snapshot)
+             if self.active not in self.tasks and not self.intent:
+                 self.active = None
+@@ -439,8 +455,9 @@
+         candidate = selection['pool'].active
+         if candidate is None:
+             return
+-        if pending['anticipatory'] and not selection.get('transit'):
+-            cells = visible_cells(runtime, candidate.path[-1], selection['yaw'])
++        if not selection.get('transit'):
++            cells = (visible_cells(runtime, candidate.path[-1], selection['yaw'])-
++                     self.fusion.priority.committed_cells(runtime, self.ledger.states, t))
+             if len(cells) < 5:
+                 return
+             selection['gain'] = len(cells)*runtime.resolution**runtime.state.ndim
+--- previous/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py
++++ recorded/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py
+@@ -18,6 +18,7 @@
+     def __init__(self):
+         super().__init__('exploration_visualization')
+         self.fleet_size = int(self.declare_parameter('fleet_size', 3).value)
++        self.priority_source = int(self.declare_parameter('priority_source', 0).value)
+         self.states = {}; self.graphs = {}; self.poses = {}; self.trails = {i: [] for i in range(self.fleet_size)}; self.map = None; self.diag = {}
+         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+         self.pub = self.create_publisher(MarkerArray, '/exploration/markers', q)
+@@ -57,6 +58,36 @@
+                 m = self.marker('observed_map', value+1, Marker.CUBE_LIST, color)
+                 m.scale.x = m.scale.y = res*.98; m.scale.z = height
+                 self.points(m, np.column_stack([xy, np.full(len(xy), z)])); out.markers.append(m)
++        # The gain layer belongs to one planner replica. Component IDs and scores
++        # from private maps must not be merged as if they were a global costmap.
++        layer = self.graphs.get(self.priority_source, {}).get('exploration_priority', {})
++        priorities = {r['region']: r for r in sorted(layer.get('regions', []), key=lambda r: -r['score'])[:10]
++                      if r['score'] > 0}
++        if layer.get('shape'):
++            groups = np.array(layer['slice_labels']).reshape(layer['shape'])
++            peak = max((c['priority'] for c in layer['components']), default=0.)
++            for component in layer['components']:
++                if component['priority'] <= 0:
++                    continue
++                cells = np.argwhere(groups == component['id'])
++                if not len(cells):
++                    continue
++                strength = component['priority']/max(peak, 1e-9)
++                color = (1., .85-.65*strength, .08)
++                m = self.marker('unknown_region_priority', component['id'], Marker.CUBE_LIST, color, .55)
++                m.scale.x = m.scale.y = layer['resolution']*.95; m.scale.z = .035
++                xy = np.array(layer['origin'])+(cells+.5)*layer['resolution']
++                self.points(m, np.column_stack([xy, np.full(len(xy), .08)])); out.markers.append(m)
++            for component in sorted(layer['components'], key=lambda c: -c['priority'])[:12]:
++                if component['priority'] <= 0:
++                    continue
++                low, high = np.array(component['bounds'])[:, :2]
++                label = self.marker('unknown_region_labels', component['id'], Marker.TEXT_VIEW_FACING, (1., .8, .2))
++                label.scale.z = .26
++                label.pose.position.x, label.pose.position.y = map(float, (low+high)/2)
++                label.pose.position.z = .65
++                label.text = f"C{component['id']} {component['volume']:.1f} {layer['unit']}\nP {component['priority']:.3f}"
++                out.markers.append(label)
+         # Display one replica's sparse graph, not a misleading union of three copies.
+         graph = self.graphs.get(0, {})
+         nodes = self.marker('sparse_junctions', 0, Marker.SPHERE_LIST, (1., .85, .3)); nodes.scale.x = nodes.scale.y = nodes.scale.z = .14
+@@ -81,6 +112,11 @@
+             label = self.marker('region_labels', rid, Marker.TEXT_VIEW_FACING, color); label.scale.z = .3
+             label.pose.position.x = float(x); label.pose.position.y = float(y); label.pose.position.z = .35
+             label.text = f'R{rid} / '+(f'U{owner}' if owner >= 0 else 'auction'); out.markers.append(label)
++            if rid in priorities:
++                row = priorities[rid]
++                label.text += f"\nP {row['score']:.3f} / wait {row['wait_s']:.0f}s"
++                if row['deferred']:
++                    label.text += ' / retry later'
+         for i, pose in self.poses.items():
+             color = COLORS[i % len(COLORS)]; p = pose.position
+             body = self.marker('actual_vehicle', i, Marker.CUBE, color); body.pose = pose
+@@ -109,6 +145,7 @@
+             f"Coverage {d.get('coverage', 0)*100:.1f}%  |  t={elapsed:.0f}s  |  {d.get('status', 'WAITING')}\n"
+             f"Sparse graph: {len(graph.get('nodes', []))} nodes / {graph.get('free_cells', 0)} free cells\n"
+             'Hgrid > MR-DTG > GVP + pair CVRP > continuous flight\n'
++            f"Unknown priority: UAV {self.priority_source} estimate / orange = higher / snapshot t={layer.get('time', 0):.0f}s\n"
+             f"Network {'RECOVERED' if d.get('network_resumed') else 'PARTITION' if d.get('isolated') else 'OK'} | Restart {'RECOVERED' if d.get('restart_recovered') else 'PENDING' if d.get('restart_trial') else '-'} | Obstacle {'CLEARED' if d.get('dynamic_finished') else 'ACTIVE' if d.get('dynamic_trial') else '-'}")
+         out.markers.append(text); self.pub.publish(out)
+ 
+--- previous/ros2_ws/src/annual_swarm/test/test_exploration_priority.py
++++ recorded/ros2_ws/src/annual_swarm/test/test_exploration_priority.py
+@@ -0,0 +1,197 @@
++"""Behavioral regressions for unknown-region utility and feedback."""
++import json
++import sys
++from pathlib import Path
++from types import SimpleNamespace
++import numpy as np
++import pytest
++sys.path.insert(0, str(Path(__file__).resolve().parents[4]/'next_project'))
++from core.exploration.mapping import ObservedMap
++from core.exploration.voxel_mapping import VoxelMap
++from core.exploration.hierarchy import ExplorationRegion
++from core.exploration.priority import ExplorationPriority, PriorityConfig, service_result, service_cells
++from core.exploration.fusion import FusionPlanner
++from core.exploration.mrdtg import MultiRobotGraph
++from core.exploration.regions import visible_cells
++
++
++def scene():
++    m = ObservedMap([[0, 0, 0], [16, 12, 4]])
++    m.state[:] = 0; m.state[32:, :] = -1; m.rebuild()
++    return m
++
++
++def task(ident=1, parent=-1):
++    p = np.array([6., 4., 1.5])
++    return ExplorationRegion(ident, [[4., 2.], [10., 6.]], 128, [p], p, parent=parent)
++
++
++@pytest.mark.parametrize('ndim', [2, 3])
++def test_unknown_components_respect_walls_and_update_without_version_bump(ndim):
++    m = scene() if ndim == 2 else VoxelMap([[0, 0, 0], [6, 6, 4]])
++    m.state[:] = 0
++    m.state[2:5, 2:5] = -1; m.state[6:9, 2:5] = -1
++    p = ExplorationPriority(); p.update_map(m)
++    assert len(p.components) == 2
++    assert sum(c['cells'] for c in p.components.values()) == np.count_nonzero(m.state == -1)
++    assert all(p.labels[m.state != -1] == 0)
++    m.state[5, 2:5] = -1
++    p.update_map(m)
++    assert len(p.components) == 1
++    m.state[5, 2:5] = 1
++    p.update_map(m)
++    assert len(p.components) == 2
++
++
++def test_diagonal_unknown_pockets_are_not_connected():
++    m = scene(); m.state[:] = 0; m.state[3, 3] = m.state[4, 4] = -1
++    p = ExplorationPriority(); p.update_map(m)
++    assert len(p.components) == 2
++
++
++def test_more_information_and_large_region_can_outweigh_longer_travel():
++    p = ExplorationPriority()
++    nearby, _ = p.utility(.4, 1., 4., 0., {}, 0.)
++    large, _ = p.utility(2., 80., 12., 0., {}, 0.)
++    assert large > nearby
++    # Size never manufactures a benefit without observable information.
++    assert p.utility(0., 10000., 1., 10000., {}, 0.)[0] == 0
++    assert p.utility(10., 10000., np.inf, 10000., {}, 0.)[0] == 0
++
++
++def test_waiting_small_region_eventually_overtakes_fresh_large_region():
++    p = ExplorationPriority()
++    small, _ = p.utility(.2, 1., 10., 0., {}, 0.)
++    large, _ = p.utility(2., 80., 12., 0., {}, 0.)
++    aged, _ = p.utility(.2, 1., 10., 600., {}, 600.)
++    assert small < large < aged
++
++
++def test_repeated_low_yield_backoff_and_success_reset():
++    feedback = {}
++    delays = []
++    for k in range(6):
++        feedback = service_result(feedback, 200.*k, 0, 80)
++        delays.append(feedback['defer_until']-feedback['stamp'])
++    assert delays == [15., 30., 60., 120., 120., 120.]
++    p = ExplorationPriority()
++    normal = p.utility(2., 80., 12., 0., {}, 1000.)[0]
++    assert p.utility(2., 80., 12., 0., feedback, 1000.)[0] < normal
++    # Clearing a tiny residual pocket is successful, even below 30 voxels.
++    success = service_result(feedback, 1100., 4, 4)
++    assert success['low_yield_streak'] == 0 and success['defer_until'] == 1100.
++    assert p.utility(2., 80., 12., 0., success, 1100.)[0] == normal
++
++
++def test_latest_shared_success_clears_older_failure_and_survives_duplicate():
++    a = MultiRobotGraph(0, [[0, 0, 0], [16, 12, 4]])
++    b = MultiRobotGraph(1, a.bounds)
++    a.replica.put('s:7', dict(kind='region_service', id=7, **service_result({}, 10., 0, 100)))
++    b.replica.merge(a.replica.packet(full=True)); b.rebuild()
++    b.replica.put('s:7', dict(kind='region_service', id=7, **service_result(b.services[7], 12., 80, 100)))
++    b.rebuild()
++    assert b.services[7]['defer_until'] == 12. and b.services[7]['low_yield_streak'] == 0
++    assert not b.replica.merge(a.replica.packet(full=True))
++    b.rebuild(); assert b.services[7]['low_yield_streak'] == 0
++
++
++def test_peer_commitments_are_deduplicated_and_expire_without_touching_map():
++    m = scene(); p = ExplorationPriority(); point = [6., 4., 1.5]
++    peer = dict(time=10., intent=dict(committed=True, path=[point], yaw=0.))
++    before = m.state.copy(); safe = m.safe.copy()
++    cells = p.committed_cells(m, {1: peer, 2: peer}, 11.)
++    assert cells and cells == p.view(m, point, 0.)
++    assert not p.committed_cells(m, {1: peer}, 13.)
++    for flag in ('retiring', 'recovery'):
++        inactive = dict(peer, intent=dict(peer['intent'], **{flag: True}))
++        assert not p.committed_cells(m, {1: inactive}, 11.)
++    peer['intent']['committed'] = False
++    assert not p.committed_cells(m, {1: peer}, 11.)
++    assert np.array_equal(before, m.state) and np.array_equal(safe, m.safe)
++
++
++def test_priority_deducts_overlapping_gain_and_keeps_unreserved_gain():
++    m = scene(); p = ExplorationPriority(); t = task()
++    costs = SimpleNamespace(distance=lambda a, b: float(np.linalg.norm(a-b)))
++    original = p.rank(m, {1: t}, {1}, costs, t.entry, 1., {})[1]
++    assert original['score'] > 0 and original['components']
++    cells = set()
++    for yaw in np.linspace(-np.pi, np.pi, p.config.preview_headings, endpoint=False):
++        cells.update(p.view(m, t.entry, yaw))
++    partial = p.rank(m, {1: t}, {1}, costs, t.entry, 1., {}, frozenset(sorted(cells)[::2]))[1]
++    excluded = p.rank(m, {1: t}, {1}, costs, t.entry, 1000., {}, frozenset(cells))[1]
++    assert 0 < partial['predicted_gain'] < original['predicted_gain']
++    assert excluded['predicted_gain'] == excluded['score'] == 0
++    assert excluded['raw_gain'] > 0
++
++
++def test_view_cache_rechecks_new_occluder_and_does_not_see_through_wall():
++    m = scene(); p = ExplorationPriority(); point = [6., 4., 1.5]
++    assert p.view(m, point, 0.)
++    m.state[28, :] = 1  # Occupied wall between view and all unknown cells.
++    assert not p.view(m, point, 0.)
++    m.state[28, :] = 0
++    assert p.view(m, point, 0.)
++
++
++def test_coarse_rays_preserve_occlusion_and_default_view_resolution():
++    m = VoxelMap([[0, 0, 0], [8, 8, 4]])
++    m.state[:] = 0; m.state[20:, :, :] = -1
++    point = [4., 4., 1.5]; p = ExplorationPriority()
++    exact = visible_cells(m, point, 0.)
++    coarse = p.view(m, point, 0., coarse=True)
++    assert coarse and coarse <= exact
++    assert exact == visible_cells(m, point, 0., azimuth_samples=61, pitch_samples=13)
++    m.state[18, :, :] = 1
++    assert not p.view(m, point, 0., coarse=True)
++
++
++def test_service_gain_excludes_unrelated_new_observations():
++    m = scene(); t = task()
++    ids = service_cells(m, t, t.entry, 0.)
++    assert len(ids)
++    elsewhere = np.flatnonzero((m.state == -1).ravel())
++    elsewhere = np.setdiff1d(elsewhere, ids)[:100]
++    m.state.ravel()[elsewhere] = 0
++    assert np.count_nonzero(m.state.ravel()[ids] != -1) == 0
++    m.state.ravel()[ids[:4]] = 0
++    assert np.count_nonzero(m.state.ravel()[ids] != -1) == 4
++
++
++def test_wait_age_inherits_parent_and_resets_on_service():
++    m = scene(); p = ExplorationPriority(); t = task(2, parent=1)
++    p.first_seen[1] = 10.
++    costs = SimpleNamespace(distance=lambda a, b: 1.)
++    row = p.rank(m, {2: t}, {2}, costs, t.entry, 100., {})[2]
++    assert row['wait_s'] == 90.
++    row = p.rank(m, {2: t}, {2}, costs, t.entry, 100., {2: service_result({}, 95., 80, 100)})[2]
++    assert row['wait_s'] == 5.
++
++
++def test_remote_proxy_and_diagnostic_snapshot_are_explicit_and_json_safe():
++    m = scene(); p = ExplorationPriority(); t = task()
++    costs = SimpleNamespace(distance=lambda a, b: np.inf)
++    row = p.rank(m, {1: t}, set(), costs, t.entry, 10., {})[1]
++    assert row['gain_source'] == 'remote_proxy' and row['travel_s'] is None and row['score'] == 0
++    packet = p.snapshot(m, 10., {1: 0}, 0)
++    json.dumps(packet, allow_nan=False)
++    layer = np.array(packet['slice_labels']).reshape(packet['shape'])
++    assert np.array_equal(layer > 0, m.state == -1)
++    assert packet['source'] == 0 and packet['unit'] == 'm2'
++
++
++def test_fusion_main_tour_uses_priority_and_preserves_known_free_paths():
++    m = scene(); planner = FusionPlanner(0, m.bounds)
++    result = planner.compute(m, np.array([2., 4., 1.5]), 0., None, [], {}, [], 1, 1., False, {}, {}, {})
++    tour = result['tour']; assert len(tour) > 1
++    scores = planner.priority.scores
++    assert [scores[r]['score'] for r in tour] == sorted([scores[r]['score'] for r in tour], reverse=True)
++    # Giving another region a continuous low-yield history changes the next task.
++    former = tour[0]
++    feedback = {former: dict(stamp=1., defer_until=1., observed_new_cells=0, low_yield_streak=100)}
++    result = planner.compute(m, np.array([2., 4., 1.5]), 0., former, [], {}, [], 2, 2., True, {}, {}, {}, feedback)
++    assert result['tour'][0] != former
++    if result['selection']:
++        assert m.safe_path(result['selection']['pool'].active.path)
++        assert result['selection']['priority']['region'] == result['selected']
++    assert 'priority' in planner.diagnostics['stage_wall_s']
+--- previous/ros2_ws/src/annual_swarm/test/test_priority_ros.py
++++ recorded/ros2_ws/src/annual_swarm/test/test_priority_ros.py
+@@ -0,0 +1,81 @@
++"""ROS message construction, configuration and service-feedback callback checks."""
++import sys
++from pathlib import Path
++from types import SimpleNamespace
++import numpy as np
++import pytest
++
++rclpy = pytest.importorskip('rclpy')
++ROOT = Path(__file__).resolve().parents[4]
++sys.path.insert(0, str(ROOT/'next_project'))
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'scripts'))
++from exploration_visualization_node import Visualization
++from decentralized_agent_node import ExplorationAgent
++from core.exploration.priority import ExplorationPriority
++from core.exploration.voxel_mapping import VoxelMap
++
++
++def test_priority_markers_contain_unknown_voxels_size_and_score():
++    m = VoxelMap([[0, 0, 0], [8, 8, 4]])
++    m.state[:] = 0; m.state[20:, :, :] = -1
++    priority = ExplorationPriority(); priority.update_map(m)
++    priority.scores = {7: dict(region=7, components=[1], score=.7, deferred=False, wait_s=90.)}
++    layer = priority.snapshot(m, 10., {7: 0}, 0)
++    rclpy.init()
++    node = Visualization()
++    try:
++        packets = []; node.pub = SimpleNamespace(publish=packets.append)
++        node.graphs[0] = dict(exploration_priority=layer)
++        node.tick()
++        markers = packets[-1].markers
++        heat = next(x for x in markers if x.ns == 'unknown_region_priority')
++        assert len(heat.points) == np.count_nonzero(np.array(layer['slice_labels']) == 1)
++        assert heat.color.r == 1. and heat.color.a > 0
++        text = next(x.text for x in markers if x.ns == 'unknown_region_labels')
++        assert 'm3' in text and '0.700' in text
++        # A completed component disappears on the next published DELETEALL frame.
++        node.graphs[0] = {}
++        node.tick()
++        assert not any(x.ns == 'unknown_region_priority' for x in packets[-1].markers)
++    finally:
++        node.destroy_node(); rclpy.shutdown()
++
++
++def test_agent_feedback_persists_streak_and_success_across_restart(tmp_path):
++    config = ROOT/'ros2_ws/src/annual_swarm/config/exploration_priority.yaml'
++    rclpy.init(args=['--ros-args', '--params-file', str(config),
++                    '-p', 'bounds:="[[0,0,0],[8,8,4]]"',
++                    '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', f'output_dir:={tmp_path}'])
++    node = ExplorationAgent()
++    try:
++        assert node.fusion.priority.config.retry_base_s == 15.
++        node.now = lambda: 100.
++        node.position = np.array([2.25, 2.25, 1.65])
++        node.bootstrapped = node.rejoin_ready = True
++        node.replica.map.state[:] = 0
++        node.replica.map.state.ravel()[100:200] = -1
++        node.replica.map.rebuild()
++        def observe(gain):
++            node.intent = dict(committed=True, path=[node.position.tolist()], yaw=0., token='test')
++            node.selection = dict(transit=False); node.active = 7
++            node.view_start_cells = np.arange(100, 200)
++            node.view_start_known = int(np.count_nonzero(node.replica.map.state != -1))
++            node.replica.map.state.ravel()[100:100+gain] = 0
++            node.execution = dict(epoch=node.epoch, arrived=True, ready=True)
++            node.heartbeat()
++        observe(0)
++        assert node.service_feedback[7]['low_yield_streak'] == 1
++        assert node.cooldown[7] == 115.
++        node.now = lambda: 120.
++        observe(40)
++        assert node.service_feedback[7]['low_yield_streak'] == 0
++        assert node.cooldown[7] == 120.
++    finally:
++        node.worker.shutdown(); node.log.close(); node.paths.close(); node.destroy_node()
++    restored = ExplorationAgent()
++    try:
++        assert restored.service_feedback[7]['low_yield_streak'] == 0
++        assert restored.service_feedback[7]['observed_new_cells'] == 40
++    finally:
++        restored.worker.shutdown(); restored.log.close(); restored.paths.close(); restored.destroy_node()
++        rclpy.shutdown()

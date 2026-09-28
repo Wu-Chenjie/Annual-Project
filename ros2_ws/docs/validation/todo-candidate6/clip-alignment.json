@@ -1,0 +1,104 @@
+{
+  "method": "last raw-video mtime minus decoded duration; then verify clips against simulation HUD",
+  "estimated_recording_start_monotonic": 13350.59516620636,
+  "alignment_uncertainty_s": 2.0,
+  "raw_duration_s": 992.4,
+  "clips": {
+    "moving-handoff": {
+      "event": {
+        "type": "handoff_consumed",
+        "drone": 1,
+        "time": 380.00100000000003,
+        "incarnation": "57ea253503a9414e90da661dc171767c",
+        "old_token": "1:57ea2535:2401053",
+        "token": "1:57ea2535:2401054",
+        "continuity": {
+          "position": 0.0,
+          "velocity": 3.884318186931144e-15,
+          "acceleration": 1.4062616933866388e-15,
+          "yaw": 0.0,
+          "yaw_rate": 0.0,
+          "yaw_acceleration": 0.0
+        },
+        "speed": 0.5276903738079471
+      },
+      "raw_anchor_s": 574.4822834456409,
+      "start_s": 569.4822834456409,
+      "duration_s": 12.0
+    },
+    "cached-backup": {
+      "event": {
+        "type": "cached_route_switched",
+        "drone": 1,
+        "time": 295.20000000000005,
+        "incarnation": "57ea253503a9414e90da661dc171767c",
+        "region": 93,
+        "token": "1:57ea2535:2401043",
+        "candidate": "93:2401041:5",
+        "origin": {
+          "token": "1:57ea2535:2401041",
+          "candidate": "93:2401041:sparse",
+          "time": 290.0,
+          "map_version": 613
+        },
+        "actual_start": [
+          6.032845696605844,
+          7.941924943902426,
+          1.054530770099243
+        ],
+        "actual_speed": 0.027482021836583204,
+        "map_version": 626,
+        "team_gain_estimate": 0.08099999999999999
+      },
+      "raw_anchor_s": 438.5180315216403,
+      "start_s": 433.5180315216403,
+      "duration_s": 12.0
+    },
+    "tail-90-95": {
+      "start_s": 912.0872404746406,
+      "duration_s": 74.31644297899948
+    },
+    "transit-reobserve": {
+      "event": {
+        "type": "path_committed",
+        "drone": 1,
+        "time": 333.653,
+        "incarnation": "57ea253503a9414e90da661dc171767c",
+        "token": "1:57ea2535:2401046",
+        "region": 133,
+        "quorum": [
+          2,
+          0
+        ],
+        "predicted_frontier_volume_m3": 3.6989999999999994,
+        "lookahead": null,
+        "exploration_priority": {
+          "score": 0.037483845612179496,
+          "predicted_gain": 0.45899999999999996,
+          "raw_gain": 0.45899999999999996,
+          "component_volume": 0.9989999999999999,
+          "components": [],
+          "repeat_factor": 1.0,
+          "service_role": "neighbor_observation_entry",
+          "forecast_age_s": 4.001000000000033,
+          "forecast_scope_kind": "fresh_ray_footprint",
+          "region": 133,
+          "travel_s": 15.472935299583014,
+          "wait_s": 132.50100000000003,
+          "aging_multiplier": 1.3312525000000002,
+          "gain_source": "remote_proxy",
+          "information_reward": 0.6362108863550813,
+          "deferred": false,
+          "traffic_delay_s": 0.0,
+          "reactivation_reason": "new_or_successful_task",
+          "purpose": "explore",
+          "committed_by_peer": false
+        }
+      },
+      "purpose": "transit_reobserve",
+      "raw_anchor_s": 498.86443004463945,
+      "start_s": 493.86443004463945,
+      "duration_s": 12.0
+    }
+  }
+}

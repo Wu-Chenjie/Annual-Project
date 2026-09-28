@@ -1,0 +1,29 @@
+{
+  "run-configuration.json": "a090018873433675d649a0b3299738f9f27e51dfb86abaf1e44dcb4074f3b506",
+  "summary.json": "1ad6d0930add7ef5c16e707817272e62452eb9e7b0860945c7bc9c6d81a51804",
+  "independent-acceptance.json": "f86f3af5233754afd1880d09652a089ea92e8b3880edf68f333320b54bb37310",
+  "original-accounting-audit-status.json": "45c23b008a6319bcae65f22fe2935de87a39fb975bbfd0a3b65653a384486940",
+  "dynamic-backup-audit.json": "994623be61628904f9ecce789c8f4b731044b90ce7b5bf3c5f238560f7fce140",
+  "execution-protocol-audit.json": "a29ffcdc4757ff718a91d89b5a7ba649010a5efeb3e0c56000a5cb56d0964e72",
+  "recorder-manifest.json": "20e38916117887ca61fb9fe4655b77e0505ab4e78264f80fce94272c0148df37",
+  "audit-status.json": "5baa36efe3bcc5c4132c840047b6e60efc4e611a031e5ecea10edffe920a71c4",
+  "recording-clock.json": "9888391a036d6c7d6f006ae7f0d8f5099278de0825e29baa693748b529a7bea5",
+  "external-test-manifest.json": "5225f6e776a36601d8ae46195285ac77408d27c6e97a34b3365457eb375a7334",
+  "transport.json": "f618d450eef604015ab5abbea6554632a8114db513fde283a633380b847f54b2",
+  "frame-15s.png": "4512083ff8ac5c80d77604b3bbf3bbf1b4a9f44276b7e16dcf07c358392e5725",
+  "gazebo-rviz-raw.mp4": "9d1f24e9d0468cf8b13830a2d246c7bdd82e3b516abf96c9e3c6f645235b1417",
+  "accounting-revision.json": "c64a1d5911e718aa3972ac5a4c3cbacc2c24156d9cf84befa0795cb5d5e59322",
+  "process-cleanup.json": "5148d06380f163ba4cbd87390bd68de7bdb79ead95f916b592698e1e4bd6fc54",
+  "todo-audit.json": "79f55f0cce8529dc1ac7d7d209323c38e0988889c6da8c45c12c9bf22a75e778",
+  "video-probe.json": "64d2644ba2cc52874593907c55cdc03518365f0f100fd2659fc406988ed2f155",
+  "run-result.json": "7832813588858e1e42f8cb25f2cde9b908674fb5dc97b57d260fd5a9a88a9051",
+  "todo-exploration.mp4": "694d860327dc37550e1e1c4718db4fd99f571d79c4c48e0f650af4d10e4a93d0",
+  "retained_raw_evidence": {
+    "observations.jsonl.gz": "2b7e66514dec24e3aad7fe7125b2ba51aa4e02a7ae1c537dedeb8ef332599990",
+    "trajectory.csv": "5f61a83195894d32751b8046bb8d9f0f2341a912facd4e7da0b1e74adb05e7ce",
+    "tracking.csv": "97796b62787528cb86a8d1d4af885186df5d3d8c2824337d19d7c28b1669b71f",
+    "command-evidence.jsonl": "fe5c99617a35647bccb9862f8b7a9511cd56645210a1661b3cefc9b9456bb080",
+    "execution-evidence.jsonl": "29ed282abb350d9031e80ff32f61ac009f660a7aef5bffbbcaeba04782e659fe",
+    "peer_states.jsonl": "e06e2ddca03b98dac5a5ee9d4854a7d6613a590ca8d297783dcbf5ba58f3f11e"
+  }
+}

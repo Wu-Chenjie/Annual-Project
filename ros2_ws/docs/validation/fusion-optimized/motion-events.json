@@ -1,0 +1,444 @@
+[
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 385.21200000000005,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      7.338746876464871,
+      18.152636923859042,
+      1.827627113150112
+    ],
+    "map_clearance": 0.4842213545276974
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 386.12100000000004,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      7.32836046512303,
+      18.155643539161733,
+      1.8248024322295082
+    ],
+    "map_clearance": 0.4932368991110801
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1043.502,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.140048963155348,
+      8.263084854950318,
+      1.0505447970020632
+    ],
+    "map_clearance": 0.4369151450496819
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1047.001,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.143099514134498,
+      8.279601209266417,
+      1.0504635195345025
+    ],
+    "map_clearance": 0.7203987907335833
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1047.943,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.150365144794627,
+      8.278886120577159,
+      1.0490499015257724
+    ],
+    "map_clearance": 0.42111387942284073
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1049.219,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.13993550095962,
+      8.285402740504,
+      1.055876956738318
+    ],
+    "map_clearance": 0.5990275051887605
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1051.64,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.141630949157015,
+      8.286571212493973,
+      1.0465853815688004
+    ],
+    "map_clearance": 0.41342878750602663
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1052.0,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.146559858212978,
+      8.279640428981828,
+      1.0468893427998511
+    ],
+    "map_clearance": 0.7203595710181719
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1053.698,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.137241869287706,
+      8.28099736661046,
+      1.0548989604620977
+    ],
+    "map_clearance": 0.41900263338953925
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1054.501,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.148490484285034,
+      8.279497029095856,
+      1.0488350809287181
+    ],
+    "map_clearance": 0.6184498713393478
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1055.0030000000002,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.146461368370524,
+      8.294971361444471,
+      1.0475946345865228
+    ],
+    "map_clearance": 0.4050286385555285
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1083.458,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.144157205084444,
+      8.293009279851137,
+      1.044072751745993
+    ],
+    "map_clearance": 0.6200493585351814
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1085.0020000000002,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.135661942927683,
+      8.28216947300732,
+      1.0509924754063866
+    ],
+    "map_clearance": 0.41783052699267953
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1085.5,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.137332223484105,
+      8.288178115289941,
+      1.0438816200291396
+    ],
+    "map_clearance": 0.6236616084133106
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1086.526,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.14042400755749,
+      8.282597410588705,
+      1.0478055154024752
+    ],
+    "map_clearance": 0.4174025894112944
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1088.0030000000002,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.145462934521642,
+      8.280496367234655,
+      1.0474423711125693
+    ],
+    "map_clearance": 0.6208444000626214
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1088.5,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.136039535633003,
+      8.290702999954688,
+      1.0383942297194677
+    ],
+    "map_clearance": 0.4092970000453121
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1098.0,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.141887320503226,
+      8.287165386908278,
+      1.047256843659307
+    ],
+    "map_clearance": 0.7128346130917226
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1098.5700000000002,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.146943516812605,
+      8.287164858917413,
+      1.0419380782291299
+    ],
+    "map_clearance": 0.4128351410825871
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1099.509,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.137347822131446,
+      8.285508004168511,
+      1.0532326372812852
+    ],
+    "map_clearance": 0.7144919958314894
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1101.241,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.144620432209145,
+      8.293862154843605,
+      1.0448197039229656
+    ],
+    "map_clearance": 0.4061378451563943
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1109.001,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.13848003813267,
+      8.280333317112092,
+      1.0463827016386893
+    ],
+    "map_clearance": 0.6074299817900937
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1110.086,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.151419344866408,
+      8.285146901000253,
+      1.0400125755573013
+    ],
+    "map_clearance": 0.41485309899974643
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1131.092,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.139895545400098,
+      8.274633888010406,
+      1.0517080819596518
+    ],
+    "map_clearance": 0.6155085424540516
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1134.141,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.144881365791267,
+      8.287785185652968,
+      1.0452662167941555
+    ],
+    "map_clearance": 0.41221481434703156
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1153.0020000000002,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.137300722685882,
+      8.294027420930949,
+      1.041768433288305
+    ],
+    "map_clearance": 0.7059725790690518
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1154.0,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.138230447025638,
+      8.279843583048443,
+      1.037732742950814
+    ],
+    "map_clearance": 0.4201564169515567
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1172.1970000000001,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.13905811876566,
+      8.279192435147342,
+      1.044448321219928
+    ],
+    "map_clearance": 0.6283676706983828
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1173.501,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.140999402076403,
+      8.28669051715365,
+      1.0393859973247064
+    ],
+    "map_clearance": 0.41330948284634983
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1174.0,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.148110860533574,
+      8.296109439378458,
+      1.0432686956588901
+    ],
+    "map_clearance": 0.6198466752378147
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1176.431,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.138706634555167,
+      8.281361475145932,
+      1.0410610554657218
+    ],
+    "map_clearance": 0.4186385248540677
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1181.0,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.14169137747397,
+      8.288373519930007,
+      1.0413876976328178
+    ],
+    "map_clearance": 0.5910589551576005
+  },
+  {
+    "type": "motion_suspended",
+    "drone": 1,
+    "time": 1185.5,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "no_certified_recovery",
+    "position": [
+      18.149982311832808,
+      8.249552664896878,
+      1.0344877919278206
+    ],
+    "map_clearance": 0.4504473351031212
+  },
+  {
+    "type": "motion_resumed",
+    "drone": 1,
+    "time": 1187.711,
+    "incarnation": "a64e1561d158441ea0b3a8c94bf81f50",
+    "reason": "certified_motion_available",
+    "position": [
+      18.15246855604651,
+      8.245637175691753,
+      1.0424070763317395
+    ],
+    "map_clearance": 0.4543628243082466
+  }
+]

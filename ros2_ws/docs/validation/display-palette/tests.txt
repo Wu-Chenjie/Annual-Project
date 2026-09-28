@@ -1,0 +1,4 @@
+ROS priority display/feedback: 2 tests passed.
+Scene generation: 6 tests passed.
+Both CTest suites passed in the ROS Jazzy build.
+Native Gazebo + RViz launch and screenshot verified.

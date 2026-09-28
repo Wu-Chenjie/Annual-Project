@@ -1,0 +1,277 @@
+[
+  {
+    "wall": 1.0825970700000198,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 0,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 1.0822517720000633,
+      "stage_wall_s": {
+        "map": 6.169000016598147e-06,
+        "hierarchy": 0.028252910999981395,
+        "topology": 0.030486902999996346,
+        "priority": 0.2531336700000111,
+        "tour": 0.2158858479999708,
+        "pair": 2.2930000795895467e-06,
+        "view": 0.14428252099992278,
+        "trajectory": 0.41019211900004393
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "selected_priority": {
+        "score": 0.2644577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 125,
+        "travel_s": 7.999999999999998,
+        "wait_s": 0.0,
+        "gain_source": "local_rays",
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.8328884039999593,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.8325476489999346,
+      "stage_wall_s": {
+        "map": 6.335999955808802e-06,
+        "hierarchy": 0.027204678999964926,
+        "topology": 0.027699593000079403,
+        "priority": 0.035543555000003835,
+        "tour": 0.2180104089999304,
+        "pair": 2.501000039956125e-06,
+        "view": 0.14595902700000352,
+        "trajectory": 0.378113170000006
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "selected_priority": {
+        "score": 0.2694577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 125,
+        "travel_s": 7.999999999999998,
+        "wait_s": 2.0,
+        "gain_source": "local_rays",
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.8138399669999217,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.8135108860000173,
+      "stage_wall_s": {
+        "map": 6.586999916180503e-06,
+        "hierarchy": 0.026379474000009395,
+        "topology": 0.028475648000039655,
+        "priority": 0.03524598900003184,
+        "tour": 0.20621138799992877,
+        "pair": 1.500000053056283e-06,
+        "view": 0.14067071700003453,
+        "trajectory": 0.37651307999999517
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "selected_priority": {
+        "score": 0.2744577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 125,
+        "travel_s": 7.999999999999998,
+        "wait_s": 4.0,
+        "gain_source": "local_rays",
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.82590036900001,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.8255551970000852,
+      "stage_wall_s": {
+        "map": 6.962000043131411e-06,
+        "hierarchy": 0.027041722000035406,
+        "topology": 0.026706388999969022,
+        "priority": 0.03535154199994395,
+        "tour": 0.20130005800001527,
+        "pair": 1.500000053056283e-06,
+        "view": 0.14105970299999626,
+        "trajectory": 0.394082234999928
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "selected_priority": {
+        "score": 0.2794577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 125,
+        "travel_s": 7.999999999999998,
+        "wait_s": 6.0,
+        "gain_source": "local_rays",
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  },
+  {
+    "wall": 0.8130513650000921,
+    "tasks": 71,
+    "diagnostics": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 105,
+      "hgrid_splits": 18,
+      "frontier_clusters": 49,
+      "reused_frontiers": 49,
+      "history_nodes": 1,
+      "handshake_updates": 0,
+      "delta_applied": 0,
+      "local_regions": 8,
+      "global_regions": 0,
+      "shared_deferred_regions": 0,
+      "pair_status": "no_pair",
+      "compute_wall_s": 0.8127116120000437,
+      "stage_wall_s": {
+        "map": 6.837000000814442e-06,
+        "hierarchy": 0.026735277000057067,
+        "topology": 0.025383185999999114,
+        "priority": 0.0349343330000238,
+        "tour": 0.2040237950000119,
+        "pair": 1.7919999208970694e-06,
+        "view": 0.14170731800004432,
+        "trajectory": 0.3799140290000196
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "unknown_components": 14,
+      "reserved_gain_cells": 0,
+      "selected_priority": {
+        "score": 0.2844577422775565,
+        "predicted_gain": 1.053,
+        "raw_gain": 1.053,
+        "component_volume": 411.53399999999993,
+        "components": [
+          8
+        ],
+        "repeat_factor": 1.0,
+        "preview_position": [
+          10.049999999999999,
+          6.1499999999999995,
+          1.95
+        ],
+        "preview_yaw": -1.5707963267948966,
+        "region": 125,
+        "travel_s": 7.999999999999998,
+        "wait_s": 8.0,
+        "gain_source": "local_rays",
+        "deferred": false,
+        "committed_by_peer": false
+      }
+    }
+  }
+]

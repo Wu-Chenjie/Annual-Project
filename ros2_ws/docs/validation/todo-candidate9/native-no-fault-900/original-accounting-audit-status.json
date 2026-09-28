@@ -1,0 +1,18 @@
+{
+  "accounting": {
+    "completed": false,
+    "error": "ValueError('Parent timing counters decreased within one process session')"
+  },
+  "flight_and_coverage": {
+    "completed": true,
+    "passed": true,
+    "status": null
+  },
+  "execution_protocol": {
+    "completed": true,
+    "passed": true,
+    "status": "PASS"
+  },
+  "outcome": "COMPLETE",
+  "complete_attempt_accepted": false
+}

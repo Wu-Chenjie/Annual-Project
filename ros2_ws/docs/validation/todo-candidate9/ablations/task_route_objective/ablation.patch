@@ -1,0 +1,42 @@
+--- next_project/core/exploration/fusion.py
++++ next_project/core/exploration/fusion.py
+@@ -222,7 +222,7 @@
+         rewards = {r: p['information_reward'] for r, p in priorities.items()}
+         # The ledger pins execution, while this route starts at its anticipated
+         # endpoint. Do not pin a finished view or re-sort the optimized route.
+-        tour, workload = optimize_tour(position, owned, feasible, costs, rewards=rewards,
++        tour, workload = optimize_tour(position, owned, feasible, costs, rewards=None,
+                                       latency_weight=self.priority.config.route_latency_weight,
+                                       traffic_delays={r:p.get('traffic_delay_s',0.) for r,p in priorities.items()})
+         bids = {}
+--- next_project/core/exploration/fusion.py
++++ next_project/core/exploration/fusion.py
+@@ -223,7 +223,7 @@
+         # The ledger pins execution, while this route starts at its anticipated
+         # endpoint. Do not pin a finished view or re-sort the optimized route.
+         tour, workload = optimize_tour(position, owned, feasible, costs, rewards=None,
+-                                      latency_weight=self.priority.config.route_latency_weight,
++                                      latency_weight=0.,
+                                       traffic_delays={r:p.get('traffic_delay_s',0.) for r,p in priorities.items()})
+         bids = {}
+         for rid, task in (feasible.items() if can_move else []):
+@@ -255,7 +255,7 @@
+                          for r, owner in owners.items() if owner == i and r in tasks and r not in ids)
+                      for i in (self.drone, other)]
+             result = solve_pair(ids, starts, between, demands, owners, (self.drone, other), pinned, fixed_loads=fixed,
+-                                reward_weights=[rewards[r] for r in ids], latency_weight=self.priority.config.route_latency_weight)
++                                reward_weights=[rewards[r] for r in ids], latency_weight=0.)
+             offer = dict(other=other, result=result, owners={r: owners[r] for r in ids})
+             if (result['status'] == 'optimal_window' and
+                     (not result.get('before_feasible', True) or result['after'] < result['before']-.2)):
+--- next_project/core/exploration/fusion.py
++++ next_project/core/exploration/fusion.py
+@@ -255,7 +255,7 @@
+                          for r, owner in owners.items() if owner == i and r in tasks and r not in ids)
+                      for i in (self.drone, other)]
+             result = solve_pair(ids, starts, between, demands, owners, (self.drone, other), pinned, fixed_loads=fixed,
+-                                reward_weights=[rewards[r] for r in ids], latency_weight=0.)
++                                reward_weights=None, latency_weight=0.)
+             offer = dict(other=other, result=result, owners={r: owners[r] for r in ids})
+             if (result['status'] == 'optimal_window' and
+                     (not result.get('before_feasible', True) or result['after'] < result['before']-.2)):

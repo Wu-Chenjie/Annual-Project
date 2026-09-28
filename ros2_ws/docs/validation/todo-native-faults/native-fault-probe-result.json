@@ -1,0 +1,119 @@
+{
+  "executed_cases": 3,
+  "total_cases": 3,
+  "events": [
+    {
+      "type": "fault_injected",
+      "case": "planning_deadline",
+      "drone": 0,
+      "time": 61.00000000000001,
+      "process": {
+        "pid": 23165,
+        "parent": 22821,
+        "start_ticks": "1450185",
+        "arguments": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=24, pipe_handle=28)",
+          "--multiprocessing-fork"
+        ]
+      },
+      "signal": "SIGSTOP",
+      "request_id": "0:12",
+      "old_token": "0:3b480bfb:1361009",
+      "before_position": [
+        3.4438994173372404,
+        1.6238775995255827,
+        1.955102556698141
+      ],
+      "wall_monotonic": 14554.76040621
+    },
+    {
+      "type": "fault_window_ended",
+      "case": "planning_deadline",
+      "drone": 0,
+      "time": 72.5,
+      "original_process_alive": false,
+      "resumed": false,
+      "wall_monotonic": 14567.863701525
+    },
+    {
+      "type": "fault_injected",
+      "case": "planning_worker_crash",
+      "drone": 1,
+      "time": 100.0,
+      "process": {
+        "pid": 23171,
+        "parent": 22828,
+        "start_ticks": "1450187",
+        "arguments": [
+          "/usr/bin/python3",
+          "-B",
+          "-c",
+          "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=24, pipe_handle=28)",
+          "--multiprocessing-fork"
+        ]
+      },
+      "signal": "SIGKILL",
+      "request_id": "1:19",
+      "old_token": "1:99c86e49:1600013",
+      "before_position": [
+        5.847245191046297,
+        5.551221567118062,
+        1.95459932375392
+      ],
+      "wall_monotonic": 14601.625019676
+    },
+    {
+      "type": "fault_window_ended",
+      "case": "planning_worker_crash",
+      "drone": 1,
+      "time": 100.0,
+      "original_process_alive": false,
+      "resumed": false,
+      "wall_monotonic": 14601.730838694
+    },
+    {
+      "type": "fault_injected",
+      "case": "perception_update_loss",
+      "drone": 2,
+      "time": 150.0,
+      "process": {
+        "pid": 22843,
+        "parent": 22797,
+        "start_ticks": "1448362",
+        "arguments": [
+          "python3",
+          "/tmp/annual-todo-candidate-6/ros2_ws/install/annual_swarm/lib/annual_swarm/pointcloud_mapping_node.py",
+          "--ros-args",
+          "-r",
+          "__ns:=/drone_2",
+          "--params-file",
+          "/tmp/launch_params_wplx_ojz",
+          "--params-file",
+          "/tmp/launch_params_g3ak7kmg"
+        ]
+      },
+      "signal": "SIGSTOP",
+      "request_id": null,
+      "old_token": "2:8906eb91:1600020",
+      "before_position": [
+        5.503332761992824,
+        18.36344016967013,
+        2.354048758103455
+      ],
+      "wall_monotonic": 14666.637852785
+    },
+    {
+      "type": "fault_window_ended",
+      "case": "perception_update_loss",
+      "drone": 2,
+      "time": 153.0,
+      "original_process_alive": true,
+      "resumed": true,
+      "wall_monotonic": 14670.566683135
+    }
+  ],
+  "note": "Injection completion is not a safety pass. Independently audit actual flight, leases, timeout/crash recovery and new sensor gains."
+}

@@ -1,0 +1,81 @@
+{
+  "early_policy_3d": {
+    "status": "SEARCHING",
+    "coverage": 0.535288194029596,
+    "elapsed_s": 2400.641,
+    "t90_s": null,
+    "t95_s": null,
+    "distance_m": 434.7374567435628,
+    "contacts": 0,
+    "minimum_separation_m": 1.2830972006490098,
+    "views": 128,
+    "commits": 150,
+    "movement": {
+      "0": {
+        "moving_fraction": 0.3256548253798985,
+        "sampled_duration_s": 2400.6400000000003,
+        "altitude_span_m": 2.1094744495891007
+      },
+      "1": {
+        "moving_fraction": 0.06075879765395888,
+        "sampled_duration_s": 2400.6400000000003,
+        "altitude_span_m": 1.805554020272595
+      },
+      "2": {
+        "moving_fraction": 0.04591275659823987,
+        "sampled_duration_s": 2400.6400000000003,
+        "altitude_span_m": 1.80488071503061
+      }
+    },
+    "coverage_at_elapsed_s": {
+      "300.0": 0.46925190735462285,
+      "362.0": 0.4692689754049395,
+      "1000.0": 0.4693543156565226,
+      "1631.005": 0.46932017955588934,
+      "2400.0": 0.5352199218283296
+    },
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589
+  },
+  "optimized_fused": {
+    "status": "COMPLETE",
+    "coverage": 0.9524654798682346,
+    "elapsed_s": 1631.005,
+    "t90_s": 1136.0030000000002,
+    "t95_s": 1631.005,
+    "distance_m": 652.625140527426,
+    "contacts": 0,
+    "minimum_separation_m": 1.7443277962802688,
+    "views": 370,
+    "commits": 395,
+    "movement": {
+      "0": {
+        "moving_fraction": 0.4263274064990797,
+        "sampled_duration_s": 1631.0,
+        "altitude_span_m": 2.15084883434173
+      },
+      "1": {
+        "moving_fraction": 0.3148068669527896,
+        "sampled_duration_s": 1631.0,
+        "altitude_span_m": 2.150942344512907
+      },
+      "2": {
+        "moving_fraction": 0.3953341508277126,
+        "sampled_duration_s": 1631.0,
+        "altitude_span_m": 2.134562498285554
+      }
+    },
+    "coverage_at_elapsed_s": {
+      "300.0": 0.5254740650975439,
+      "362.0": 0.6266534673744218,
+      "1000.0": 0.8705900424994453,
+      "1631.005": 0.9524654798682346,
+      "2400.0": null
+    },
+    "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "truth_free_voxels": 58589
+  },
+  "interpretation": "One recorded run of each final fixed version is shown; earlier diagnostic and failed attempts are disclosed separately. Common map, sensing, coverage and motion constraints. Central sharing, dimensional adaptation and realized fault/restart semantics differ; not an isolated allocator ablation."
+}

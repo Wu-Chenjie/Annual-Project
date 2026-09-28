@@ -1,0 +1,23 @@
+{
+  "file": "early-policy-3d.mp4",
+  "codec": "h264",
+  "width": 1920,
+  "height": 1080,
+  "fps": "30/1",
+  "duration_s": 159.8,
+  "bytes": 9650263,
+  "sha256": "a2b1f797e0750f87c08cc5885c2c54d62ddd74bb76e2b676ba22fbaf771d0e87",
+  "full_decode_exit_code": 0,
+  "raw_capture_duration_s": 3831.4,
+  "playback_speed": 24.0,
+  "speed_basis": "wall clock recording; use logged simulation time for mission metrics",
+  "frame_timestamps_s": {
+    "early-frame.png": 5.0,
+    "middle-frame.png": 79.9,
+    "demo-preview.png": 159.70000000000002
+  },
+  "recorded_outcome": "SIMULATION_TIME_LIMIT",
+  "native_end_screen": "SEARCHING; the run was censored by the external time-limit runner",
+  "visual_review_passed": true,
+  "visual_review_notes": "Native Gazebo and RViz verified at 5.0 s, 79.9 s and 159.7 s; final visible telemetry is 53.5%, SEARCHING, obstacle CLEARED. The external runner stopped at the time limit; no completion caption was fabricated."
+}

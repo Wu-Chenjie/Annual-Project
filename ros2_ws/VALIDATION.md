@@ -1,6 +1,12 @@
 # ROS / Gazebo 迁移验收记录
 
-验证日期：2026-09-22。仓库基线：`7b09723d033068caac723433f3668efd832312d4`。
+2026-09-28：[工程TODO执行进度](TODO_EXECUTION.md)及[第一版原生开发证据](docs/validation/todo-development/README.md)已增加。候选3完整190项测试、基线观测/计时适配163项原测试通过；正式5种子配对及6项消融仍待全部完成，下述历史单次结果不替代本轮验收。
+
+早期策略已接入同一三维传感环境实测：2400.6 s 时覆盖 53.53%，未达到 95%；当前优化融合版为 1631.0 s 达到 95%。[原生录像、同口径对照及全部尝试披露](docs/validation/early-policy-3d/README.md)。这是旧策略的三维接口适配对照，不是原二维约 300 s 任务的复现。
+
+最新三维融合探索验收、录像源码版本、129 项包测试及同地图性能对照见 [优化版运行证据](docs/validation/fusion-optimized/README.md)。95% 覆盖用时缩短 25.3%，总航程增加 37.1%，零接触；每版本仅一次完整运行。[原融合基线与独立冷启动证据](docs/validation/fusion/README.md) 单独保留。架构和接口边界见 [融合探索说明](DECENTRALIZED_EXPLORATION.md)。下面按时间保留历史验证，不将旧限制或旧指标当作当前融合版结论。
+
+历史首轮验证日期：2026-09-22。仓库基线：`7b09723d033068caac723433f3668efd832312d4`。
 
 环境：Docker Linux aarch64、Ubuntu 24.04、ROS 2 Jazzy、Gazebo Sim 8.15.0（Harmonic）。首次安装使用 Ubuntu 镜像站加速，ROS 软件包来自官方 APT 源。已通过真实 Gazebo GUI 截图检查，旧截图保存在 `artifacts/screenshots/`；下面的飞行指标来自实际无界面物理仿真。
 

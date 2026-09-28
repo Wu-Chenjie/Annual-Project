@@ -6,6 +6,7 @@ import heapq
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import dijkstra
+from scipy.ndimage import distance_transform_edt
 from core.planning import AStar
 from core.planning.base import PlannerError
 from core.planning.path_quality import Candidate,PathQualityEvaluator,RankedPathPool
@@ -39,7 +40,8 @@ class TopologyGraph:
 def route_pool(runtime,start,goal,task_id,epoch,max_attempts=8):
     """Original A* + penalized graph searches; shared evaluator ranks unique routes."""
     candidates=[];evaluator=PathQualityEvaluator();penalties=np.zeros(runtime.shape)
-    start=np.asarray(start).copy();start[2]=runtime.altitude;goal=np.asarray(goal)
+    start=np.asarray(start).copy();goal=np.asarray(goal)
+    if runtime.state.ndim == 2:start[2]=runtime.altitude
     s=tuple(runtime.indices(start));g=tuple(runtime.indices(goal))
     for attempt in range(max_attempts):
         if attempt==0:
@@ -53,12 +55,13 @@ def route_pool(runtime,start,goal,task_id,epoch,max_attempts=8):
                 _,c,u=heapq.heappop(queue)
                 if c>cost[u]+1e-8:continue
                 if u==g:found=True;break
-                for dx,dy in ((1,0),(-1,0),(0,1),(0,-1)):
-                    v=(u[0]+dx,u[1]+dy)
-                    if min(v)<0 or v[0]>=runtime.shape[0] or v[1]>=runtime.shape[1] or not runtime.safe[v]:continue
+                for axis in range(runtime.state.ndim):
+                  for sign in (-1,1):
+                    cell=list(u);cell[axis]+=sign;v=tuple(cell)
+                    if any(v[j]<0 or v[j]>=runtime.shape[j] for j in range(runtime.state.ndim)) or not runtime.safe[v]:continue
                     nc=c+runtime.resolution*(1.+penalties[v])
                     if nc<cost.get(v,np.inf):
-                        cost[v]=nc;parent[v]=u;heapq.heappush(queue,(nc+runtime.resolution*(abs(v[0]-g[0])+abs(v[1]-g[1])),nc,v))
+                        cost[v]=nc;parent[v]=u;heapq.heappush(queue,(nc+runtime.resolution*sum(abs(v[j]-g[j]) for j in range(runtime.state.ndim)),nc,v))
             if not found:break
             cells=[g]
             while cells[-1]!=s:cells.append(parent[cells[-1]])
@@ -71,6 +74,15 @@ def route_pool(runtime,start,goal,task_id,epoch,max_attempts=8):
         if runtime.safe_path(path):
             candidates.append(Candidate(f'{task_id}:{epoch}:{attempt}',planner,attempt,path,evaluator.evaluate(path,runtime),runtime.version))
         idx=runtime.indices(np.vstack([np.linspace(a,b,max(2,int(np.linalg.norm(b-a)/.1)+1)) for a,b in zip(path[:-1],path[1:])]))
-        penalties[idx[:,0],idx[:,1]]+=3.
+        # A one-voxel penalty only produces parallel routes a few centimetres
+        # apart after curve fitting; one physical cylinder then blocks every
+        # reserve. Penalize a horizontal tube around the traveled corridor so
+        # later searches discover genuinely different bypasses when free space
+        # permits one. The penalty is a search preference, never a safety gate.
+        footprint=np.zeros(runtime.shape[:2],bool)
+        footprint[tuple(idx[:,:2].T)]=True
+        lateral=distance_transform_edt(~footprint)*runtime.resolution
+        tube=5.*np.maximum(0.,1.-lateral/1.8)**2
+        penalties+=tube[...,None] if runtime.state.ndim==3 else tube
     pool=RankedPathPool();pool.rank(candidates)
     return pool

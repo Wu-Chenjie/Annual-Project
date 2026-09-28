@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 144,
+  "captured_curve_commands": 143,
+  "lease_intervals": 143,
+  "handoffs": [
+    {
+      "token": "2:8906eb91:1600009",
+      "old_token": "2:8906eb91:1600008",
+      "authorized_at": 53.2,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 9.814059125499787e-16,
+        "acceleration": 2.1677340309497225e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 53.422000000000004
+    },
+    {
+      "token": "0:3b480bfb:1361013",
+      "old_token": "0:3b480bfb:1361012",
+      "authorized_at": 83.20100000000001,
+      "continuity": {
+        "position": 8.881784197001252e-16,
+        "velocity": 7.722935558248492e-16,
+        "acceleration": 9.25047693095021e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 83.4
+    },
+    {
+      "token": "0:3b480bfb:1361014",
+      "old_token": "0:3b480bfb:1361013",
+      "authorized_at": 86.4,
+      "continuity": {
+        "position": 1.8444410139024814e-15,
+        "velocity": 5.680553238690389e-16,
+        "acceleration": 2.0130778013083258e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 87.801
+    },
+    {
+      "token": "1:99c86e49:1600011",
+      "old_token": "1:99c86e49:1600010",
+      "authorized_at": 86.4,
+      "continuity": {
+        "position": 9.930136612989092e-16,
+        "velocity": 1.1541531293703759e-15,
+        "acceleration": 2.875457875277858e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 1.3877787807814457e-17
+      },
+      "executed_at": 87.801
+    },
+    {
+      "token": "1:99c86e49:1600014",
+      "old_token": "1:99c86e49:1600013",
+      "authorized_at": 109.628,
+      "continuity": {
+        "position": 8.881784197001252e-16,
+        "velocity": 1.872900529399048e-15,
+        "acceleration": 6.383428837617504e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 110.42200000000001
+    },
+    {
+      "token": "0:3b480bfb:1361019",
+      "old_token": "0:3b480bfb:1361018",
+      "authorized_at": 115.64200000000001,
+      "continuity": {
+        "position": 1.831026719408895e-15,
+        "velocity": 4.690692279041286e-15,
+        "acceleration": 7.092961650273852e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 115.92
+    },
+    {
+      "token": "2:8906eb91:1600019",
+      "old_token": "2:8906eb91:1600018",
+      "authorized_at": 138.4,
+      "continuity": {
+        "position": 9.155133597044475e-16,
+        "velocity": 9.96386356287637e-16,
+        "acceleration": 2.0754876483480954e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 1.734723475976807e-18
+      },
+      "executed_at": 138.842
+    },
+    {
+      "token": "0:3b480bfb:1361023",
+      "old_token": "0:3b480bfb:1361022",
+      "authorized_at": 141.638,
+      "continuity": {
+        "position": 1.7763568394002505e-15,
+        "velocity": 1.429538259433561e-15,
+        "acceleration": 2.7850466111002412e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 143.04000000000002
+    },
+    {
+      "token": "2:8906eb91:1600028",
+      "old_token": "2:8906eb91:1600027",
+      "authorized_at": 195.66600000000003,
+      "continuity": {
+        "position": 3.978256139440565e-15,
+        "velocity": 5.272504732242812e-15,
+        "acceleration": 9.687491145909707e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 197.8
+    },
+    {
+      "token": "0:3b480bfb:1361044",
+      "old_token": "0:3b480bfb:1361043",
+      "authorized_at": 321.331,
+      "continuity": {
+        "position": 3.978256139440565e-15,
+        "velocity": 3.868226812693627e-15,
+        "acceleration": 3.743235822239587e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 4.336808689942018e-19
+      },
+      "executed_at": 321.96000000000004
+    },
+    {
+      "token": "0:3b480bfb:1361052",
+      "old_token": "0:3b480bfb:1361051",
+      "authorized_at": 389.769,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 8.08113264318885e-16,
+        "acceleration": 3.6188843062238402e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "cancelled_at": 390.40000000000003
+    },
+    {
+      "token": "2:8906eb91:1600060",
+      "old_token": "2:8906eb91:1600059",
+      "authorized_at": 408.80400000000003,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 5.184737624656152e-15,
+        "acceleration": 7.26474107564062e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 411.3
+    }
+  ],
+  "cached_route_chains": [],
+  "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
+}

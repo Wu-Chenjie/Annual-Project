@@ -1,0 +1,190 @@
+{
+  "schema": "annual.todo-audit/2",
+  "status": "COMPLETE",
+  "thresholds": {
+    "t50": 127.00900000000001,
+    "t80": 267.5,
+    "t90": 309.5,
+    "t95": 439.50600000000003
+  },
+  "tail_90_95_s": 130.00600000000003,
+  "service_window_definition": "Actual tracking of an authorized service, from commit/consumption until completion, cancellation request, process restart or task end; clipped to the common task window. Braking observations are outside the cancelled service.",
+  "service_window_terminations": {
+    "cancelled:experiment_complete": 1,
+    "cancelled:path_or_tracking_invalidated": 14,
+    "completed": 125
+  },
+  "never_executed_authorizations": 0,
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "actual_tracking_packets": 4300,
+  "raw_frames": 3401,
+  "observed_known_cells": 70145,
+  "observed_free_cells": 65750,
+  "service_windows": 140,
+  "actual_team_new_known_in_windows": 53780,
+  "team_new_known_outside_service_windows": 16365,
+  "exploration_low_team_yield": 36,
+  "exploration_zero_team_yield": 12,
+  "exploration_low_yield_duration_s": 290.19,
+  "exploration_total_duration_s": 981.2530000000002,
+  "exploration_total_distance_m": 283.5104522856245,
+  "exploration_low_yield_distance_m": 93.26870268554065,
+  "purpose_counts": {
+    "explore": 136,
+    "transit_reobserve": 0,
+    "safety_recovery": 4
+  },
+  "residence_s": {
+    "takeoff": 0.0,
+    "incarnation_start": 0.0,
+    "initial_yaw_scan": 0.0,
+    "idle": 382.9550000000001,
+    "tracking_view": 859.8250000000087,
+    "observation_dwell": 73.00800000000012,
+    "view_observed": 1.9750000000000298,
+    "lease_confirmation_hold": 0.7550000000000523
+  },
+  "close_radius_m": 2.0,
+  "close_pair_duration_s": {},
+  "residence_by_uav_s": {
+    "0": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 43.12699999999986,
+      "planning_wait": 57.99200000000023,
+      "reservation_wait": 30.003999999999987,
+      "execution": 275.23100000000005,
+      "observation_dwell": 24.99799999999983,
+      "view_observed": 0.5910000000000082,
+      "lease_confirmation_hold": 0.3620000000000516,
+      "safety_recovery": 7.201000000000022
+    },
+    "1": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 42.14399999999986,
+      "planning_wait": 53.39600000000012,
+      "reservation_wait": 26.17500000000006,
+      "execution": 296.9929999999999,
+      "observation_dwell": 20.215000000000124,
+      "view_observed": 0.38699999999999335,
+      "lease_confirmation_hold": 0.19599999999999795
+    },
+    "2": {
+      "takeoff": 0.0,
+      "incarnation_start": 0.0,
+      "observation": 0.0,
+      "allocation_wait": 49.609999999999964,
+      "planning_wait": 48.29600000000002,
+      "reservation_wait": 32.210999999999956,
+      "execution": 280.39999999999986,
+      "observation_dwell": 27.79500000000017,
+      "view_observed": 0.9970000000000283,
+      "lease_confirmation_hold": 0.19700000000000273
+    }
+  },
+  "planning_wait_fleet_s": 159.68400000000037,
+  "planning_wall_median_s": 3.3011137209996377,
+  "planning_wall_p95_s": 7.167300190998503,
+  "planning_compute_wall_median_s": 2.8041834870000457,
+  "planning_request_counts": {
+    "planning_submitted": 279,
+    "planning_result": 276,
+    "planning_timeout": 0,
+    "planning_failed": 0
+  },
+  "planning_all_measured_requests_wall_s": {
+    "p50": 3.3011137209996377,
+    "p90": 5.710862353000266,
+    "p95": 7.167300190998503
+  },
+  "planning_queue_wall_s": {
+    "p50": 0.23842259750017547,
+    "p90": 0.40638432299965643,
+    "p95": 0.4738395047497761
+  },
+  "planning_delivery_wall_s": {
+    "p50": 0.24680948050081497,
+    "p90": 0.480846490498152,
+    "p95": 0.5675755372485582
+  },
+  "planning_stage_wall_s": {
+    "hierarchy": {
+      "p50": 0.16263461400012602,
+      "p90": 0.3036171135994664,
+      "p95": 0.34695868840099137
+    },
+    "map": {
+      "p50": 2.245799987576902e-05,
+      "p90": 4.005799928563647e-05,
+      "p95": 5.748229996243017e-05
+    },
+    "pair": {
+      "p50": 0.09118155100077274,
+      "p90": 0.20237259540081143,
+      "p95": 0.2248489854006038
+    },
+    "priority": {
+      "p50": 0.6178419909992954,
+      "p90": 0.7881699813980959,
+      "p95": 0.8108788216981339
+    },
+    "topology": {
+      "p50": 0.39572515800318797,
+      "p90": 0.9473736081992685,
+      "p95": 1.0817064820992528
+    },
+    "tour": {
+      "p50": 0.10977512700264924,
+      "p90": 0.24948900959934692,
+      "p95": 0.27367450310193814
+    },
+    "trajectory": {
+      "p50": 0.7555992830002651,
+      "p90": 2.0583619855005963,
+      "p95": 3.281372089249089
+    },
+    "view": {
+      "p50": 0.6032641290003085,
+      "p90": 0.99779283740063,
+      "p95": 1.3440436732988017
+    }
+  },
+  "parent_geometry": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "rebuilds": null,
+    "note": "Legacy telemetry has no parent_geometry counter; missing is not zero."
+  },
+  "parent_proposal": {
+    "status": "UNAVAILABLE",
+    "wall_s": null,
+    "calls": null,
+    "note": "Legacy telemetry has no parent_proposal counter; missing is not zero."
+  },
+  "rejected_planning_results": 33,
+  "planning_time_scope": "submitted_to_result_receipt",
+  "planning_timeout_count": 0,
+  "moving_handoffs": 14,
+  "moving_handoff_max_boundary_error": 5.980473209640394e-15,
+  "distances_m": {
+    "0": 95.69744958921153,
+    "1": 107.09193793014016,
+    "2": 94.55734931155145
+  },
+  "coverage": 0.9514755329498711,
+  "contacts": 0,
+  "completed_window_duplicate_ratio": {
+    "numerator": 22651,
+    "denominator": 76431,
+    "scope": "sum of actual local-new cells in completed, cancelled, restarted and task-end service windows"
+  },
+  "limitations": [
+    "Online regional estimates and offline full service-window gains have different spatial scopes.",
+    "Close duration is telemetry sampled; missing intervals are excluded.",
+    "First-free evidence does not replace final truth-free coverage acceptance."
+  ]
+}

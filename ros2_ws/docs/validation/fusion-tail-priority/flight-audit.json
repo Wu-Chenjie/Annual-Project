@@ -1,0 +1,58 @@
+{
+  "task_start": 14.501000000000001,
+  "task_end": 2394.5,
+  "truth_pose": {
+    "0": {
+      "samples": 237688,
+      "first_time": 14.511,
+      "last_time": 2394.491,
+      "min_height_m": 0.742266671567387,
+      "max_height_m": 2.8687192419175886,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.05999999999994543,
+      "maximum_pose_difference_speed_mps": 0.6617903366885993
+    },
+    "1": {
+      "samples": 237648,
+      "first_time": 14.511,
+      "last_time": 2394.491,
+      "min_height_m": 0.741146205025319,
+      "max_height_m": 2.856364768548673,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.05999999999994543,
+      "maximum_pose_difference_speed_mps": 0.6232869717659009
+    },
+    "2": {
+      "samples": 237635,
+      "first_time": 14.511,
+      "last_time": 2394.491,
+      "min_height_m": 0.7198243940034207,
+      "max_height_m": 2.8826632431212253,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.06999999999993634,
+      "maximum_pose_difference_speed_mps": 0.6682730029555375
+    }
+  },
+  "tracking": {
+    "2": {
+      "samples": 5900,
+      "p95_error_m": 0.03271938803534449,
+      "maximum_error_m": 0.14592138758339057
+    },
+    "0": {
+      "samples": 6442,
+      "p95_error_m": 0.030118697992474807,
+      "maximum_error_m": 0.1689049034111698
+    },
+    "1": {
+      "samples": 4332,
+      "p95_error_m": 0.03137212363138922,
+      "maximum_error_m": 0.09718111768997825
+    }
+  },
+  "max_logged_reference_speed_mps": 0.591133003783668,
+  "max_logged_reference_acceleration_mps2": 0.6051566850765051,
+  "no_recorded_unexpected_landings": true,
+  "all_truth_streams_recorded": true,
+  "note": "Truth heights exclude takeoff; tracking.csv only logs active references. Sampled checks do not prove continuous collision avoidance. Reference speed and true finite-difference speed are distinct."
+}

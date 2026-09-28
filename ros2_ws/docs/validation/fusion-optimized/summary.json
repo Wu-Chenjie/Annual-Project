@@ -1,0 +1,218 @@
+{
+  "fleet_size": 3,
+  "agent_ages": {
+    "2": 0.42200000000002547,
+    "0": 0.42200000000002547,
+    "1": 0.42200000000002547
+  },
+  "status": "COMPLETE",
+  "failure_reason": null,
+  "simulation_time": 1651.624,
+  "start_time": 15.500000000000002,
+  "finish_time": 1646.505,
+  "architecture": "fused adaptive Hgrid, MR-DTG deltas, two-level graph Voronoi, bilateral capacity routing, continuous quintic flight",
+  "coverage": 0.9524654798682346,
+  "t90": 1136.0030000000002,
+  "t95": 1631.005,
+  "coverage_target": 0.95,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 1.7443277962802688,
+  "distances_m": {
+    "0": 242.20509956724706,
+    "1": 187.0503124630515,
+    "2": 223.3697284971274
+  },
+  "odometry_samples": {
+    "0": 165027,
+    "1": 165016,
+    "2": 165007
+  },
+  "pause_resumed": true,
+  "paused": [],
+  "graph": {
+    "2": {
+      "nodes": 59,
+      "edges": 326,
+      "free_cells": 11692
+    },
+    "0": {
+      "nodes": 59,
+      "edges": 326,
+      "free_cells": 10476
+    },
+    "1": {
+      "nodes": 59,
+      "edges": 326,
+      "free_cells": 14797
+    }
+  },
+  "commits": {
+    "0": 143,
+    "1": 124,
+    "2": 128
+  },
+  "views": {
+    "0": 135,
+    "1": 115,
+    "2": 120
+  },
+  "peer_payload_bytes": {
+    "0": 50467371,
+    "1": 50370066,
+    "2": 57473311
+  },
+  "graph_payload_bytes": {
+    "0": 30015917,
+    "1": 33076034,
+    "2": 34664632
+  },
+  "fusion": {
+    "2": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 225,
+      "hgrid_splits": 36,
+      "frontier_clusters": 53,
+      "reused_frontiers": 51,
+      "history_nodes": 58,
+      "handshake_updates": 1078,
+      "delta_applied": 425,
+      "local_regions": 22,
+      "global_regions": 65,
+      "shared_deferred_regions": 31,
+      "pair_status": "no_pair",
+      "compute_wall_s": 6.00851021500057,
+      "stage_wall_s": {
+        "map": 4.339700080890907e-05,
+        "hierarchy": 0.4146978279995892,
+        "topology": 3.7039499680004155,
+        "tour": 1.0271557389996815,
+        "pair": 3.2509997254237533e-06,
+        "view": 0.790275066000504,
+        "trajectory": 0.07233473199994478
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "map_clearance": 1.2306921838121623,
+      "worker_running": false
+    },
+    "0": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 225,
+      "hgrid_splits": 36,
+      "frontier_clusters": 46,
+      "reused_frontiers": 45,
+      "history_nodes": 58,
+      "handshake_updates": 1311,
+      "delta_applied": 319,
+      "local_regions": 29,
+      "global_regions": 69,
+      "shared_deferred_regions": 33,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 11.873009334999551,
+      "stage_wall_s": {
+        "map": 2.2094000087236054e-05,
+        "hierarchy": 0.37589060200025415,
+        "topology": 2.2077589949994945,
+        "tour": 0.6568361300005563,
+        "pair": 0.1597058539991849,
+        "view": 6.415264365999974,
+        "trajectory": 2.0573966020001535
+      },
+      "anticipatory_view": true,
+      "can_move": true,
+      "map_clearance": 1.3584807776655432,
+      "worker_running": false
+    },
+    "1": {
+      "engine": "Hgrid+MR-DTG+GVP+pair-CVRP",
+      "hgrid_leaves": 233,
+      "hgrid_splits": 38,
+      "frontier_clusters": 61,
+      "reused_frontiers": 52,
+      "history_nodes": 59,
+      "handshake_updates": 1252,
+      "delta_applied": 407,
+      "local_regions": 33,
+      "global_regions": 62,
+      "shared_deferred_regions": 31,
+      "pair_status": "optimal_window",
+      "compute_wall_s": 5.7791282469997896,
+      "stage_wall_s": {
+        "map": 2.2344000171869993e-05,
+        "hierarchy": 0.4108117619998666,
+        "topology": 1.714351581000301,
+        "tour": 1.6433389679996253,
+        "pair": 0.1358050770004411,
+        "view": 1.2541721899997356,
+        "trajectory": 0.6205766760003826
+      },
+      "anticipatory_view": false,
+      "can_move": true,
+      "map_clearance": 0.9346598258734792,
+      "worker_running": false
+    }
+  },
+  "pair_commits": {
+    "0": 40,
+    "1": 53,
+    "2": 55
+  },
+  "tracking": {
+    "0": {
+      "samples": 4678,
+      "rms_m": 0.018341514269161426,
+      "p95_m": 0.03242415252519957,
+      "max_m": 0.07076497465077382
+    },
+    "1": {
+      "samples": 3836,
+      "rms_m": 0.017388990721660072,
+      "p95_m": 0.031645830340007085,
+      "max_m": 0.09927638976750855
+    },
+    "2": {
+      "samples": 4452,
+      "rms_m": 0.017721479411833874,
+      "p95_m": 0.03094235465099874,
+      "max_m": 0.13660950189471405
+    }
+  },
+  "observation_frames": {
+    "0": 4125,
+    "1": 4128,
+    "2": 4125
+  },
+  "mapping_dimensions": 3,
+  "isolated": [],
+  "network_started": 115.50000000000001,
+  "network_resumed": true,
+  "dynamic_trial": {
+    "start": 522.5,
+    "drone": 2,
+    "center": [
+      16.954830829587184,
+      11.52908208786498
+    ],
+    "side": [
+      -0.20340162058401634,
+      0.7737103984979108
+    ],
+    "token": "2:663e13fa:2400068"
+  },
+  "dynamic_finished": true,
+  "restart_trial": {
+    "drone": 0,
+    "session": "ac912f4d113e447282399418916e0dc3",
+    "start": 225.501,
+    "recovered_session": "dd5a3ef5bfea4620b5849682be102be2"
+  },
+  "restart_recovered": true,
+  "tracking_reference": "Gazebo truth position versus executed reference at telemetry receipt",
+  "assumptions": "3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations",
+  "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+  "legacy_center_free_coverage": 0.8974350779065122,
+  "truth_free_voxels": 58589,
+  "observed_free_voxels": 55804,
+  "unobserved_free_voxels": 2481,
+  "falsely_occupied_free_voxels": 304
+}

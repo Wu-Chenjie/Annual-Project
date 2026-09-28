@@ -1,0 +1,13 @@
+{
+  "passed": false,
+  "checks": {
+    "physical_obstacle_requested": true,
+    "gazebo_acknowledged": false,
+    "physical_obstacle_removed": false,
+    "independent_flight_and_coverage": true,
+    "independent_authorization": true,
+    "reached_95": true
+  },
+  "details": {},
+  "note": "This is one externally targeted physical-obstacle case. It is separate from the preregistered efficiency and stock recovery groups."
+}

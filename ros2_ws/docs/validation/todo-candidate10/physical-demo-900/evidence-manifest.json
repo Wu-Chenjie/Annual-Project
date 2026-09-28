@@ -1,0 +1,114 @@
+{
+  "coverage.json": {
+    "sha256": "dded64a7b78ae8ed6450f2e4128bbca72815beb744d5f0e006e6efd1b135bbe2",
+    "bytes": 38820
+  },
+  "drone_0-events.jsonl": {
+    "sha256": "b18bb436c2538fcac358e03afcfbfd6c35257cabea2ef36faeb0b7b35cc1b625",
+    "bytes": 229402
+  },
+  "drone_1-events.jsonl": {
+    "sha256": "378d255259520dfbb9668993950b36b1765dd17bd7a0ba7e4d796134b0947aeb",
+    "bytes": 255292
+  },
+  "drone_2-events.jsonl": {
+    "sha256": "daec6177af82b892bdf7df5472f2a6665229a957563ba5f9e041692de0d06efd",
+    "bytes": 303226
+  },
+  "dynamic-backup-audit-10c-original-fail.json": {
+    "sha256": "4261c4fbe6c05226ee8c537f754c24d2e8bc9f517393947237347811130c0e5b",
+    "bytes": 6554
+  },
+  "dynamic-backup-audit.json": {
+    "sha256": "4342d152c0f5b92f6e7257db2c1459fd9fab3502d9aa0297f6405130ca37f8c5",
+    "bytes": 7333
+  },
+  "dynamic-backup-fault.jsonl": {
+    "sha256": "5a62be57ed8906bc3195cc6984de8fad68fb75a69820f4ca632ab381b941d78c",
+    "bytes": 1574
+  },
+  "dynamic-switch-original-speed.mp4": {
+    "sha256": "4312912c0d18ebbb73cb98401e464d601ad434aedfc300fd5d00f5ef8a299f67",
+    "bytes": 1240097
+  },
+  "environment.json": {
+    "sha256": "ca1f73258c1fd2bf61aa70c436ea69923b15b75ca43ec95ff7ad669c7d1c7c65",
+    "bytes": 279
+  },
+  "execution-protocol-audit.json": {
+    "sha256": "c1f8ca5d9a7fdd27ee9c8ef726913e6e1abee9569817d0effd332dbea9cc00da",
+    "bytes": 7283
+  },
+  "external-test-manifest.json": {
+    "sha256": "ddfbdaa0ddec6959a2963ab4740457880e7aa3abc045375f3b26361907cc20c3",
+    "bytes": 2158
+  },
+  "frame-dynamic-13s.png": {
+    "sha256": "a80f6f86288e4eb860c26ddf1d871208ceb594f8227a99c1815164c44fb436b7",
+    "bytes": 1191400
+  },
+  "frame-obstacle-14s.png": {
+    "sha256": "741a552d6ce827b246cc95d877eda583b10d1fbb157a3b0b4331b1b73edb9c30",
+    "bytes": 1219861
+  },
+  "frame-tail-31s.png": {
+    "sha256": "155546ac0fc5b21b6840a97074863d1f7e1cb68c20f2b012a50645fa1ebe4c48",
+    "bytes": 1297898
+  },
+  "gazebo-rviz-raw.mp4": {
+    "sha256": "6793b2eb7b225302f7317307f426b8deb0ff6f16c6c95e255ddb34e009d5a65f",
+    "bytes": 53598621
+  },
+  "independent-acceptance.json": {
+    "sha256": "a37e791ea64ef5123e55973e8db8f11e65542af7184372866ba579c555395cdd",
+    "bytes": 2500
+  },
+  "process-cleanup.json": {
+    "sha256": "27c864a2645e84ced95f024e2d030f6c728cf1140917af15317a77d5edbf339b",
+    "bytes": 266
+  },
+  "recorder-manifest.json": {
+    "sha256": "e49d3f9b1bee93393c290380236d1357d0fda1aa24059a11307028be3ff9b60e",
+    "bytes": 386
+  },
+  "recording-clock.json": {
+    "sha256": "7ea5141a76b9ea60f6fcba4d1343068405034315d955276347c90e72c1f8f2c4",
+    "bytes": 250
+  },
+  "run-configuration.json": {
+    "sha256": "f358b3f6db6edcceb8a4335842b0389df61942f470bca81b1bc6ac9b52d761c9",
+    "bytes": 711
+  },
+  "run-result.json": {
+    "sha256": "e657623df004882b024f194f8eaee7c7b06b701341cdcf5e4be7f76bacedb4cf",
+    "bytes": 150
+  },
+  "service-windows.csv": {
+    "sha256": "9871f29d53253928a5f802eebdd56d6f80f99bdb7ab9064dff20561e7b13fb12",
+    "bytes": 22317
+  },
+  "source-manifest.json": {
+    "sha256": "0f5d78836420cad6e8417126e56e132c059403ac96530677a79ab846c131619c",
+    "bytes": 31707
+  },
+  "summary.json": {
+    "sha256": "93a37bd5571629ae5f21be5f075be2fa41885adff4db8ee190600740b871c4fa",
+    "bytes": 10268
+  },
+  "todo-audit.json": {
+    "sha256": "2bfbaa96eed74a27b1b3eb3c169cbb6f34b68cc51f15be34c3e7e1a7dc1bb054",
+    "bytes": 7166
+  },
+  "todo-exploration.mp4": {
+    "sha256": "a76632ac81e75ef12329e58ccb478780eda9f011f0a456b13f8cfb9b79f591d3",
+    "bytes": 4908087
+  },
+  "transport.json": {
+    "sha256": "bf26a2d48653192de8ebb14b973c07c0463813c066bf2c1c780c1b1f986f64e4",
+    "bytes": 100
+  },
+  "video-probe.json": {
+    "sha256": "a96674314bca841e93032f21edb09137f44861dcec11b846845b38c1a0204a51",
+    "bytes": 2661
+  }
+}

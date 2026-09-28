@@ -1,0 +1,19 @@
+{
+  "arguments": {
+    "output_dir": "/workspace/artifacts/todo-execution/formal-3/main-no_fault-900-combined",
+    "seed": 900,
+    "map": "/tmp/annual-todo-candidate-3/next_project/maps/search_fusion_3d.json",
+    "faults": "none",
+    "simulation_limit": 2400.0,
+    "wall_limit": 7200.0,
+    "observer": "/tmp/annual-todo-study-tools/record_observation_evidence.py"
+  },
+  "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+  "environment": {
+    "ANNUAL_EXPERIMENT_SEED": "900",
+    "GZ_PARTITION": "annual_todo_9737c6e7855346a793b6a047b24822a8",
+    "ROS_DOMAIN_ID": "22"
+  },
+  "cpu_assignment": 6,
+  "memory_assignment_gib": 8
+}

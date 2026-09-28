@@ -60,6 +60,24 @@ def test_search_pool_reuses_quality_gate_and_task_identity():
     assert p.active and p.active.id.startswith('123:4:') and len(p.backups)<=5
     assert all(m.safe_path(c.path) for c in [p.active]+p.backups)
 
+def test_three_dimensional_reserve_bypasses_a_new_physical_cylinder():
+    from core.exploration.voxel_mapping import VoxelMap
+    from core.planning.path_quality import PathQualityEvaluator, resample
+    from core.planning.continuous_trajectory import optimize_trajectory
+    m=VoxelMap([[0,0,0],[10,10,4]]);m.state[:]=0;m.rebuild()
+    pool=route_pool(m,[2,2,1.5],[7,2,1.5],123,4,max_attempts=6)
+    old=pool.active.id
+    center=resample(pool.active.path,100)[40,:2]
+    curves=[optimize_trajectory(candidate.path,m,0.,0.,preserve_route=candidate is not pool.active)
+            for candidate in [pool.active]+pool.backups]
+    assert any(np.min(np.linalg.norm(curve.path(.15)[:,:2]-center,axis=1))>1.15 for curve in curves[1:])
+    cells=np.argwhere(np.ones(m.shape,bool));points=m.points(cells)
+    occupied=(np.linalg.norm(points[:,:2]-center,axis=1)<.55)&(points[:,2]<=3.)
+    m.state[tuple(cells[occupied].T)]=1;m.rebuild()
+    changed,rejected=pool.revalidate([2,2,1.5],m,PathQualityEvaluator(),m.version)
+    assert changed and old in rejected and pool.active is not None
+    assert m.safe_path(pool.active.path)
+
 def test_release_retains_interrupted_task_for_transfer():
     c=SearchCoordinator([[0,0,0],[10,10,4]]);c.active[1]=12;c.task_positions[12]=np.array([5,5,1.5]);c.release(1,'unavailable')
     assert 1 not in c.active and c.pending_transfers[12]==1

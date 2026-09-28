@@ -1,0 +1,11 @@
+--- ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -554,7 +554,7 @@
+         active = self.active
+         anticipated = dict(position=self.intent['path'][-1], yaw=self.intent['yaw']) if self.intent else None
+         self.future_boundary = None
+-        if self.intent and self.execution.get('epoch') == self.intent.get('epoch'):
++        if False and self.intent and self.execution.get('epoch') == self.intent.get('epoch'):
+             curve = ContinuousTrajectory.from_dict(self.intent['trajectory'])
+             progress = self.execution.get('trajectory_time', 0.)
+             # Pipeline lead includes measured worker latency and two peer ACKs.

@@ -1,0 +1,5 @@
+{
+  "lib/libannual_motor_system.so": "43ec7791f3b5435e7eb979d38c83c2c634d98ead3ef5a97de86b87f2ae0cc4b7",
+  "lib/annual_swarm/controller_node": "a7ed7a4aee141ce48fa245029fe2d52231fc0a7e3d71e2f425343291b3189309",
+  "lib/annual_swarm/planner_node": "8a658423e5876f57fc322987908ff3371ccb2c077e8cfc55a719034745f6dfb3"
+}

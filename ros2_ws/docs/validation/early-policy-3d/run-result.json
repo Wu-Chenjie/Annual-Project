@@ -1,0 +1,7 @@
+{
+  "outcome": "SIMULATION_TIME_LIMIT",
+  "reason": "Did not reach 95% within the preregistered limit",
+  "wall_elapsed_s": 3833.2688510919997,
+  "last_coverage": 0.5352540579289627,
+  "last_simulation_time": 2415.502
+}

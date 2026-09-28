@@ -1,0 +1,12 @@
+{
+  "policy": "Candidate6 policy unchanged. External launch string normalization fixed after pre-start infrastructure failure. Original failed attempt retained separately.",
+  "files": {
+    "run_safety_case.py": "5de23ec0687b37f507cef6ae58f86ccbacd08f08066abbe74dda60ecd0c81506",
+    "native_fault_probe.py": "8c8b56c0c9c25638499a6e068f85b450e958341efae7d72da278e55df67cc5b2",
+    "experiment_processes.py": "9e7643331076a79960b6b9f5bdc99a18ccf82bc5135229c80b5f7b374ed9dcdd",
+    "safety_input_fault.launch.py": "3f7f9c15ccfac4b3e6944a8bcac978f4dadc870199a512e7b149ea062844745f",
+    "run_todo_experiment.py": "88954d0ef9c18f307aa3f34a8100e175f0a11a293a29aa32c07148f12188d5ee",
+    "record_observation_evidence.py": "4d824b2db6a50f36199d869bf0c74c455a6635f12b9bb8bb0e231c7584377d7c",
+    "safety_input_relay.py": "55faa53e7e17c35e4b35a06231ad2cff72bbeea3762b65ae1eb3667d63694698"
+  }
+}

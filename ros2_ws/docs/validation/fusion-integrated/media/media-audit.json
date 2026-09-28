@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "full_decode": true,
+  "codec": "h264",
+  "width": 1920,
+  "height": 1080,
+  "frame_rate": "30/1",
+  "frames": "1748",
+  "duration_s": 58.266667,
+  "bytes": 6375905,
+  "sha256": "09cc703ea732737a19dac61eb44b5ecc8fc189ca0fc9dfa92cf6b30f2939f136",
+  "inspection_frames": {
+    "early-frame.png": {
+      "video_time_s": 5.0,
+      "sha256": "d9f8208296a540516f648149f06f7004108ca6eaf6b91a2f81adaa3ffebb5b20"
+    },
+    "middle-frame.png": {
+      "video_time_s": 29.1333335,
+      "sha256": "d17631746bbba0c5468e88ed9390ee82ae441115cdc94f29a882ad54152ebb30"
+    },
+    "last-frame.png": {
+      "video_time_s": 58.166667,
+      "sha256": "ee91ebebbc7bed35399732819596f3b46d5a6dcc2b8c69232cbb829e6d67bd4f"
+    }
+  },
+  "playback": "24x native X11 wall-clock recording; mission metrics use the separate Gazebo simulation clock."
+}

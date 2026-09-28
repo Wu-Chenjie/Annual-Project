@@ -19,10 +19,13 @@ Visualization Manager:
         flown_trajectory: true
         live_status: true
         observed_map: true
+        peer_observed_local_unknown: true
         region_labels: true
         regional_tasks: true
         sparse_corridors: true
         sparse_junctions: true
+        unknown_region_priority: true
+        unknown_region_labels: true
         vehicle_labels: true
       Topic:
         Depth: 1

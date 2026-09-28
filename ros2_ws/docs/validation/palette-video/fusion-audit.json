@@ -1,0 +1,144 @@
+{
+  "passed": true,
+  "events": {
+    "incarnation_ready": 4,
+    "path_proposed": 235,
+    "path_committed": 225,
+    "next_view_ready": 171,
+    "view_observed": 214,
+    "region_service": 204,
+    "next_view_adopted": 103,
+    "region_low_yield": 46,
+    "region_yielded": 4,
+    "lease_cancellation_requested": 20,
+    "reservation_retired": 11,
+    "tracking_recovery": 7,
+    "availability_pause": 1,
+    "region_reassigned": 8,
+    "availability_resume": 1,
+    "pair_cvrp_prepared": 51,
+    "pair_cvrp_committed": 76,
+    "network_partition": 3,
+    "network_recovered": 3,
+    "process_restart_requested": 1,
+    "peer_rejoined": 2,
+    "cached_route_switched": 2
+  },
+  "jointly_applied_pair_transactions": [
+    "1:c880f787:1",
+    "1:c880f787:2",
+    "1:c880f787:3",
+    "1:c880f787:4",
+    "1:c880f787:5",
+    "0:8efb5982:1",
+    "0:8efb5982:2",
+    "0:8efb5982:3",
+    "0:8efb5982:4",
+    "0:8efb5982:5",
+    "1:c880f787:6",
+    "1:c880f787:7",
+    "0:8efb5982:8",
+    "0:8efb5982:9",
+    "0:8efb5982:10",
+    "0:8efb5982:11",
+    "0:8efb5982:12",
+    "1:c880f787:8",
+    "1:c880f787:9",
+    "1:c880f787:10",
+    "1:c880f787:11",
+    "1:c880f787:12",
+    "0:8efb5982:15",
+    "1:c880f787:13",
+    "0:8efb5982:16",
+    "0:8efb5982:17",
+    "0:8efb5982:19",
+    "0:8efb5982:20",
+    "0:8efb5982:21",
+    "1:c880f787:15",
+    "1:c880f787:16",
+    "1:c880f787:17",
+    "1:c880f787:19",
+    "1:c880f787:20",
+    "1:c880f787:21",
+    "0:8efb5982:24",
+    "0:8efb5982:25",
+    "1:c880f787:22"
+  ],
+  "trajectory_methods": {
+    "minimum_jerk_bspline": 221,
+    "stop_at_corner_quintic": 14
+  },
+  "candidate_planners": {
+    "sparse_topology": 153,
+    "graph_astar_penalized": 698,
+    "astar": 69,
+    "tracking_recovery": 7,
+    "mrdtg_transit": 3
+  },
+  "candidates": 235,
+  "max_backups": 5,
+  "airborne_altitude_span_m": {
+    "0": 2.145383656503099,
+    "1": 2.117794002410072,
+    "2": 2.213396769156463
+  },
+  "yaw_travel_rad": {
+    "0": 66.29189077209642,
+    "1": 67.78189984171429,
+    "2": 49.78966796836888
+  },
+  "overlapping_same_region_leases": 0,
+  "dynamic_response_events": [
+    {
+      "type": "lease_cancellation_requested",
+      "drone": 2,
+      "time": 244.79100000000003,
+      "incarnation": "c14f8efb18e647849e88b358dc75ffd7",
+      "region": 157,
+      "reason": "path_or_tracking_invalidated"
+    },
+    {
+      "type": "cached_route_switched",
+      "drone": 2,
+      "time": 246.50000000000003,
+      "incarnation": "c14f8efb18e647849e88b358dc75ffd7",
+      "region": 157
+    },
+    {
+      "type": "lease_cancellation_requested",
+      "drone": 2,
+      "time": 250.292,
+      "incarnation": "c14f8efb18e647849e88b358dc75ffd7",
+      "region": 157,
+      "reason": "path_or_tracking_invalidated"
+    }
+  ],
+  "coverage": 0.9506562665346737,
+  "t95_s": 890.5,
+  "contacts": 0,
+  "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+  "legacy_center_free_coverage": 0.8986016779864163,
+  "min_separation_m": 1.3231075045121627,
+  "truth_tracking": {
+    "0": {
+      "samples": 2688,
+      "rms_m": 0.01692402139717719,
+      "p95_m": 0.030769078668789376,
+      "max_m": 0.04800933662465618
+    },
+    "1": {
+      "samples": 2614,
+      "rms_m": 0.01693487662794041,
+      "p95_m": 0.029536361372602796,
+      "max_m": 0.04214220895078433
+    },
+    "2": {
+      "samples": 2539,
+      "rms_m": 0.01683989097177911,
+      "p95_m": 0.03014824786383219,
+      "max_m": 0.048861641203513835
+    }
+  },
+  "summary_sha256": "ceb7a5aa616be72434e57545629d4c17cfbc7e874e7614303d7f1ad949b4cdb8",
+  "scope": "Observed flight and protocol evidence for this run; not a proof of arbitrary networks or paper benchmark reproduction."
+}

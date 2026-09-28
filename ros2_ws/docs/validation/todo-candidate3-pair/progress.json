@@ -1,0 +1,7 @@
+{
+  "status": "SUPERSEDED_AFTER_COMPLETED_PAIR",
+  "finished_jobs": 2,
+  "pending_jobs": 78,
+  "total_jobs": 80,
+  "reason": "Completed-region lifecycle overwrote adjacent observation entrance in independent end-to-end check; old development Gazebo residue present in both paired samples. Preserve attempts; do not combine revisions into one study."
+}

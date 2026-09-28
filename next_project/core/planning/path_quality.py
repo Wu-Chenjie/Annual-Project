@@ -33,7 +33,8 @@ class PathQualityEvaluator:
         length=float(np.linalg.norm(np.diff(path,axis=0),axis=1).sum())
         canonical=resample(path,max(3,int(np.ceil(length/.1))+1))
         trajectory=TrajectoryOptimizer(nominal_speed=self.speed,sample_dt=.2).optimize(canonical,method='none')
-        distances=np.array([runtime.field.signed_distance(p) for p in canonical])
+        distances=(runtime.field.signed_distances(canonical) if hasattr(runtime.field,'signed_distances') else
+                   np.array([runtime.field.signed_distance(p) for p in canonical]))
         clearance=float(np.min(distances))
         # No obstacles is a valid map: represent unbounded obstacle distance by map diagonal.
         if not np.isfinite(clearance):clearance=float(np.linalg.norm(runtime.bounds[1]-runtime.bounds[0]))
@@ -59,8 +60,11 @@ class Candidate:
     path: np.ndarray
     quality: dict
     map_version: int
+    created_at: float = None
+    expires_at: float = None
     def metadata(self):
-        return dict(id=self.id,planner=self.planner,variant=self.variant,quality=self.quality,map_version=self.map_version)
+        return dict(id=self.id,planner=self.planner,variant=self.variant,quality=self.quality,map_version=self.map_version,
+                    created_at=self.created_at, expires_at=self.expires_at)
 
 
 class RankedPathPool:
@@ -77,7 +81,8 @@ class RankedPathPool:
     @staticmethod
     def connect(position,path,runtime):
         """Trim traversed prefix and check the entire joining segment, not just endpoints."""
-        position=np.asarray(position,float).copy(); position[2]=runtime.altitude
+        position=np.asarray(position,float).copy()
+        if getattr(runtime, "ndim", 2) == 2:position[2]=runtime.altitude
         path=np.asarray(path,float)
         nearest=int(np.argmin(np.linalg.norm(path-position,axis=1)))
         # A blocked remaining suffix invalidates this reserve. Do not jump over an
@@ -86,16 +91,25 @@ class RankedPathPool:
         for index in range(nearest,min(nearest+20,len(path))):
             if runtime.safe_path([position,path[index]]):return np.vstack([position,path[index:]])
         return None
-    def revalidate(self,position,runtime,evaluator,version):
+    def revalidate(self,position,runtime,evaluator,version,now=None):
         active_id=self.active.id if self.active else None
         valid=[]; rejected=[]
         for item in ([self.active] if self.active else [])+self.backups:
+            if now is not None and item.expires_at is not None and now > item.expires_at:
+                rejected.append(item.id); continue
             joined=self.connect(position,item.path,runtime)
             if joined is None:rejected.append(item.id);continue
-            valid.append(Candidate(item.id,item.planner,item.variant,joined,evaluator.evaluate(joined,runtime),version))
+            valid.append(Candidate(item.id,item.planner,item.variant,joined,evaluator.evaluate(joined,runtime),version,
+                                   item.created_at,item.expires_at))
         # Keep a still-safe active route; avoid score-noise induced switching.
         active=next((c for c in valid if c.id==active_id),None)
         alternatives=sorted([c for c in valid if c.id!=active_id],key=lambda c:(c.quality['score'],c.id))
         if active is None and alternatives:active=alternatives.pop(0)
-        self.active=active; self.backups=alternatives[:self.backup_count]
+        diverse=[]
+        for candidate in alternatives:
+            chosen=([active] if active else [])+diverse
+            if any(np.mean(np.linalg.norm(resample(candidate.path)-resample(other.path),axis=1))<self.diversity_m for other in chosen):continue
+            diverse.append(candidate)
+            if len(diverse)>=self.backup_count:break
+        self.active=active; self.backups=diverse
         return active_id!=(active.id if active else None),rejected

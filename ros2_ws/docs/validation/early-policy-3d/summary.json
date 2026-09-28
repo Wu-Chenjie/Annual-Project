@@ -1,0 +1,223 @@
+{
+  "fleet_size": 3,
+  "agent_ages": {
+    "0": 0.13999999999987267,
+    "2": 0.13999999999987267,
+    "1": 0.1410000000000764
+  },
+  "status": "SEARCHING",
+  "failure_reason": null,
+  "simulation_time": 2416.141,
+  "start_time": 15.500000000000002,
+  "finish_time": null,
+  "architecture": "7136591 centralized GVP + pairwise heuristic; dimension-adapted full-grid frontier search",
+  "coverage": 0.535288194029596,
+  "t90": null,
+  "t95": null,
+  "coverage_target": 0.95,
+  "contacts_after_takeoff": 0,
+  "min_separation_m": 1.2830972006490098,
+  "distances_m": {
+    "0": 307.2802923759079,
+    "1": 68.50085859497388,
+    "2": 58.95630577268106
+  },
+  "odometry_samples": {
+    "0": 241377,
+    "1": 241365,
+    "2": 241353
+  },
+  "pause_resumed": true,
+  "paused": [],
+  "graph": {
+    "0": {
+      "nodes": 9585,
+      "edges": 25072,
+      "frontiers": 22,
+      "map_version": 523,
+      "allocation": {
+        "objective": 125.74600000000005,
+        "initial_objective": 177.816,
+        "moves": 3,
+        "loads": [
+          79.77,
+          80.14000000000004,
+          68.11999999999999
+        ],
+        "unreachable": [
+          20179,
+          24981
+        ]
+      },
+      "active": {
+        "1": 33171,
+        "2": 12127
+      },
+      "round": 523,
+      "wall_seconds": 1.1271360370001275,
+      "backup_counts": {
+        "1": 5,
+        "2": 5
+      },
+      "free_cells": 9570
+    },
+    "2": {
+      "nodes": 9585,
+      "edges": 25072,
+      "frontiers": 22,
+      "map_version": 523,
+      "allocation": {
+        "objective": 125.74600000000005,
+        "initial_objective": 177.816,
+        "moves": 3,
+        "loads": [
+          79.77,
+          80.14000000000004,
+          68.11999999999999
+        ],
+        "unreachable": [
+          20179,
+          24981
+        ]
+      },
+      "active": {
+        "1": 33171,
+        "2": 12127
+      },
+      "round": 523,
+      "wall_seconds": 1.1271360370001275,
+      "backup_counts": {
+        "1": 5,
+        "2": 5
+      },
+      "free_cells": 9570
+    },
+    "1": {
+      "nodes": 9585,
+      "edges": 25072,
+      "frontiers": 22,
+      "map_version": 523,
+      "allocation": {
+        "objective": 125.74600000000005,
+        "initial_objective": 177.816,
+        "moves": 3,
+        "loads": [
+          79.77,
+          80.14000000000004,
+          68.11999999999999
+        ],
+        "unreachable": [
+          20179,
+          24981
+        ]
+      },
+      "active": {
+        "1": 33171,
+        "2": 12127
+      },
+      "round": 523,
+      "wall_seconds": 1.1271360370001275,
+      "backup_counts": {
+        "1": 5,
+        "2": 5
+      },
+      "free_cells": 9570
+    }
+  },
+  "commits": {
+    "0": 107,
+    "1": 22,
+    "2": 21
+  },
+  "views": {
+    "0": 103,
+    "1": 12,
+    "2": 13
+  },
+  "peer_payload_bytes": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+  },
+  "graph_payload_bytes": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+  },
+  "fusion": {
+    "0": {},
+    "2": {},
+    "1": {}
+  },
+  "pair_commits": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+  },
+  "tracking": {
+    "0": {
+      "samples": 4956,
+      "rms_m": 0.01776025508788793,
+      "p95_m": 0.027640315002103163,
+      "max_m": 0.043007338664178725
+    },
+    "1": {
+      "samples": 966,
+      "rms_m": 0.01991669645044888,
+      "p95_m": 0.026185783215338307,
+      "max_m": 0.201366214288672
+    },
+    "2": {
+      "samples": 621,
+      "rms_m": 0.01795906574695491,
+      "p95_m": 0.028536156902238742,
+      "max_m": 0.07738799637245229
+    }
+  },
+  "observation_frames": {
+    "0": 6035,
+    "1": 6035,
+    "2": 6035
+  },
+  "mapping_dimensions": 3,
+  "isolated": [],
+  "network_started": 115.50000000000001,
+  "network_resumed": true,
+  "dynamic_trial": {
+    "start": 2364.502,
+    "drone": 1,
+    "center": [
+      6.774928030743984,
+      8.400478607226722
+    ],
+    "side": [
+      -0.42656783923670344,
+      0.6767864349474877
+    ],
+    "token": "central:139"
+  },
+  "dynamic_finished": true,
+  "restart_trial": {
+    "drone": 0,
+    "session": "23ea14811f334f5aa7b0a5977c8e6a78",
+    "start": 225.501,
+    "recovered_session": "eb7f361551d041f5976b9ffefcaf547a"
+  },
+  "restart_recovered": true,
+  "tracking_reference": "Gazebo truth position versus executed reference at telemetry receipt",
+  "assumptions": "3D occupancy; native GPU lidar 120x120 degrees / 4.5m with range noise; IMU and noisy simulated localization EKF (not SLAM); planning-channel partition with independent local safety sensing; fixed fleet spatial reservations",
+  "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+  "legacy_center_free_coverage": 0.5086216540151818,
+  "truth_free_voxels": 58589,
+  "observed_free_voxels": 31362,
+  "unobserved_free_voxels": 27031,
+  "falsely_occupied_free_voxels": 196,
+  "baseline_adapter": {
+    "historical_commit": "7136591",
+    "mapping": "same native 3D sensor/estimator; maps shared centrally",
+    "graph": "6-neighbor full free-voxel graph; not sparse MR-DTG",
+    "observation": "2m spherical extension of old gain proxy; 12-bin yaw adapter",
+    "control": "common continuous trajectories and executor; central authorization instead of peer quorum",
+    "restart_scope": "actual per-UAV command-client process restart; central planner stays alive, unlike fused per-UAV planner restart"
+  }
+}

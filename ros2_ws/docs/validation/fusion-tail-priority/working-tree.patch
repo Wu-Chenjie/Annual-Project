@@ -1,0 +1,425 @@
+diff --git a/next_project/core/exploration/fusion.py b/next_project/core/exploration/fusion.py
+index 7cfa333..0e1b935 100644
+--- a/next_project/core/exploration/fusion.py
++++ b/next_project/core/exploration/fusion.py
+@@ -9,6 +9,7 @@ from .sparse_graph import SparseTopology, length
+ from .voxel_mapping import VoxelRouter
+ from .regions import ObservationPlanner, optimize_tour, visible_cells
+ from .pairwise import solve_pair
++from .priority import ExplorationPriority
+ from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator
+ from core.planning.continuous_trajectory import optimize_trajectory
+ 
+@@ -71,10 +72,11 @@ class GraphCosts:
+ 
+ 
+ class FusionPlanner:
+-    def __init__(self, drone, bounds):
++    def __init__(self, drone, bounds, priority_config=None):
+         self.drone = drone; self.hierarchy = AdaptiveRegions(bounds); self.graph = MultiRobotGraph(drone, bounds)
+         self.partition = {}; self.global_partition = {}; self.tiers = {}; self.tasks = {}
+         self.diagnostics = {}; self.connections = {}; self.ownership = {}
++        self.priority = ExplorationPriority(priority_config); self.priority_layer = {}
+ 
+     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
+                 peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True):
+@@ -139,10 +141,24 @@ class FusionPlanner:
+             excluded_cells = visible_cells(runtime, position, yaw)
+             recent = list(recent)+[(position, yaw)]
+             view_attachments = self.graph.connect(position)
++        excluded_cells = excluded_cells | self.priority.committed_cells(runtime, peers, now)
++        priorities = self.priority.rank(runtime, tasks, local_tasks, costs, position, now,
++                                        self.graph.services, excluded_cells)
++        for rid, row in priorities.items():
++            row['deferred'] |= cooldown.get(rid, 0) > now
++            row['committed_by_peer'] = rid in pinned and pinned[rid] != self.drone
++        self.priority_layer = self.priority.snapshot(runtime, now, owners, self.drone)
++        stage('priority')
+         feasible = {r: task for r, task in tasks.items()
+                     if max(cooldown.get(r, 0), self.graph.services.get(r, {}).get('defer_until', 0)) <= now}
+         owned = [r for r, owner in owners.items() if owner == self.drone and r in feasible]
+         tour, workload = optimize_tour(position, owned, feasible, costs, active)
++        # Priority applies at every next-view decision. A current committed flight
++        # remains untouched; its regional ID need not monopolize subsequent views.
++        order = {r: k for k, r in enumerate(tour)}
++        tour.sort(key=lambda r: (-priorities[r]['score'], order[r]))
++        workload = sum(costs.distance(position if k == 0 else tasks[tour[k-1]].entry, tasks[r].entry)/.6+
++                       1.+tasks[r].unknown*.012 for k, r in enumerate(tour))
+         bids = {}
+         for rid, task in (feasible.items() if can_move else []):
+             distance = costs.distance(position, task.entry)
+@@ -161,7 +177,8 @@ class FusionPlanner:
+             # owners absent from the peer's auction revision, so prepare can
+             # never be accepted after the fleet has serviced boundary regions.
+             ids = [r for r, owner in owners.items() if owner in (self.drone, other) and r in feasible and r in region_costs]
+-            ids.sort(key=lambda r: (abs(region_costs[r].get(self.drone, np.inf)-region_costs[r].get(other, np.inf)), r))
++            ids.sort(key=lambda r: (-priorities[r]['score'],
++                abs(region_costs[r].get(self.drone, np.inf)-region_costs[r].get(other, np.inf)), r))
+             ids = ids[:10]
+             if len(ids) < 2:
+                 continue
+@@ -181,7 +198,7 @@ class FusionPlanner:
+         if plan_view:
+             local.block_paths(reservations, radius=1.25)
+         local_graph = router(local) if plan_view else None
+-        choices = ([active] if active in feasible else [])+[r for r in tour if r != active]
++        choices = list(tour)
+         # Global burden sharing: prioritize useful, nearby history regions when
+         # all locally partitioned work has disappeared. The region lease still
+         # arbitrates exclusivity before any motion starts.
+@@ -189,8 +206,7 @@ class FusionPlanner:
+             fallback = []
+             for rid, task in feasible.items():
+                 d = costs.distance(position, task.entry)/.6
+-                users = sum(p.get('active') == rid for p in peers.values())
+-                gain = task.unknown*runtime.resolution**runtime.state.ndim*math.exp(-.08*d)/(users+1) if np.isfinite(d) else 0
++                gain = priorities[rid]['score'] if np.isfinite(d) else 0
+                 if gain > 0 and rid not in pinned:
+                     fallback.append((-gain, rid))
+             choices = [r for _, r in sorted(fallback)]
+@@ -229,6 +245,7 @@ class FusionPlanner:
+                             selection = dict(pool=pool, yaw=heading, gain=len(visible_cells(local, route[-1], heading))*runtime.resolution**runtime.state.ndim,
+                                              objective=0., lookahead=None, transit=True)
+                 if selection:
++                    selection['priority'] = priorities[rid]
+                     selected = rid; break
+                 rejected.append(rid)
+         stage('view')
+@@ -247,7 +264,9 @@ class FusionPlanner:
+             local_regions=sum(v == 'local' for v in tiers.values()), global_regions=sum(v == 'global' for v in tiers.values()),
+             shared_deferred_regions=sum(v['defer_until'] > now for v in self.graph.services.values()),
+             pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin,
+-            stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move)
++            stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move,
++            unknown_components=len(self.priority.components), reserved_gain_cells=len(excluded_cells),
++            selected_priority=priorities.get(selected))
+         return dict(fusion=self, graph=self.graph, tasks=tasks, bids=bids, tour=tour, workload=workload,
+                     selection=selection, selected=selected, rejected=rejected, offer=offer,
+                     wall=time.monotonic()-begin, position=position, version=runtime.version)
+diff --git a/next_project/core/exploration/mrdtg.py b/next_project/core/exploration/mrdtg.py
+index fee1dba..663fabf 100644
+--- a/next_project/core/exploration/mrdtg.py
++++ b/next_project/core/exploration/mrdtg.py
+@@ -170,8 +170,10 @@ class MultiRobotGraph:
+                     regions[rid] = v; stamps[rid] = stamp
+             elif v['kind'] == 'region_service':
+                 rid = int(v['id'])
+-                if v['defer_until'] > services.get(rid, {}).get('defer_until', -1.):
+-                    services[rid] = v
++                # New successful sensing clears an older deferral. Selecting by
++                # retry deadline would make a stale failure override that success.
++                if (v['stamp'], source) > services.get(rid, {}).get('_order', (-1., -1)):
++                    services[rid] = dict(v, _order=(v['stamp'], source))
+         self.nodes = nodes; self.edges = []; self.adj = {n: [] for n in nodes}
+         for key, edge in edge_records.items():
+             if key in blocked:
+diff --git a/next_project/core/exploration/regions.py b/next_project/core/exploration/regions.py
+index 13ec897..ceee315 100644
+--- a/next_project/core/exploration/regions.py
++++ b/next_project/core/exploration/regions.py
+@@ -12,17 +12,18 @@ def angle_delta(a, b):
+     return math.atan2(math.sin(a-b), math.cos(a-b))
+ 
+ 
+-def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5):
++def visible_cells(runtime, position, yaw, fov=2*math.pi/3, radius=4.5, *, azimuth_samples=None, pitch_samples=13):
+     """Predicted view: count the first unknown surface on each ray; do not see through it.
+ 
+     This function never receives simulator truth. Its predicted gain is corrected
+     by the next actual observation, including previously unknown occluders.
+     """
+-    angles = np.linspace(yaw-fov/2, yaw+fov/2, 61 if runtime.state.ndim == 3 else 121)
++    count = azimuth_samples if azimuth_samples is not None else (61 if runtime.state.ndim == 3 else 121)
++    angles = np.linspace(yaw-fov/2, yaw+fov/2, count)
+     ranges = np.arange(0., radius+runtime.resolution/2, runtime.resolution/2)
+     if runtime.state.ndim == 3:
+         position = np.asarray(position)+np.array([0., 0., .4])
+-        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, 13))
++        headings, pitch = np.meshgrid(angles, np.linspace(-np.pi/3, np.pi/3, pitch_samples))
+         directions = np.column_stack([np.cos(pitch.ravel())*np.cos(headings.ravel()),
+                                       np.cos(pitch.ravel())*np.sin(headings.ravel()), np.sin(pitch.ravel())])
+         coordinates = np.asarray(position)+directions[:, None, :]*ranges[None, :, None]
+diff --git a/ros2_ws/DECENTRALIZED_EXPLORATION.md b/ros2_ws/DECENTRALIZED_EXPLORATION.md
+index b835612..79863e5 100644
+--- a/ros2_ws/DECENTRALIZED_EXPLORATION.md
++++ b/ros2_ws/DECENTRALIZED_EXPLORATION.md
+@@ -15,7 +15,7 @@
+ | MR-DTG | 实际飞行历史节点、有限半径 Dijkstra 树、树交叠握手折线；每个可达 EROI 挂接一个历史节点；跨机图增量合并、缺包快照修复、障碍边否决与区域服务反馈 | `mrdtg.py` |
+ | 图分区 | 沿图上真实走廊距离计算局部 EROI 与全局历史节点 Voronoi，决定初始服务归属 | `mrdtg.py:graph_voronoi` |
+ | 任务与路线 | 双机交换窗口上 Held–Karp 子集路线及容量约束划分；窗口之外的任务计入固定负载；已执行区域固定；版本化 prepare/accept/commit/applied 协商 | `pairwise.py`, `fusion.py` |
+-| 分层搜索 | 全局区域访问序列采用插入与 2-opt；本地区域做位置/偏航两步搜索；远程区域通过 MR-DTG 走廊推进已观测前缀；无本机归属工作时按收益/时间/服务人数分担 | `fusion.py`, `regions.py` |
++| 分层搜索 | 可达区域按可见新增量、未知连通块规模、到达时间及等待时间排序；插入与 2-opt 提供同分顺序；本地做位置/偏航两步搜索，远程通过 MR-DTG 走廊推进已观测前缀 | `fusion.py`, `priority.py`, `regions.py` |
+ | 观测/运动 | 信息收益按每条射线的首个未知体素计算，考虑遮挡；两步观测去重，联合平移、偏航、路线质量与下一服务区域出口代价 | `regions.py:ObservationPlanner` |
+ | 轨迹 | 共用质量评估器评估多规划器/单规划器多候选，保留至多五条有效备选；固定路径节点的最小 jerk 五次样条、段时间优化、速度/加速度/jerk 极值验证、偏航连续与控制前馈 | `path_quality.py`, `continuous_trajectory.py` |
+ 
+@@ -29,10 +29,33 @@
+ 
+ 计算开销通过以下方式降低：区域插入及有向 2-opt 使用边代价增量；同一规划快照的拓扑接入点查询缓存；三维局部有限半径搜索使用稀疏矩阵 Dijkstra；历史树及握手仅在对应搜索包围盒内的占据/未知几何或膨胀安全格变化时重算；已构建的碰撞场按地图内容与配置复用。缓存不以传感版本号单独判断有效性，直接修改地图以及新障碍均有失效回归测试。
+ 
+-`fusion.stage_wall_s` 分别记录地图、分层区域、拓扑、路线、双机窗口、视点和轨迹拟合的墙钟耗时。`next_view_ready` / `next_view_adopted` 和 `prepared_trajectory` 区分后台准备、抵达后采用与连续曲线实际复用。旧版本的 `compute_wall_s` 不包含 ROS 回调中的轨迹拟合，比较时需注明这个统计范围差异。
++`fusion.stage_wall_s` 分别记录地图、分层区域、拓扑、探索优先级（`priority`）、路线、双机窗口、视点和轨迹拟合的墙钟耗时。`next_view_ready` / `next_view_adopted` 和 `prepared_trajectory` 区分后台准备、抵达后采用与连续曲线实际复用。旧版本的 `compute_wall_s` 不包含 ROS 回调中的轨迹拟合，比较时需注明这个统计范围差异。
+ 
+ 若新观测使当前位置不满足常规余量，且不存在经过机体包络验证的短距离恢复路线，代理发布 `motion_blocked=true`、停止竞价并标记暂不可服务。它仍感知、确认已有预约、同步拓扑和处理任务转交，每 10 s 刷新一次完整规划快照；不能因为无法运动而把整条协作链路提前退出。再次具备安全运动条件时自动恢复竞价。`motion_suspended` / `motion_resumed` 记录这个过程。该机制提供安全悬停和任务接管，不保证从任意保守地图重叠状态自动脱困；进程重启成功也不能等同于已恢复飞行。
+ 
++## 未探索区域优先级
++
++`priority.py` 在每架机的观测地图上，按面邻接聚合未知体素。组件体积是未知空间估计，可能包含未发现的墙体，不能称为可通行自由体积。组件编号只在当前快照内有意义；等待时间依附稳定的 Hgrid 区域 ID，细分时继承已记录的父区域等待起点。
++
++区域排序采用以下收益分数（越高越优先），不写入碰撞代价：
++
++```
++P = repeat_factor × net_visible_volume × (1 + 0.35 × log(1 + component_volume / 8))
++    / (1.5 + route_distance / 0.6) + 0.15 × waiting_seconds / 60
++```
++
++每个本地区域预评估最多两个安全前沿视点、各四个偏航方向，使用 21×5 的粗射线采样减少全区域排序开销；视野仍只统计射线遇到的首个未知体素，不能穿墙或穿过未知空间预测深层信息。实际视点规划保留原 61×13（三维）的采样，同伴已承诺视野也使用原采样密度；预排序收益是较稀疏的信息代理量。`component_volume` 为该方向能触及的未知组件体积，按对数加权避免巨大未知块支配排序。到达距离来自已知自由空间的路由/历史图。这个有限采样是区域优先级估计；选定区域后仍由原观测规划器搜索最多五个视点、八个方向，并验证实际路径与预约。分数用于本机主要访问顺序、双机交换窗口的候选顺序及无本机任务时的分担选择；双机精确子问题的容量与行驶时间目标保持原定义。
++
++当前视点的预期可见格，以及三秒内新鲜、已提交、未撤销且非恢复路线的同伴终点视野，都按集合并集从预测收益中扣除；同一体素不会被重复扣减。组件体积也扣除这些已承诺的首层未知体素。过期意图不再提供收益折扣，原安全预约仍由已有协议独立保留。采用预规划时再次检查实时收益。没有本地地图证据的远程区域标为 `remote_proxy`，使用上限 1 m³ 的信息代理量引导安全走廊推进；不冒充可见体积或跨机共享原始地图。
++
++每次提交时记录区域内及跨区域预测视野中的未知格，完成后只对这些格计算服务新增量，避免无关区域的沿途观测掩盖反复低收益。低收益门槛为 `min(30, max(1, ceil(待观测格数 × 20%)))`，因此清理小残片也可视为成功。连续低收益的退避为 15、30、60、120 秒，之后封顶；收益乘以 `1/(1 + streak × exp(-距上次服务秒数/600))`。成功立即清零次数。远程走廊中途推进不产生失败反馈。
++
++等待加分不封顶，允许有正收益的小区域逐渐超过新出现的大区域；零预测收益、不可达区域不能靠等待变成可执行任务。服务后重新计时。当前已提交飞行继续执行，区域收益在下一视点决策时重排，不因优先级变化中途抢占飞行。未知体素、机体净空、动态障碍及多机预约仍是硬约束。
++
++参数集中在 `config/exploration_priority.yaml`，启动时可通过 `priority_config:=/absolute/path/to/config.yaml` 替换。`/drone_i/topology.exploration_priority` 仅向诊断/RViz 发布组件体积、优先级、等待时间和观测切片，`graph_delta` 不传这张地图。RViz 默认叠加 UAV 0 的收益层（可视化节点参数 `priority_source`），橙色越深表示分数越高；组件标签显示未知体积和 P，优先级最高的十个区域标签显示 P、等待秒数及是否暂缓。图例标明估计来源和快照时间，不能把多个私有组件的体积相加当成全局未知量。
++
++实现验证覆盖连通块分裂/合并、遮挡和缓存失效、较远大区域优先、同伴视野去重与失效、小区域等待加分、低收益退避与成功恢复、ROS 标记和反馈重启恢复。保存地图的离线计时只说明计算开销；尾段是否变快仍需同地图冷启动对照，以 90%→95% 耗时、重复观测和总航程评估，不能用单测或旧版本录像宣称性能改善。
++
+ ## ROS 节点与数据接口
+ 
+ 每架机各有以下独立节点：
+@@ -59,7 +82,7 @@
+ | `/drone_i/view_execution` | `String` JSON | 本机执行状态、epoch、参考位置/速度/加速度、到点与停稳信息 |
+ | `/experiment/control` | `String` JSON | 仅实验暂停、规划通信分区、指定旧实例重启和实验结束，不分配任务 |
+ 
+-实际观测新增不足 30 个体素时，区域暂缓重访 600 s；这条服务结果通过图增量传给同伴并在本机重启后恢复。未知量较多的陈旧区域报告不能覆盖更充分观测后的完成/细分状态。
++区域服务结果通过图增量传给同伴并在本机重启后恢复，包括连续低收益次数及成功后的清零；以最新观测时间合并，旧失败的较长截止时间不会覆盖新成功。未知量较多的陈旧区域报告不能覆盖更充分观测后的完成/细分状态。
+ 
+ 双机交换只纳入当前可竞价区域。接受提案后，参与方在断连期间保留锁并等待发起方的明确结果；已应用结果持续确认，防止迟到提交或确认丢失造成卡死。
+ 
+diff --git a/ros2_ws/src/annual_swarm/CMakeLists.txt b/ros2_ws/src/annual_swarm/CMakeLists.txt
+index 1550119..0ec9e16 100644
+--- a/ros2_ws/src/annual_swarm/CMakeLists.txt
++++ b/ros2_ws/src/annual_swarm/CMakeLists.txt
+@@ -36,6 +36,8 @@ install(FILES scripts/scene.py DESTINATION share/${PROJECT_NAME}/launch)
+ if(BUILD_TESTING)
+   find_package(ament_cmake_pytest REQUIRED)
+   ament_add_pytest_test(fusion_test test/test_fusion.py TIMEOUT 180)
++  ament_add_pytest_test(exploration_priority_test test/test_exploration_priority.py TIMEOUT 180)
++  ament_add_pytest_test(priority_ros_test test/test_priority_ros.py TIMEOUT 60)
+   ament_add_pytest_test(decentralized_test test/test_decentralized.py TIMEOUT 180)
+   ament_add_pytest_test(exploration_test test/test_exploration.py TIMEOUT 180)
+   ament_add_pytest_test(scene_test test/test_scene.py)
+diff --git a/ros2_ws/src/annual_swarm/config/exploration.rviz b/ros2_ws/src/annual_swarm/config/exploration.rviz
+index ad2c61e..c302cdc 100644
+--- a/ros2_ws/src/annual_swarm/config/exploration.rviz
++++ b/ros2_ws/src/annual_swarm/config/exploration.rviz
+@@ -23,6 +23,8 @@ Visualization Manager:
+         regional_tasks: true
+         sparse_corridors: true
+         sparse_junctions: true
++        unknown_region_priority: true
++        unknown_region_labels: true
+         vehicle_labels: true
+       Topic:
+         Depth: 1
+diff --git a/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py b/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
+index 1f21d1c..62a5b7f 100644
+--- a/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
++++ b/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
+@@ -38,7 +38,7 @@ def setup(context):
+             Node(package='annual_swarm', executable='pointcloud_mapping_node.py', namespace=namespace,
+                 parameters=[common, {'drone_id': i, 'bounds': json.dumps(data['bounds'])}], output='screen'),
+             Node(package='annual_swarm', executable='decentralized_agent_node.py', namespace=namespace, respawn=True, respawn_delay=2.,
+-                parameters=[common, {'drone_id': i, 'bounds': json.dumps(data['bounds']), 'fleet_starts': json.dumps(starts), 'output_dir': output}], output='screen'),
++                parameters=[arg('priority_config'), common, {'drone_id': i, 'bounds': json.dumps(data['bounds']), 'fleet_starts': json.dumps(starts), 'output_dir': output}], output='screen'),
+             Node(package='annual_swarm', executable='view_executor_node.py', namespace=namespace,
+                 parameters=[common, {'drone_id': i, 'start': json.dumps(starts[i]), 'fleet_starts': json.dumps(starts)}], output='screen'),
+             Node(package='annual_swarm', executable='controller_node', namespace=namespace,
+@@ -63,6 +63,7 @@ def generate_launch_description():
+         DeclareLaunchArgument('headless', default_value='false', choices=['true', 'false']),
+         DeclareLaunchArgument('map', default_value=str(share/'maps/search_fusion_3d.json')),
+         DeclareLaunchArgument('output_dir', default_value='/tmp/annual_decentralized'),
++        DeclareLaunchArgument('priority_config', default_value=str(share/'config/exploration_priority.yaml')),
+         DeclareLaunchArgument('coverage_target', default_value='0.95'),
+         DeclareLaunchArgument('pause_after', default_value='60.0'),
+         DeclareLaunchArgument('pause_duration', default_value='25.0'),
+diff --git a/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py b/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+index 3a0f7eb..ae1fa09 100755
+--- a/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+ """One independently replaceable exploration agent. No truth map or fleet planner."""
+ import copy
++from dataclasses import fields
+ from concurrent.futures import ProcessPoolExecutor
+ from multiprocessing import get_context
+ import json
+@@ -17,6 +18,7 @@ import planning_runtime  # installed core module location
+ from core.exploration.decentralized import MapReplica, PeerLedger, remainder, tracking_recovery
+ from core.exploration.sparse_graph import SparseTopology
+ from core.exploration.fusion import FusionPlanner, reusable_trajectory
++from core.exploration.priority import PriorityConfig, service_cells, service_result
+ from core.exploration.pairwise import PairExchange
+ from core.planning.continuous_trajectory import optimize_trajectory
+ from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
+@@ -32,7 +34,9 @@ class ExplorationAgent(Node):
+         self.network_isolated = set()
+         self.replica = MapReplica(bounds, self.id, volumetric=True, flight_limits=(.7, min(3.1, bounds[1][2]-.3))); self.ledger = PeerLedger(self.id, members=tuple(range(len(self.seeds))))
+         self.ledger.seeds = self.seeds
+-        self.fusion = FusionPlanner(self.id, bounds); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
++        priority_config = PriorityConfig(**{f.name: self.declare_parameter('exploration_priority.'+f.name, f.default).value
++                                           for f in fields(PriorityConfig)})
++        self.fusion = FusionPlanner(self.id, bounds, priority_config); self.pair = PairExchange(self.id, self.fusion.graph.replica.session)
+         self.bootstrapped = False; self.rejoin_ready = False; self.join_stopped_since = None
+         self.last_graph_full = -30.; self.graph_bytes = 0; self.last_pair_commits = 0
+         self.position = None; self.yaw = 0.; self.observation = None; self.execution = {}
+@@ -53,13 +57,16 @@ class ExplorationAgent(Node):
+             for line in previous_events.read_text().splitlines():
+                 try:
+                     e = json.loads(line)
+-                    if e.get('type') == 'region_low_yield':
++                    if e.get('type') == 'region_service':
++                        self.service_feedback[int(e['region'])] = e['feedback']
++                    elif e.get('type') == 'region_low_yield':
+                         self.service_feedback[int(e['region'])] = dict(stamp=e['time'], defer_until=e['retry_after'], observed_new_cells=e['new_cells'])
+                 except (ValueError, KeyError):
+                     continue
+         self.log = (self.output/'events.jsonl').open('a'); self.paths = (self.output/'candidates.jsonl').open('a')
+         self.last_map_dump = -20.
+         self.view_start_known = 0
++        self.view_start_cells = np.empty(0, dtype=int)
+         self.bytes = 0; self.peer_bytes = 0; self.commits = 0; self.observed_views = 0
+         # CPU-bound graph/tour/trajectory work must not hold the ROS callback GIL.
+         # Spawn avoids inheriting DDS threads or sockets into the planning worker.
+@@ -247,24 +254,32 @@ class ExplorationAgent(Node):
+         if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
+             self.intent['committed'] = True; self.commits += 1
+             self.view_start_known = int(np.count_nonzero(self.replica.map.state != -1))
++            self.view_start_cells = service_cells(self.replica.map, self.tasks.get(self.active),
++                                                 self.intent['path'][-1], self.intent['yaw'])
+             self.publish(self.command_pub, dict(epoch=self.epoch, path=self.intent['path'], yaw=self.intent['yaw'],
+                                                region=self.active, token=self.intent['token'], trajectory=self.intent.get('trajectory')))
+             self.event('path_committed', token=self.intent['token'], region=self.active, quorum=self.intent['voters'],
+-                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'])
++                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'],
++                       exploration_priority=self.selection.get('priority'))
+         if self.intent and self.intent.get('committed') and self.execution.get('arrived') and self.execution.get('epoch') == self.epoch:
+             self.observed_views += 1
+             new_cells = max(0, int(np.count_nonzero(self.replica.map.state != -1))-self.view_start_known)
+             self.recent.append((t+(240. if new_cells < 3 else 0.), self.position.copy(), self.intent['yaw']))
+             self.event('view_observed', region=self.active, epoch=self.epoch, token=self.intent['token'], new_cells=new_cells,
+                        observed_volume=new_cells*self.replica.map.resolution**self.replica.map.state.ndim)
+-            if self.active is not None and self.active >= 0 and new_cells < 30:
+-                # A noisy wall fringe can remain an apparent frontier after a
+-                # successful view. Measured low yield ends the current regional
+-                # service, allowing the coverage tour to advance before retry.
+-                self.cooldown[self.active] = t+600.
+-                self.service_feedback[self.active] = dict(stamp=t, defer_until=t+600., observed_new_cells=new_cells)
+-                self.event('region_low_yield', region=self.active, new_cells=new_cells, retry_after=t+600.)
+-                self.active = None
++            if self.active is not None and self.active >= 0 and not self.selection.get('transit'):
++                gained = int(np.count_nonzero(self.replica.map.state.ravel()[self.view_start_cells] != -1))
++                previous = max((self.service_feedback.get(self.active, {}), self.fusion.graph.services.get(self.active, {})),
++                               key=lambda v: v.get('stamp', -1.))
++                feedback = service_result(previous, t, gained, len(self.view_start_cells), self.fusion.priority.config)
++                self.service_feedback[self.active] = feedback
++                self.cooldown[self.active] = feedback['defer_until']
++                if feedback['low_yield_streak']:
++                    self.event('region_low_yield', region=self.active, new_cells=gained, retry_after=feedback['defer_until'])
++                # Write last so restart replay restores streaks and successful resets.
++                self.event('region_service', region=self.active, feedback=feedback)
++                if feedback['low_yield_streak']:
++                    self.active = None
+             # Retain the regional service priority while selecting its next view.
+             self.intent = None; self.selection = None
+         if self.intent and not self.intent.get('committed') and t-self.intent['created'] > 6:
+@@ -375,6 +390,7 @@ class ExplorationAgent(Node):
+             self.last_plan = result['wall']; self.graph = result['graph']; self.tasks = result['tasks']
+             self.bids, self.tour, self.workload = result['bids'], result['tour'], result['workload']
+             self.graph_seq += 1; snapshot = self.graph.snapshot(); snapshot['sequence'] = self.graph_seq
++            snapshot['exploration_priority'] = self.fusion.priority_layer
+             self.publish(self.graph_pub, snapshot)
+             if self.active not in self.tasks and not self.intent:
+                 self.active = None
+@@ -439,8 +455,9 @@ class ExplorationAgent(Node):
+         candidate = selection['pool'].active
+         if candidate is None:
+             return
+-        if pending['anticipatory'] and not selection.get('transit'):
+-            cells = visible_cells(runtime, candidate.path[-1], selection['yaw'])
++        if not selection.get('transit'):
++            cells = (visible_cells(runtime, candidate.path[-1], selection['yaw'])-
++                     self.fusion.priority.committed_cells(runtime, self.ledger.states, t))
+             if len(cells) < 5:
+                 return
+             selection['gain'] = len(cells)*runtime.resolution**runtime.state.ndim
+diff --git a/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py b/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py
+index 099acae..d2c559d 100755
+--- a/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/exploration_visualization_node.py
+@@ -18,6 +18,7 @@ class Visualization(Node):
+     def __init__(self):
+         super().__init__('exploration_visualization')
+         self.fleet_size = int(self.declare_parameter('fleet_size', 3).value)
++        self.priority_source = int(self.declare_parameter('priority_source', 0).value)
+         self.states = {}; self.graphs = {}; self.poses = {}; self.trails = {i: [] for i in range(self.fleet_size)}; self.map = None; self.diag = {}
+         q = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+         self.pub = self.create_publisher(MarkerArray, '/exploration/markers', q)
+@@ -57,6 +58,36 @@ class Visualization(Node):
+                 m = self.marker('observed_map', value+1, Marker.CUBE_LIST, color)
+                 m.scale.x = m.scale.y = res*.98; m.scale.z = height
+                 self.points(m, np.column_stack([xy, np.full(len(xy), z)])); out.markers.append(m)
++        # The gain layer belongs to one planner replica. Component IDs and scores
++        # from private maps must not be merged as if they were a global costmap.
++        layer = self.graphs.get(self.priority_source, {}).get('exploration_priority', {})
++        priorities = {r['region']: r for r in sorted(layer.get('regions', []), key=lambda r: -r['score'])[:10]
++                      if r['score'] > 0}
++        if layer.get('shape'):
++            groups = np.array(layer['slice_labels']).reshape(layer['shape'])
++            peak = max((c['priority'] for c in layer['components']), default=0.)
++            for component in layer['components']:
++                if component['priority'] <= 0:
++                    continue
++                cells = np.argwhere(groups == component['id'])
++                if not len(cells):
++                    continue
++                strength = component['priority']/max(peak, 1e-9)
++                color = (1., .85-.65*strength, .08)
++                m = self.marker('unknown_region_priority', component['id'], Marker.CUBE_LIST, color, .55)
++                m.scale.x = m.scale.y = layer['resolution']*.95; m.scale.z = .035
++                xy = np.array(layer['origin'])+(cells+.5)*layer['resolution']
++                self.points(m, np.column_stack([xy, np.full(len(xy), .08)])); out.markers.append(m)
++            for component in sorted(layer['components'], key=lambda c: -c['priority'])[:12]:
++                if component['priority'] <= 0:
++                    continue
++                low, high = np.array(component['bounds'])[:, :2]
++                label = self.marker('unknown_region_labels', component['id'], Marker.TEXT_VIEW_FACING, (1., .8, .2))
++                label.scale.z = .26
++                label.pose.position.x, label.pose.position.y = map(float, (low+high)/2)
++                label.pose.position.z = .65
++                label.text = f"C{component['id']} {component['volume']:.1f} {layer['unit']}\nP {component['priority']:.3f}"
++                out.markers.append(label)
+         # Display one replica's sparse graph, not a misleading union of three copies.
+         graph = self.graphs.get(0, {})
+         nodes = self.marker('sparse_junctions', 0, Marker.SPHERE_LIST, (1., .85, .3)); nodes.scale.x = nodes.scale.y = nodes.scale.z = .14
+@@ -81,6 +112,11 @@ class Visualization(Node):
+             label = self.marker('region_labels', rid, Marker.TEXT_VIEW_FACING, color); label.scale.z = .3
+             label.pose.position.x = float(x); label.pose.position.y = float(y); label.pose.position.z = .35
+             label.text = f'R{rid} / '+(f'U{owner}' if owner >= 0 else 'auction'); out.markers.append(label)
++            if rid in priorities:
++                row = priorities[rid]
++                label.text += f"\nP {row['score']:.3f} / wait {row['wait_s']:.0f}s"
++                if row['deferred']:
++                    label.text += ' / retry later'
+         for i, pose in self.poses.items():
+             color = COLORS[i % len(COLORS)]; p = pose.position
+             body = self.marker('actual_vehicle', i, Marker.CUBE, color); body.pose = pose
+@@ -109,6 +145,7 @@ class Visualization(Node):
+             f"Coverage {d.get('coverage', 0)*100:.1f}%  |  t={elapsed:.0f}s  |  {d.get('status', 'WAITING')}\n"
+             f"Sparse graph: {len(graph.get('nodes', []))} nodes / {graph.get('free_cells', 0)} free cells\n"
+             'Hgrid > MR-DTG > GVP + pair CVRP > continuous flight\n'
++            f"Unknown priority: UAV {self.priority_source} estimate / orange = higher / snapshot t={layer.get('time', 0):.0f}s\n"
+             f"Network {'RECOVERED' if d.get('network_resumed') else 'PARTITION' if d.get('isolated') else 'OK'} | Restart {'RECOVERED' if d.get('restart_recovered') else 'PENDING' if d.get('restart_trial') else '-'} | Obstacle {'CLEARED' if d.get('dynamic_finished') else 'ACTIVE' if d.get('dynamic_trial') else '-'}")
+         out.markers.append(text); self.pub.publish(out)
+ 

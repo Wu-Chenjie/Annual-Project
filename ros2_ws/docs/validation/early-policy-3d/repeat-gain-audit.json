@@ -1,0 +1,77 @@
+{
+  "recorded_map_sha256": "024a9976a0fdec5976899595c194d61ed97abec9d8230afd7fb4ccd3634839de",
+  "map_time": 2416.141,
+  "rows": [
+    {
+      "drone": 0,
+      "task": 28411,
+      "assignments_after_300": 40,
+      "position": [
+        9.15,
+        5.85,
+        1.65
+      ],
+      "sphere_unknown_voxels_within_2m": 1,
+      "adapted_yaw_rad": 1.5707963267948966,
+      "finite_fov_predicted_unknown_surface_cells_at_yaw": 0,
+      "best_predicted_unknown_surface_cells_over_12_yaws": 0
+    },
+    {
+      "drone": 0,
+      "task": 31085,
+      "assignments_after_300": 37,
+      "position": [
+        10.049999999999999,
+        2.85,
+        1.65
+      ],
+      "sphere_unknown_voxels_within_2m": 129,
+      "adapted_yaw_rad": 0.0,
+      "finite_fov_predicted_unknown_surface_cells_at_yaw": 0,
+      "best_predicted_unknown_surface_cells_over_12_yaws": 5
+    },
+    {
+      "drone": 1,
+      "task": 33171,
+      "assignments_after_300": 4,
+      "position": [
+        10.65,
+        7.35,
+        1.65
+      ],
+      "sphere_unknown_voxels_within_2m": 33,
+      "adapted_yaw_rad": 1.5707963267948966,
+      "finite_fov_predicted_unknown_surface_cells_at_yaw": 12,
+      "best_predicted_unknown_surface_cells_over_12_yaws": 14
+    },
+    {
+      "drone": 0,
+      "task": 33171,
+      "assignments_after_300": 3,
+      "position": [
+        10.65,
+        7.35,
+        1.65
+      ],
+      "sphere_unknown_voxels_within_2m": 33,
+      "adapted_yaw_rad": 1.5707963267948966,
+      "finite_fov_predicted_unknown_surface_cells_at_yaw": 12,
+      "best_predicted_unknown_surface_cells_over_12_yaws": 14
+    },
+    {
+      "drone": 2,
+      "task": 11023,
+      "assignments_after_300": 3,
+      "position": [
+        3.4499999999999997,
+        15.149999999999999,
+        1.65
+      ],
+      "sphere_unknown_voxels_within_2m": 0,
+      "adapted_yaw_rad": 0.0,
+      "finite_fov_predicted_unknown_surface_cells_at_yaw": 2,
+      "best_predicted_unknown_surface_cells_over_12_yaws": 2
+    }
+  ],
+  "note": "Posthoc estimate on the final recorded sensor map using the common visibility routine; no simulator truth or runtime policy changes. Sphere volume counts and ray-surface counts have different units. A proxy comparison is not a causal ablation or an actual measurement of information gained."
+}
