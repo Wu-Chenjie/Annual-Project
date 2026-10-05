@@ -45,6 +45,15 @@ flowchart LR
 
 ROS 可选择 A*、航向约束 A*、Hybrid A*、Dijkstra、RRT*、Informed RRT*、D* Lite、GNN 与分层滑动窗口调度；控制可选 PID、SMC、反步＋SMC、反步＋PID，以及两种实验控制分支。ESDF、FIRI、轨迹后处理、APF 前馈可独立配置。支持飞行中更换目标和周期重规划，运行结果记录实际算法及回退信息。
 
+### GitHub 自动 CI
+
+每个分支的 push 和所有 pull request 自动运行两套检查，也可在 [Actions](https://github.com/Wu-Chenjie/Annual-Project/actions) 页面手动运行：
+
+- **CI**：安装锁定 Python 依赖、构建 C++ 全部目标、运行非 slow 的 pytest 回归；超时 30 分钟，保存 `python-test-report` 测试报告。
+- **ROS 2 Gazebo**：构建 Jazzy/Harmonic Docker 环境、运行 ROS 包测试与完整 Gazebo 物理冒烟验收；超时 45 分钟，保存 `gazebo-flight` 中的包测试报告及飞行证据。
+
+同一工作流、同一分支的新提交会取消旧运行，测试报告保留 14 天。`Fused 3D Gazebo exploration` 和 `Complex-map search validation` 继续手动触发，适合耗时较长的专项验收。
+
 ```bash
 ros2 launch annual_swarm swarm.launch.py planner:=window controller:=backstepping replan_interval:=3.0
 ros2 launch annual_swarm swarm.launch.py planner:=informed_rrt_star controller:=smc

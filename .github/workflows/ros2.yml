@@ -1,8 +1,16 @@
 name: ROS 2 Gazebo
 on:
   push:
-    branches: [main, master]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gazebo:
     runs-on: ubuntu-24.04
@@ -12,7 +20,21 @@ jobs:
       - name: Build ROS and Gazebo image
         run: docker build -f docker/Dockerfile.ros2 -t annual-swarm:ci .
       - name: Run package tests
-        run: docker run --rm annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && cd ros2_ws && colcon test --event-handlers console_direct+ && colcon test-result --verbose'
+        run: |
+          mkdir -p artifacts/ros2-test-results
+          docker run --rm -v "$PWD/artifacts/ros2-test-results:/test-results" annual-swarm:ci bash -c '
+            source /opt/ros/jazzy/setup.bash
+            source ros2_ws/install/setup.bash
+            cd ros2_ws
+            colcon test --event-handlers console_direct+
+            test_status=$?
+            colcon test-result --verbose
+            result_status=$?
+            cp -a build/annual_swarm/test_results/. /test-results/
+            copy_status=$?
+            if (( test_status != 0 || result_status != 0 || copy_status != 0 )); then
+              exit 1
+            fi'
       - name: Validate every planner and controller with Gazebo physics
         run: docker run --rm -v "$PWD/artifacts:/results" annual-swarm:ci bash -c 'source /opt/ros/jazzy/setup.bash && source ros2_ws/install/setup.bash && ros2 run annual_swarm validate_matrix.py --timeout 240 --output-dir /results/matrix'
       - name: Single-planner reserves and safe hover without a route
@@ -28,3 +50,5 @@ jobs:
         with:
           name: gazebo-flight
           path: artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
