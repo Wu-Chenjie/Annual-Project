@@ -1,5 +1,7 @@
 # 实验数据与对比结果下载
 
+当前状态：11个附件已全部上传并通过[远端大小与SHA256核对](upload-verification.json)，Release仍为草稿，等待公开发布授权；下列附件下载链接在正式发布后对外生效。已入库的对比报告可直接查看。
+
 [GitHub 数据发布](https://github.com/Wu-Chenjie/Annual-Project/releases/tag/experiment-data-2026-10-06)保存截至2026-10-06的原始实验资料。原来仅在本地 `artifacts/` 中的 **3603 个文件**共 6.23 GiB，打包为9个独立压缩包，共 3.65 GiB。每个文件均记录SHA256，且已逐包解压读取、逐文件比对大小与SHA256。
 
 成功、失败、中止、超时和开发诊断样本完整保留。本次仅归档上传，没有新增仿真或重新计算历史成绩。排除115个Python缓存或系统元数据文件，具体列表见[文件清单](experiment-manifest.json)。
