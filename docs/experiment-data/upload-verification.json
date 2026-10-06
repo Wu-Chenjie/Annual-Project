@@ -1,0 +1,77 @@
+{
+  "release_id": 404546765,
+  "tag": "experiment-data-2026-10-06",
+  "draft": true,
+  "verified_assets": [
+    {
+      "name": "annual-early-baseline-20261006.tar.gz",
+      "bytes": 312250339,
+      "sha256": "349410393d195fa613da419994cf52840f0b4b11e7d415eda00065364fff5df9",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-early-baseline-20261006.tar.gz"
+    },
+    {
+      "name": "annual-fusion-20261006.tar.gz",
+      "bytes": 854009189,
+      "sha256": "5a31c5f8e4f9e0443e65ba9474b8afddc2d4d92e03865b0598d86502b3b8523b",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-fusion-20261006.tar.gz"
+    },
+    {
+      "name": "annual-other-experiments-20261006.tar.gz",
+      "bytes": 350210020,
+      "sha256": "1c2d3fd9e80a412dec1e98efd9f6f10891e1be2cba1a57798c1ce7dcd4c88ed4",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-other-experiments-20261006.tar.gz"
+    },
+    {
+      "name": "annual-tail-priority-20261006.tar.gz",
+      "bytes": 327913673,
+      "sha256": "72109a143da9eae49c1387bcb5b282234cbbb2af4091278a548834e780b8696d",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-tail-priority-20261006.tar.gz"
+    },
+    {
+      "name": "annual-todo-formal-10-20261006.tar.gz",
+      "bytes": 551221029,
+      "sha256": "beac82441e3482d4887bb95409fadc841cd9dc756f945e27abeeec5f14e48d5f",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-todo-formal-10-20261006.tar.gz"
+    },
+    {
+      "name": "annual-todo-formal-3-20261006.tar.gz",
+      "bytes": 107970484,
+      "sha256": "3f3e9f7cc992bc762b4e65665b596b3865d4fbb1755f1e4f8d8ac77baac7e16b",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-todo-formal-3-20261006.tar.gz"
+    },
+    {
+      "name": "annual-todo-formal-8-20261006.tar.gz",
+      "bytes": 484795711,
+      "sha256": "d9cbc677076790daf21e9074d0a693bed5215a9303bedbf949d3f763d60b38e8",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-todo-formal-8-20261006.tar.gz"
+    },
+    {
+      "name": "annual-todo-other-20261006.tar.gz",
+      "bytes": 336265454,
+      "sha256": "3eb477da0008b7184493011b01881f2b8260ab5d0498489f5f7571686ac7b619",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-todo-other-20261006.tar.gz"
+    },
+    {
+      "name": "annual-todo-runs-20261006.tar.gz",
+      "bytes": 592259532,
+      "sha256": "b4e4e9a9fcd1738063bf48facdebd8c5cb00bde42ffee6b2764497b957757bce",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/annual-todo-runs-20261006.tar.gz"
+    },
+    {
+      "name": "experiment-manifest.json",
+      "bytes": 956688,
+      "sha256": "6f8753711ea94b2cabd266e08b3c97af07edd611d254ed66e57c58484fc62d7c",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/experiment-manifest.json"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 1010,
+      "sha256": "0712ad925ef2835860c56b7f7465d9513a0b9749cfc18fd1f23d474fddcc2751",
+      "url": "https://github.com/Wu-Chenjie/Annual-Project/releases/download/untagged-9b80383205d677478bf5/SHA256SUMS.txt"
+    }
+  ],
+  "pending": [],
+  "complete": true,
+  "checked_at_utc": "2026-10-06T09:57:25.749830+00:00",
+  "publication_status": "draft_awaiting_explicit_publication_approval"
+}
