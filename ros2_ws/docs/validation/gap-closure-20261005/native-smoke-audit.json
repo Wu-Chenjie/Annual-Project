@@ -1,0 +1,1520 @@
+{
+  "passed": true,
+  "errors": [],
+  "completed_observations": 34,
+  "timing_records": 44,
+  "rolling_p95_records": 34,
+  "consumed_handoffs": [
+    {
+      "type": "handoff_consumed",
+      "drone": 0,
+      "time": 50.401,
+      "monotonic_wall_time": 1302.20872028,
+      "incarnation": "1687289b536944c59cfcce6a874836b9",
+      "old_token": "0:1687289b:1206007",
+      "token": "0:1687289b:1206008",
+      "continuity": {
+        "position": 1.3322676295501878e-15,
+        "velocity": 9.759943393759652e-16,
+        "acceleration": 8.935021601524638e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "speed": 0.39535091516831333
+    },
+    {
+      "type": "handoff_consumed",
+      "drone": 1,
+      "time": 58.800000000000004,
+      "monotonic_wall_time": 1312.336219358,
+      "incarnation": "2e1048c6f2ef4261b6ed64c0e6dd4e47",
+      "old_token": "1:2e1048c6:1206008",
+      "token": "1:2e1048c6:1206009",
+      "continuity": {
+        "position": 0.0,
+        "velocity": 4.3709524189038457e-16,
+        "acceleration": 8.545291686047604e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "speed": 0.5578470418603627
+    },
+    {
+      "type": "handoff_consumed",
+      "drone": 1,
+      "time": 89.2,
+      "monotonic_wall_time": 1349.803252976,
+      "incarnation": "2e1048c6f2ef4261b6ed64c0e6dd4e47",
+      "old_token": "1:2e1048c6:1206013",
+      "token": "1:2e1048c6:1206014",
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 2.217712176767239e-15,
+        "acceleration": 3.1929544796101374e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "speed": 0.26200294406572533
+    },
+    {
+      "type": "handoff_consumed",
+      "drone": 2,
+      "time": 56.002,
+      "monotonic_wall_time": 1308.964066115,
+      "incarnation": "bf29a653e6ce4e6a9c87a31893cda098",
+      "old_token": "2:bf29a653:1021008",
+      "token": "2:bf29a653:1021009",
+      "continuity": {
+        "position": 0.0,
+        "velocity": 2.4276213934271013e-16,
+        "acceleration": 1.355199909595506e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "speed": 0.16451125469921624
+    },
+    {
+      "type": "handoff_consumed",
+      "drone": 2,
+      "time": 101.2,
+      "monotonic_wall_time": 1364.805801303,
+      "incarnation": "bf29a653e6ce4e6a9c87a31893cda098",
+      "old_token": "2:bf29a653:1021016",
+      "token": "2:bf29a653:1021017",
+      "continuity": {
+        "position": 0.0,
+        "velocity": 2.342840229615247e-16,
+        "acceleration": 6.973502068242161e-17,
+        "yaw": 0.0,
+        "yaw_rate": 2.7755575615628914e-17,
+        "yaw_acceleration": 0.0
+      },
+      "speed": 0.09120816170208705
+    }
+  ],
+  "observation_proofs": [
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206002",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        52
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 52,
+        "time": 21.6,
+        "position": [
+          1.0624913149376622,
+          1.93915785934272,
+          1.9431622871123342
+        ],
+        "yaw": 0.7864764808509855,
+        "map_version": 106,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 3384,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 21.400000000000002,
+        "token": "0:1687289b:1206002",
+        "epoch": 1206002,
+        "completed_at": 21.645
+      },
+      "position_error_m": 0.01789802448423372,
+      "yaw_error_rad": 0.0010783174535372586
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206003",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        67
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 67,
+        "time": 27.6,
+        "position": [
+          1.6396584165974664,
+          3.1341604930440043,
+          1.939523623040275
+        ],
+        "yaw": 0.785547335971729,
+        "map_version": 136,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 3192,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 27.48,
+        "token": "0:1687289b:1206003",
+        "epoch": 1206003,
+        "completed_at": 27.680000000000003
+      },
+      "position_error_m": 0.02162389423953914,
+      "yaw_error_rad": 0.0001491725742807093
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206004",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        79
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 79,
+        "time": 32.4,
+        "position": [
+          1.0413524692099854,
+          2.554679084741511,
+          2.248473934574683
+        ],
+        "yaw": 0.7852654760532539,
+        "map_version": 160,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 3243,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 32.300000000000004,
+        "token": "0:1687289b:1206004",
+        "epoch": 1206004,
+        "completed_at": 32.46
+      },
+      "position_error_m": 0.009949999922857581,
+      "yaw_error_rad": 0.0001326873441943599
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206005",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        101
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 101,
+        "time": 41.2,
+        "position": [
+          1.9440116185342013,
+          4.033690983280378,
+          2.8514972833824896
+        ],
+        "yaw": 0.785426071772296,
+        "map_version": 204,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2758,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 41.02,
+        "token": "0:1687289b:1206005",
+        "epoch": 1206005,
+        "completed_at": 41.263000000000005
+      },
+      "position_error_m": 0.0174380789213829,
+      "yaw_error_rad": 2.7908374847673834e-05
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206008",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        133
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 133,
+        "time": 54.0,
+        "position": [
+          5.832754404662291,
+          4.6461662316286,
+          1.9533409410632134
+        ],
+        "yaw": 0.7852150567638623,
+        "map_version": 268,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 1545,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 53.92,
+        "token": "0:1687289b:1206008",
+        "epoch": 1206008,
+        "completed_at": 54.06
+      },
+      "position_error_m": 0.01797971706299483,
+      "yaw_error_rad": 0.00018310663358600546
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206009",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        150
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 150,
+        "time": 60.8,
+        "position": [
+          7.327824825668636,
+          4.046196356324197,
+          1.9541273526321659
+        ],
+        "yaw": 0.00079259323460896,
+        "map_version": 302,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2558,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 60.760000000000005,
+        "token": "0:1687289b:1206009",
+        "epoch": 1206009,
+        "completed_at": 60.86000000000001
+      },
+      "position_error_m": 0.02287446396288296,
+      "yaw_error_rad": 0.00079259323460896
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206011",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        162
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 162,
+        "time": 65.6,
+        "position": [
+          7.946832782811259,
+          3.754927374212952,
+          1.9503877053022203
+        ],
+        "yaw": -0.00019015682961380935,
+        "map_version": 326,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2888,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 65.24000000000001,
+        "token": "0:1687289b:1206011",
+        "epoch": 1206011,
+        "completed_at": 65.7
+      },
+      "position_error_m": 0.005870314877116252,
+      "yaw_error_rad": 0.00019015682961380935
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206012",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        172
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 172,
+        "time": 69.6,
+        "position": [
+          7.937514852931268,
+          3.75514703928266,
+          1.9523814956277257
+        ],
+        "yaw": -0.7735887954032062,
+        "map_version": 346,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2488,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 69.542,
+        "token": "0:1687289b:1206012",
+        "epoch": 1206012,
+        "completed_at": 69.66000000000001
+      },
+      "position_error_m": 0.013712856454072294,
+      "yaw_error_rad": 0.011809367994242039
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206013",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        195
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 195,
+        "time": 78.8,
+        "position": [
+          9.436600285566952,
+          5.5362901434510565,
+          1.942925492983981
+        ],
+        "yaw": 0.785640183490065,
+        "map_version": 392,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2376,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 78.68100000000001,
+        "token": "0:1687289b:1206013",
+        "epoch": 1206013,
+        "completed_at": 78.861
+      },
+      "position_error_m": 0.02043431337235668,
+      "yaw_error_rad": 0.00024202009261675705
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206014",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        207
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 207,
+        "time": 83.6,
+        "position": [
+          10.044554931198158,
+          5.255439571457458,
+          2.2528807133320585
+        ],
+        "yaw": 0.785283905791503,
+        "map_version": 416,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2748,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 83.32100000000001,
+        "token": "0:1687289b:1206014",
+        "epoch": 1206014,
+        "completed_at": 83.661
+      },
+      "position_error_m": 0.008218042418912925,
+      "yaw_error_rad": 0.00011425760594530045
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206015",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        223
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 223,
+        "time": 90.0,
+        "position": [
+          9.762486531478213,
+          4.072785389416329,
+          1.9475525735303525
+        ],
+        "yaw": 2.35727319775876,
+        "map_version": 448,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2100,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 89.82000000000001,
+        "token": "0:1687289b:1206015",
+        "epoch": 1206015,
+        "completed_at": 90.08000000000001
+      },
+      "position_error_m": 0.02609745841139464,
+      "yaw_error_rad": 0.0010787075664153711
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206016",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        244
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 244,
+        "time": 98.4,
+        "position": [
+          10.628115628268029,
+          5.538929821354947,
+          1.9442415275931106
+        ],
+        "yaw": 0.7846289767907001,
+        "map_version": 490,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2877,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 98.241,
+        "token": "0:1687289b:1206016",
+        "epoch": 1206016,
+        "completed_at": 98.48400000000001
+      },
+      "position_error_m": 0.025191954783172325,
+      "yaw_error_rad": 0.0007691866067481845
+    },
+    {
+      "drone": 0,
+      "token": "0:1687289b:1206017",
+      "frame_key": [
+        0,
+        "fb17cabec2494b8bacc4c75b2653eaab",
+        261
+      ],
+      "proof": {
+        "sensor_session": "fb17cabec2494b8bacc4c75b2653eaab",
+        "sequence": 261,
+        "time": 105.2,
+        "position": [
+          12.14119276301106,
+          6.132833908795847,
+          1.95120748265313
+        ],
+        "yaw": -0.7822059751333014,
+        "map_version": 524,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 3189,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 105.2,
+        "token": "0:1687289b:1206017",
+        "epoch": 1206017,
+        "completed_at": 105.30000000000001
+      },
+      "position_error_m": 0.019331324966650063,
+      "yaw_error_rad": 0.0031921882641469113
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206002",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        50
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 50,
+        "time": 20.8,
+        "position": [
+          2.2524110526678767,
+          7.959029009548386,
+          1.9525718137012253
+        ],
+        "yaw": -0.0001449867691066886,
+        "map_version": 101,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2948,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 20.521,
+        "token": "1:2e1048c6:1206002",
+        "epoch": 1206002,
+        "completed_at": 20.860000000000003
+      },
+      "position_error_m": 0.009692802180275227,
+      "yaw_error_rad": 0.0001449867691066886
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206003",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        62
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 62,
+        "time": 25.6,
+        "position": [
+          1.6682155410681756,
+          7.9409959240661445,
+          2.2450465157795074
+        ],
+        "yaw": 5.067126750780554e-05,
+        "map_version": 125,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2991,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 25.220000000000002,
+        "token": "1:2e1048c6:1206003",
+        "epoch": 1206003,
+        "completed_at": 25.680000000000003
+      },
+      "position_error_m": 0.020914500370595755,
+      "yaw_error_rad": 5.067126750780554e-05
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206004",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        74
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 74,
+        "time": 30.4,
+        "position": [
+          1.053737913637821,
+          7.942288471979338,
+          1.9530933395303116
+        ],
+        "yaw": 2.1522765020610095e-05,
+        "map_version": 149,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2777,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 30.002000000000002,
+        "token": "1:2e1048c6:1206004",
+        "epoch": 1206004,
+        "completed_at": 30.48
+      },
+      "position_error_m": 0.009110895248385808,
+      "yaw_error_rad": 2.1522765020610095e-05
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206005",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        95
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 95,
+        "time": 38.8,
+        "position": [
+          1.9376327677040448,
+          9.43384298068325,
+          2.2442425666428174
+        ],
+        "yaw": 1.5722639388721877,
+        "map_version": 191,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2428,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 38.421,
+        "token": "1:2e1048c6:1206005",
+        "epoch": 1206005,
+        "completed_at": 38.86
+      },
+      "position_error_m": 0.021145821022756976,
+      "yaw_error_rad": 0.0014676120772911805
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206006",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        107
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 107,
+        "time": 43.6,
+        "position": [
+          1.952628517552801,
+          10.034637690348838,
+          1.9521181692085716
+        ],
+        "yaw": 1.5708250115244542,
+        "map_version": 215,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2657,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 43.221000000000004,
+        "token": "1:2e1048c6:1206006",
+        "epoch": 1206006,
+        "completed_at": 43.7
+      },
+      "position_error_m": 0.015728836674709423,
+      "yaw_error_rad": 2.8684729557637567e-05
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206007",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        121
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 121,
+        "time": 49.2,
+        "position": [
+          1.9655727869915856,
+          11.241646753027716,
+          1.6549595164331026
+        ],
+        "yaw": 0.7886202087563156,
+        "map_version": 243,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2395,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 49.18,
+        "token": "1:2e1048c6:1206007",
+        "epoch": 1206007,
+        "completed_at": 49.28
+      },
+      "position_error_m": 0.018354433603779162,
+      "yaw_error_rad": 0.003222045358867276
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206011",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        174
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 174,
+        "time": 70.4,
+        "position": [
+          3.4506222957409434,
+          11.550531943570617,
+          1.9492706915278823
+        ],
+        "yaw": -0.649389863970714,
+        "map_version": 347,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 466,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 70.28,
+        "token": "1:2e1048c6:1206011",
+        "epoch": 1206011,
+        "completed_at": 70.48
+      },
+      "position_error_m": 0.0010964063111003203,
+      "yaw_error_rad": 3.471396107379565e-05
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206012",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        180
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 180,
+        "time": 72.8,
+        "position": [
+          3.4441038390344483,
+          11.556941507948256,
+          1.9425551850987046
+        ],
+        "yaw": -0.6491612693736448,
+        "map_version": 359,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 469,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 72.74000000000001,
+        "token": "1:2e1048c6:1206012",
+        "epoch": 1206012,
+        "completed_at": 72.882
+      },
+      "position_error_m": 0.011763269768306694,
+      "yaw_error_rad": 5.363430653104739e-05
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206014",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        226
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 226,
+        "time": 91.2,
+        "position": [
+          3.425677841425676,
+          9.150427119686563,
+          1.0577052515423084
+        ],
+        "yaw": -0.7751125595360718,
+        "map_version": 450,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 3002,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 91.12,
+        "token": "1:2e1048c6:1206014",
+        "epoch": 1206014,
+        "completed_at": 91.32100000000001
+      },
+      "position_error_m": 0.025517067430868366,
+      "yaw_error_rad": 0.010285603861376445
+    },
+    {
+      "drone": 1,
+      "token": "1:2e1048c6:1206015",
+      "frame_key": [
+        1,
+        "b3b65221452a45d5b980879ff22db0bb",
+        256
+      ],
+      "proof": {
+        "sensor_session": "b3b65221452a45d5b980879ff22db0bb",
+        "sequence": 256,
+        "time": 103.2,
+        "position": [
+          5.848391588927795,
+          7.947764781507224,
+          1.0531574726757313
+        ],
+        "yaw": 0.7858046499526681,
+        "map_version": 510,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 1925,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 102.96000000000001,
+        "token": "1:2e1048c6:1206015",
+        "epoch": 1206015,
+        "completed_at": 103.30000000000001
+      },
+      "position_error_m": 0.004189608762835855,
+      "yaw_error_rad": 0.00040648655521979826
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021002",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        53
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 53,
+        "time": 21.8,
+        "position": [
+          2.8329576703670423,
+          18.139443418472823,
+          1.3551773362412962
+        ],
+        "yaw": -1.6748814552985347e-05,
+        "map_version": 103,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2763,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 21.5,
+        "token": "2:bf29a653:1021002",
+        "epoch": 1021002,
+        "completed_at": 21.900000000000002
+      },
+      "position_error_m": 0.0207047633025285,
+      "yaw_error_rad": 1.6748814552985344e-05
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021003",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        65
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 65,
+        "time": 26.6,
+        "position": [
+          3.1485093702401983,
+          18.146269249691063,
+          1.9470201732677093
+        ],
+        "yaw": 1.8089738317929156e-05,
+        "map_version": 127,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2743,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 26.400000000000002,
+        "token": "2:bf29a653:1021003",
+        "epoch": 1021003,
+        "completed_at": 26.66
+      },
+      "position_error_m": 0.005001983836730808,
+      "yaw_error_rad": 1.8089738317929156e-05
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021004",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        77
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 77,
+        "time": 31.4,
+        "position": [
+          3.737826725271581,
+          18.137250968612527,
+          2.541548573438781
+        ],
+        "yaw": -0.7888728519643409,
+        "map_version": 151,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2874,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 31.060000000000002,
+        "token": "2:bf29a653:1021004",
+        "epoch": 1021004,
+        "completed_at": 31.500000000000004
+      },
+      "position_error_m": 0.01954873473788126,
+      "yaw_error_rad": 0.003474688566892592
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021005",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        89
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 89,
+        "time": 36.2,
+        "position": [
+          3.4505164325819986,
+          18.153092931081076,
+          1.9445287877507036
+        ],
+        "yaw": -0.7853032336044565,
+        "map_version": 175,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2846,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 36.0,
+        "token": "2:bf29a653:1021005",
+        "epoch": 1021005,
+        "completed_at": 36.32
+      },
+      "position_error_m": 0.006306115187726897,
+      "yaw_error_rad": 9.49297929917492e-05
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021006",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        113
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 113,
+        "time": 45.8,
+        "position": [
+          4.663405135222134,
+          16.065392748265264,
+          1.9495702599820122
+        ],
+        "yaw": -0.7854413556215221,
+        "map_version": 223,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2627,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 45.78,
+        "token": "2:bf29a653:1021006",
+        "epoch": 1021006,
+        "completed_at": 45.945
+      },
+      "position_error_m": 0.020416146207467085,
+      "yaw_error_rad": 4.319222407378476e-05
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021007",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        123
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 123,
+        "time": 49.8,
+        "position": [
+          4.660209855988798,
+          16.045970407499283,
+          1.9461068137228867
+        ],
+        "yaw": -1.5739552890243125,
+        "map_version": 243,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2598,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 49.56,
+        "token": "2:bf29a653:1021007",
+        "epoch": 1021007,
+        "completed_at": 49.900000000000006
+      },
+      "position_error_m": 0.011646272984184244,
+      "yaw_error_rad": 0.003158962229415918
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021009",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        150
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 150,
+        "time": 60.6,
+        "position": [
+          3.754028078033635,
+          14.546321249934156,
+          1.9490463716959765
+        ],
+        "yaw": 3.1392117359333684,
+        "map_version": 297,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 1867,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 60.281000000000006,
+        "token": "2:bf29a653:1021009",
+        "epoch": 1021009,
+        "completed_at": 60.7
+      },
+      "position_error_m": 0.005537871579787066,
+      "yaw_error_rad": 0.0023809176564244757
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021012",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        175
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 175,
+        "time": 70.6,
+        "position": [
+          4.04421305202311,
+          14.553189739873401,
+          1.9475266546379888
+        ],
+        "yaw": -3.0349598520432077,
+        "map_version": 347,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2299,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 70.58,
+        "token": "2:bf29a653:1021012",
+        "epoch": 1021012,
+        "completed_at": 70.74000000000001
+      },
+      "position_error_m": 0.007055539995419959,
+      "yaw_error_rad": 1.3776594510961361e-05
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021013",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        183
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 183,
+        "time": 73.8,
+        "position": [
+          4.058763968039742,
+          14.538944419821561,
+          1.9463961632438107
+        ],
+        "yaw": -3.034949596902064,
+        "map_version": 363,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2313,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 73.661,
+        "token": "2:bf29a653:1021013",
+        "epoch": 1021013,
+        "completed_at": 73.86
+      },
+      "position_error_m": 0.014560928138300018,
+      "yaw_error_rad": 1.9932568147140724e-06
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021014",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        209
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 209,
+        "time": 84.2,
+        "position": [
+          4.350144434237032,
+          13.947335294294156,
+          1.9529748974976564
+        ],
+        "yaw": -0.7841008142595992,
+        "map_version": 415,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2460,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 83.82100000000001,
+        "token": "2:bf29a653:1021014",
+        "epoch": 1021014,
+        "completed_at": 84.30000000000001
+      },
+      "position_error_m": 0.0039964400244635575,
+      "yaw_error_rad": 0.001297349137849069
+    },
+    {
+      "drone": 2,
+      "token": "2:bf29a653:1021015",
+      "frame_key": [
+        2,
+        "706c0ce5c7604ec6acf7561e3096ba17",
+        222
+      ],
+      "proof": {
+        "sensor_session": "706c0ce5c7604ec6acf7561e3096ba17",
+        "sequence": 222,
+        "time": 89.4,
+        "position": [
+          4.932352558907762,
+          13.363727801347748,
+          1.9555689885482364
+        ],
+        "yaw": -0.7853283593087161,
+        "map_version": 441,
+        "shape": [
+          80,
+          67,
+          14
+        ],
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "resolution": 0.3,
+        "grid": "1dfd787040d5b220fb873c50c2d6942c32054f1668631cfe3527af8dc263aefa",
+        "ray_cell_count": 2262,
+        "completion_reason": "post_arrival_integrated_sensor_frame",
+        "arrived_at": 89.08300000000001,
+        "token": "2:bf29a653:1021015",
+        "epoch": 1021015,
+        "completed_at": 89.5
+      },
+      "position_error_m": 0.02304123131253564,
+      "yaw_error_rad": 6.980408873213939e-05
+    }
+  ],
+  "safety_gates": {
+    "all_truth_streams_recorded": true,
+    "no_recorded_unexpected_landings": true,
+    "zero_contacts": true,
+    "sampled_separation": true,
+    "reference_speed": true,
+    "reference_acceleration": true
+  },
+  "protocol_passed": true,
+  "final_map_matches": false,
+  "outcome": "SIMULATION_TIME_LIMIT",
+  "scope": "90 simulation-second native smoke; not a completed coverage or T95 experiment",
+  "auditor_sha256": "d7d9d203fa43de1e995a94fe8188c90daa1f6bfe2c59bded28edeccb05c53b38",
+  "input_sha256": {
+    "artifacts/todo-execution/gap-closure-native-smoke-904/summary.json": "e5f1427466751b853bb92f659936a14446220e08cef9da939eb816d50ced8d5f",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/run-result.json": "8ed890d97a7a70fd67be323ab63a93d353857cb31d876b53c7ad5a1196adf7ff",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/observations.jsonl.gz": "891441e07638142ef522ca7174d902af0013ee1dfe3c83640c1422f0a4ca965e",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/command-evidence.jsonl": "156005dd2ae77bda04200517cca76a5ab380511d6e2109b649dd94cd12784be1",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/independent-acceptance.json": "3f3c04bebfa1e4fbd12377aa5bb83ad1a6bb046ccce87c49c62b6cff516ca62c",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/execution-protocol-audit.json": "bd815be2a2970b8f407970264989717e04a84f83e40e2c73fe9214ebc88a4d0f",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/process-cleanup.json": "d80584df8d9d14b7f63c1c4e5a248d610cdcba7e0fb41838b84ce0a22cb64a3f",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/drone_1/events.jsonl": "7e7f4c7d3595da9c80f8bed38a7f52b7afc1e5a78a861b96f4bf5f72390ec343",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/drone_0/events.jsonl": "968ecb11b595e1df9d9d6e0fcfbf8c1b8b0fd0f9fc42e1bdcdfcf958c0604254",
+    "artifacts/todo-execution/gap-closure-native-smoke-904/drone_2/events.jsonl": "c7e2565dca4b5a924eecb43484ca481b9a022766c72ba8698ce9ae8507c3892c"
+  }
+}

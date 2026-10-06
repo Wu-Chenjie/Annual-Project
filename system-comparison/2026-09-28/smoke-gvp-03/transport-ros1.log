@@ -1,0 +1,12 @@
+{"cloud": 532, "dropped_cloud": 165, "odom": 1488, "commands": 0}
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/core.py", line 642, in _ros_atexit
+    signal_shutdown('atexit')
+  File "/opt/ros/noetic/lib/python3/dist-packages/rospy/core.py", line 626, in signal_shutdown
+    t.join(_TIMEOUT_SHUTDOWN_JOIN)
+  File "/usr/lib/python3.8/threading.py", line 1015, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.8/threading.py", line 1027, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt

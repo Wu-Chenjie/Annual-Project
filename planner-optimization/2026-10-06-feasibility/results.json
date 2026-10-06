@@ -1,0 +1,161 @@
+{
+  "environment": {
+    "python": "3.13.9 (v3.13.9:8183fa5e3f7, Oct 14 2025, 10:27:13) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "numpy": "2.4.1",
+    "scipy": "1.17.0",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O"
+  },
+  "scope": "Local read-only code/prototype feasibility; no production changes or new flights.",
+  "source_sha256": {
+    "core/exploration/regions.py": "522f717eb8601d38689d4e2862dde39a0968237667dcea17848de677290940c2",
+    "core/exploration/mrdtg.py": "c4a1130335dcd2c5a91e596e58a93db4f6d1372b32a2da416adb60be19a0e81a",
+    "core/exploration/voxel_mapping.py": "69c50fa744adbb8b9e68ea1b12e3d97cc874a719d571f7b9693c011a7b632a4f",
+    "core/exploration/fusion.py": "97e1ab455b0d83563b8c3895267c7d5a2b4831164c85110e2d994bd719cabf4d",
+    "core/exploration/priority.py": "a47c805b2219b6cc1ee2a13af32cc17fe5b05c7db5b0589b23a8fc7d6b15524f",
+    "core/planning/continuous_trajectory.py": "9567483dc6d96a08517a205d3fb5ad170870d90dd4abca9fc50a19562e3f91da"
+  },
+  "stationary_scaling": {
+    "cases": 120,
+    "max_relative_objective_difference": 0.0,
+    "max_relative_log_scale_gradient_error": 3.302789099858601e-11,
+    "max_geometry_difference_m": 5.728750807065808e-14,
+    "nonzero_boundary_counterexample": true,
+    "scope": "Fixed shape and segment proportions, zero endpoint derivatives; not per-segment or moving-boundary optimization."
+  },
+  "direct_trajectory": {
+    "cases": [
+      {
+        "distance_m": 0.3,
+        "yaw_rad": 0.0,
+        "current_interpolation_calls": 39,
+        "analytic_interpolation_calls": 1,
+        "current_wall_s": 0.01372279180213809,
+        "analytic_wall_s": 0.0009698751382529736,
+        "current_duration_s": 2.1112850803976824,
+        "analytic_duration_s": 2.1112850803976855,
+        "current_time_jerk_score": 2.165349140418483,
+        "analytic_time_jerk_score": 2.1653491404184866
+      },
+      {
+        "distance_m": 0.8,
+        "yaw_rad": 0.5,
+        "current_interpolation_calls": 53,
+        "analytic_interpolation_calls": 1,
+        "current_wall_s": 0.01766829239204526,
+        "analytic_wall_s": 0.0010830829851329327,
+        "current_duration_s": 2.9277666277240413,
+        "analytic_duration_s": 2.9277666277240386,
+        "current_time_jerk_score": 3.002738478829225,
+        "analytic_time_jerk_score": 3.002738478829221
+      },
+      {
+        "distance_m": 1.8,
+        "yaw_rad": -0.8,
+        "current_interpolation_calls": 53,
+        "analytic_interpolation_calls": 1,
+        "current_wall_s": 0.018610083032399416,
+        "analytic_wall_s": 0.0014592092484235764,
+        "current_duration_s": 5.709375000000012,
+        "analytic_duration_s": 5.7093749999999925,
+        "current_time_jerk_score": 5.722833687393212,
+        "analytic_time_jerk_score": 5.7228336873931935
+      },
+      {
+        "distance_m": 3.5,
+        "yaw_rad": 1.3,
+        "current_interpolation_calls": 49,
+        "analytic_interpolation_calls": 1,
+        "current_wall_s": 0.018223874736577272,
+        "analytic_wall_s": 0.0017534997314214706,
+        "current_duration_s": 11.101562500000039,
+        "analytic_duration_s": 11.101562499999993,
+        "current_time_jerk_score": 11.10339319539076,
+        "analytic_time_jerk_score": 11.103393195390714
+      }
+    ],
+    "scope": "Four static straight routes in a constructed known-free map; host timings, not flight outcomes or universal speedup."
+  },
+  "voxel_sets": {
+    "checks": 15,
+    "cases": [
+      {
+        "cells": 0,
+        "python_set_estimated_bytes": 216,
+        "sorted_int32_payload_bytes": 0,
+        "whole_grid_bitmap_payload_bytes": 2048,
+        "set_difference_median_s": 8.288770914077759e-08,
+        "array_difference_median_s": 1.2498348951339722e-06,
+        "bitmap_difference_median_s": 4.5821070671081543e-07
+      },
+      {
+        "cells": 1,
+        "python_set_estimated_bytes": 244,
+        "sorted_int32_payload_bytes": 4,
+        "whole_grid_bitmap_payload_bytes": 2048,
+        "set_difference_median_s": 8.381903171539307e-08,
+        "array_difference_median_s": 6.58305361866951e-06,
+        "bitmap_difference_median_s": 5.00120222568512e-07
+      },
+      {
+        "cells": 128,
+        "python_set_estimated_bytes": 11992,
+        "sorted_int32_payload_bytes": 512,
+        "whole_grid_bitmap_payload_bytes": 2048,
+        "set_difference_median_s": 1.3327226042747498e-06,
+        "array_difference_median_s": 6.582587957382202e-06,
+        "bitmap_difference_median_s": 4.1676685214042664e-07
+      },
+      {
+        "cells": 1024,
+        "python_set_estimated_bytes": 61656,
+        "sorted_int32_payload_bytes": 4096,
+        "whole_grid_bitmap_payload_bytes": 2048,
+        "set_difference_median_s": 9.750016033649445e-06,
+        "array_difference_median_s": 1.7375219613313675e-05,
+        "bitmap_difference_median_s": 4.577450454235077e-07
+      },
+      {
+        "cells": 8192,
+        "python_set_estimated_bytes": 753880,
+        "sorted_int32_payload_bytes": 32768,
+        "whole_grid_bitmap_payload_bytes": 2048,
+        "set_difference_median_s": 8.141621947288513e-05,
+        "array_difference_median_s": 4.591699689626694e-05,
+        "bitmap_difference_median_s": 4.591420292854309e-07
+      }
+    ],
+    "note": "Bitmap timing measures bitwise difference only; output enumeration, construction, headers and conversion are excluded. Arrays are not assumed faster for every sparse set."
+  },
+  "array_trees": {
+    "reached_nodes": 3562,
+    "checked_paths": 26,
+    "dictionary_estimated_bytes": 1434800,
+    "full_distance_predecessor_array_payload_bytes": 81120,
+    "dictionary_conversion_median_s": 0.003046290948987007,
+    "array_reachability_median_s": 3.6670826375484467e-06,
+    "scope": "Retain existing CSR Dijkstra results; distances and reconstructed paths identical. Node IDs require router-generation binding."
+  },
+  "snapshots": {
+    "file_mapped_cross_process_readonly_array": true,
+    "snapshot_isolated_from_live_input": true,
+    "shallow_map_copy_reservation_alias_counterexample": true,
+    "shared_memory_probe": "Named POSIX shared memory was denied by the filesystem sandbox; failed log retained. File-backed read-only mapping verified instead.",
+    "scope": "Shared file mapping prototype works; cKDTree/CSR sharing and snapshot lifetime need separate design."
+  },
+  "mathematical_bounds": {
+    "fixed_coverage_submodularity_checks": 108,
+    "score_upper_bound_checks": 800,
+    "naive_dominance_counterexample": {
+      "superset_score": 1.0101010101010102,
+      "subset_score": 31.599999999999998
+    },
+    "scope": "Fixed sets only; valid candidate upper bounds must include lookahead and exit terms. No adaptive-submodularity or current-greedy approximation guarantee established."
+  },
+  "temporal_and_information": {
+    "simultaneous_crossing_detected": true,
+    "separated_crossing_unpenalized": true,
+    "toy_door_value_of_information_s": 2.0,
+    "scope": "Exact linear segment timing and a one-door decision example. Real uncertainty margins, priors, calibration and cost budgets remain unverified."
+  },
+  "passed": true
+}

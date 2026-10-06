@@ -1,0 +1,30 @@
+{
+  "checks": {
+    "identical_generated_world": true,
+    "identical_truth_denominator": true,
+    "frozen_harness_unchanged": true,
+    "frozen_annual_source_unchanged": true,
+    "all_reference_limits": true,
+    "all_cleanup_empty": true
+  },
+  "metrics": [
+    {
+      "system": "Annual (current)",
+      "exploration_t95_s": 96.654,
+      "mission_total_distance_m": 40.727453955050144,
+      "low_speed_fraction": 0.494542105971137
+    },
+    {
+      "system": "RACER",
+      "exploration_t95_s": 18.906999999999996,
+      "mission_total_distance_m": 20.65651436339654,
+      "low_speed_fraction": 0.04264324638907989
+    },
+    {
+      "system": "GVP-MREP",
+      "exploration_t95_s": 36.298,
+      "mission_total_distance_m": 28.211656557513383,
+      "low_speed_fraction": 0.31966603290072715
+    }
+  ]
+}

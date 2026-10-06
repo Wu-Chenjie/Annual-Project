@@ -1,0 +1,30 @@
+... logging to /root/.ros/log/b42bd39a-bb49-11f1-b4c2-5255551de53e/roslaunch-colima-racer-gvp-1955.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;roscore
+[1mstarted roslaunch server http://localhost:37581/[0m
+ros_comm version 1.17.4
+
+
+SUMMARY
+========
+
+PARAMETERS
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+
+NODES
+
+auto-starting new master
+[1mprocess[master]: started with pid [1963][0m
+[1mROS_MASTER_URI=http://localhost:11328/[0m
+]2;roscore http://localhost:11328/
+[1msetting /run_id to b42bd39a-bb49-11f1-b4c2-5255551de53e[0m
+[1mprocess[rosout-1]: started with pid [1973][0m
+started core service [/rosout]
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

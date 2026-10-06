@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "errors": [],
+  "proofs": [
+    {
+      "token": "1:9aaedb8d:401008",
+      "old_token": "1:9aaedb8d:401007",
+      "executed_stop_at": 107.516,
+      "stop_epoch": 401009,
+      "last_old_progress": 8.980000000000004,
+      "boundary": 10.893147136142268,
+      "held_until": 108.4,
+      "task_end_censored_at": 108.405,
+      "consumed": false,
+      "classification": "cancelled_before_boundary_with_leases_retained"
+    }
+  ]
+}

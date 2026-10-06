@@ -1,0 +1,5 @@
+# Preserve feasibility results and success/failure logs.
+!*
+__pycache__/
+.pytest_cache/
+.DS_Store

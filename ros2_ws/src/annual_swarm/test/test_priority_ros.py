@@ -16,6 +16,25 @@ from core.exploration.priority import ExplorationPriority
 from core.exploration.voxel_mapping import VoxelMap
 
 
+@pytest.mark.parametrize('lease',['intent','pending_intent','retiring','retiring_extra',None])
+def test_published_execution_bid_expires_with_lease_even_without_new_worker_result(tmp_path,lease):
+    rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                    '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+    node=ExplorationAgent()
+    try:
+        node.position=np.array([2.25,2.25,1.65]);node.bids={7:-1e6,8:4.}
+        if lease:
+            intent=dict(region=7,committed=False)
+            if lease=='retiring_extra':node.retiring_extra=[intent]
+            else:setattr(node,lease,intent)
+        assert node.state()['bids']==({7:-1e6,8:4.} if lease else {8:4.})
+        node.intent=node.pending_intent=node.retiring=None;node.retiring_extra=[]
+        assert node.state()['bids']=={8:4.}
+        assert node.bids=={7:-1e6,8:4.}  # Filtering never deletes a task or mutates worker data.
+    finally:
+        node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()
+
+
 def test_priority_markers_contain_unknown_voxels_size_and_score():
     m = VoxelMap([[0, 0, 0], [8, 8, 4]])
     m.state[:] = 0; m.state[20:, :, :] = -1
@@ -79,7 +98,9 @@ def test_agent_feedback_persists_streak_and_success_across_restart(tmp_path):
         assert node.service_feedback[7]['low_yield_streak'] == 1
         assert node.cooldown[7] == 115.
         node.now = lambda: 120.
+        node.bids[7] = -1e6
         observe(40)
+        assert node.active is None and 7 not in node.state()['bids']
         assert node.service_feedback[7]['low_yield_streak'] == 0
         assert node.cooldown[7] == 120.
     finally:
@@ -160,8 +181,8 @@ def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(
         p,v,a,h,rate=old.sample(12.)
         new=interpolate(np.array([p,[7.,3.,1.5]]),[16.],h,.4-h,start_velocity=v,start_acceleration=a,
                         start_yaw_rate=rate,start_yaw_acceleration=old.yaw_acceleration(12.))
-        node.position=old.sample(4.)[0];node.yaw=old.sample(4.)[3]
-        node.epoch=1;node.execution=dict(trajectory_time=4.,epoch=1);node.now=lambda:5.
+        node.position=old.sample(8.)[0];node.yaw=old.sample(8.)[3]
+        node.epoch=1;node.execution=dict(trajectory_time=8.,epoch=1);node.now=lambda:5.
         node.intent=dict(token='old',purpose='explore',recovery=False)
         node.selection=dict(gain=100*node.replica.map.resolution**3);node.owners={8:node.id}
         node.replica.map.state[:]=0;node.replica.map.state.ravel()[100:200]=-1;node.replica.map.rebuild()
@@ -176,18 +197,22 @@ def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(
             monkeypatch.setattr(agent_module,'visible_cells',lambda *args,**kwargs:frozenset(range(180,200)))
             node.preplanned['selection'].update(transit=False,purpose='explore')
             def promises(runtime,peers,now,arrival=None):
-                assert arrival==pytest.approx(29.)  # Includes the remaining old prefix and the new curve.
+                assert arrival==pytest.approx(25.)  # Includes the remaining old prefix and the new curve.
                 return frozenset(range(180,200)) if peer_case=='earlier' else frozenset()
             node.fusion.priority.committed_cells=promises
-        node.adopt_moving_preplan(5.)
-        assert node.pending_intent is None and node.epoch==1 and node.preplanned is not None
-        node.replica.map.state.ravel()[100:161]=0;node.replica.map.rebuild()
         node.adopt_moving_preplan(5.)
         if peer_case=='earlier':
             assert node.pending_intent is None and node.preplanned is None and node.intent['token']=='old'
             return
         assert node.pending_intent and not node.pending_intent['committed']
         assert node.intent['token']=='old' and node.epoch==2
+        commands=[]
+        monkeypatch.setattr(node,'publish',lambda publisher,packet:commands.append(packet))
+        node.manage_pending(5.)
+        assert not node.pending_intent['committed'] and not commands
+        assert node.pending_intent['quorum_ready_at']==5.
+        assert not node.old_service_ready()
+        node.replica.map.state.ravel()[100:161]=0;node.replica.map.rebuild()
         recorded=__import__('json').loads((tmp_path/'drone_0/candidates.jsonl').read_text())
         assert recorded['phase']=='handoff_proposed' and recorded['active_candidate']=='reserve'
         assert recorded['paths'][0]['trajectory']==new.to_dict()
@@ -199,5 +224,9 @@ def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(
             assert node.pending_intent is None and node.intent['token']=='old'
             assert node.events[-1]['type']=='handoff_cancelled'
             assert node.replica.map.state.ravel()[180:200].tolist()==[-1]*20
+        else:
+            node.manage_pending(5.)
+            assert node.pending_intent['committed'] and len(commands)==1
+            assert commands[0]['handoff']==boundary and node.intent['token']=='old'
     finally:
         node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()

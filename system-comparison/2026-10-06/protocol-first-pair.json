@@ -1,0 +1,100 @@
+{
+  "status": "fixed_before_followup_flights",
+  "systems": [
+    "Annual baseline view-preview",
+    "Annual handoff-service-corridor"
+  ],
+  "trial_seed": 900,
+  "repetitions": 1,
+  "map_sha256": "72f14eabcb6cd9cdf5f9a1960f827341ab1ff355abdf479b1aa07dfb0df9669c",
+  "fleet_size": 2,
+  "max_velocity_mps": 0.6,
+  "max_acceleration_mps2": 0.8,
+  "max_yaw_rate_radps": 0.65,
+  "lidar": {
+    "range_m": [
+      0.1,
+      4.5
+    ],
+    "horizontal_fov_deg": 120,
+    "vertical_fov_deg": 120,
+    "samples": [
+      181,
+      31
+    ],
+    "hz": 5,
+    "noise_std_m": 0.005,
+    "body_offset_m": [
+      0,
+      0,
+      0.4
+    ]
+  },
+  "coverage": {
+    "target": 0.95,
+    "voxel_m": 0.3,
+    "definition": "observed free / geometrically fully free voxels, common external mapper; truth only for scoring",
+    "ego_space": "Each mapper may clear physically occupied hull from measured pose only. No ground-truth geometry sent to planners."
+  },
+  "limit_sim_seconds": 300,
+  "limit_wall_seconds": 1200,
+  "shared": "Gazebo Harmonic quadrotor physics + lidar + noisy localization/IMU estimator + PID motor controller",
+  "adapted": "Native mapping, allocation, planning and trajectory sampling retained; ROS1 transport adapter; GVP simulation clock and finite-FOV pointcloud ingress port",
+  "limitations": [
+    "One paired trial cannot establish statistical superiority",
+    "ROS1/ROS2 transport and runtimes differ; record adapter delay",
+    "Internal map representation and initialization remain system-specific",
+    "A smoke failure is an integration result, never an allocation quality result"
+  ],
+  "common_execution": "Native trajectory sample -> identical reference governor (Euclidean speed <=0.6, acceleration <=0.8, yaw rate <=0.65) -> identical PID -> Gazebo motors. Log raw and governed references; actual tracking overshoot is measured.",
+  "self_filter": "Discard returns within known physical body box [0.34,0.34,0.10] half-extents, offset [0,0,0.4]; do not raycast through discarded returns.",
+  "startup": "Same bounded ascent and yaw scan for first 20 simulated seconds; exploration commands accepted from t=20.",
+  "safety_stop": [
+    "physical OBB hull intersects an obstacle beyond 5mm numerical tolerance",
+    "executed reference tracking error >0.8m for >1 simulated second"
+  ],
+  "physical_body_m": [
+    0.64,
+    0.64,
+    0.16
+  ],
+  "mapper_adaptation": "Common self-return removal; Annual and GVP clear only physical hull swept by estimated robot poses. GVP pointcloud blind range set to physical sensor minimum 0.1m.",
+  "scored_runs": [
+    "baseline-900-r1",
+    "candidate-900"
+  ],
+  "execution_caveat": "Common governor may change trajectory tracking behavior; this is an adapted full exploration closed-loop comparison, not native autopilot or allocation-only comparison. Actual speed overshoot is reported, not hidden.",
+  "comparison_to_previous": "Fresh baseline and candidate pair on one container/image; historical flights are not paired here.",
+  "mapper_metadata_adaptation": "Only added native integrated-frame provenance required by new Annual executor. Identical ray integration and filtering for all three systems.",
+  "flight_order": [
+    "baseline-900-r1",
+    "candidate-900"
+  ],
+  "acceptance": {
+    "T95": "candidate < baseline",
+    "low_speed": "candidate < baseline; measured v < 0.1m/s after t=20",
+    "distance": "candidate <= 1.1*baseline",
+    "planning": "report P95; do not hide regression",
+    "safety": "zero contacts and geometric hits; native execution authorization, exact reference derivatives and raw sensor coverage audits pass"
+  },
+  "scope": "Two development runs only; no formal 70-run matrix or statistical acceptance.",
+  "frozen_harness": {
+    "common.launch.py": "4e4740c677c88729c49c0af9b0cc2a9700982342968e7a5e01abdfdd6fc262c2",
+    "common_mapper.py": "54a35073a264fbb09e5534220d71dd75d60ec622d72d3f457766cd497660871b",
+    "bridge_ros2.py": "ca67c24a1c42f5dd43a78f8a0d710f79e1f424d856c6e750084e6eba33c72383",
+    "supervisor.py": "e422ef8e11ee35cb3ad2bf0be286475400340e81cca5009049e9c9d414bb2ebb",
+    "experiment_processes.py": "9e7643331076a79960b6b9f5bdc99a18ccf82bc5135229c80b5f7b374ed9dcdd",
+    "motion_envelope.py": "bfce66673e8b8e3755dd6d544fceb07798476201dac1f231dffece93f99ea124",
+    "geometry_check.py": "1ea16e4899f2691a699c96525215d35135e11c3dafe80b0578a6d4776809dbc6",
+    "replay_coverage.py": "eab96134d9706731b62530ecb3e915f125bd3fd607dfb9b691215c9d6c151c1f",
+    "map.json": "72f14eabcb6cd9cdf5f9a1960f827341ab1ff355abdf479b1aa07dfb0df9669c"
+  },
+  "excluded_attempts": {
+    "baseline-900": "Stopped before exploration (t=19.472) because regression ran concurrently; retain all evidence, no T95 result."
+  },
+  "flight_source_manifests": {
+    "baseline-900-r1": "baseline-source-manifest.json",
+    "candidate-900": "candidate-final-source-manifest.json"
+  },
+  "runtime": "Existing local Colima container, same image and compiled physics for both trials; one available CPU reported by nproc, 3905 MiB guest memory; older six-CPU trials are not used for this performance pair."
+}

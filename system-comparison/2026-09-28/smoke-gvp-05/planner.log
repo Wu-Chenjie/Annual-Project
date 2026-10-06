@@ -1,0 +1,1524 @@
+... logging to /root/.ros/log/06f98918-bb4b-11f1-88bc-5255551de53e/roslaunch-colima-racer-gvp-6614.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/comparison/gvp.launch
+[1mstarted roslaunch server http://localhost:35881/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /murder_1/Computation/data_name0: gvp
+ * /murder_1/Computation/data_name1: local
+ * /murder_1/Computation/data_name2: global
+ * /murder_1/Computation/data_num: 3
+ * /murder_1/Computation/dir: /home/charliedog/...
+ * /murder_1/Computation/vdata_name0: volume
+ * /murder_1/Computation/vdata_name1: DTG
+ * /murder_1/Computation/vdata_name2: pose
+ * /murder_1/Computation/vdata_name3: traj
+ * /murder_1/Computation/vdata_name4: job
+ * /murder_1/Computation/vdata_name5: state
+ * /murder_1/Computation/vdata_name6: map
+ * /murder_1/Computation/vdata_name7: mapreq
+ * /murder_1/Computation/vdata_name8: total
+ * /murder_1/Computation/vdata_num: 9
+ * /murder_1/EXP/finish_hold_duration: 15.0
+ * /murder_1/Exp/AutoTakeoff: True
+ * /murder_1/Exp/UAV_id: 1
+ * /murder_1/Exp/acc_off: -0.5
+ * /murder_1/Exp/check_duration: 3.5
+ * /murder_1/Exp/colli_range: 0.8
+ * /murder_1/Exp/drone_num: 2
+ * /murder_1/Exp/exc_duration: 0.5
+ * /murder_1/Exp/finish_thresh: 0.5
+ * /murder_1/Exp/global_comm_freq: 0.5
+ * /murder_1/Exp/global_path_search: 3000
+ * /murder_1/Exp/local_comm_freq: 5.0
+ * /murder_1/Exp/local_dist_thresh: 7.0
+ * /murder_1/Exp/local_path_search: 1000
+ * /murder_1/Exp/maxX: 6.0
+ * /murder_1/Exp/maxY: 6.0
+ * /murder_1/Exp/maxZ: 3.0
+ * /murder_1/Exp/minX: -6.0
+ * /murder_1/Exp/minY: -6.0
+ * /murder_1/Exp/minZ: 0.0
+ * /murder_1/Exp/reach_out_t: 0.1
+ * /murder_1/Exp/replan_duration: 1.5
+ * /murder_1/Exp/robot_sizeX: 0.48
+ * /murder_1/Exp/robot_sizeY: 0.48
+ * /murder_1/Exp/robot_sizeZ: 0.3
+ * /murder_1/Exp/show_swarm_traj: False
+ * /murder_1/Exp/statistic: True
+ * /murder_1/Exp/strong_check_interval: 3.0
+ * /murder_1/Exp/swarm_check: True
+ * /murder_1/Exp/takeoff_x: -4.0
+ * /murder_1/Exp/takeoff_y: -3.0
+ * /murder_1/Exp/takeoff_yaw: 0.0
+ * /murder_1/Exp/takeoff_z: 1.2
+ * /murder_1/Exp/traj_length: 10.0
+ * /murder_1/Frontier/FOV_hor_num: 15
+ * /murder_1/Frontier/FOV_ver_num: 10
+ * /murder_1/Frontier/cam_hor: 2.0943951023931953
+ * /murder_1/Frontier/cam_ver: 2.0943951023931953
+ * /murder_1/Frontier/grid_scale: 2.0
+ * /murder_1/Frontier/min_vp_num: 6
+ * /murder_1/Frontier/observe_thresh: 0.85
+ * /murder_1/Frontier/ray_samp_dist1: 0.2
+ * /murder_1/Frontier/ray_samp_dist2: 0.1
+ * /murder_1/Frontier/resample_duration: 0.8
+ * /murder_1/Frontier/sample_dist_num: 2
+ * /murder_1/Frontier/sample_hor_dir_num: 10
+ * /murder_1/Frontier/sample_max_range: 2.2
+ * /murder_1/Frontier/sample_ver_dir_num: 3
+ * /murder_1/Frontier/sensor_type: Depth_Camera
+ * /murder_1/Frontier/show_frontier: True
+ * /murder_1/Frontier/viewpoint_thresh: 1.3
+ * /murder_1/GVD/allowance: 0.08
+ * /murder_1/GVD/lambda: 0.1
+ * /murder_1/GVD/partition_frequency: 0.33
+ * /murder_1/GVD/show_gvd: True
+ * /murder_1/GVD/tau: 0.2
+ * /murder_1/LowResMap/blockX: 5
+ * /murder_1/LowResMap/blockY: 5
+ * /murder_1/LowResMap/blockZ: 3
+ * /murder_1/LowResMap/corridor_expX: 2
+ * /murder_1/LowResMap/corridor_expY: 2
+ * /murder_1/LowResMap/corridor_expZ: 1
+ * /murder_1/LowResMap/debug: True
+ * /murder_1/LowResMap/lambda_heu: 5.0
+ * /murder_1/LowResMap/localgraph_sizex: 14.0
+ * /murder_1/LowResMap/localgraph_sizey: 14.0
+ * /murder_1/LowResMap/localgraph_sizez: 8.0
+ * /murder_1/LowResMap/node_x: 0.6
+ * /murder_1/LowResMap/node_y: 0.6
+ * /murder_1/LowResMap/node_z: 0.6
+ * /murder_1/LowResMap/occ_duration: 2.0
+ * /murder_1/LowResMap/prune_seg_length: 6.5
+ * /murder_1/LowResMap/resolution: 0.1
+ * /murder_1/LowResMap/seg_length: 2.5
+ * /murder_1/LowResMap/show_dtg: False
+ * /murder_1/LowResMap/showmap: True
+ * /murder_1/LowResMap/unknown_duration: 0.2
+ * /murder_1/MR_DTG/H_thresh: 5.5
+ * /murder_1/MR_DTG/Toporange: 10.0
+ * /murder_1/MR_DTG/resX: 2.0
+ * /murder_1/MR_DTG/resY: 2.0
+ * /murder_1/MR_DTG/resZ: 2.0
+ * /murder_1/MR_DTG/show_edge_details: False
+ * /murder_1/MR_DTG/update_FF: False
+ * /murder_1/block_map/CamtoBody_Quater_w: 1.0
+ * /murder_1/block_map/CamtoBody_Quater_x: 0.0
+ * /murder_1/block_map/CamtoBody_Quater_y: 0.0
+ * /murder_1/block_map/CamtoBody_Quater_z: 0.0
+ * /murder_1/block_map/CamtoBody_x: 0.0
+ * /murder_1/block_map/CamtoBody_y: 0.0
+ * /murder_1/block_map/CamtoBody_z: 0.4
+ * /murder_1/block_map/FFD: False
+ * /murder_1/block_map/HeightcolorB: [48, 147, 92, 130...
+ * /murder_1/block_map/HeightcolorG: [21, 80, 66, 114,...
+ * /murder_1/block_map/HeightcolorR: [44, 71, 198, 234...
+ * /murder_1/block_map/RobotVisX: 0.81
+ * /murder_1/block_map/RobotVisY: 0.81
+ * /murder_1/block_map/RobotVisZ: 0.41
+ * /murder_1/block_map/bline_occ_range: 0.1
+ * /murder_1/block_map/blockX: 10
+ * /murder_1/block_map/blockY: 10
+ * /murder_1/block_map/blockZ: 10
+ * /murder_1/block_map/colorB: [150, 238, 0, 0, ...
+ * /murder_1/block_map/colorG: [150, 229, 165, 2...
+ * /murder_1/block_map/colorR: [150, 0, 255, 124...
+ * /murder_1/block_map/depth: True
+ * /murder_1/block_map/depth_step: 2
+ * /murder_1/block_map/maxX: 6.0
+ * /murder_1/block_map/maxY: 6.0
+ * /murder_1/block_map/maxZ: 3.0
+ * /murder_1/block_map/minX: -6.0
+ * /murder_1/block_map/minY: -6.0
+ * /murder_1/block_map/minZ: 0.0
+ * /murder_1/block_map/min_finish_t: 45.0
+ * /murder_1/block_map/occ_max: 0.9
+ * /murder_1/block_map/occ_min: 0.2
+ * /murder_1/block_map/pro_hit_occ: 0.9
+ * /murder_1/block_map/pro_miss_free: 0.75
+ * /murder_1/block_map/resolution: 0.1
+ * /murder_1/block_map/sensor_max_range: 4.5
+ * /murder_1/block_map/show_block: False
+ * /murder_1/block_map/show_freq: 10.0
+ * /murder_1/block_map/statistic_v: True
+ * /murder_1/block_map/swarm_pub_thresh: 0.975
+ * /murder_1/block_map/swarm_send_delay: 2.0
+ * /murder_1/block_map/swarm_tol: 0.3
+ * /murder_1/block_map/update_freq: 10.0
+ * /murder_1/block_map/vis_mode: False
+ * /murder_1/opt/MaxAcc: 0.8
+ * /murder_1/opt/MaxJer: 25.0
+ * /murder_1/opt/MaxVel: 0.6
+ * /murder_1/opt/RelCostTolL: 1e-05
+ * /murder_1/opt/SwarmAvoid: 1.2
+ * /murder_1/opt/WeiAcc: 400.0
+ * /murder_1/opt/WeiJer: 50.0
+ * /murder_1/opt/WeiPos: 5000.0
+ * /murder_1/opt/WeiSwarm: 100.0
+ * /murder_1/opt/WeiT: 200.0
+ * /murder_1/opt/WeiVel: 800.0
+ * /murder_1/opt/WeiminT: 10.0
+ * /murder_1/opt/YawAcc: 0.8
+ * /murder_1/opt/YawVel: 0.65
+ * /murder_1/opt/integralIntervs: 16
+ * /murder_1/opt/smoothingEps: 0.01
+ * /murder_2/Computation/data_name0: gvp
+ * /murder_2/Computation/data_name1: local
+ * /murder_2/Computation/data_name2: global
+ * /murder_2/Computation/data_num: 3
+ * /murder_2/Computation/dir: /home/charliedog/...
+ * /murder_2/Computation/vdata_name0: volume
+ * /murder_2/Computation/vdata_name1: DTG
+ * /murder_2/Computation/vdata_name2: pose
+ * /murder_2/Computation/vdata_name3: traj
+ * /murder_2/Computation/vdata_name4: job
+ * /murder_2/Computation/vdata_name5: state
+ * /murder_2/Computation/vdata_name6: map
+ * /murder_2/Computation/vdata_name7: mapreq
+ * /murder_2/Computation/vdata_name8: total
+ * /murder_2/Computation/vdata_num: 9
+ * /murder_2/EXP/finish_hold_duration: 15.0
+ * /murder_2/Exp/AutoTakeoff: True
+ * /murder_2/Exp/UAV_id: 2
+ * /murder_2/Exp/acc_off: -0.5
+ * /murder_2/Exp/check_duration: 3.5
+ * /murder_2/Exp/colli_range: 0.8
+ * /murder_2/Exp/drone_num: 2
+ * /murder_2/Exp/exc_duration: 0.5
+ * /murder_2/Exp/finish_thresh: 0.5
+ * /murder_2/Exp/global_comm_freq: 0.5
+ * /murder_2/Exp/global_path_search: 3000
+ * /murder_2/Exp/local_comm_freq: 5.0
+ * /murder_2/Exp/local_dist_thresh: 7.0
+ * /murder_2/Exp/local_path_search: 1000
+ * /murder_2/Exp/maxX: 6.0
+ * /murder_2/Exp/maxY: 6.0
+ * /murder_2/Exp/maxZ: 3.0
+ * /murder_2/Exp/minX: -6.0
+ * /murder_2/Exp/minY: -6.0
+ * /murder_2/Exp/minZ: 0.0
+ * /murder_2/Exp/reach_out_t: 0.1
+ * /murder_2/Exp/replan_duration: 1.5
+ * /murder_2/Exp/robot_sizeX: 0.48
+ * /murder_2/Exp/robot_sizeY: 0.48
+ * /murder_2/Exp/robot_sizeZ: 0.3
+ * /murder_2/Exp/show_swarm_traj: False
+ * /murder_2/Exp/statistic: True
+ * /murder_2/Exp/strong_check_interval: 3.0
+ * /murder_2/Exp/swarm_check: True
+ * /murder_2/Exp/takeoff_x: -4.0
+ * /murder_2/Exp/takeoff_y: 3.0
+ * /murder_2/Exp/takeoff_yaw: 0.0
+ * /murder_2/Exp/takeoff_z: 1.2
+ * /murder_2/Exp/traj_length: 10.0
+ * /murder_2/Frontier/FOV_hor_num: 15
+ * /murder_2/Frontier/FOV_ver_num: 10
+ * /murder_2/Frontier/cam_hor: 2.0943951023931953
+ * /murder_2/Frontier/cam_ver: 2.0943951023931953
+ * /murder_2/Frontier/grid_scale: 2.0
+ * /murder_2/Frontier/min_vp_num: 6
+ * /murder_2/Frontier/observe_thresh: 0.85
+ * /murder_2/Frontier/ray_samp_dist1: 0.2
+ * /murder_2/Frontier/ray_samp_dist2: 0.1
+ * /murder_2/Frontier/resample_duration: 0.8
+ * /murder_2/Frontier/sample_dist_num: 2
+ * /murder_2/Frontier/sample_hor_dir_num: 10
+ * /murder_2/Frontier/sample_max_range: 2.2
+ * /murder_2/Frontier/sample_ver_dir_num: 3
+ * /murder_2/Frontier/sensor_type: Depth_Camera
+ * /murder_2/Frontier/show_frontier: True
+ * /murder_2/Frontier/viewpoint_thresh: 1.3
+ * /murder_2/GVD/allowance: 0.08
+ * /murder_2/GVD/lambda: 0.1
+ * /murder_2/GVD/partition_frequency: 0.33
+ * /murder_2/GVD/show_gvd: True
+ * /murder_2/GVD/tau: 0.2
+ * /murder_2/LowResMap/blockX: 5
+ * /murder_2/LowResMap/blockY: 5
+ * /murder_2/LowResMap/blockZ: 3
+ * /murder_2/LowResMap/corridor_expX: 2
+ * /murder_2/LowResMap/corridor_expY: 2
+ * /murder_2/LowResMap/corridor_expZ: 1
+ * /murder_2/LowResMap/debug: True
+ * /murder_2/LowResMap/lambda_heu: 5.0
+ * /murder_2/LowResMap/localgraph_sizex: 14.0
+ * /murder_2/LowResMap/localgraph_sizey: 14.0
+ * /murder_2/LowResMap/localgraph_sizez: 8.0
+ * /murder_2/LowResMap/node_x: 0.6
+ * /murder_2/LowResMap/node_y: 0.6
+ * /murder_2/LowResMap/node_z: 0.6
+ * /murder_2/LowResMap/occ_duration: 2.0
+ * /murder_2/LowResMap/prune_seg_length: 6.5
+ * /murder_2/LowResMap/resolution: 0.1
+ * /murder_2/LowResMap/seg_length: 2.5
+ * /murder_2/LowResMap/show_dtg: False
+ * /murder_2/LowResMap/showmap: True
+ * /murder_2/LowResMap/unknown_duration: 0.2
+ * /murder_2/MR_DTG/H_thresh: 5.5
+ * /murder_2/MR_DTG/Toporange: 10.0
+ * /murder_2/MR_DTG/resX: 2.0
+ * /murder_2/MR_DTG/resY: 2.0
+ * /murder_2/MR_DTG/resZ: 2.0
+ * /murder_2/MR_DTG/show_edge_details: False
+ * /murder_2/MR_DTG/update_FF: False
+ * /murder_2/block_map/CamtoBody_Quater_w: 1.0
+ * /murder_2/block_map/CamtoBody_Quater_x: 0.0
+ * /murder_2/block_map/CamtoBody_Quater_y: 0.0
+ * /murder_2/block_map/CamtoBody_Quater_z: 0.0
+ * /murder_2/block_map/CamtoBody_x: 0.0
+ * /murder_2/block_map/CamtoBody_y: 0.0
+ * /murder_2/block_map/CamtoBody_z: 0.4
+ * /murder_2/block_map/FFD: False
+ * /murder_2/block_map/HeightcolorB: [48, 147, 92, 130...
+ * /murder_2/block_map/HeightcolorG: [21, 80, 66, 114,...
+ * /murder_2/block_map/HeightcolorR: [44, 71, 198, 234...
+ * /murder_2/block_map/RobotVisX: 0.81
+ * /murder_2/block_map/RobotVisY: 0.81
+ * /murder_2/block_map/RobotVisZ: 0.41
+ * /murder_2/block_map/bline_occ_range: 0.1
+ * /murder_2/block_map/blockX: 10
+ * /murder_2/block_map/blockY: 10
+ * /murder_2/block_map/blockZ: 10
+ * /murder_2/block_map/colorB: [150, 238, 0, 0, ...
+ * /murder_2/block_map/colorG: [150, 229, 165, 2...
+ * /murder_2/block_map/colorR: [150, 0, 255, 124...
+ * /murder_2/block_map/depth: True
+ * /murder_2/block_map/depth_step: 2
+ * /murder_2/block_map/maxX: 6.0
+ * /murder_2/block_map/maxY: 6.0
+ * /murder_2/block_map/maxZ: 3.0
+ * /murder_2/block_map/minX: -6.0
+ * /murder_2/block_map/minY: -6.0
+ * /murder_2/block_map/minZ: 0.0
+ * /murder_2/block_map/min_finish_t: 45.0
+ * /murder_2/block_map/occ_max: 0.9
+ * /murder_2/block_map/occ_min: 0.2
+ * /murder_2/block_map/pro_hit_occ: 0.9
+ * /murder_2/block_map/pro_miss_free: 0.75
+ * /murder_2/block_map/resolution: 0.1
+ * /murder_2/block_map/sensor_max_range: 4.5
+ * /murder_2/block_map/show_block: False
+ * /murder_2/block_map/show_freq: 10.0
+ * /murder_2/block_map/statistic_v: True
+ * /murder_2/block_map/swarm_pub_thresh: 0.975
+ * /murder_2/block_map/swarm_send_delay: 2.0
+ * /murder_2/block_map/swarm_tol: 0.3
+ * /murder_2/block_map/update_freq: 10.0
+ * /murder_2/block_map/vis_mode: False
+ * /murder_2/opt/MaxAcc: 0.8
+ * /murder_2/opt/MaxJer: 25.0
+ * /murder_2/opt/MaxVel: 0.6
+ * /murder_2/opt/RelCostTolL: 1e-05
+ * /murder_2/opt/SwarmAvoid: 1.2
+ * /murder_2/opt/WeiAcc: 400.0
+ * /murder_2/opt/WeiJer: 50.0
+ * /murder_2/opt/WeiPos: 5000.0
+ * /murder_2/opt/WeiSwarm: 100.0
+ * /murder_2/opt/WeiT: 200.0
+ * /murder_2/opt/WeiVel: 800.0
+ * /murder_2/opt/WeiminT: 10.0
+ * /murder_2/opt/YawAcc: 0.8
+ * /murder_2/opt/YawVel: 0.65
+ * /murder_2/opt/integralIntervs: 16
+ * /murder_2/opt/smoothingEps: 0.01
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /sim1_bridge_exp_tcp_sim/computer_num: 1
+ * /sim1_bridge_exp_tcp_sim/drone_num: 2
+ * /sim1_bridge_exp_tcp_sim/ground_station_num: 0
+ * /sim1_bridge_exp_tcp_sim/is_ground_station: True
+ * /sim1_bridge_exp_tcp_sim/max_tolerable_delay: 0.25
+ * /sim1_bridge_exp_tcp_sim/self_id: 1
+ * /sim1_bridge_exp_tcp_sim/sim_ip_1: 127.0.0.1
+ * /sim1_bridge_exp_tcp_sim/sim_num_1: 2
+ * /traj_exc_node1/Computation/data_name0: gvp
+ * /traj_exc_node1/Computation/data_name1: local
+ * /traj_exc_node1/Computation/data_name2: global
+ * /traj_exc_node1/Computation/data_num: 3
+ * /traj_exc_node1/Computation/dir: /home/charliedog/...
+ * /traj_exc_node1/Computation/vdata_name0: volume
+ * /traj_exc_node1/Computation/vdata_name1: DTG
+ * /traj_exc_node1/Computation/vdata_name2: pose
+ * /traj_exc_node1/Computation/vdata_name3: traj
+ * /traj_exc_node1/Computation/vdata_name4: job
+ * /traj_exc_node1/Computation/vdata_name5: state
+ * /traj_exc_node1/Computation/vdata_name6: map
+ * /traj_exc_node1/Computation/vdata_name7: mapreq
+ * /traj_exc_node1/Computation/vdata_name8: total
+ * /traj_exc_node1/Computation/vdata_num: 9
+ * /traj_exc_node1/EXP/finish_hold_duration: 15.0
+ * /traj_exc_node1/Exp/AutoTakeoff: True
+ * /traj_exc_node1/Exp/acc_off: -0.5
+ * /traj_exc_node1/Exp/check_duration: 3.5
+ * /traj_exc_node1/Exp/colli_range: 0.8
+ * /traj_exc_node1/Exp/exc_duration: 0.5
+ * /traj_exc_node1/Exp/finish_thresh: 0.5
+ * /traj_exc_node1/Exp/global_comm_freq: 0.5
+ * /traj_exc_node1/Exp/global_path_search: 3000
+ * /traj_exc_node1/Exp/local_comm_freq: 5.0
+ * /traj_exc_node1/Exp/local_dist_thresh: 7.0
+ * /traj_exc_node1/Exp/local_path_search: 1000
+ * /traj_exc_node1/Exp/maxX: 6.0
+ * /traj_exc_node1/Exp/maxY: 6.0
+ * /traj_exc_node1/Exp/maxZ: 3.0
+ * /traj_exc_node1/Exp/minX: -6.0
+ * /traj_exc_node1/Exp/minY: -6.0
+ * /traj_exc_node1/Exp/minZ: 0.0
+ * /traj_exc_node1/Exp/reach_out_t: 0.1
+ * /traj_exc_node1/Exp/replan_duration: 1.5
+ * /traj_exc_node1/Exp/robot_sizeX: 0.48
+ * /traj_exc_node1/Exp/robot_sizeY: 0.48
+ * /traj_exc_node1/Exp/robot_sizeZ: 0.3
+ * /traj_exc_node1/Exp/show_swarm_traj: False
+ * /traj_exc_node1/Exp/statistic: True
+ * /traj_exc_node1/Exp/strong_check_interval: 3.0
+ * /traj_exc_node1/Exp/swarm_check: True
+ * /traj_exc_node1/Exp/takeoff_x: -4.0
+ * /traj_exc_node1/Exp/takeoff_y: -3.0
+ * /traj_exc_node1/Exp/takeoff_yaw: 0.0
+ * /traj_exc_node1/Exp/takeoff_z: 1.2
+ * /traj_exc_node1/Exp/traj_length: 10.0
+ * /traj_exc_node1/Frontier/FOV_hor_num: 15
+ * /traj_exc_node1/Frontier/FOV_ver_num: 10
+ * /traj_exc_node1/Frontier/cam_hor: 2.0943951023931953
+ * /traj_exc_node1/Frontier/cam_ver: 2.0943951023931953
+ * /traj_exc_node1/Frontier/grid_scale: 2.0
+ * /traj_exc_node1/Frontier/min_vp_num: 6
+ * /traj_exc_node1/Frontier/observe_thresh: 0.85
+ * /traj_exc_node1/Frontier/ray_samp_dist1: 0.2
+ * /traj_exc_node1/Frontier/ray_samp_dist2: 0.1
+ * /traj_exc_node1/Frontier/resample_duration: 0.8
+ * /traj_exc_node1/Frontier/sample_dist_num: 2
+ * /traj_exc_node1/Frontier/sample_hor_dir_num: 10
+ * /traj_exc_node1/Frontier/sample_max_range: 2.2
+ * /traj_exc_node1/Frontier/sample_ver_dir_num: 3
+ * /traj_exc_node1/Frontier/sensor_type: Depth_Camera
+ * /traj_exc_node1/Frontier/show_frontier: True
+ * /traj_exc_node1/Frontier/viewpoint_thresh: 1.3
+ * /traj_exc_node1/GVD/allowance: 0.08
+ * /traj_exc_node1/GVD/lambda: 0.1
+ * /traj_exc_node1/GVD/partition_frequency: 0.33
+ * /traj_exc_node1/GVD/show_gvd: True
+ * /traj_exc_node1/GVD/tau: 0.2
+ * /traj_exc_node1/LowResMap/blockX: 5
+ * /traj_exc_node1/LowResMap/blockY: 5
+ * /traj_exc_node1/LowResMap/blockZ: 3
+ * /traj_exc_node1/LowResMap/corridor_expX: 2
+ * /traj_exc_node1/LowResMap/corridor_expY: 2
+ * /traj_exc_node1/LowResMap/corridor_expZ: 1
+ * /traj_exc_node1/LowResMap/debug: True
+ * /traj_exc_node1/LowResMap/lambda_heu: 5.0
+ * /traj_exc_node1/LowResMap/localgraph_sizex: 14.0
+ * /traj_exc_node1/LowResMap/localgraph_sizey: 14.0
+ * /traj_exc_node1/LowResMap/localgraph_sizez: 8.0
+ * /traj_exc_node1/LowResMap/node_x: 0.6
+ * /traj_exc_node1/LowResMap/node_y: 0.6
+ * /traj_exc_node1/LowResMap/node_z: 0.6
+ * /traj_exc_node1/LowResMap/occ_duration: 2.0
+ * /traj_exc_node1/LowResMap/prune_seg_length: 6.5
+ * /traj_exc_node1/LowResMap/resolution: 0.1
+ * /traj_exc_node1/LowResMap/seg_length: 2.5
+ * /traj_exc_node1/LowResMap/show_dtg: False
+ * /traj_exc_node1/LowResMap/showmap: True
+ * /traj_exc_node1/LowResMap/unknown_duration: 0.2
+ * /traj_exc_node1/MR_DTG/H_thresh: 5.5
+ * /traj_exc_node1/MR_DTG/Toporange: 10.0
+ * /traj_exc_node1/MR_DTG/resX: 2.0
+ * /traj_exc_node1/MR_DTG/resY: 2.0
+ * /traj_exc_node1/MR_DTG/resZ: 2.0
+ * /traj_exc_node1/MR_DTG/show_edge_details: False
+ * /traj_exc_node1/MR_DTG/update_FF: False
+ * /traj_exc_node1/block_map/CamtoBody_Quater_w: 1.0
+ * /traj_exc_node1/block_map/CamtoBody_Quater_x: 0.0
+ * /traj_exc_node1/block_map/CamtoBody_Quater_y: 0.0
+ * /traj_exc_node1/block_map/CamtoBody_Quater_z: 0.0
+ * /traj_exc_node1/block_map/CamtoBody_x: 0.0
+ * /traj_exc_node1/block_map/CamtoBody_y: 0.0
+ * /traj_exc_node1/block_map/CamtoBody_z: 0.4
+ * /traj_exc_node1/block_map/FFD: False
+ * /traj_exc_node1/block_map/RobotVisX: 0.81
+ * /traj_exc_node1/block_map/RobotVisY: 0.81
+ * /traj_exc_node1/block_map/RobotVisZ: 0.41
+ * /traj_exc_node1/block_map/blockX: 10
+ * /traj_exc_node1/block_map/blockY: 10
+ * /traj_exc_node1/block_map/blockZ: 10
+ * /traj_exc_node1/block_map/depth: True
+ * /traj_exc_node1/block_map/depth_step: 2
+ * /traj_exc_node1/block_map/maxX: 6.0
+ * /traj_exc_node1/block_map/maxY: 6.0
+ * /traj_exc_node1/block_map/maxZ: 3.0
+ * /traj_exc_node1/block_map/minX: -6.0
+ * /traj_exc_node1/block_map/minY: -6.0
+ * /traj_exc_node1/block_map/minZ: 0.0
+ * /traj_exc_node1/block_map/min_finish_t: 45.0
+ * /traj_exc_node1/block_map/occ_max: 0.9
+ * /traj_exc_node1/block_map/occ_min: 0.2
+ * /traj_exc_node1/block_map/pro_hit_occ: 0.9
+ * /traj_exc_node1/block_map/pro_miss_free: 0.75
+ * /traj_exc_node1/block_map/resolution: 0.1
+ * /traj_exc_node1/block_map/sensor_max_range: 4.5
+ * /traj_exc_node1/block_map/show_block: True
+ * /traj_exc_node1/block_map/show_freq: 10.0
+ * /traj_exc_node1/block_map/statistic_v: True
+ * /traj_exc_node1/block_map/swarm_pub_thresh: 0.975
+ * /traj_exc_node1/block_map/swarm_send_delay: 2.0
+ * /traj_exc_node1/block_map/swarm_tol: 0.3
+ * /traj_exc_node1/block_map/update_freq: 10.0
+ * /traj_exc_node1/block_map/vis_mode: False
+ * /traj_exc_node1/opt/MaxAcc: 0.8
+ * /traj_exc_node1/opt/MaxJer: 25.0
+ * /traj_exc_node1/opt/MaxVel: 0.6
+ * /traj_exc_node1/opt/RelCostTolL: 1e-05
+ * /traj_exc_node1/opt/SwarmAvoid: 1.2
+ * /traj_exc_node1/opt/WeiAcc: 400.0
+ * /traj_exc_node1/opt/WeiJer: 50.0
+ * /traj_exc_node1/opt/WeiPos: 5000.0
+ * /traj_exc_node1/opt/WeiSwarm: 100.0
+ * /traj_exc_node1/opt/WeiT: 200.0
+ * /traj_exc_node1/opt/WeiVel: 800.0
+ * /traj_exc_node1/opt/WeiminT: 10.0
+ * /traj_exc_node1/opt/YawAcc: 0.8
+ * /traj_exc_node1/opt/YawVel: 0.65
+ * /traj_exc_node1/opt/integralIntervs: 16
+ * /traj_exc_node1/opt/smoothingEps: 0.01
+ * /traj_exc_node2/Computation/data_name0: gvp
+ * /traj_exc_node2/Computation/data_name1: local
+ * /traj_exc_node2/Computation/data_name2: global
+ * /traj_exc_node2/Computation/data_num: 3
+ * /traj_exc_node2/Computation/dir: /home/charliedog/...
+ * /traj_exc_node2/Computation/vdata_name0: volume
+ * /traj_exc_node2/Computation/vdata_name1: DTG
+ * /traj_exc_node2/Computation/vdata_name2: pose
+ * /traj_exc_node2/Computation/vdata_name3: traj
+ * /traj_exc_node2/Computation/vdata_name4: job
+ * /traj_exc_node2/Computation/vdata_name5: state
+ * /traj_exc_node2/Computation/vdata_name6: map
+ * /traj_exc_node2/Computation/vdata_name7: mapreq
+ * /traj_exc_node2/Computation/vdata_name8: total
+ * /traj_exc_node2/Computation/vdata_num: 9
+ * /traj_exc_node2/EXP/finish_hold_duration: 15.0
+ * /traj_exc_node2/Exp/AutoTakeoff: True
+ * /traj_exc_node2/Exp/acc_off: -0.5
+ * /traj_exc_node2/Exp/check_duration: 3.5
+ * /traj_exc_node2/Exp/colli_range: 0.8
+ * /traj_exc_node2/Exp/exc_duration: 0.5
+ * /traj_exc_node2/Exp/finish_thresh: 0.5
+ * /traj_exc_node2/Exp/global_comm_freq: 0.5
+ * /traj_exc_node2/Exp/global_path_search: 3000
+ * /traj_exc_node2/Exp/local_comm_freq: 5.0
+ * /traj_exc_node2/Exp/local_dist_thresh: 7.0
+ * /traj_exc_node2/Exp/local_path_search: 1000
+ * /traj_exc_node2/Exp/maxX: 6.0
+ * /traj_exc_node2/Exp/maxY: 6.0
+ * /traj_exc_node2/Exp/maxZ: 3.0
+ * /traj_exc_node2/Exp/minX: -6.0
+ * /traj_exc_node2/Exp/minY: -6.0
+ * /traj_exc_node2/Exp/minZ: 0.0
+ * /traj_exc_node2/Exp/reach_out_t: 0.1
+ * /traj_exc_node2/Exp/replan_duration: 1.5
+ * /traj_exc_node2/Exp/robot_sizeX: 0.48
+ * /traj_exc_node2/Exp/robot_sizeY: 0.48
+ * /traj_exc_node2/Exp/robot_sizeZ: 0.3
+ * /traj_exc_node2/Exp/show_swarm_traj: False
+ * /traj_exc_node2/Exp/statistic: True
+ * /traj_exc_node2/Exp/strong_check_interval: 3.0
+ * /traj_exc_node2/Exp/swarm_check: True
+ * /traj_exc_node2/Exp/takeoff_x: -4.0
+ * /traj_exc_node2/Exp/takeoff_y: 3.0
+ * /traj_exc_node2/Exp/takeoff_yaw: 0.0
+ * /traj_exc_node2/Exp/takeoff_z: 1.2
+ * /traj_exc_node2/Exp/traj_length: 10.0
+ * /traj_exc_node2/Frontier/FOV_hor_num: 15
+ * /traj_exc_node2/Frontier/FOV_ver_num: 10
+ * /traj_exc_node2/Frontier/cam_hor: 2.0943951023931953
+ * /traj_exc_node2/Frontier/cam_ver: 2.0943951023931953
+ * /traj_exc_node2/Frontier/grid_scale: 2.0
+ * /traj_exc_node2/Frontier/min_vp_num: 6
+ * /traj_exc_node2/Frontier/observe_thresh: 0.85
+ * /traj_exc_node2/Frontier/ray_samp_dist1: 0.2
+ * /traj_exc_node2/Frontier/ray_samp_dist2: 0.1
+ * /traj_exc_node2/Frontier/resample_duration: 0.8
+ * /traj_exc_node2/Frontier/sample_dist_num: 2
+ * /traj_exc_node2/Frontier/sample_hor_dir_num: 10
+ * /traj_exc_node2/Frontier/sample_max_range: 2.2
+ * /traj_exc_node2/Frontier/sample_ver_dir_num: 3
+ * /traj_exc_node2/Frontier/sensor_type: Depth_Camera
+ * /traj_exc_node2/Frontier/show_frontier: True
+ * /traj_exc_node2/Frontier/viewpoint_thresh: 1.3
+ * /traj_exc_node2/GVD/allowance: 0.08
+ * /traj_exc_node2/GVD/lambda: 0.1
+ * /traj_exc_node2/GVD/partition_frequency: 0.33
+ * /traj_exc_node2/GVD/show_gvd: True
+ * /traj_exc_node2/GVD/tau: 0.2
+ * /traj_exc_node2/LowResMap/blockX: 5
+ * /traj_exc_node2/LowResMap/blockY: 5
+ * /traj_exc_node2/LowResMap/blockZ: 3
+ * /traj_exc_node2/LowResMap/corridor_expX: 2
+ * /traj_exc_node2/LowResMap/corridor_expY: 2
+ * /traj_exc_node2/LowResMap/corridor_expZ: 1
+ * /traj_exc_node2/LowResMap/debug: True
+ * /traj_exc_node2/LowResMap/lambda_heu: 5.0
+ * /traj_exc_node2/LowResMap/localgraph_sizex: 14.0
+ * /traj_exc_node2/LowResMap/localgraph_sizey: 14.0
+ * /traj_exc_node2/LowResMap/localgraph_sizez: 8.0
+ * /traj_exc_node2/LowResMap/node_x: 0.6
+ * /traj_exc_node2/LowResMap/node_y: 0.6
+ * /traj_exc_node2/LowResMap/node_z: 0.6
+ * /traj_exc_node2/LowResMap/occ_duration: 2.0
+ * /traj_exc_node2/LowResMap/prune_seg_length: 6.5
+ * /traj_exc_node2/LowResMap/resolution: 0.1
+ * /traj_exc_node2/LowResMap/seg_length: 2.5
+ * /traj_exc_node2/LowResMap/show_dtg: False
+ * /traj_exc_node2/LowResMap/showmap: True
+ * /traj_exc_node2/LowResMap/unknown_duration: 0.2
+ * /traj_exc_node2/MR_DTG/H_thresh: 5.5
+ * /traj_exc_node2/MR_DTG/Toporange: 10.0
+ * /traj_exc_node2/MR_DTG/resX: 2.0
+ * /traj_exc_node2/MR_DTG/resY: 2.0
+ * /traj_exc_node2/MR_DTG/resZ: 2.0
+ * /traj_exc_node2/MR_DTG/show_edge_details: False
+ * /traj_exc_node2/MR_DTG/update_FF: False
+ * /traj_exc_node2/block_map/CamtoBody_Quater_w: 1.0
+ * /traj_exc_node2/block_map/CamtoBody_Quater_x: 0.0
+ * /traj_exc_node2/block_map/CamtoBody_Quater_y: 0.0
+ * /traj_exc_node2/block_map/CamtoBody_Quater_z: 0.0
+ * /traj_exc_node2/block_map/CamtoBody_x: 0.0
+ * /traj_exc_node2/block_map/CamtoBody_y: 0.0
+ * /traj_exc_node2/block_map/CamtoBody_z: 0.4
+ * /traj_exc_node2/block_map/FFD: False
+ * /traj_exc_node2/block_map/RobotVisX: 0.81
+ * /traj_exc_node2/block_map/RobotVisY: 0.81
+ * /traj_exc_node2/block_map/RobotVisZ: 0.41
+ * /traj_exc_node2/block_map/blockX: 10
+ * /traj_exc_node2/block_map/blockY: 10
+ * /traj_exc_node2/block_map/blockZ: 10
+ * /traj_exc_node2/block_map/depth: True
+ * /traj_exc_node2/block_map/depth_step: 2
+ * /traj_exc_node2/block_map/maxX: 6.0
+ * /traj_exc_node2/block_map/maxY: 6.0
+ * /traj_exc_node2/block_map/maxZ: 3.0
+ * /traj_exc_node2/block_map/minX: -6.0
+ * /traj_exc_node2/block_map/minY: -6.0
+ * /traj_exc_node2/block_map/minZ: 0.0
+ * /traj_exc_node2/block_map/min_finish_t: 45.0
+ * /traj_exc_node2/block_map/occ_max: 0.9
+ * /traj_exc_node2/block_map/occ_min: 0.2
+ * /traj_exc_node2/block_map/pro_hit_occ: 0.9
+ * /traj_exc_node2/block_map/pro_miss_free: 0.75
+ * /traj_exc_node2/block_map/resolution: 0.1
+ * /traj_exc_node2/block_map/sensor_max_range: 4.5
+ * /traj_exc_node2/block_map/show_block: True
+ * /traj_exc_node2/block_map/show_freq: 10.0
+ * /traj_exc_node2/block_map/statistic_v: True
+ * /traj_exc_node2/block_map/swarm_pub_thresh: 0.975
+ * /traj_exc_node2/block_map/swarm_send_delay: 2.0
+ * /traj_exc_node2/block_map/swarm_tol: 0.3
+ * /traj_exc_node2/block_map/update_freq: 10.0
+ * /traj_exc_node2/block_map/vis_mode: False
+ * /traj_exc_node2/opt/MaxAcc: 0.8
+ * /traj_exc_node2/opt/MaxJer: 25.0
+ * /traj_exc_node2/opt/MaxVel: 0.6
+ * /traj_exc_node2/opt/RelCostTolL: 1e-05
+ * /traj_exc_node2/opt/SwarmAvoid: 1.2
+ * /traj_exc_node2/opt/WeiAcc: 400.0
+ * /traj_exc_node2/opt/WeiJer: 50.0
+ * /traj_exc_node2/opt/WeiPos: 5000.0
+ * /traj_exc_node2/opt/WeiSwarm: 100.0
+ * /traj_exc_node2/opt/WeiT: 200.0
+ * /traj_exc_node2/opt/WeiVel: 800.0
+ * /traj_exc_node2/opt/WeiminT: 10.0
+ * /traj_exc_node2/opt/YawAcc: 0.8
+ * /traj_exc_node2/opt/YawVel: 0.65
+ * /traj_exc_node2/opt/integralIntervs: 16
+ * /traj_exc_node2/opt/smoothingEps: 0.01
+ * /use_sim_time: True
+
+NODES
+  /
+    murder_1 (murder_swarm/murder_swarm_node)
+    murder_2 (murder_swarm/murder_swarm_node)
+    sim1_bridge_exp_tcp_sim (swarm_exp_bridge/swarm_exp_bridge_tcp_sim)
+    traj_exc_node1 (traj_exc/traj_exc_node)
+    traj_exc_node2 (traj_exc/traj_exc_node)
+command:mkdir /home/charliedog/data/swarm/maze4/MURDER/2/2026_9_28_14_43_56_1
+path_:/home/charliedog/data/swarm/maze4/MURDER/2/2026_9_28_14_43_56_1
+command:mkdir /home/charliedog/data/swarm/maze4/MURDER/2/2026_9_28_14_43_56_2
+path_:/home/charliedog/data/swarm/maze4/MURDER/2/2026_9_28_14_43_56_2
+use_answer_:0
+use_answer_:0
+robots_scale_:0.81 0.81 0.41
+0.9 0.75
+edgeblock_size_:2 2 1
+origin_:-6 -6  0
+block_num_:13 13  4
+last_update_:-10
+update_interval_:0.1
+thr_max_:2.19722
+thr_min_:-1.38629
+pro_hit_:1.28093
+pro_miss_:-1.09861
+0.588235
+0
+1
+0.486275
+0.945098
+0
+1
+1
+0
+0.952941
+0.560784
+0.439216
+robots_scale_:0.81 0.81 0.41
+0.9 0.75
+origin_:-6.3 -6.3    0
+edgeblock_size_:2 2 1
+map_upbd_:6.2999 6.2999 3.4999
+origin_:-6 -6  0
+block_num_:13 13  4
+map_lowbd_:-6.2999 -6.2999  0.0001
+mapscale_:12.6 12.6  3.5
+last_update_:-10
+update_interval_:0.1
+blockscale_:3.5 3.5 2.1
+edgeblock_scale_:2.1 2.1 1.4
+thr_max_:2.19722
+thr_min_:-1.38629
+block_size_:5 5 3
+voxel_num_:18 18  5
+pro_hit_:1.28093
+pro_miss_:-1.09861
+block_num_:4 4 2
+node_size_:7 7 7
+node_scale_:0.7 0.7 0.7
+localgraph_scale:14 14  8
+drone_num:2
+localgraph_size_:20 20 12
+0.588235
+0
+1
+0.486275
+0.945098
+0
+1
+1
+0
+0.952941
+0.560784
+0.439216
+origin_:-6.3 -6.3    0
+node_scale_:2
+map_upbd_:6.2999 6.2999 3.4999
+map_lowbd_:-6.2999 -6.2999  0.0001
+up_bd_:6 6 3
+origin_:-6 -6  0
+mapscale_:12.6 12.6  3.5
+blockscale_:3.5 3.5 2.1
+node_num_:6 6 2
+use_swarm_:1
+edgeblock_scale_:2.1 2.1 1.4
+SDM_->drone_num_:2
+SDM_->is_ground_:0
+block_size_:5 5 3
+voxel_num_:18 18  5
+fn_vp_size_:15
+vp_max_:60
+block_num_:4 4 2
+node_size_:7 7 7
+node_scale_:0.7 0.7 0.7
+localgraph_scale:14 14  8
+drone_num:2
+localgraph_size_:20 20 12
+[33m[WARN] [1790606636.557635415]: use camera[0m
+0samp d:1.73105
+1samp d:2.199
+node_scale_:2
+samp_h_dir_num_:10
+samp_v_dir_num_:3
+up_bd_:6 6 3
+origin_:-6 -6  0
+samp_dist_num_:2
+samp_num_:60
+node_num_:6 6 2
+use_swarm_:1
+sensor_type_:1
+SDM_->drone_num_:2
+SDM_->is_ground_:0
+fn_vp_size_:15
+vp_max_:60
+F_depot72  72
+72
+vox_num_:6 6 2  map_upbd_ - origin_:12 12  3
+[33m[WARN] [1790606636.581091387]: use camera[0m
+DTG origin:-6 -6  0
+DTG topo_range:10
+DTG H_thresh_:5.5
+DTG eurange:7.75
+DTG update_FF_:0
+0samp d:1.73105
+1samp d:2.199
+DTG map_upbd_:6.2999 6.2999 3.4999
+DTG vox_num_:6 6 2
+DTG vox_scl_:2 2 2
+DTG uav_id_:1
+DTG drone_num_:2
+samp_h_dir_num_:10
+samp_v_dir_num_:3
+samp_dist_num_:2
+samp_num_:60
+sensor_type_:1
+F_depot72  72
+72
+vox_num_:6 6 2  map_upbd_ - origin_:12 12  3
+DTG origin:-6 -6  0
+DTG topo_range:10
+DTG H_thresh_:5.5
+DTG eurange:7.75
+DTG update_FF_:0
+DTG map_upbd_:6.2999 6.2999 3.4999
+DTG vox_num_:6 6 2
+DTG vox_scl_:2 2 2
+DTG uav_id_:2
+DTG drone_num_:2
+ -3.99801  -2.99903 0.0834077[0;31m collide!!!!! [0m
+[33m[WARN] [1790606649.697689331, 0.216000000]: id:1 Infeasible1! DTG refuse to update![0m
+ -3.99754   2.99576 0.0792268[0;31m collide!!!!! [0m
+[33m[WARN] [1790606649.703283085, 0.226000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00206 -3.00347  0.10334[0;31m collide!!!!! [0m
+[33m[WARN] [1790606649.894031203, 0.409000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00227  3.00439 0.108731[0;31m collide!!!!! [0m
+[33m[WARN] [1790606649.903805546, 0.418000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00758 -3.00335 0.157448[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.095418055, 0.610000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99083  3.00186 0.152033[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.100632411, 0.619000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00885 -3.00244 0.208598[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.292666588, 0.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99394  2.99791  0.21123[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.303832877, 0.818000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00446 -2.99614 0.267061[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.495109718, 1.008999999]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99583  2.99869 0.261169[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.502944675, 1.018000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99718 -2.99446 0.318705[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.700866170, 1.217000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00083  3.00072 0.315509[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.710477556, 1.217000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00339 -2.99417 0.381797[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.897530119, 1.402000000]: id:1 Infeasible1! DTG refuse to update![0m
+ -4.0085  2.99683 0.380407[0;31m collide!!!!! [0m
+[33m[WARN] [1790606650.906378583, 1.411999999]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99582 -3.00079 0.430169[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.099792700, 1.602000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99352  2.99768 0.434417[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.109708239, 1.621999999]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99953 -2.99565 0.488173[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.299165545, 1.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00402  2.99285 0.499387[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.304588714, 1.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00595 -2.99524  0.55228[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.497393235, 2.007000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99716  2.99228 0.560821[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.507475106, 2.016999999]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00572 -3.00042 0.612989[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.703947418, 2.205999999]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99908  2.99407 0.615264[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.709194165, 2.216000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99926  -3.0048 0.665446[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.903633837, 2.413000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99542  2.98818 0.674449[0;31m collide!!!!! [0m
+[33m[WARN] [1790606651.915352110, 2.423000000]: id:2 Infeasible1! DTG refuse to update![0m
+ -3.9999 -3.00074 0.723532[0;34m New root [0m
+[33m[WARN] [1790606652.101873782, 2.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99793  2.99755 0.719822[0;34m New root [0m
+[33m[WARN] [1790606652.108218662, 2.607000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00633  -3.0019 0.791737[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.305540023, 2.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99584  2.99674 0.791057[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.318779556, 2.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00523 -2.99655 0.852558[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.509614384, 3.007000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99574  2.99943 0.839496[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.516394106, 3.016999999]: id:2 Infeasible1! DTG refuse to update![0m
+[0;44m id:2 Partition[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606652.530982938, 3.036999999]: id:1 LocalGVP![0m
+[33m[WARN] [1790606652.530786757, 3.036999999]: id:2 LocalGVP![0m
+-4.00674 -3.00577 0.906398[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.709922572, 3.216000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99869  3.00424 0.898284[0;31m collide!!!!! [0m
+[33m[WARN] [1790606652.719798215, 3.225999999]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99423 -3.00709 0.973067[0;34m New root [0m
+[33m[WARN] [1790606652.907524365, 3.413000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99802  3.00154 0.969202[0;34m New root [0m
+[33m[WARN] [1790606652.918313090, 3.423000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99769 -3.00116  1.03582[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.106040157, 3.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.9927 3.00488 1.02666[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.116628365, 3.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00269 -3.00211  1.08989[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.307194851, 3.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00257  2.99996  1.08269[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.314078541, 3.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00062 -3.00002  1.13643[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.505995910, 4.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00311  2.99569  1.12409[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.516301060, 4.020999999]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99724 -3.00051  1.15669[0;34m New root [0m
+[33m[WARN] [1790606653.709649811, 4.213000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99493  2.99654  1.14732[0;34m New root [0m
+[33m[WARN] [1790606653.716404770, 4.213000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99402 -2.99651  1.17404[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.909320889, 4.405000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99814  2.99904  1.16288[0;31m collide!!!!! [0m
+[33m[WARN] [1790606653.917955204, 4.415000000]: id:2 Infeasible1! DTG refuse to update![0m
+ -3.9926 -2.98999  1.17615[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.108320380, 4.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99981  3.00485  1.17382[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.117036319, 4.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99754   -2.991  1.18643[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.308247336, 4.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99961  3.00065  1.18519[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.318986411, 4.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99808 -2.99004  1.18229[0;34m New root [0m
+[33m[WARN] [1790606654.514076115, 5.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00186  2.99187  1.18803[0;34m New root [0m
+[33m[WARN] [1790606654.518266876, 5.011000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00593   -2.999  1.18764[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.780665218, 5.213000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99577  2.99624  1.18611[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.794548073, 5.232000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00478 -3.00497  1.19123[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.980856264, 5.415000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.0008 2.99913  1.1982[0;31m collide!!!!! [0m
+[33m[WARN] [1790606654.993407828, 5.424000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99661 -3.00134  1.18384[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.175726567, 5.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00327  3.00202  1.19262[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.187808147, 5.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99997 -3.00352  1.20209[0;34m New root [0m
+[33m[WARN] [1790606655.378713760, 5.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00853  2.99502  1.19425[0;34m New root [0m
+[33m[WARN] [1790606655.385615418, 5.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99473 -3.00397  1.19634[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.579043583, 6.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99732  2.99504  1.20335[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.584466585, 6.011000000]: id:2 Infeasible1! DTG refuse to update![0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606655.635700981, 6.068999999]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606655.636058910, 6.068999999]: id:2 LocalGVP![0m
+-3.99715 -2.99747  1.20196[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.776569881, 6.203000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99746  2.99791  1.19284[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.781225124, 6.213000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00669 -2.99635  1.19638[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.976307825, 6.405000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.9883 3.00209 1.19999[0;31m collide!!!!! [0m
+[33m[WARN] [1790606655.987978366, 6.415000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00269 -2.99952  1.20239[0;34m New root [0m
+[33m[WARN] [1790606656.177785513, 6.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.9941 3.00557 1.19677[0;34m New root [0m
+[33m[WARN] [1790606656.185314443, 6.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+ -3.9984 -2.99605  1.20611[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.378289299, 6.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99849  3.00431   1.2058[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.386451086, 6.809000000]: id:2 Infeasible1! DTG refuse to update![0m
+ -4.0033 -3.00101  1.19714[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.579365245, 7.001000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00076  3.01034  1.21228[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.585768695, 7.011000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00524 -3.00615  1.19947[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.779697278, 7.203000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00358  3.00759  1.19772[0;31m collide!!!!! [0m
+[33m[WARN] [1790606656.788426890, 7.213000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99413 -3.00633  1.19842[0;34m New root [0m
+[33m[WARN] [1790606656.978839049, 7.405000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99529  3.00354  1.20477[0;34m New root [0m
+[33m[WARN] [1790606656.985581460, 7.415000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99165 -3.01097  1.19903[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.183602546, 7.607000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00089  3.00067  1.20893[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.200349624, 7.626000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00068 -3.01255   1.1901[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.383756865, 7.809000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00232  3.00725  1.20419[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.389709131, 7.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99839 -3.01019  1.19331[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.587085979, 8.012000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.0017 3.00368 1.20238[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.601678688, 8.021000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99716 -3.00484  1.19459[0;34m New root [0m
+[33m[WARN] [1790606657.785549494, 8.204000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00054  2.99975  1.19734[0;34m New root [0m
+[33m[WARN] [1790606657.793835594, 8.214000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99822 -3.00303  1.18991[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.983882612, 8.406000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99446  3.00483  1.19612[0;31m collide!!!!! [0m
+[33m[WARN] [1790606657.996704811, 8.416000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99867 -2.99029  1.19338[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.189243199, 8.608000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99357  3.00588  1.20042[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.196113591, 8.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99795 -3.00059   1.2029[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.390556514, 8.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99602  3.00338    1.203[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.397348867, 8.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00489 -3.00193  1.20478[0;34m New root [0m
+[33m[WARN] [1790606658.590565510, 9.012000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99521  2.99923  1.19233[0;34m New root [0m
+[33m[WARN] [1790606658.597582600, 9.021000000]: id:2 Infeasible1! DTG refuse to update![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606658.674685632, 9.098000000]: id:2 LocalGVP![0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606658.675209561, 9.098000000]: id:1 LocalGVP![0m
+-4.00051 -3.00554  1.20546[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.795157839, 9.214000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00212  3.00191  1.19664[0;31m collide!!!!! [0m
+[33m[WARN] [1790606658.802247757, 9.214000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00805  -2.9903  1.19983[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.000297732, 9.416000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00847  3.00021  1.19725[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.009787933, 9.425000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00251 -3.00101  1.20027[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.198064275, 9.608000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99844   3.0013  1.20563[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.211646354, 9.617000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00435 -3.00037  1.20209[0;34m New root [0m
+[33m[WARN] [1790606659.401789670, 9.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00503  3.00187  1.20173[0;34m New root [0m
+[33m[WARN] [1790606659.408853575, 9.819000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00406 -2.99339  1.19569[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.601442405, 10.002000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00771  2.99699  1.20077[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.611828970, 10.021000000]: id:2 Infeasible1! DTG refuse to update![0m
+-4.00262  -2.9994  1.20302[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.807602975, 10.214000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99694  3.00186  1.19994[0;31m collide!!!!! [0m
+[33m[WARN] [1790606659.816132863, 10.223000000]: id:2 Infeasible1! DTG refuse to update![0m
+ -3.9969 -2.99224  1.20032[0;31m collide!!!!! [0m
+[33m[WARN] [1790606660.008272885, 10.406000000]: id:1 Infeasible1! DTG refuse to update![0m
+-4.00202  2.99888  1.20545[0;31m collide!!!!! [0m
+[33m[WARN] [1790606660.022524382, 10.425000000]: id:2 Infeasible1! DTG refuse to update![0m
+-3.99477 -2.99824  1.19674[0;34m New root [0m
+[33m[WARN] [1790606660.211224185, 10.608000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.9992 2.99745 1.20517[0;34m New root [0m
+id:2[0;42m try create:-3.85  3.15  1.05  ;-3.9992 2.99745 1.20517 [0m
+[0;42m new id:4  25 [0m-3.85  3.15  1.05  ;-3.9992 2.99745 1.20517
+ -3.9958 -2.99975  1.20459[0;31m collide!!!!! [0m
+[33m[WARN] [1790606660.413664730, 10.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+id:1[0;42m try create swarm h:-3.85  3.15  1.05  ;-3.85  3.15  1.05 [0m
+[0;42m new id:4  25 [0m-3.85  3.15  1.05  ;-3.85  3.15  1.05
+ -3.9935 -3.00396  1.20375[0;31m collide!!!!! [0m
+[33m[WARN] [1790606660.609015440, 11.002000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99006 -2.99877  1.20084[0;31m collide!!!!! [0m
+[33m[WARN] [1790606660.810952608, 11.204000000]: id:1 Infeasible1! DTG refuse to update![0m
+ -3.9903 -3.00197  1.19648[0;34m New root [0m
+[33m[WARN] [1790606661.012710854, 11.406000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99076 -3.00341  1.20461[0;31m collide!!!!! [0m
+[33m[WARN] [1790606661.212532089, 11.608000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99363 -3.00251    1.203[0;31m collide!!!!! [0m
+[33m[WARN] [1790606661.412934532, 11.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99431 -3.00491  1.20288[0;31m collide!!!!! [0m
+[33m[WARN] [1790606661.612809962, 12.002000000]: id:1 Infeasible1! DTG refuse to update![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606661.728527292, 12.127000000]: id:2 LocalGVP![0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606661.729036171, 12.127000000]: id:1 LocalGVP![0m
+-3.99307 -3.00523  1.20213[0;34m New root [0m
+[33m[WARN] [1790606661.813337384, 12.204000000]: id:1 Infeasible1! DTG refuse to update![0m
+ -3.9949 -2.99753  1.20054[0;31m collide!!!!! [0m
+[33m[WARN] [1790606662.014939176, 12.406000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99723 -3.00271  1.19158[0;31m collide!!!!! [0m
+[33m[WARN] [1790606662.214021334, 12.608000000]: id:1 Infeasible1! DTG refuse to update![0m
+ -3.9973 -3.00446  1.20515[0;31m collide!!!!! [0m
+[33m[WARN] [1790606662.415054467, 12.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+-3.99029  -2.9942  1.20586[0;34m New root [0m
+id:1[0;42m try create:-3.85 -3.15  1.05  ;-3.99029  -2.9942  1.20586 [0m
+[0;42m new id:3  7 [0m-3.85 -3.15  1.05  ;-3.99029  -2.9942  1.20586
+id:2[0;42m try create swarm h:-3.85 -3.15  1.05  ;-3.85 -3.15  1.05 [0m
+[0;42m new id:3  7 [0m-3.85 -3.15  1.05  ;-3.85 -3.15  1.05
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606664.770985304, 15.156000000]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606664.771431277, 15.156000000]: id:2 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606667.797846479, 18.187000000]: id:2 LocalGVP![0m
+[33m[WARN] [1790606667.798022276, 18.187000000]: id:1 LocalGVP![0m
+from  [0;46mid: 2  SLEEP[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 1  SLEEP[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606670.169586425, 20.574000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606670.707848463, 21.114000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606670.812544618, 21.214999999]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606670.822108940, 21.224000000]: id:2 LocalGVP![0m
+[33m[WARN] [1790606671.012200146, 21.416000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606671.410241609, 21.818000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606672.003243629, 22.413000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606672.458173314, 22.815000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606672.649756308, 23.007000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606673.065381808, 23.428000000]: id:1 local plan![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606673.260801720, 23.620000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606673.886265170, 24.251000000]: id:2 LocalGVP![0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606673.886702639, 24.251000000]: id:1 LocalGVP![0m
+[33m[WARN] [1790606674.046329204, 24.407000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606674.251534381, 24.617000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606674.845146205, 25.211999999]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606675.055415079, 25.422000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606675.641894547, 26.007000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606676.042477697, 26.410000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606676.058278010, 26.428000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606676.442446082, 26.812000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+traj infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606676.910078698, 27.278999999]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606676.910586160, 27.278999999]: id:2 LocalGVP![0m
+[33m[WARN] [1790606677.048671418, 27.416000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606677.641560340, 28.010000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606678.056239076, 28.422000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606678.648138795, 29.007000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606679.067526342, 29.428000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606679.656616782, 30.015000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:1 Partition[0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606679.948537586, 30.307999999]: id:1 LocalGVP![0m
+[33m[WARN] [1790606679.948663149, 30.307999999]: id:2 LocalGVP![0m
+[33m[WARN] [1790606680.061705142, 30.417000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606680.657137710, 31.012000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606680.868175676, 31.222000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606681.665240510, 32.018000000]: id:1 local plan![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606681.867775227, 32.218000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606682.659171769, 33.014000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606682.668261312, 33.023000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[0;44m id:2 Partition[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606682.980393800, 33.334000000]: id:2 LocalGVP![0m
+[33m[WARN] [1790606682.980592233, 33.334000000]: id:1 LocalGVP![0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606683.658690738, 34.011000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606683.669899965, 34.020000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606684.063954143, 34.414000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606684.075053732, 34.423000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606684.459503486, 34.807000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606684.871571501, 35.218000000]: id:1 local plan![0m
+[33m[WARN] [1790606684.872128237, 35.218000000]: id:2 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+static_check:0 tc:1.893
+[33m[WARN] [1790606685.065162123, 35.411000000]: id:1 swarm collision 2[0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+static_check:0 tc:1.902
+[33m[WARN] [1790606685.073559278, 35.420000000]: id:2 swarm collision 1[0m
+traj infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606685.266454010, 35.612000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606685.276631221, 35.621000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606686.025524314, 36.371000000]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606686.025961199, 36.371000000]: id:2 LocalGVP![0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606686.271144355, 36.618000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606686.273849832, 36.618000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606687.274412072, 37.615000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606687.277941669, 37.615000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606687.670271945, 38.008000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606688.072789853, 38.411000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606688.282443628, 38.621000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[33m[WARN] [1790606688.477402684, 38.813000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+ 0.305367 -0.828733    1.3274[0;31m collide!!!!! [0m
+[33m[WARN] [1790606688.672603902, 39.005000000]: id:1 Infeasible1! DTG refuse to update![0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:1 Partition[0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606689.062621230, 39.398000000]: id:1 LocalGVP![0m
+[33m[WARN] [1790606689.062854430, 39.398000000]: id:2 LocalGVP![0m
+0.394556 -1.15636  1.30775[0;34m New root [0m
+[33m[WARN] [1790606689.079320284, 39.408000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+ 0.44986 -1.20972  1.30917[0;34m New root [0m
+[33m[WARN] [1790606689.280114173, 39.609000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606689.292536714, 39.618000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.473786  -1.2432  1.32821[0;34m New root [0m
+[33m[WARN] [1790606689.480643596, 39.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.477918 -1.23496  1.37613[0;34m New root [0m
+[33m[WARN] [1790606689.683083557, 40.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.440992  -1.2079   1.4188[0;34m New root [0m
+[33m[WARN] [1790606689.883350140, 40.212000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606690.289362462, 40.615000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+vp infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[33m[WARN] [1790606690.684917849, 41.008000000]: id:1 local plan![0m
+from  [0;46mid: 1  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.070675 -1.41962  1.68055[0;34m New root [0m
+[33m[WARN] [1790606690.947297515, 41.209000000]: id:1 Infeasible1! DTG refuse to update![0m
+id:2[0;42m try create:1.75 1.05 1.75  ;1.43822 1.21271 1.96268 [0m
+[0;42m new id:6  21 [0m1.75 1.05 1.75  ;1.43822 1.21271 1.96268
+0.0663481  -1.41598   1.67942[0;34m New root [0m
+[33m[WARN] [1790606691.146146098, 41.411000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+id:1[0;42m try create swarm h:1.75 1.05 1.75  ;1.75 1.05 1.75 [0m
+[0;42m new id:6  21 [0m1.75 1.05 1.75  ;1.75 1.05 1.75
+0.0694616   -1.4157   1.67569[0;34m New root [0m
+[33m[WARN] [1790606691.348159054, 41.612000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606691.359108985, 41.621000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0641875  -1.41885   1.67297[0;34m New root [0m
+[33m[WARN] [1790606691.545912173, 41.813000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0690615  -1.42295   1.66721[0;34m New root [0m
+[33m[WARN] [1790606691.749405077, 42.014000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0682321  -1.41708    1.6778[0;34m New root [0m
+[33m[WARN] [1790606691.945980900, 42.206000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0697584  -1.42468   1.67604[0;34m New root [0m
+[33m[WARN] [1790606692.146682325, 42.408000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606692.155408644, 42.417000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+[0;44m id:2 Partition[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606692.164096486, 42.426000000]: id:2 LocalGVP![0m
+[33m[WARN] [1790606692.164294585, 42.426000000]: id:1 LocalGVP![0m
+0.071518 -1.42507  1.67944[0;34m New root [0m
+[33m[WARN] [1790606692.351260146, 42.609000000]: id:1 Infeasible1! DTG refuse to update![0m
+traj infeasible
+from  [0;46mid: 1  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0617622  -1.42358   1.68195[0;34m New root [0m
+[33m[WARN] [1790606692.553943688, 42.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0662061  -1.41924   1.67889[0;34m New root [0m
+[33m[WARN] [1790606692.753509004, 43.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0629903  -1.41859   1.67236[0;34m New root [0m
+[33m[WARN] [1790606692.955217850, 43.203000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606692.960702924, 43.212000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0693874  -1.41405   1.67514[0;34m New root [0m
+[33m[WARN] [1790606693.160508027, 43.404000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0717143   -1.4256   1.68132[0;34m New root [0m
+[33m[WARN] [1790606693.358776403, 43.606000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0702117  -1.42363   1.67475[0;34m New root [0m
+[33m[WARN] [1790606693.562954942, 43.816000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0697809  -1.41862   1.67672[0;34m New root [0m
+[33m[WARN] [1790606693.759231156, 44.008000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.066431 -1.42511  1.67487[0;34m New root [0m
+[33m[WARN] [1790606693.958866465, 44.209000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606693.964740359, 44.218000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0613196    -1.416   1.68082[0;34m New root [0m
+[33m[WARN] [1790606694.160907644, 44.411000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0657775  -1.42135   1.67485[0;34m New root [0m
+[33m[WARN] [1790606694.363665389, 44.612000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0668372  -1.42563   1.66681[0;34m New root [0m
+[33m[WARN] [1790606694.560479622, 44.804000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606694.572467571, 44.822000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0649011  -1.41608   1.66951[0;34m New root [0m
+[33m[WARN] [1790606694.762435007, 45.005000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0679888  -1.41945   1.67071[0;34m New root [0m
+[33m[WARN] [1790606694.962655776, 45.206000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0736015  -1.42116   1.67173[0;34m New root [0m
+[33m[WARN] [1790606695.163597864, 45.408000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+[0;44m id:1 Partition[0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606695.213383703, 45.462000000]: id:2 LocalGVP![0m
+[33m[WARN] [1790606695.213294825, 45.462000000]: id:1 LocalGVP![0m
+0.0652842  -1.42124   1.67151[0;34m New root [0m
+[33m[WARN] [1790606695.366145129, 45.609000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606695.375146877, 45.618000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0675756  -1.42023   1.66699[0;34m New root [0m
+[33m[WARN] [1790606695.564770684, 45.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0696121  -1.42325   1.67152[0;34m New root [0m
+[33m[WARN] [1790606695.771841000, 46.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0680129   -1.4216   1.67103[0;34m New root [0m
+[33m[WARN] [1790606695.965074277, 46.212000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0717105  -1.42109   1.67624[0;34m New root [0m
+[33m[WARN] [1790606696.171919190, 46.414000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606696.182781535, 46.423000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0661934  -1.42341   1.67428[0;34m New root [0m
+[33m[WARN] [1790606696.368544328, 46.606000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0650851  -1.42179   1.67942[0;34m New root [0m
+[33m[WARN] [1790606696.571554533, 46.807000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0642042  -1.42108   1.67807[0;34m New root [0m
+[33m[WARN] [1790606696.771483697, 47.008000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.072982 -1.42008  1.66968[0;34m New root [0m
+[33m[WARN] [1790606696.971932455, 47.209000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0721133   -1.4172   1.67402[0;34m New root [0m
+[33m[WARN] [1790606697.172821433, 47.411000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606697.180208541, 47.420000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0680645   -1.4171   1.67466[0;34m New root [0m
+[33m[WARN] [1790606697.375703282, 47.612000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0705206  -1.41733   1.67846[0;34m New root [0m
+[33m[WARN] [1790606697.574163837, 47.813000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0679427  -1.42025   1.67466[0;34m New root [0m
+[33m[WARN] [1790606697.775500164, 48.005000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0679041  -1.41864    1.6732[0;34m New root [0m
+[33m[WARN] [1790606697.973907818, 48.206000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606697.981375133, 48.215000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.066375 -1.41973  1.67973[0;34m New root [0m
+[33m[WARN] [1790606698.179502689, 48.408000000]: id:1 Infeasible1! DTG refuse to update![0m
+[0;44m id:1 Partition[0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606698.252879776, 48.490000000]: id:1 LocalGVP![0m
+[33m[WARN] [1790606698.253094717, 48.490000000]: id:2 LocalGVP![0m
+0.0676814   -1.4203   1.67434[0;34m New root [0m
+[33m[WARN] [1790606698.374763563, 48.609000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0740471  -1.42091    1.6743[0;34m New root [0m
+[33m[WARN] [1790606698.579952147, 48.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0668577  -1.42342   1.67859[0;34m New root [0m
+[33m[WARN] [1790606698.782679460, 49.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0669828  -1.42299   1.67708[0;34m New root [0m
+[33m[WARN] [1790606698.978305558, 49.203000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606698.984387556, 49.212000000]: id:2 local plan![0m
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mEXCUTE[0m
+0.0630011  -1.42374   1.67219[0;34m New root [0m
+[33m[WARN] [1790606699.180263528, 49.404000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0679737  -1.42005   1.67331[0;34m New root [0m
+[33m[WARN] [1790606699.381620031, 49.606000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0605619   -1.4236   1.68037[0;34m New root [0m
+[33m[WARN] [1790606699.584671798, 49.807000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0657845  -1.41563   1.67285[0;34m New root [0m
+[33m[WARN] [1790606699.783483988, 50.008000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0691035  -1.41574   1.66489[0;34m New root [0m
+[33m[WARN] [1790606699.985232729, 50.209000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606699.992037505, 50.218000000]: id:2 local plan![0m
+id:2create fake hn, local global
+id:2local global
+id:2hn_t:1
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mGLOBALPLAN[0m
+ 0.06686 -1.41909  1.67399[0;34m New root [0m
+[33m[WARN] [1790606700.186854656, 50.411000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606700.195548709, 50.420000000]: id:2 global plan![0m
+id:2exp_state:3.53433 -1.3555 1.08154 4.39823  0
+from  [0;46mid: 2  GLOBALPLAN[0m to [0;46mEXCUTE[0m
+0.0694767   -1.4172   1.68005[0;34m New root [0m
+[33m[WARN] [1790606700.389560584, 50.612000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0681243  -1.41773    1.6701[0;34m New root [0m
+[33m[WARN] [1790606700.587905540, 50.813000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0652602  -1.41586    1.6777[0;34m New root [0m
+[33m[WARN] [1790606700.792080577, 51.005000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.0649255  -1.42041   1.67463[0;34m New root [0m
+[33m[WARN] [1790606700.993222139, 51.206000000]: id:1 Infeasible1! DTG refuse to update![0m
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+0.0685453   -1.4172   1.67685[0;34m New root [0m
+[33m[WARN] [1790606701.198036287, 51.417000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606701.210721126, 51.426000000]: id:2 local plan![0m
+id:2create fake hn, local global
+id:2local global
+id:2hn_t:1
+from  [0;46mid: 2  LOCALPLAN[0m to [0;46mGLOBALPLAN[0m
+[0;44m id:1 Partition[0m
+[33m[WARN] [1790606701.300947883, 51.517000000]: id:1 LocalGVP![0m
+[0;44m id:2 Partition[0m
+[33m[WARN] [1790606701.301659864, 51.517000000]: id:2 LocalGVP![0m
+ 0.07577 -1.41751  1.67231[0;34m New root [0m
+[33m[WARN] [1790606701.397549994, 51.609000000]: id:1 Infeasible1! DTG refuse to update![0m
+[33m[WARN] [1790606701.413970533, 51.627000000]: id:2 global plan![0m
+id:2exp_state:3.53433 -1.3555 1.08154 4.39823  0
+from  [0;46mid: 2  GLOBALPLAN[0m to [0;46mEXCUTE[0m
+0.0749062  -1.41722   1.67495[0;34m New root [0m
+[33m[WARN] [1790606701.599712399, 51.810000000]: id:1 Infeasible1! DTG refuse to update![0m
+0.071063   -1.418  1.67587[0;34m New root [0m
+[33m[WARN] [1790606701.800459056, 52.011000000]: id:1 Infeasible1! DTG refuse to update![0m
+vp infeasible
+from  [0;46mid: 2  EXCUTE[0m to [0;46mLOCALPLAN[0m
+terminate called after throwing an instance of 'boost::wrapexcept<boost::lock_error>'
+  what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+*** Aborted at 1790606702 (unix time) try "date -d @1790606702" if you are using GNU date ***
+PC: @                0x0 (unknown)
+*** SIGABRT (@0x19e5) received by PID 6629 (TID 0xfedc4d725ad0) from PID 6629; stack trace: ***
+    @     0xfedc5008ef10 (unknown)
+    @     0xfedc503ac8f8 ([vdso]+0x8f7)
+    @     0xfedc4fc32d88 gsignal
+    @     0xfedc4fc1faac abort
+    @     0xfedc4fee28bc __gnu_cxx::__verbose_terminate_handler()
+    @     0xfedc4fee020c (unknown)
+    @     0xfedc4fedf044 (unknown)
+    @     0xfedc4fedf8a4 __gxx_personality_v0
+    @     0xfedc4fd7f964 (unknown)
+    @     0xfedc4fd7fef4 _Unwind_Resume
+    @     0xfedc5029b188 ros::TimerManager<>::remove()
+    @     0xfedc50299734 ros::Timer::Impl::stop()
+    @     0xfedc50299800 ros::Timer::Impl::~Impl()
+    @     0xfedc5029d07c boost::detail::sp_counted_impl_p<>::dispose()
+    @     0xfedc502995bc ros::Timer::~Timer()
+    @     0xfedc4fc3548c (unknown)
+    @     0xfedc4fc3561c exit
+    @     0xfedc4fc1fe14 __libc_start_main
+    @     0xac23d3c8ff64 (unknown)
+terminate called after throwing an instance of 'boost::wrapexcept<boost::lock_error>'
+  what():  boost: mutex lock failed in pthread_mutex_lock: Invalid argument
+*** Aborted at 1790606702 (unix time) try "date -d @1790606702" if you are using GNU date ***
+PC: @                0x0 (unknown)
+*** SIGABRT (@0x19e7) received by PID 6631 (TID 0xff49de83aad0) from PID 6631; stack trace: ***
+    @     0xff49e11a3f10 (unknown)
+    @     0xff49e14c18f8 ([vdso]+0x8f7)
+    @     0xff49e0d47d88 gsignal
+    @     0xff49e0d34aac abort
+    @     0xff49e0ff78bc __gnu_cxx::__verbose_terminate_handler()
+    @     0xff49e0ff520c (unknown)
+    @     0xff49e0ff4044 (unknown)
+    @     0xff49e0ff48a4 __gxx_personality_v0
+    @     0xff49e0e94964 (unknown)
+    @     0xff49e0e94ef4 _Unwind_Resume
+    @     0xff49e13b0188 ros::TimerManager<>::remove()
+    @     0xff49e13ae734 ros::Timer::Impl::stop()
+    @     0xff49e13ae800 ros::Timer::Impl::~Impl()
+    @     0xff49e13b207c boost::detail::sp_counted_impl_p<>::dispose()
+    @     0xff49e13ae5bc ros::Timer::~Timer()
+    @     0xff49e0d4a48c (unknown)
+    @     0xff49e0d4a61c exit
+    @     0xff49e0d34e14 __libc_start_main
+    @     0xbfdd3a05ff64 (unknown)
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+
+[1mROS_MASTER_URI=http://localhost:11328[0m
+]2;/comparison/gvp.launch http://localhost:11328
+[1mprocess[murder_1-1]: started with pid [6628][0m
+[1mprocess[traj_exc_node1-2]: started with pid [6629][0m
+[1mprocess[murder_2-3]: started with pid [6630][0m
+[1mprocess[traj_exc_node2-4]: started with pid [6631][0m
+[1mprocess[sim1_bridge_exp_tcp_sim-5]: started with pid [6638][0m
+[sim1_bridge_exp_tcp_sim-5] killing on exit
+[traj_exc_node2-4] killing on exit
+[murder_2-3] killing on exit
+[traj_exc_node1-2] killing on exit
+[murder_1-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

@@ -1,0 +1,92 @@
+{
+  "schema": "annual.execution-diagnostics/1",
+  "run": "/workspace/artifacts/todo-execution/formal-10/main-no_fault-901-baseline",
+  "mission_start": 16.002000000000002,
+  "mission_end": 652.5020000000001,
+  "low_speed_threshold_mps": 0.1,
+  "expected_fleet_s": 1909.5000000000005,
+  "classified_execution_fleet_s": 1909.2010000000098,
+  "pose_speed_covered_fleet_s": 1909.2010000000282,
+  "actual_low_speed_fleet_s": 1173.5190000000096,
+  "actual_low_speed_fraction": 0.6146649828907444,
+  "actual_motion_fleet_s": 735.6820000000005,
+  "maximum_sampled_pose_speed_mps": 0.6489256549271066,
+  "residence_by_phase_fleet_s": {
+    "planning_wait": 391.00299999999976,
+    "allocation_wait": 170.67700000000053,
+    "reservation_wait": 156.77999999999932,
+    "execution": 1186.7380000000103,
+    "view_observed": 3.813000000000006,
+    "lease_confirmation_hold": 0.18999999999999773
+  },
+  "low_speed_by_phase_fleet_s": {
+    "planning_wait": 385.8719999999999,
+    "allocation_wait": 170.0710000000006,
+    "reservation_wait": 156.77999999999932,
+    "execution": 456.793000000001,
+    "view_observed": 3.813000000000006,
+    "lease_confirmation_hold": 0.18999999999999773
+  },
+  "residence_by_uav_s": {
+    "1": {
+      "planning_wait": 131.42700000000002,
+      "allocation_wait": 58.229000000000426,
+      "reservation_wait": 50.963999999999736,
+      "execution": 394.57199999999995,
+      "view_observed": 1.2079999999999416
+    },
+    "2": {
+      "allocation_wait": 53.44200000000005,
+      "planning_wait": 153.5239999999999,
+      "reservation_wait": 52.59699999999995,
+      "execution": 375.2380000000001,
+      "view_observed": 1.5999999999999837
+    },
+    "0": {
+      "planning_wait": 106.05199999999984,
+      "allocation_wait": 59.00600000000005,
+      "reservation_wait": 53.218999999999625,
+      "execution": 416.92800000000045,
+      "view_observed": 1.0050000000000807,
+      "lease_confirmation_hold": 0.18999999999999773
+    }
+  },
+  "planning_request_counts": {
+    "planning_result": 271
+  },
+  "unmatched_request_results": 271,
+  "request_overlap_status": "UNAVAILABLE_WITHOUT_COMPLETE_REQUEST_BOUNDARIES",
+  "planning_request_union_fleet_s": null,
+  "planning_execution_overlap_fleet_s": null,
+  "planning_during_actual_motion_fleet_s": null,
+  "planning_during_low_speed_fleet_s": null,
+  "handoff": {
+    "ready_views": 143,
+    "proposed": 0,
+    "authorized": 0,
+    "consumed": 0,
+    "proposed_to_consumed_ratio": null,
+    "cancelled_reasons": {},
+    "proposal_to_authorization_sim_s": null,
+    "attempts": [],
+    "rolling_latency_evidence": []
+  },
+  "limitations": [
+    "Low speed uses finite differences of sampled physical poses, not commanded reference speed.",
+    "Phase labels identify recorded execution states; low-speed tracking is not automatically planning delay.",
+    "Intervals with stale/missing execution or pose samples are unclassified, never silently zero.",
+    "Planning intervals include queue, compute and delivery. Parallel work is unioned per UAV, not summed as mission delay.",
+    "Ready views are not one-to-one with handoff proposals; ready-to-consumed is not an adoption success rate.",
+    "Legacy baseline lacks request submission IDs; request/flight overlap remains unavailable."
+  ],
+  "input_sha256": {
+    "summary.json": "df9831bb3793666c621f0a3665d6c17683d1c08634d2d6a013b5309afb211567",
+    "trajectory.csv": "ac2a774b363500e8116e8f8968ee6a55855854f10ef5f35bd9b8c326a806b752",
+    "execution-evidence.jsonl": "195d389da1c5278a3f3e42fb6a74bba3ac38f598e1f306771577f5432c42e252",
+    "peer_states.jsonl": "7a1cede03782fc0b3cb3030d9c62500ee8297676ae30cc72f32d31afae4ebcce",
+    "drone_1/events.jsonl": "541f5f48e2ed392bdc76d98ef464f442bb73e371362556ee3a67b47e64c61978",
+    "drone_0/events.jsonl": "63144d518a443d717448b95f388566f8e860df537d710f61d9428691e2e47fc8",
+    "drone_2/events.jsonl": "d8f026212938af9b560cd0371d6e49fdd3c81566aaa1d002a901a57acd6089b7"
+  },
+  "tool_sha256": "471deddd967cf4d74068d382a1b8b62c64ba8ded83c0c9a3be33b4e1521ab2c3"
+}

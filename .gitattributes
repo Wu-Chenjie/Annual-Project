@@ -1,1 +1,6 @@
 # Git attributes for this repository.
+
+# Frozen evidence must retain exact bytes for its SHA256 manifests.
+system-comparison/** -text
+planner-optimization/** -text
+ros2_ws/docs/validation/gap-closure-20261005/** -text

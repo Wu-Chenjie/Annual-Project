@@ -1,0 +1,22 @@
+{
+  "passed": false,
+  "errors": [
+    "Authorized handoff not consumed 1:9aaedb8d:401008"
+  ],
+  "handoffs": [
+    {
+      "token": "1:9aaedb8d:401008",
+      "old_token": "1:9aaedb8d:401007",
+      "authorized_at": 105.60000000000001,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 6.798699777552591e-17,
+        "acceleration": 8.582937747229195e-17,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      }
+    }
+  ],
+  "gate_errors": []
+}

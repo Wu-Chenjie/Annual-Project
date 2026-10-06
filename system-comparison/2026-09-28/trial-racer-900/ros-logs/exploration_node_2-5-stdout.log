@@ -1,0 +1,1127 @@
+hit: 0.619039, miss: -0.619039, min: -1.99243, max: 2.19722, thresh: 1.38629
+origin_:   -7   -7 -0.1
+map size:  14  14 3.5
+origin_:   -7   -7 -0.1
+map size:  14  14 3.5
+origin_:   -7   -7 -0.1
+map size:  14  14 3.5
+data size: 9
+grid num: 3 3 1
+resolution: 4 4 3
+data size: 36
+grid num: 6 6 1
+resolution: 2 2 3
+origin_:   -7   -7 -0.1
+map size:  14  14 3.5
+[0m[INFO] [1790607019.780855544, 1.008999999]: [FSM]: Drone 2 state: INIT[0m
+[0m[INFO] [1790607020.796374508, 2.016999999]: [FSM]: Drone 2 state: INIT[0m
+[0m[INFO] [1790607021.787493821, 3.011000000]: [FSM]: Drone 2 from INIT to WAIT_TRIGGER[0m
+[0m[INFO] [1790607021.794473600, 3.020999999]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607022.286714598, 3.504000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607022.286733441, 3.504000000]: Total t: 0.000000[0m
+odom: -3.99676   2.9984 0.991776
+[0m[INFO] [1790607022.286744363, 3.504000000]: Find grid tour---------------[0m
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607022.792800932, 4.008000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607022.792821484, 4.008000000]: Total t: 0.000000[0m
+odom: -4.00312  2.99564  1.12393
+[0m[INFO] [1790607022.792832322, 4.008000000]: Find grid tour---------------[0m
+Allocated grid: 6, 7, 8, 18, 30, 23, 29, 28, 27, 13, 14, 20, 23, 29, 30, 27, 28, 31, 32, 
+Grid tour: 20, 14, 13, 18, 23, 23, 29, 29, 30, 30, 31, 32, 8, 7, 28, 28, 27, 27, 6, 
+[0m[INFO] [1790607022.886912006, 4.104000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607023.301601038, 4.517000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607023.301623091, 4.517000000]: Total t: 0.009000[0m
+odom: -3.99676  2.99727  1.16697
+[0m[INFO] [1790607023.301635347, 4.517000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 20, 14, 13, 12, 18, 30, 31, 32, 13, 14, 20, 31, 32, 
+Grid tour: 20, 20, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607023.805214136, 5.008000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607023.805233687, 5.008000000]: Total t: 0.000000[0m
+odom: -4.0019 2.99176 1.18794
+[0m[INFO] [1790607023.805247403, 5.017000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 20, 20, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 
+Grid tour: 20, 20, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607023.900427219, 5.113000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607024.307573649, 5.508000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607024.307595993, 5.508000000]: Total t: 0.000000[0m
+odom: -3.99653  2.99839  1.19279
+[0m[INFO] [1790607024.307608249, 5.508000000]: Find grid tour---------------[0m
+Allocated grid: 8, 20, 14, 13, 12, 18, 30, 31, 32, 13, 14, 20, 31, 32, 
+Grid tour: 20, 20, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 
+Frontier num: 5, 2
+Frontier cost mat size: 5
+[0m[INFO] [1790607024.821317226, 6.008000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607024.821336110, 6.008000000]: Total t: 0.000000[0m
+odom: -3.99733  2.99502  1.20335
+[0m[INFO] [1790607024.821346782, 6.008000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 20, 14, 13, 12, 18, 30, 31, 32, 13, 14, 20, 31, 32, 
+Grid tour: 20, 20, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607024.928734324, 6.123000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 6, 3
+Frontier cost mat size: 6
+[0m[INFO] [1790607025.328489936, 6.517000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607025.328511905, 6.517000000]: Total t: 0.009000[0m
+odom: -3.99088  3.00182  1.19925
+[0m[INFO] [1790607025.328524453, 6.517000000]: Find grid tour---------------[0m
+Allocated grid: 8, 20, 14, 13, 12, 18, 30, 31, 32, 13, 14, 20, 31, 32, 
+Grid tour: 18, 12, 13, 13, 14, 14, 20, 20, 32, 32, 31, 31, 30, 8, 
+Frontier num: 6, 3
+Frontier cost mat size: 6
+[0m[INFO] [1790607025.841129669, 7.008000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607025.841156724, 7.008000000]: Total t: 0.000000[0m
+odom: -4.00083  3.01034  1.21226
+[0m[INFO] [1790607025.841169064, 7.008000000]: Find grid tour---------------[0m
+Allocated grid: 8, 18, 12, 13, 13, 14, 14, 32, 32, 31, 31, 30, 
+Grid tour: 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 
+[0m[INFO] [1790607025.944122598, 7.123000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 7, 5
+Frontier cost mat size: 7
+[0m[INFO] [1790607026.347361117, 7.517000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607026.347385629, 7.517000000]: Total t: 0.009000[0m
+odom: -3.9954  3.0047 1.20584
+[0m[INFO] [1790607026.347398761, 7.517000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 14, 13, 12, 18, 30, 31, 32, 13, 19, 14, 31, 32, 19, 
+Grid tour: 19, 19, 14, 14, 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+Frontier num: 6, 9
+Frontier cost mat size: 6
+[0m[INFO] [1790607026.862416058, 8.007999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607026.862440362, 8.007999999]: Total t: 0.000000[0m
+odom: -4.00162  3.00426  1.20206
+[0m[INFO] [1790607026.862452493, 8.007999999]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 13, 13, 12, 18, 30, 31, 31, 32, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607026.988621838, 8.140000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 6, 5
+Frontier cost mat size: 6
+[0m[INFO] [1790607027.383582553, 8.518000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607027.383608607, 8.518000000]: Total t: 0.009000[0m
+odom: -3.99452  3.00489  1.19281
+[0m[INFO] [1790607027.383683770, 8.518000000]: Find grid tour---------------[0m
+Allocated grid: 13, 12, 18, 13, 
+Grid tour: 13, 13, 12, 18, 
+Frontier num: 6, 5
+Frontier cost mat size: 6
+[0m[INFO] [1790607027.888877741, 9.009000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607027.888907214, 9.009000000]: Total t: 0.000000[0m
+odom: -3.99525  2.99924  1.19242
+[0m[INFO] [1790607027.888922055, 9.009000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 13, 12, 18, 30, 31, 32, 13, 31, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607028.025914975, 9.153000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 5, 8
+Frontier cost mat size: 5
+[0m[INFO] [1790607028.407122109, 9.509000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607028.407149581, 9.509000000]: Total t: 0.000000[0m
+odom: -4.0035 2.99879 1.19764
+[0m[INFO] [1790607028.407161837, 9.509000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 13, 12, 18, 30, 31, 32, 13, 31, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+Frontier num: 5, 8
+Frontier cost mat size: 5
+[0m[INFO] [1790607028.917071540, 10.009999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607028.917100346, 10.009999999]: Total t: 0.000000[0m
+odom: -4.00753  2.99707   1.2008
+[0m[INFO] [1790607028.917114603, 10.009999999]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 13, 13, 12, 18, 30, 31, 31, 32, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607029.051347227, 10.156000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 5, 9
+Frontier cost mat size: 5
+[0m[INFO] [1790607029.410411420, 10.502000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607029.410436641, 10.502000000]: Total t: 0.000000[0m
+odom: -4.00563   3.0007  1.20177
+[0m[INFO] [1790607029.410449522, 10.502000000]: Find grid tour---------------[0m
+Allocated grid: 8, 13, 12, 18, 30, 31, 32, 13, 31, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 
+Frontier num: 6, 9
+Frontier cost mat size: 6
+[0m[INFO] [1790607029.925664835, 11.002000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607029.925690431, 11.002000000]: Total t: 0.000000[0m
+odom: -4.00322  2.99587  1.20119
+[0m[INFO] [1790607029.925702562, 11.002000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 13, 12, 18, 30, 31, 32, 13, 31, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607030.076790652, 11.156000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 7, 8
+Frontier cost mat size: 7
+[0m[INFO] [1790607030.449814529, 11.512000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607030.449840208, 11.512000000]: Total t: 0.010000[0m
+odom: -3.98616  2.99447  1.19874
+[0m[INFO] [1790607030.449853674, 11.512000000]: Find grid tour---------------[0m
+Allocated grid: 8, 13, 12, 18, 30, 31, 32, 13, 31, 32, 
+Grid tour: 13, 13, 12, 18, 30, 31, 31, 32, 32, 8, 
+Frontier num: 7, 8
+Frontier cost mat size: 7
+[0m[INFO] [1790607030.962674539, 12.012000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607030.962700761, 12.012000000]: Total t: 0.010000[0m
+odom: -4.00196  2.99895   1.1917
+[0m[INFO] [1790607030.962714726, 12.012000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 18, 30, 31, 32, 19, 31, 32, 19, 
+Grid tour: 19, 19, 12, 18, 30, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607031.105990912, 12.156000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 4, 16
+Frontier cost mat size: 4
+[0m[INFO] [1790607031.468729566, 12.512000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607031.468770503, 12.512000000]: Total t: 0.010000[0m
+odom: -4.0002 3.01381 1.20556
+[0m[INFO] [1790607031.468790429, 12.512000000]: Find grid tour---------------[0m
+Allocated grid: 8, 18, 30, 31, 32, 31, 32, 
+Grid tour: 18, 30, 31, 31, 32, 32, 8, 
+Frontier num: 3, 16
+Frontier cost mat size: 3
+[0m[INFO] [1790607031.962315152, 13.002000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607031.962338080, 13.002000000]: Total t: 0.000000[0m
+odom: -4.00404  3.00933  1.20443
+[0m[INFO] [1790607031.962349461, 13.002000000]: Find grid tour---------------[0m
+Allocated grid: 8, 18, 30, 31, 31, 32, 32, 
+Grid tour: 18, 30, 31, 31, 32, 32, 8, 
+[0m[INFO] [1790607032.110081040, 13.156000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 1, 16
+Frontier cost mat size: 1
+[0m[INFO] [1790607032.468695549, 13.512000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607032.468718936, 13.512000000]: Total t: 0.010000[0m
+odom: -4.00283  3.00555  1.19586
+[0m[INFO] [1790607032.468730609, 13.512000000]: Find grid tour---------------[0m
+Allocated grid: 8, 30, 31, 32, 31, 32, 
+Grid tour: 30, 31, 31, 32, 32, 8, 
+Frontier num: 1, 16
+Frontier cost mat size: 1
+[0m[INFO] [1790607032.967587954, 14.002000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607032.967606630, 14.002000000]: Total t: 0.000000[0m
+odom: -4.00486  2.99853  1.19612
+[0m[INFO] [1790607032.967617553, 14.002000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 32, 31, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607033.118702307, 14.156000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 15
+Frontier cost mat size: 2
+[0m[INFO] [1790607033.477392146, 14.505000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607033.477412406, 14.505000000]: Total t: 0.000000[0m
+odom: -4.0026 2.99443 1.20237
+[0m[INFO] [1790607033.477422536, 14.505000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 12, 
+Grid tour: 12, 12, 30, 31, 31, 32, 32, 8, 
+Frontier num: 2, 15
+Frontier cost mat size: 2
+[0m[INFO] [1790607033.981303393, 15.005000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607033.981326779, 15.005000000]: Total t: 0.000000[0m
+odom: -4.00009  2.99704  1.20833
+[0m[INFO] [1790607033.981351959, 15.005000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 32, 31, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607034.129690049, 15.159000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607034.487383306, 15.505000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607034.487408944, 15.505000000]: Total t: 0.000000[0m
+odom: -3.99592   3.0062  1.19971
+[0m[INFO] [1790607034.487422993, 15.505000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607034.992672367, 16.004000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607034.992696879, 16.004000000]: Total t: 0.000000[0m
+odom: -4.00098  2.99758  1.20324
+[0m[INFO] [1790607034.992708218, 16.004000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 32, 31, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607035.147309063, 16.160000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607035.505433870, 16.507000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607035.505454672, 16.507000000]: Total t: 0.000000[0m
+odom: -3.9965 2.99151 1.19845
+[0m[INFO] [1790607035.505466136, 16.507000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607036.001842783, 17.001000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607036.001861168, 17.001000000]: Total t: 0.000000[0m
+odom: -3.99645   2.9942  1.20316
+[0m[INFO] [1790607036.001872548, 17.001000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 31, 32, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+[0m[INFO] [1790607036.162258034, 17.166000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607036.506524332, 17.504000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607036.506544133, 17.504000000]: Total t: 0.000000[0m
+odom: -4.00474   2.9961  1.20446
+[0m[INFO] [1790607036.506555597, 17.504000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607037.022172986, 18.007000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607037.022219176, 18.007000000]: Total t: 0.000000[0m
+odom: -3.99598  3.00325  1.20087
+[0m[INFO] [1790607037.022234725, 18.007000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 32, 31, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607037.188708420, 18.181000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607037.513077107, 18.501000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607037.513094699, 18.501000000]: Total t: 0.000000[0m
+odom: -4.0007 2.99932 1.20376
+[0m[INFO] [1790607037.513106163, 18.501000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607038.022082858, 19.004000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607038.022124087, 19.004000000]: Total t: 0.000000[0m
+odom: -3.99696  3.00212  1.20395
+[0m[INFO] [1790607038.022148349, 19.004000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 32, 31, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607038.203694077, 19.187000000]: [FSM]: Drone 2 state: WAIT_TRIGGER[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607038.529536750, 19.507000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607038.529560762, 19.507000000]: Total t: 0.000000[0m
+odom: -4.00305  3.00045  1.19873
+[0m[INFO] [1790607038.529573727, 19.507000000]: Find grid tour---------------[0m
+Allocated grid: 8, 12, 30, 31, 32, 31, 32, 
+Grid tour: 12, 30, 31, 31, 32, 32, 8, 
+Triggered!
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607039.029666065, 20.001000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607039.029687659, 20.001000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607039.029693954, 20.001000000]: [triggerCallback]: Drone 2 from WAIT_TRIGGER to PLAN_TRAJ[0m
+start pos: -4.0006 2.99481 1.20619, vel: 0.00615397  -0.016475 0.00441421, acc: 0 0 0
+[0m[INFO] [1790607039.029723802, 20.001000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 32, 31, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607039.043974716, 20.010000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607039.056235843, 20.019999999]: Grid tour t: 0.009000, frontier tour t: 0.010000.[0m
+Local refine graph size: 1, 2, 1, 
+Next view: -4.16791  1.68797  1.59894, -2.38519
+Traj opt iter num: 125
+[0m[INFO] [1790607039.059875454, 20.028999999]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607039.059896798, 20.028999999]: Total time: 0.028000[0m
+[0m[INFO] [1790607039.059906511, 20.028999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607039.219183068, 20.193000000]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607039.230010729, 20.202000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607040.236168932, 21.199000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607040.392967626, 21.346000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607040.392993264, 21.346000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607040.393027823, 21.346000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -4.00402  2.89867  1.24325, vel: -0.0158296  -0.153405  0.0539971, acc: -0.0263896  -0.160778  0.0519685
+[0m[INFO] [1790607040.393149300, 21.346000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 31, 32, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607040.404219791, 21.355000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607040.409758392, 21.364000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 2, 1, 
+Next view: -4.16791  1.68797  1.59894, -2.38519
+Traj opt iter num: 53
+[0m[INFO] [1790607040.412620156, 21.364000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607040.412649795, 21.364000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607040.412664469, 21.364000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607040.596314749, 21.548999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607040.900601858, 21.843000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607040.900627788, 21.843000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607040.900670601, 21.843000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -4.01511  2.80281  1.27555, vel: -0.0284259  -0.231434   0.075692, acc:  -0.02422 -0.152345 0.0431842
+[0m[INFO] [1790607040.902275903, 21.843000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 31, 32, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607040.915377992, 21.852000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607040.921628658, 21.861000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 2, 1, 
+Next view: -4.16791  1.68797  1.59894, -2.38519
+Traj opt iter num: 60
+[0m[INFO] [1790607040.924458322, 21.861000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607040.924484793, 21.861000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607040.924493256, 21.861000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607041.103537233, 22.044000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607041.262662673, 22.199000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607041.326232067, 22.254000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607041.326274296, 22.254000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607041.326374471, 22.254000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -4.02867  2.69563  1.31008, vel: -0.0375829  -0.289928  0.0916516, acc: -0.0214185  -0.136718  0.0355062
+[0m[INFO] [1790607041.326640438, 22.254000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 12, 31, 31, 32, 32, 
+Grid tour: 12, 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607041.339595120, 22.263000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607041.348976809, 22.282000000]: Grid tour t: 0.009000, frontier tour t: 0.019000.[0m
+Local refine graph size: 1, 2, 1, 
+Next view: -4.16791  1.68797  1.59894, -2.38519
+Traj opt iter num: 61
+[0m[INFO] [1790607041.352107081, 22.282000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607041.352132094, 22.282000000]: Total time: 0.028000[0m
+[0m[INFO] [1790607041.352141098, 22.282000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607041.527562557, 22.455999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 1, 17
+Frontier cost mat size: 1
+[0m[INFO] [1790607041.746659009, 22.667000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607041.746684647, 22.667000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607041.746728335, 22.667000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -4.04594  2.56431  1.35101, vel: -0.0462037  -0.345841   0.105822, acc: -0.0207271  -0.133889  0.0323011
+[0m[INFO] [1790607041.747264353, 22.667000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607041.759598142, 22.676999999]: Find frontier tour, 0 involved------------[0m
+Next view: -1.30139 -0.28284  1.59024, 0.227291
+Mid goal
+near end
+Traj opt iter num: 156
+[0m[INFO] [1790607041.762523521, 22.676999999]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607041.762551284, 22.676999999]: Total time: 0.010000[0m
+[0m[INFO] [1790607041.762560664, 22.676999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607041.952868729, 22.868999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 1, 17
+Frontier cost mat size: 1
+[0m[INFO] [1790607042.164102335, 23.079000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607042.164123679, 23.079000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607042.164165741, 23.079000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -4.04185  2.40624  1.39671, vel:  0.131208 -0.438157  0.113782, acc:   0.706613  -0.273526 0.00787711
+[0m[INFO] [1790607042.164475855, 23.079000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607042.175583406, 23.088000000]: Find frontier tour, 0 involved------------[0m
+Next view:   -1.1507 -0.257788   1.68689, 0.225489
+Mid goal
+Traj opt iter num: 179
+[0m[INFO] [1790607042.177533881, 23.088000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607042.177550305, 23.088000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607042.177559143, 23.088000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607042.292297692, 23.207000000]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607042.368960796, 23.280000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 1, 17
+Frontier cost mat size: 1
+[0m[INFO] [1790607042.598451860, 23.500000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607042.598473579, 23.500000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607042.598514849, 23.500000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -3.91218   2.2119  1.44575, vel:  0.441935 -0.484129  0.117747, acc:   0.674931  -0.029934 0.00504024
+[0m[INFO] [1790607042.598692146, 23.500000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607042.607512054, 23.509000000]: Find frontier tour, 0 involved------------[0m
+Next view: -0.836648 -0.186505   1.79778, 0.164785
+Mid goal
+near end
+nlopt failure
+Traj opt iter num: 171
+[0m[INFO] [1790607042.609541818, 23.509000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607042.609560494, 23.509000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607042.609569249, 23.509000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607042.813230112, 23.710000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 1, 17
+Frontier cost mat size: 1
+[0m[INFO] [1790607043.017828402, 23.903999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607043.017852122, 23.903999999]: Total t: 0.000000[0m
+[0m[INFO] [1790607043.017899812, 23.903999999]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -3.68577  2.01162  1.49552, vel:  0.629198 -0.480658  0.124025, acc:  0.268838 0.0456971 0.0212143
+[0m[INFO] [1790607043.019132762, 23.913000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607043.026169237, 23.913000000]: Find frontier tour, 0 involved------------[0m
+Next view:  -0.83786 -0.179043   1.86068, 0.159007
+Mid goal
+near end
+Traj opt iter num: 117
+[0m[INFO] [1790607043.027599118, 23.913000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607043.027615418, 23.913000000]: Total time: 0.000000[0m
+[0m[INFO] [1790607043.027623255, 23.913000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607043.231876872, 24.114000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607043.336104377, 24.214999999]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607043.447525643, 24.315000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607043.447553157, 24.315000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607043.447612561, 24.315000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -3.41375  1.82106  1.54799, vel:  0.679909 -0.440939  0.130657, acc: 0.0266049  0.137753 0.0113693
+[0m[INFO] [1790607043.449076001, 24.324000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607043.457252421, 24.324000000]: Find frontier tour, 0 involved------------[0m
+Next view: -0.0402143  -0.610824    1.83021, 1.15322
+Mid goal
+Traj opt iter num: 88
+[0m[INFO] [1790607043.458228700, 24.324000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607043.458260549, 24.324000000]: Total time: 0.000000[0m
+[0m[INFO] [1790607043.458274973, 24.324000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607043.656406406, 24.525999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607043.870417275, 24.727000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607043.870440870, 24.727000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607043.870483683, 24.727000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -3.11459  1.65757  1.60229, vel:  0.747342 -0.371963  0.132572, acc:    0.173368    0.123447 -0.00144335
+[0m[INFO] [1790607043.874039377, 24.736000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607043.882612828, 24.736000000]: Find frontier tour, 0 involved------------[0m
+Next view: 0.0572567 -0.499636   1.75711, 1.23923
+Mid goal
+Traj opt iter num: 188
+[0m[INFO] [1790607043.884002022, 24.745000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607043.884017989, 24.745000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607043.884026201, 24.745000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607044.085248887, 24.937000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607044.489690257, 25.150999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607044.489801229, 25.150999999]: Total t: 0.000000[0m
+[0m[INFO] [1790607044.489887689, 25.150999999]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -2.78171  1.52768  1.65695, vel:  0.806254 -0.271815  0.124071, acc:    0.10556   0.270165 -0.0356568
+[0m[INFO] [1790607044.491230485, 25.160000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607044.500169828, 25.169000000]: Find frontier tour, 0 involved------------[0m
+Next view: -0.436531  0.193369   1.72515, 0.877567
+Mid goal
+Traj opt iter num: 151
+[0m[INFO] [1790607044.502002744, 25.169000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607044.502058230, 25.169000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607044.502078740, 25.169000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607044.547914021, 25.214999999]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607044.702567476, 25.370000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 16
+Frontier cost mat size: 2
+[0m[INFO] [1790607044.905351484, 25.562000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607044.905373453, 25.562000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607044.905422770, 25.562000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -2.4353 1.44328 1.70483, vel:  0.829718 -0.172752 0.0998929, acc:   0.025247   0.121599 -0.0774938
+[0m[INFO] [1790607044.920765354, 25.580999999]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607044.955871481, 25.589999999]: Find frontier tour, 0 involved------------[0m
+Next view:  0.788694 -0.301536   1.72845, 1.11552
+Mid goal
+Traj opt iter num: 273
+[0m[INFO] [1790607044.960476616, 25.589999999]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607044.960522347, 25.589999999]: Total time: 0.009000[0m
+[0m[INFO] [1790607044.960538147, 25.589999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607045.268928807, 25.798000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607045.467971320, 25.990999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607045.467997083, 25.990999999]: Total t: 0.010000[0m
+[0m[INFO] [1790607045.468043565, 25.990999999]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -2.09515  1.38023   1.7357, vel:  0.824381 -0.159556 0.0455248, acc: -0.030452   -0.1102 -0.169154
+[0m[INFO] [1790607045.468183551, 25.990999999]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607045.482582789, 26.000000000]: Find frontier tour, 0 involved------------[0m
+Next view: 0.629744 -0.11365  1.73567, 1.2578
+Mid goal
+Traj opt iter num: 136
+[0m[INFO] [1790607045.483792644, 26.000000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607045.483809069, 26.000000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607045.483817198, 26.000000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607045.672268501, 26.192000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607045.717644678, 26.228000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 1, 18
+Frontier cost mat size: 1
+[0m[INFO] [1790607045.889075517, 26.393000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607045.889097320, 26.393000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607045.889145427, 26.393000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -1.75815  1.30187  1.73178, vel:   0.805084  -0.253605 -0.0749635, acc: -0.0831126  -0.401991  -0.347307
+[0m[INFO] [1790607045.895279159, 26.402000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607045.915733673, 26.420000000]: Find frontier tour, 0 involved------------[0m
+Next view:     0.693578 -0.000771741      1.72313, 1.29482
+Mid goal
+nlopt failure
+Traj opt iter num: 267
+[0m[INFO] [1790607045.916714788, 26.420000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607045.916728337, 26.420000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607045.916736424, 26.420000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607046.114951899, 26.618999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 1, 18
+Frontier cost mat size: 1
+[0m[INFO] [1790607046.320628144, 26.820000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607046.320657743, 26.820000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607046.320705641, 26.820000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -1.43115    1.169  1.67792, vel:  0.791412  -0.38623 -0.177706, acc: 0.0855352 -0.252415 -0.155022
+[0m[INFO] [1790607046.320954891, 26.820000000]: Find grid tour---------------[0m
+Allocated grid: 8, 7, 31, 31, 32, 32, 
+Grid tour: 31, 31, 32, 32, 8, 7, 
+[0m[INFO] [1790607046.339566484, 26.838999999]: Find frontier tour, 0 involved------------[0m
+Next view: 0.803426  0.15762   1.7342, 1.36668
+Mid goal
+Traj opt iter num: 171
+[0m[INFO] [1790607046.342308979, 26.838999999]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607046.342350792, 26.838999999]: Total time: 0.019000[0m
+[0m[INFO] [1790607046.342368467, 26.838999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607046.524638265, 27.021000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 2, 17
+Frontier cost mat size: 2
+[0m[INFO] [1790607046.741642922, 27.222000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607046.741671019, 27.222000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607046.741772445, 27.222000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+[0m[INFO] [1790607046.749134958, 27.231000000]: [FSM]: Drone 2 state: PLAN_TRAJ[0m
+start pos: -1.15453  0.96429    1.588, vel:  0.541113 -0.640996 -0.257218, acc: -0.674923  -0.61907 -0.120806
+[0m[INFO] [1790607046.749202741, 27.231000000]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 35, 41, 36, 42, 29, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 29, 
+[0m[INFO] [1790607046.765726916, 27.250000000]: Find frontier tour, 0 involved------------[0m
+Next view: 0.959631 0.375893  1.80853, 1.21208
+Mid goal
+Traj opt iter num: 184
+[0m[INFO] [1790607046.767661675, 27.250000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607046.767678016, 27.250000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607046.767688188, 27.250000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607046.953713488, 27.432999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 17
+Frontier cost mat size: 3
+[0m[INFO] [1790607047.174256913, 27.643000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607047.174290096, 27.643000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607047.174343706, 27.643000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -0.97521 0.656344  1.47706, vel:   0.41042 -0.747189 -0.249521, acc: 0.0445288  0.107621  0.130794
+[0m[INFO] [1790607047.178406611, 27.643000000]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 36, 42, 41, 35, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 
+[0m[INFO] [1790607047.189572942, 27.652000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607047.196133470, 27.661000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 8, 1, 
+Next view:  1.0166 1.08252 1.85434, 1.20895
+Mid goal
+Traj opt iter num: 329
+[0m[INFO] [1790607047.201926365, 27.670000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607047.201955297, 27.670000000]: Total time: 0.027000[0m
+[0m[INFO] [1790607047.201966135, 27.670000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607047.374642806, 27.844000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 17
+Frontier cost mat size: 3
+[0m[INFO] [1790607047.591977210, 28.054999999]: Drone 2: frontier t: 0.000000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607047.592004432, 28.054999999]: Total t: 0.010000[0m
+[0m[INFO] [1790607047.592053123, 28.054999999]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -0.765768  0.399311   1.42482, vel:  0.619559 -0.453451 0.0279108, acc: 0.299657  0.81992 0.770664
+[0m[INFO] [1790607047.592223292, 28.054999999]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 36, 42, 41, 35, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 
+[0m[INFO] [1790607047.601759724, 28.064000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607047.606468994, 28.064000000]: Grid tour t: 0.009000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 12, 1, 
+Next view: 1.35781 1.03714 1.90728, 1.39653
+Mid goal
+Traj opt iter num: 187
+[0m[INFO] [1790607047.607482626, 28.073000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607047.607496799, 28.073000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607047.607505512, 28.073000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607047.777944689, 28.237999999]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607047.795371523, 28.256000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 17
+Frontier cost mat size: 3
+[0m[INFO] [1790607048.014603126, 28.466000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607048.014630306, 28.466000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607048.014677413, 28.466000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -0.485108  0.284344   1.48585, vel:  0.739027 -0.100971  0.254312, acc: 0.273195 0.850078 0.362714
+[0m[INFO] [1790607048.014816900, 28.466000000]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 36, 42, 41, 35, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 
+[0m[INFO] [1790607048.022897730, 28.475000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607048.029735313, 28.475000000]: Grid tour t: 0.009000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 12, 1, 
+Next view:  1.3798 1.22505 1.67966, 1.50113
+Mid goal
+Traj opt iter num: 468
+[0m[INFO] [1790607048.032560684, 28.484000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607048.032584654, 28.484000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607048.032593909, 28.484000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607048.219035625, 28.669000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 4, 17
+Frontier cost mat size: 4
+[0m[INFO] [1790607048.440920845, 28.881000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607048.440949109, 28.881000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607048.441011557, 28.881000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: -0.163365  0.287522   1.61659, vel:  0.782478 0.0608603  0.338057, acc: -0.0114825  0.0853568  0.0391931
+[0m[INFO] [1790607048.441243465, 28.881000000]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 36, 42, 41, 35, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 
+[0m[INFO] [1790607048.450232499, 28.890000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607048.457292986, 28.899000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 12, 1, 
+Next view:  1.7503 1.67967 1.56525, 1.93305
+Mid goal
+Traj opt iter num: 337
+[0m[INFO] [1790607048.461083713, 28.899000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607048.461108601, 28.899000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607048.461117980, 28.899000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607048.641367435, 29.083999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607048.816541145, 29.248000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 5, 16
+Frontier cost mat size: 5
+[0m[INFO] [1790607048.872317519, 29.294000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607048.872343782, 29.294000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607048.872394391, 29.294000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 0.142635 0.290736  1.74705, vel:   0.694008 -0.0580157   0.277022, acc: -0.189343 -0.251889 -0.280341
+[0m[INFO] [1790607048.872666569, 29.294000000]: Find grid tour---------------[0m
+Allocated grid: 8, 31, 31, 32, 32, 36, 42, 41, 35, 
+Grid tour: 31, 31, 32, 32, 8, 36, 42, 41, 35, 
+[0m[INFO] [1790607048.892946287, 29.321000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607048.898155432, 29.321000000]: Grid tour t: 0.027000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 8, 1, 
+Next view: 1.62729 1.86855 1.60839, 1.98634
+Mid goal
+Traj opt iter num: 254
+[0m[INFO] [1790607048.901535746, 29.330999999]: Traj: 0.010000, yaw: 0.000000[0m
+[0m[INFO] [1790607048.901563468, 29.330999999]: Total time: 0.037000[0m
+[0m[INFO] [1790607048.901574099, 29.330999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607049.073884711, 29.496999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 16
+Frontier cost mat size: 5
+[0m[INFO] [1790607049.305529642, 29.698000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607049.305558657, 29.698000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607049.305601345, 29.698000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 0.418551  0.26537  1.83063, vel:   0.663732 -0.0840518    0.11881, acc: 0.00781697   0.177573  -0.466881
+[0m[INFO] [1790607049.307899827, 29.707000000]: Find grid tour---------------[0m
+Allocated grid: 31, 31, 32, 32, 36, 42, 41, 35, 37, 43, 38, 44, 
+Grid tour: 31, 31, 32, 32, 38, 44, 43, 37, 36, 42, 41, 35, 
+[0m[INFO] [1790607049.351676496, 29.743999999]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607049.357114922, 29.753000000]: Grid tour t: 0.037000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 11, 1, 
+Next view: 1.95429 2.74146 1.69742, 2.5301
+Mid goal
+Traj opt iter num: 257
+[0m[INFO] [1790607049.360666030, 29.753000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607049.360696462, 29.753000000]: Total time: 0.046000[0m
+[0m[INFO] [1790607049.360706342, 29.753000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607049.518752284, 29.908000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 17
+Frontier cost mat size: 5
+[0m[INFO] [1790607049.780409130, 30.140000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607049.780437561, 30.140000000]: Total t: 0.018000[0m
+[0m[INFO] [1790607049.780490338, 30.140000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 0.693585 0.280872  1.85717, vel:   0.664603   0.101595 -0.0518922, acc: -0.000599594     0.640617    -0.331857
+[0m[INFO] [1790607049.780808788, 30.140000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 43, 37, 42, 41, 35, 
+Grid tour: 32, 32, 38, 44, 37, 43, 42, 41, 35, 
+[0m[INFO] [1790607049.800005257, 30.158000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607049.814609597, 30.167000000]: Grid tour t: 0.018000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 10, 1, 
+Next view: 1.64937 2.80516 1.74307, 1.68023
+Mid goal
+Traj opt iter num: 509
+[0m[INFO] [1790607049.818963856, 30.167000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607049.818995039, 30.167000000]: Total time: 0.027000[0m
+[0m[INFO] [1790607049.819006795, 30.167000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607049.898388007, 30.251000000]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607049.996936590, 30.343000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 17
+Frontier cost mat size: 5
+[0m[INFO] [1790607050.230934948, 30.574000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607050.230975926, 30.574000000]: Total t: 0.018000[0m
+[0m[INFO] [1790607050.231039708, 30.574000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 0.979509 0.392286  1.82104, vel:   0.651276   0.429985 -0.0983419, acc: -0.113691  0.776162 0.0451845
+[0m[INFO] [1790607050.231291417, 30.574000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 37, 43, 42, 41, 35, 
+Grid tour: 32, 32, 38, 44, 37, 43, 42, 41, 35, 
+[0m[INFO] [1790607050.241504730, 30.583999999]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607050.246804337, 30.583999999]: Grid tour t: 0.010000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 8, 1, 
+Next view: 2.00735 3.11091 1.78861, 1.86948
+Mid goal
+Traj opt iter num: 447
+[0m[INFO] [1790607050.250157221, 30.593000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607050.250174021, 30.593000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607050.250183234, 30.593000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607050.439156215, 30.775999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 17
+Frontier cost mat size: 5
+[0m[INFO] [1790607050.668435756, 30.986000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607050.668466688, 30.986000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607050.668523424, 30.986000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos:  1.21487 0.634309  1.78793, vel:   0.448995   0.693175 -0.0613976, acc: -0.651197  0.386231 0.0981119
+[0m[INFO] [1790607050.668647195, 30.986000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 37, 43, 42, 41, 35, 
+Grid tour: 32, 32, 38, 37, 44, 43, 42, 41, 35, 
+[0m[INFO] [1790607050.679869219, 30.995000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607050.690254576, 31.013000000]: Grid tour t: 0.009000, frontier tour t: 0.018000.[0m
+Local refine graph size: 1, 12, 1, 
+Next view: 2.10568   3.078  1.7096, 2.47793
+Mid goal
+Traj opt iter num: 318
+[0m[INFO] [1790607050.693248906, 31.013000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607050.693274585, 31.013000000]: Total time: 0.027000[0m
+[0m[INFO] [1790607050.693284674, 31.013000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607050.871335030, 31.187000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607050.940342891, 31.251000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 5, 17
+Frontier cost mat size: 5
+[0m[INFO] [1790607051.171284596, 31.457000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.014000, mat: 0.000000[0m
+[0m[INFO] [1790607051.171313903, 31.457000000]: Total t: 0.014000[0m
+[0m[INFO] [1790607051.171361176, 31.457000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos:  1.37041 0.983349  1.76991, vel:   0.275232    0.74266 -0.0229319, acc: -0.0758065  -0.051403   0.041758
+[0m[INFO] [1790607051.172129935, 31.457000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 37, 44, 43, 42, 41, 35, 
+Grid tour: 32, 32, 38, 44, 37, 43, 42, 41, 35, 
+[0m[INFO] [1790607051.188136101, 31.475000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607051.198894061, 31.484000000]: Grid tour t: 0.018000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 12, 1, 
+Next view: 2.30196 3.59169  1.7593, 1.86423
+Mid goal
+Traj opt iter num: 171
+[0m[INFO] [1790607051.201538174, 31.493999999]: Traj: 0.010000, yaw: 0.000000[0m
+[0m[INFO] [1790607051.201559059, 31.493999999]: Total time: 0.037000[0m
+[0m[INFO] [1790607051.201568564, 31.493999999]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607051.367892393, 31.660000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 18
+Frontier cost mat size: 5
+[0m[INFO] [1790607051.594133207, 31.870000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607051.594166015, 31.870000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607051.594431731, 31.879000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 1.53559 1.27705 1.78283, vel:  0.540611  0.660762 0.0812375, acc:   0.596064 -0.0293291  0.0439391
+[0m[INFO] [1790607051.594507769, 31.879000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 43, 42, 41, 35, 
+Grid tour: 32, 32, 38, 44, 43, 42, 41, 35, 
+[0m[INFO] [1790607051.606477876, 31.888000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607051.612591556, 31.888000000]: Grid tour t: 0.009000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 15, 1, 
+Next view: 2.16613 3.41704 1.71489, 2.07982
+Mid goal
+Traj opt iter num: 253
+[0m[INFO] [1790607051.614558873, 31.888000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607051.614572505, 31.888000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607051.614581676, 31.888000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607051.805239165, 32.082000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607051.985305695, 32.255000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 5, 19
+Frontier cost mat size: 5
+[0m[INFO] [1790607052.031917990, 32.301000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.009000, mat: 0.000000[0m
+[0m[INFO] [1790607052.031939126, 32.301000000]: Total t: 0.018000[0m
+[0m[INFO] [1790607052.031990485, 32.301000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos:  1.8114 1.55006 1.84372, vel: 0.700153 0.638967 0.178359, acc:  0.184071 0.0352128 0.0230066
+[0m[INFO] [1790607052.032254825, 32.301000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 43, 42, 41, 
+Grid tour: 32, 32, 38, 44, 43, 42, 41, 
+[0m[INFO] [1790607052.041691833, 32.310000000]: Find frontier tour, 0 involved------------[0m
+Next view:  2.1303 2.95956 1.53146, 1.22233
+Traj opt iter num: 192
+[0m[INFO] [1790607052.044797968, 32.310000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607052.044831193, 32.310000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607052.044843700, 32.310000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607052.239262944, 32.502000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 4, 20
+Frontier cost mat size: 4
+[0m[INFO] [1790607052.474011135, 32.721000000]: Drone 2: frontier t: 0.018000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607052.474033104, 32.721000000]: Total t: 0.018000[0m
+[0m[INFO] [1790607052.474068872, 32.721000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.08487 1.81709  1.8824, vel:    0.57277   0.629194 -0.0501529, acc: -0.418947  -0.01555 -0.801568
+[0m[INFO] [1790607052.474969030, 32.721000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 43, 
+Grid tour: 32, 32, 38, 44, 43, 
+[0m[INFO] [1790607052.485848092, 32.731000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607052.494364890, 32.731000000]: Grid tour t: 0.010000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 3, 1, 
+Next view: 1.32181 3.63973  1.6222, 2.28037
+Mid goal
+Traj opt iter num: 521
+[0m[INFO] [1790607052.498498330, 32.740000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607052.498522634, 32.740000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607052.498534057, 32.740000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607052.682500035, 32.923000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 4, 22
+Frontier cost mat size: 4
+[0m[INFO] [1790607052.921402594, 33.133000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607052.921429482, 33.133000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607052.921473921, 33.133000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.26032 2.08606 1.81114, vel:    0.2626  0.660693 -0.289641, acc:  -0.826362 -0.0287555  -0.374877
+[0m[INFO] [1790607052.921613032, 33.133000000]: Find grid tour---------------[0m
+Allocated grid: 32, 32, 38, 44, 43, 
+Grid tour: 32, 32, 38, 44, 43, 
+[0m[INFO] [1790607052.928989844, 33.142000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607052.935153466, 33.151000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 9, 1, 
+Next view: 1.75481 3.90172 1.67289, 2.36391
+Mid goal
+Traj opt iter num: 573
+[0m[INFO] [1790607052.939938982, 33.151000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607052.939969623, 33.151000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607052.939982504, 33.151000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607053.046625674, 33.261000000]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607053.121965283, 33.334000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 6, 25
+Frontier cost mat size: 6
+[0m[INFO] [1790607053.251519333, 33.554000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.009000[0m
+[0m[INFO] [1790607053.252706301, 33.554000000]: Total t: 0.018000[0m
+[0m[INFO] [1790607053.252765706, 33.554000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.29705 2.37113 1.68615, vel: -0.0859917    0.68904  -0.265254, acc:   -0.82161 0.00120483   0.261079
+[0m[INFO] [1790607053.253226061, 33.554000000]: Find grid tour---------------[0m
+Allocated grid: 38, 44, 43, 37, 
+Grid tour: 37, 43, 44, 38, 
+[0m[INFO] [1790607053.261055099, 33.563000000]: Find frontier tour, 3 involved------------[0m
+[0m[INFO] [1790607053.265780168, 33.563000000]: Grid tour t: 0.009000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 8, 1, 
+[0m[INFO] [1790607053.265976308, 33.563000000]: Local refine time: 0.000000[0m
+Next view: 2.19788  3.4993 1.66462, 1.59075
+Traj opt iter num: 115
+[0m[INFO] [1790607053.266801637, 33.563000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607053.266821814, 33.563000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607053.266831069, 33.563000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607053.460887423, 33.755000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 5, 26
+Frontier cost mat size: 5
+[0m[INFO] [1790607053.684944063, 33.975000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.010000, mat: 0.000000[0m
+[0m[INFO] [1790607053.684977538, 33.975000000]: Total t: 0.019000[0m
+[0m[INFO] [1790607053.685024311, 33.975000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.23415 2.67734 1.61213, vel:  -0.166716   0.765878 -0.0756646, acc: 0.200761 0.205912 0.523784
+[0m[INFO] [1790607053.685470659, 33.975000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 38, 
+Grid tour: 38, 44, 43, 
+[0m[INFO] [1790607053.704261591, 33.993000000]: Find frontier tour, 2 involved------------[0m
+[0m[INFO] [1790607053.711743956, 33.993000000]: Grid tour t: 0.018000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 1, 
+Next view: 1.51806 4.09718  1.6841, 1.0648
+Mid goal
+Traj opt iter num: 158
+[0m[INFO] [1790607053.714816241, 34.002000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607053.714879648, 34.002000000]: Total time: 0.027000[0m
+[0m[INFO] [1790607053.714896114, 34.002000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607053.890197763, 34.176000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607053.985537159, 34.270000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 3, 30
+Frontier cost mat size: 3
+[0m[INFO] [1790607054.113473637, 34.389000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607054.113503944, 34.389000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607054.113567392, 34.389000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.15983 2.98447 1.61568, vel: -0.229656   0.69417  0.073198, acc: -0.385959 -0.268067  0.225822
+[0m[INFO] [1790607054.113800676, 34.389000000]: Find grid tour---------------[0m
+Allocated grid: 38, 44, 43, 
+Grid tour: 38, 44, 43, 
+[0m[INFO] [1790607054.128202915, 34.408000000]: Find frontier tour, 2 involved------------[0m
+[0m[INFO] [1790607054.136874332, 34.408000000]: Grid tour t: 0.019000, frontier tour t: 0.000000.[0m
+Local refine graph size: 1, 1, 
+Next view: 1.97296 4.07743 1.68306, 1.09228
+Traj opt iter num: 130
+[0m[INFO] [1790607054.138511066, 34.408000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607054.138537371, 34.408000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607054.138550878, 34.408000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607054.320087059, 34.590000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 32
+Frontier cost mat size: 3
+[0m[INFO] [1790607054.545009881, 34.792000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607054.545059489, 34.792000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607054.545122354, 34.792000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.04715 3.26451 1.65805, vel: -0.278196  0.669752  0.111368, acc:  0.126352 0.0634051 -0.021717
+[0m[INFO] [1790607054.547476322, 34.804999999]: Find grid tour---------------[0m
+Allocated grid: 44, 43, 
+Grid tour: 43, 44, 
+[0m[INFO] [1790607054.562559902, 34.817000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607054.571027675, 34.829000000]: Grid tour t: 0.012000, frontier tour t: 0.012000.[0m
+Next view: 2.79881 3.68568  1.6662, 0.678379
+Traj opt iter num: 181
+[0m[INFO] [1790607054.574772672, 34.829000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607054.574819111, 34.829000000]: Total time: 0.024000[0m
+[0m[INFO] [1790607054.574836954, 34.829000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607054.771520163, 35.006999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 29
+Frontier cost mat size: 3
+[0m[INFO] [1790607055.000928602, 35.218000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607055.000963161, 35.218000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607055.001017146, 35.218000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 1.95891 3.54144 1.70098, vel: -0.0996453   0.585422  0.0815553, acc:  0.607041 -0.378613 -0.107169
+[0m[INFO] [1790607055.028647412, 35.237000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 
+Grid tour: 43, 44, 
+[0m[INFO] [1790607055.036226909, 35.237000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607055.043294316, 35.237000000]: Grid tour t: 0.000000, frontier tour t: 0.000000.[0m
+Next view: 3.12136 3.29439 1.64874, 0.933861
+Traj opt iter num: 214
+[0m[INFO] [1790607055.045267385, 35.246000000]: Traj: 0.009000, yaw: 0.000000[0m
+[0m[INFO] [1790607055.045295858, 35.246000000]: Total time: 0.009000[0m
+[0m[INFO] [1790607055.045309906, 35.246000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607055.070282303, 35.274000000]: [FSM]: Drone 2 state: PUB_TRAJ[0m
+[0m[INFO] [1790607055.254379514, 35.442999999]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 3, 26
+Frontier cost mat size: 3
+[0m[INFO] [1790607055.469605823, 35.651000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607055.469641341, 35.651000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607055.469690324, 35.651000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 1.99002 3.72294 1.72294, vel:  0.246844  0.278861 0.0263656, acc:  0.870618 -0.856642 -0.128775
+[0m[INFO] [1790607055.469886505, 35.651000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 
+Grid tour: 43, 44, 
+[0m[INFO] [1790607055.476950077, 35.661000000]: Find frontier tour, 1 involved------------[0m
+[0m[INFO] [1790607055.481841105, 35.670000000]: Grid tour t: 0.010000, frontier tour t: 0.009000.[0m
+Next view: 3.01869 4.71006 1.58085, -0.0399036
+Traj opt iter num: 343
+[0m[INFO] [1790607055.483940404, 35.670000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607055.483972795, 35.670000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607055.483984926, 35.670000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607055.669980711, 35.853000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 4, 27
+Frontier cost mat size: 4
+[0m[INFO] [1790607055.894939968, 36.063000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607055.894966939, 36.063000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607055.895010795, 36.063000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.16576 3.81095 1.71972, vel:   0.564211   0.231843 -0.0413352, acc:  0.524809  0.474629 -0.168101
+[0m[INFO] [1790607055.895252249, 36.063000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 
+Grid tour: 43, 44, 
+[0m[INFO] [1790607055.902170498, 36.072000000]: Find frontier tour, 2 involved------------[0m
+[0m[INFO] [1790607055.907667995, 36.081000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 1, 
+Next view: 2.55431 4.55672 1.34466, 0.0266487
+Traj opt iter num: 239
+[0m[INFO] [1790607055.912101211, 36.081000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607055.912128891, 36.081000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607055.912142023, 36.081000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607056.094052057, 36.264000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607056.118316934, 36.283000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 4, 26
+Frontier cost mat size: 4
+[0m[INFO] [1790607056.327310962, 36.478000000]: Drone 2: frontier t: 0.010000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607056.327339018, 36.478000000]: Total t: 0.010000[0m
+[0m[INFO] [1790607056.327375786, 36.478000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.40838  3.9493 1.67224, vel:  0.536911  0.431399 -0.212641, acc: -0.495513  0.437039  -0.55677
+[0m[INFO] [1790607056.327722418, 36.478000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 
+Grid tour: 43, 44, 
+[0m[INFO] [1790607056.337126909, 36.487000000]: Find frontier tour, 2 involved------------[0m
+[0m[INFO] [1790607056.344200152, 36.496000000]: Grid tour t: 0.009000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 1, 
+Next view: 3.10677 4.51535 1.60697, 0.674895
+Traj opt iter num: 52
+[0m[INFO] [1790607056.345039530, 36.496000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607056.345068378, 36.496000000]: Total time: 0.018000[0m
+[0m[INFO] [1790607056.345083969, 36.496000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607056.528796905, 36.679000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+Frontier num: 4, 21
+Frontier cost mat size: 4
+[0m[INFO] [1790607056.761711887, 36.886000000]: Drone 2: frontier t: 0.000000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607056.761736483, 36.886000000]: Total t: 0.000000[0m
+[0m[INFO] [1790607056.761778921, 36.886000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.62559 4.15391 1.58573, vel:  0.484416  0.474199 -0.143742, acc: -0.0366971  -0.292768    0.61927
+[0m[INFO] [1790607056.773718471, 36.904000000]: Find grid tour---------------[0m
+Allocated grid: 43, 44, 
+Grid tour: 44, 43, 
+[0m[INFO] [1790607056.788170985, 36.914000000]: Find frontier tour, 2 involved------------[0m
+[0m[INFO] [1790607056.794777454, 36.923000000]: Grid tour t: 0.010000, frontier tour t: 0.009000.[0m
+Local refine graph size: 1, 1, 
+Next view:  4.8444 4.17479 1.65452, -1.27033
+Mid goal
+Traj opt iter num: 123
+[0m[INFO] [1790607056.796263905, 36.923000000]: Traj: 0.000000, yaw: 0.000000[0m
+[0m[INFO] [1790607056.796280080, 36.923000000]: Total time: 0.019000[0m
+[0m[INFO] [1790607056.796290585, 36.923000000]: [FSM]: Drone 2 from PLAN_TRAJ to PUB_TRAJ[0m
+[0m[INFO] [1790607056.980335228, 37.106000000]: [FSM]: Drone 2 from PUB_TRAJ to EXEC_TRAJ[0m
+[0m[INFO] [1790607057.172278277, 37.289000000]: [FSM]: Drone 2 state: EXEC_TRAJ[0m
+Frontier num: 2, 24
+Frontier cost mat size: 2
+[0m[INFO] [1790607057.200365271, 37.316000000]: Drone 2: frontier t: 0.009000, viewpoint t: 0.000000, mat: 0.000000[0m
+[0m[INFO] [1790607057.200394703, 37.316000000]: Total t: 0.009000[0m
+[0m[INFO] [1790607057.200518473, 37.316000000]: [FSM]: Drone 2 from EXEC_TRAJ to PLAN_TRAJ[0m
+start pos: 2.83069 4.32424 1.56892, vel:  0.514723   0.35155 0.0569429, acc:  0.135844 -0.309572  0.361337
+[0m[INFO] [1790607057.200658793, 37.316000000]: Find grid tour---------------[0m
+[0m[INFO] [1790607057.202791401, 37.316000000]: [FSM]: Drone 2 from PLAN_TRAJ to IDLE[0m
+[0m[INFO] [1790607058.207687181, 38.295000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607059.266964139, 39.298000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607060.297403727, 40.298000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607061.368112356, 41.304000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607062.439508370, 42.310000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607063.492480468, 43.310999999]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607064.516629287, 44.316000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607065.539678306, 45.317000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607066.678674187, 46.322000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607067.703134162, 47.322000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607068.732425134, 48.328000000]: [FSM]: Drone 2 state: IDLE[0m
+[0m[INFO] [1790607069.754809863, 49.334000000]: [FSM]: Drone 2 state: IDLE[0m
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+des manager

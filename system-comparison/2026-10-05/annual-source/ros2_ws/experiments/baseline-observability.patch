@@ -1,0 +1,89 @@
+--- a/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
++++ b/ros2_ws/src/annual_swarm/launch/decentralized_search.launch.py
+@@ -21,7 +21,7 @@
+     directory = tempfile.mkdtemp(prefix='annual_decentralized_')
+     world, bridge = generate(share, file, directory, starts[0], starts=starts, dynamic=arg('dynamic_obstacle') == 'true', lidar=True)
+     sim = IncludeLaunchDescription(PythonLaunchDescriptionSource(str(Path(get_package_share_directory('ros_gz_sim'))/'launch/gz_sim.launch.py')),
+-        launch_arguments={'gz_args': f'-r -s --headless-rendering {world}'}.items())
++        launch_arguments={'gz_args': f'-r -s --headless-rendering --seed {int(os.environ.get("ANNUAL_EXPERIMENT_SEED", "900"))} {world}'}.items())
+     common = {'use_sim_time': True}; output = arg('output_dir')
+     nodes = [Node(package='ros_gz_bridge', executable='parameter_bridge', parameters=[{'config_file': bridge}], output='screen'),
+         Node(package='annual_swarm', executable='exploration_experiment_node.py', parameters=[common, {'map_file': file,
+--- a/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py
+@@ -23,6 +23,14 @@
+ from core.planning.continuous_trajectory import optimize_trajectory
+ from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells, information_count
+ from core.planning.path_quality import PathQualityEvaluator, RankedPathPool, Candidate
++
++
++def timed_baseline_compute(planner, *arguments):
++    started = time.monotonic()
++    result = planner.compute(*arguments)
++    result['worker_started_wall'] = started
++    result['worker_finished_wall'] = time.monotonic()
++    return result
+ 
+ 
+ class ExplorationAgent(Node):
+@@ -371,6 +379,11 @@
+             except Exception as e:
+                 self.future = None; self.event('planning_failed', error=str(e)); return
+             self.future = None
++            self.event('planning_result', compute_wall_s=result['wall'],
++                       total_wall_s=time.monotonic()-self.future_started_wall,
++                       dispatch_queue_wall_s=result['worker_started_wall']-self.future_started_wall,
++                       result_delivery_wall_s=time.monotonic()-result['worker_finished_wall'],
++                       result_age_sim_s=t-self.last_submit, stage_wall_s=result['fusion'].diagnostics.get('stage_wall_s'))
+             # Preserve packets received while this private worker snapshot ran.
+             remote = self.fusion.graph.replica
+             self.fusion = result['fusion']
+@@ -424,8 +437,9 @@
+         anticipated = dict(position=self.intent['path'][-1], yaw=self.intent['yaw']) if self.intent else None
+         self.last_submit = t
+         self.future_epoch = self.epoch
++        self.future_started_wall = time.monotonic()
+         planner = copy.deepcopy(self.fusion)
+-        self.future = self.worker.submit(planner.compute, copy.deepcopy(self.replica.map), self.position.copy(), self.yaw,
++        self.future = self.worker.submit(timed_baseline_compute, planner, copy.deepcopy(self.replica.map), self.position.copy(), self.yaw,
+             active, recent, dict(self.cooldown), reservations, self.epoch, t, True,
+             copy.deepcopy(self.ledger.states), dict(self.pair.overrides), dict(self.pair.last_success),
+             copy.deepcopy(self.service_feedback), anticipated, not self.motion_blocked)
+--- a/ros2_ws/src/annual_swarm/scripts/localization_measurement_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/localization_measurement_node.py
+@@ -5,6 +5,7 @@
+ This does not pretend that noisy truth measurements constitute visual SLAM.
+ """
+ import copy
++import os
+ import numpy as np
+ import rclpy
+ from rclpy.node import Node
+@@ -16,7 +17,7 @@
+     def __init__(self):
+         super().__init__('localization_measurement')
+         self.id = int(self.declare_parameter('drone_id', 0).value)
+-        self.rng = np.random.default_rng(900+self.id); self.last = -1.
++        self.rng = np.random.default_rng(int(os.environ.get('ANNUAL_EXPERIMENT_SEED', '900'))+self.id); self.last = -1.
+         self.pub = self.create_publisher(Odometry, f'/drone_{self.id}/localization_measurement', qos_profile_sensor_data)
+         self.create_subscription(Odometry, f'/drone_{self.id}/odometry', self.odom, qos_profile_sensor_data)
+ 
+--- a/ros2_ws/src/annual_swarm/scripts/pointcloud_mapping_node.py
++++ b/ros2_ws/src/annual_swarm/scripts/pointcloud_mapping_node.py
+@@ -86,6 +86,7 @@
+             merged = {tuple(c): int(v) for c, v in zip(cells, values)}
+             merged.update({tuple(c): 0 for c in ego})
+             cells = np.array(list(merged)); values = np.array(list(merged.values()), np.int8)
++        measured_cells = cells.copy(); measured_values = values.copy(); full_snapshot = self.full_requested
+         if self.full_requested:
+             cells = np.argwhere(self.map.state != -1); values = self.map.state[tuple(cells.T)]
+             self.full_requested = False
+@@ -93,6 +94,8 @@
+         self.sequence += 1; self.last = stamp
+         packet = dict(schema='annual.observation/2', dimensions=3, resolution=self.map.resolution,
+                       source=self.id, sensor_session=self.session, sequence=self.sequence, time=stamp, indices=cells.tolist(), values=values.tolist(),
++                      measured_indices=measured_cells.tolist(), measured_values=measured_values.tolist(), full_snapshot=full_snapshot,
++                      origin=self.map.origin.tolist(), shape=list(map(int, self.map.shape)),
+                       sensor='gazebo_gpu_lidar', pose_source='estimated_odometry', point_count=n)
+         self.pub.publish(String(data=json.dumps(packet, separators=(',', ':'))))
+ 

@@ -1,0 +1,135 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-09-28-14-42-02-248179-colima-annual-fusion-1567
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [parameter_bridge-1]: process started with pid [1570]
+[INFO] [localization_measurement_node.py-2]: process started with pid [1571]
+[INFO] [state_estimator_node.py-3]: process started with pid [1572]
+[INFO] [python3-4]: process started with pid [1573]
+[INFO] [decentralized_agent_node.py-5]: process started with pid [1574]
+[INFO] [view_executor_node.py-6]: process started with pid [1575]
+[INFO] [controller_node-7]: process started with pid [1576]
+[INFO] [localization_measurement_node.py-8]: process started with pid [1577]
+[INFO] [state_estimator_node.py-9]: process started with pid [1578]
+[INFO] [python3-10]: process started with pid [1579]
+[INFO] [decentralized_agent_node.py-11]: process started with pid [1580]
+[INFO] [view_executor_node.py-12]: process started with pid [1581]
+[INFO] [controller_node-13]: process started with pid [1582]
+[controller_node-7] [INFO] [1790606522.479909618] [drone_0.controller]: Controller: pid
+[controller_node-13] [INFO] [1790606522.485679835] [drone_1.controller]: Controller: pid
+[parameter_bridge-1] [INFO] [1790606523.504492279] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.508472643] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/lidar/points (gz.msgs.PointCloudPacked) -> /drone_0/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.517212427] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/odometry (gz.msgs.Odometry) -> /drone_0/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.522858874] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/imu (gz.msgs.IMU) -> /drone_0/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.524810474] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/contacts (gz.msgs.Contacts) -> /drone_0/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.532861498] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_0/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_0/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.538357411] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/lidar/points (gz.msgs.PointCloudPacked) -> /drone_1/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.539302300] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/odometry (gz.msgs.Odometry) -> /drone_1/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.540074061] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/imu (gz.msgs.IMU) -> /drone_1/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.543415606] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/contacts (gz.msgs.Contacts) -> /drone_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1790606523.548262236] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_1/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_1/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[INFO] [gz-14]: process started with pid [1794]
+[parameter_bridge-1] [INFO] [1790606532.633599431] [ros_gz_bridge]: Passing message from ROS actuator_msgs/msg/Actuators to Gazebo gz.msgs.Actuators (showing msg only once per type)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[controller_node-13] [INFO] [1790606597.011796067] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-1] [INFO] [1790606597.011887113] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [gz-14]: sending signal 'SIGINT' to process[gz-14]
+[INFO] [controller_node-13]: sending signal 'SIGINT' to process[controller_node-13]
+[INFO] [view_executor_node.py-12]: sending signal 'SIGINT' to process[view_executor_node.py-12]
+[INFO] [decentralized_agent_node.py-11]: sending signal 'SIGINT' to process[decentralized_agent_node.py-11]
+[INFO] [python3-10]: sending signal 'SIGINT' to process[python3-10]
+[INFO] [state_estimator_node.py-9]: sending signal 'SIGINT' to process[state_estimator_node.py-9]
+[INFO] [localization_measurement_node.py-8]: sending signal 'SIGINT' to process[localization_measurement_node.py-8]
+[ERROR] [view_executor_node.py-12]: process has died [pid 1581, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/view_executor_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_gtp789zx --params-file /tmp/launch_params_dap415s1 -r target:=native_target -r trajectory_target:=native_trajectory_target'].
+[INFO] [controller_node-7]: sending signal 'SIGINT' to process[controller_node-7]
+[INFO] [view_executor_node.py-6]: sending signal 'SIGINT' to process[view_executor_node.py-6]
+[INFO] [decentralized_agent_node.py-5]: sending signal 'SIGINT' to process[decentralized_agent_node.py-5]
+[ERROR] [python3-10]: process has died [pid 1579, exit code -2, cmd 'python3 /comparison/common_mapper.py --ros-args -r __ns:=/drone_1 -p use_sim_time:=true -p drone_id:=1 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].
+[ERROR] [state_estimator_node.py-9]: process has died [pid 1578, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_1ov7sxnl --params-file /tmp/launch_params_9enkh8pj'].
+[ERROR] [controller_node-7]: process has died [pid 1576, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node --ros-args -r __ns:=/drone_0 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/flight.yaml --params-file /tmp/launch_params_vkry6se3 --params-file /tmp/launch_params_0wgtfa5w -r odometry:=estimated_odometry'].
+[INFO] [python3-4]: sending signal 'SIGINT' to process[python3-4]
+[ERROR] [localization_measurement_node.py-8]: process has died [pid 1577, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_sv2l9rxm --params-file /tmp/launch_params_ze480ke9'].
+[INFO] [state_estimator_node.py-3]: sending signal 'SIGINT' to process[state_estimator_node.py-3]
+[INFO] [localization_measurement_node.py-2]: sending signal 'SIGINT' to process[localization_measurement_node.py-2]
+[ERROR] [view_executor_node.py-6]: process has died [pid 1575, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/view_executor_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_9_hklvcq --params-file /tmp/launch_params_8gevhnaf -r target:=native_target -r trajectory_target:=native_trajectory_target'].
+[INFO] [parameter_bridge-1]: sending signal 'SIGINT' to process[parameter_bridge-1]
+[ERROR] [python3-4]: process has died [pid 1573, exit code -2, cmd 'python3 /comparison/common_mapper.py --ros-args -r __ns:=/drone_0 -p use_sim_time:=true -p drone_id:=0 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].
+[ERROR] [state_estimator_node.py-3]: process has died [pid 1572, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_mk_y63_k --params-file /tmp/launch_params_i7zdex53'].
+[controller_node-7] [INFO] [1790606597.013219821] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ERROR] [localization_measurement_node.py-2]: process has died [pid 1571, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_fwjyrm3i --params-file /tmp/launch_params_p64j2qj2'].
+[decentralized_agent_node.py-5] Process SpawnProcess-1:
+[decentralized_agent_node.py-5] Traceback (most recent call last):
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+[decentralized_agent_node.py-5]     self.run()
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+[decentralized_agent_node.py-5]     self._target(*self._args, **self._kwargs)
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/concurrent/futures/process.py", line 251, in _process_worker
+[decentralized_agent_node.py-5]     call_item = call_queue.get(block=True)
+[decentralized_agent_node.py-5]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/queues.py", line 103, in get
+[decentralized_agent_node.py-5]     res = self._recv_bytes()
+[decentralized_agent_node.py-5]           ^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 216, in recv_bytes
+[decentralized_agent_node.py-5]     buf = self._recv_bytes(maxlength)
+[decentralized_agent_node.py-5]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+[decentralized_agent_node.py-5]     buf = self._recv(4)
+[decentralized_agent_node.py-5]           ^^^^^^^^^^^^^
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+[decentralized_agent_node.py-5]     chunk = read(handle, remaining)
+[decentralized_agent_node.py-5]             ^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5] KeyboardInterrupt
+[decentralized_agent_node.py-11] Process SpawnProcess-1:
+[decentralized_agent_node.py-11] Traceback (most recent call last):
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+[decentralized_agent_node.py-11]     self.run()
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+[decentralized_agent_node.py-11]     self._target(*self._args, **self._kwargs)
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/concurrent/futures/process.py", line 251, in _process_worker
+[decentralized_agent_node.py-11]     call_item = call_queue.get(block=True)
+[decentralized_agent_node.py-11]                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/queues.py", line 103, in get
+[decentralized_agent_node.py-11]     res = self._recv_bytes()
+[decentralized_agent_node.py-11]           ^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 216, in recv_bytes
+[decentralized_agent_node.py-11]     buf = self._recv_bytes(maxlength)
+[decentralized_agent_node.py-11]           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+[decentralized_agent_node.py-11]     buf = self._recv(4)
+[decentralized_agent_node.py-11]           ^^^^^^^^^^^^^
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/multiprocessing/connection.py", line 395, in _recv
+[decentralized_agent_node.py-11]     chunk = read(handle, remaining)
+[decentralized_agent_node.py-11]             ^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11] KeyboardInterrupt
+[state_estimator_node.py-3] /workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py:63: RuntimeWarning: coroutine 'Executor._make_handler.<locals>.handler' was never awaited
+[state_estimator_node.py-3]   except KeyboardInterrupt:pass
+[state_estimator_node.py-3] RuntimeWarning: Enable tracemalloc to get the object allocation traceback
+[controller_node-13] [INFO] [1790606597.056854502] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[decentralized_agent_node.py-11] Traceback (most recent call last):
+[decentralized_agent_node.py-11]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 710, in <module>
+[decentralized_agent_node.py-11]     main()
+[decentralized_agent_node.py-11]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 704, in main
+[decentralized_agent_node.py-11]     node.worker.shutdown(wait=True, cancel_futures=True)
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/concurrent/futures/process.py", line 873, in shutdown
+[decentralized_agent_node.py-11]     self._executor_manager_thread.join()
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/threading.py", line 1147, in join
+[decentralized_agent_node.py-11]     self._wait_for_tstate_lock()
+[decentralized_agent_node.py-11]   File "/usr/lib/python3.12/threading.py", line 1167, in _wait_for_tstate_lock
+[decentralized_agent_node.py-11]     if lock.acquire(block, timeout):
+[decentralized_agent_node.py-11]        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11] KeyboardInterrupt
+[decentralized_agent_node.py-5] Traceback (most recent call last):
+[decentralized_agent_node.py-5]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 710, in <module>
+[decentralized_agent_node.py-5]     main()
+[decentralized_agent_node.py-5]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 704, in main
+[decentralized_agent_node.py-5]     node.worker.shutdown(wait=True, cancel_futures=True)
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/concurrent/futures/process.py", line 873, in shutdown
+[decentralized_agent_node.py-5]     self._executor_manager_thread.join()
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/threading.py", line 1147, in join
+[decentralized_agent_node.py-5]     self._wait_for_tstate_lock()
+[decentralized_agent_node.py-5]   File "/usr/lib/python3.12/threading.py", line 1167, in _wait_for_tstate_lock
+[decentralized_agent_node.py-5]     if lock.acquire(block, timeout):
+[decentralized_agent_node.py-5]        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5] KeyboardInterrupt
+[parameter_bridge-1] [INFO] [1790606597.108501979] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [parameter_bridge-1]: process has finished cleanly [pid 1570]
+[INFO] [controller_node-13]: process has finished cleanly [pid 1582]
+[ERROR] [decentralized_agent_node.py-11]: process has died [pid 1580, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py --ros-args -r __ns:=/drone_1 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/exploration_priority.yaml --params-file /tmp/launch_params_2pxh8ce9 --params-file /tmp/launch_params_7_3mkgni'].

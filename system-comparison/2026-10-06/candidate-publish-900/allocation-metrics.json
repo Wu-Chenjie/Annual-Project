@@ -1,0 +1,17 @@
+{
+  "per_uav": {
+    "0": {
+      "local_owner_value_changes": 20,
+      "mean_reported_workload": 150.5195040031054,
+      "explore_completed_services": 7,
+      "online_target_new_cells": 531
+    },
+    "1": {
+      "local_owner_value_changes": 20,
+      "mean_reported_workload": 67.73095021852502,
+      "explore_completed_services": 5,
+      "online_target_new_cells": 49
+    }
+  },
+  "note": "Owner changes count only locally consecutive known owner values, excluding task appearance/disappearance. Counts from two local replicas are not summed as unique global handoffs. Workload is planner estimate, not measured flight duration."
+}

@@ -1,0 +1,42 @@
+{
+  "mode": "gvp",
+  "t": 60.39,
+  "wall_seconds": 70.64509659499981,
+  "coverage": 0.0,
+  "t90": null,
+  "t95": null,
+  "distance_m": {
+    "0": 1.609169981321029,
+    "1": 1.651799784723882
+  },
+  "contacts": 0,
+  "min_separation_m": 5.987901633246033,
+  "max_measured_speed_mps": 0.5675514349080947,
+  "max_command_speed_mps": 0.0,
+  "max_command_acc_mps2": 0.0,
+  "tracking_error_p95_m": 0.18293681875437895,
+  "counts": {
+    "odom_1": 6039,
+    "odom_0": 6039,
+    "cloud_0": 302,
+    "cloud_1": 302,
+    "estimated_0": 3019,
+    "estimated_1": 3019
+  },
+  "positions": {
+    "1": [
+      -4.002467685069224,
+      2.9996046797215308,
+      1.1988624186210168
+    ],
+    "0": [
+      -4.003907530920961,
+      -2.9970286825220183,
+      1.2053417054009419
+    ]
+  },
+  "native_seen": [],
+  "adapter_command_age_p95_s": null,
+  "truth_free_voxels": 12063,
+  "status": "TIME_LIMIT"
+}

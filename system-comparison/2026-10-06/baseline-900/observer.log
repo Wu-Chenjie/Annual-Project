@@ -1,0 +1,42 @@
+Traceback (most recent call last):
+  File "/study/bridge_ros2.py", line 146, in <module>
+    while rclpy.ok() and not b.done:rclpy.spin_once(b,timeout_sec=.1)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 226, in spin_once
+    executor.spin_once(timeout_sec=timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 916, in _spin_once_impl
+    handler()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/task.py", line 270, in __call__
+    self._execute_coroutine_step(self._handler)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/task.py", line 286, in _execute_coroutine_step
+    result = coro.send(None)
+             ^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 592, in handler
+    await call_coroutine()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 454, in _execute
+    await await_or_execute(tmr.callback)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 115, in await_or_execute
+    return callback(*args)
+           ^^^^^^^^^^^^^^^
+  File "/study/bridge_ros2.py", line 130, in tick
+    pm=PoseStamped();pm.header=m.header;pm.pose.position.x,pm.pose.position.y,pm.pose.position.z=map(float,p);pm.pose.orientation=tr.rotation;self.posepub[i].publish(pm);self.pubs[i].publish(m)
+                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/publisher.py", line 70, in publish
+    self.__publisher.publish(msg)
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/study/bridge_ros2.py", line 149, in <module>
+    b.stream.close();b.executed.close();b.contact_log.close();b.log.close();b.commands.close();b.cover.close();b.destroy_node();rclpy.shutdown()
+                                                                                                                                ^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+    _shutdown(context=context)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+    context.shutdown()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+    self.__context.shutdown()
+rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333

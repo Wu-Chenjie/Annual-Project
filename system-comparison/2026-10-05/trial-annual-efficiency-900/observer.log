@@ -1,0 +1,34 @@
+Traceback (most recent call last):
+  File "/study/bridge_ros2.py", line 146, in <module>
+    while rclpy.ok() and not b.done:rclpy.spin_once(b,timeout_sec=.1)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 226, in spin_once
+    executor.spin_once(timeout_sec=timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 907, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 877, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 687, in _wait_for_ready_callbacks
+    waitables.extend(filter(self.can_execute, node.waitables))
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 614, in can_execute
+    def can_execute(self, entity: WaitableEntityType) -> bool:
+
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/study/bridge_ros2.py", line 149, in <module>
+    b.stream.close();b.executed.close();b.contact_log.close();b.log.close();b.commands.close();b.cover.close();b.destroy_node();rclpy.shutdown()
+                                                                                                                                ^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+    _shutdown(context=context)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+    context.shutdown()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+    self.__context.shutdown()
+rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333

@@ -1,0 +1,9 @@
+# Preserve experimental evidence; omit rebuildable workspace outputs.
+!*
+__pycache__/
+.pytest_cache/
+.DS_Store
+**/build/
+**/devel/
+**/install/
+**/log/

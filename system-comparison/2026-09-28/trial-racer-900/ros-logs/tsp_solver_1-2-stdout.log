@@ -1,0 +1,1482 @@
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -95957, Cost.avg = -95957.00, Cost.max = -95957
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 0, Trials.avg = 0.0, Trials.max = 0
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-95957
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 0/1 
+Cost.min = -104115, Cost.avg = -104115.00, Cost.max = -104115
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-104115
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100280, Cost.avg = -100280.00, Cost.max = -100280
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100280
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100280, Cost.avg = -100280.00, Cost.max = -100280
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100280
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99743, Cost.avg = -99743.00, Cost.max = -99743
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99743
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100754, Cost.avg = -100754.00, Cost.max = -100754
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100754
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -98598, Cost.avg = -98598.00, Cost.max = -98598
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-98598
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99373, Cost.avg = -99373.00, Cost.max = -99373
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99373
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -98644, Cost.avg = -98644.00, Cost.max = -98644
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-98644
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99722, Cost.avg = -99722.00, Cost.max = -99722
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 30, Trials.avg = 30.0, Trials.max = 30
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99722
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 0/1 
+Cost.min = -99303, Cost.avg = -99303.00, Cost.max = -99303
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99303
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100083, Cost.avg = -100083.00, Cost.max = -100083
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100083
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100108, Cost.avg = -100108.00, Cost.max = -100108
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100108
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100084, Cost.avg = -100084.00, Cost.max = -100084
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100084
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99545, Cost.avg = -99545.00, Cost.max = -99545
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99545
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100100, Cost.avg = -100100.00, Cost.max = -100100
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100100
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99433, Cost.avg = -99433.00, Cost.max = -99433
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99433
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99267, Cost.avg = -99267.00, Cost.max = -99267
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99267
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -97207, Cost.avg = -97207.00, Cost.max = -97207
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-97207
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99243, Cost.avg = -99243.00, Cost.max = -99243
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99243
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99078, Cost.avg = -99078.00, Cost.max = -99078
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99078
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99879, Cost.avg = -99879.00, Cost.max = -99879
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99879
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99080, Cost.avg = -99080.00, Cost.max = -99080
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99080
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99879, Cost.avg = -99879.00, Cost.max = -99879
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99879
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99080, Cost.avg = -99080.00, Cost.max = -99080
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99080
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99879, Cost.avg = -99879.00, Cost.max = -99879
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99879
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99079, Cost.avg = -99079.00, Cost.max = -99079
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99079
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99241, Cost.avg = -99241.00, Cost.max = -99241
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99241
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99080, Cost.avg = -99080.00, Cost.max = -99080
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99080
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99229, Cost.avg = -99229.00, Cost.max = -99229
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99229
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99081, Cost.avg = -99081.00, Cost.max = -99081
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99081
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99878, Cost.avg = -99878.00, Cost.max = -99878
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99878
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99078, Cost.avg = -99078.00, Cost.max = -99078
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99078
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100376, Cost.avg = -100376.00, Cost.max = -100376
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100376
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198579, Cost.avg = -198579.00, Cost.max = -198579
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198579
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100917, Cost.avg = -100917.00, Cost.max = -100917
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100917
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198738, Cost.avg = -198738.00, Cost.max = -198738
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198738
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100952, Cost.avg = -100952.00, Cost.max = -100952
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100952
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198776, Cost.avg = -198776.00, Cost.max = -198776
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198776
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100182, Cost.avg = -100182.00, Cost.max = -100182
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100182
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198889, Cost.avg = -198889.00, Cost.max = -198889
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198889
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100558, Cost.avg = -100558.00, Cost.max = -100558
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100558
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100572, Cost.avg = -100572.00, Cost.max = -100572
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100572
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100598, Cost.avg = -100598.00, Cost.max = -100598
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100598
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199012, Cost.avg = -199012.00, Cost.max = -199012
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199012
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100628, Cost.avg = -100628.00, Cost.max = -100628
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100628
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199000, Cost.avg = -199000.00, Cost.max = -199000
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199000
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100641, Cost.avg = -100641.00, Cost.max = -100641
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100641
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199079, Cost.avg = -199079.00, Cost.max = -199079
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199079
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100651, Cost.avg = -100651.00, Cost.max = -100651
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100651
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199166, Cost.avg = -199166.00, Cost.max = -199166
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199166
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100681, Cost.avg = -100681.00, Cost.max = -100681
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100681
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199155, Cost.avg = -199155.00, Cost.max = -199155
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199155
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100702, Cost.avg = -100702.00, Cost.max = -100702
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100702
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198923, Cost.avg = -198923.00, Cost.max = -198923
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198923
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100731, Cost.avg = -100731.00, Cost.max = -100731
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100731
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199019, Cost.avg = -199019.00, Cost.max = -199019
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199019
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100263, Cost.avg = -100263.00, Cost.max = -100263
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100263
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199196, Cost.avg = -199196.00, Cost.max = -199196
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199196
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100349, Cost.avg = -100349.00, Cost.max = -100349
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100349
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199040, Cost.avg = -199040.00, Cost.max = -199040
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199040
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100299, Cost.avg = -100299.00, Cost.max = -100299
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100299
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199212, Cost.avg = -199212.00, Cost.max = -199212
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199212
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100299, Cost.avg = -100299.00, Cost.max = -100299
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100299
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199086, Cost.avg = -199086.00, Cost.max = -199086
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199086
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100118, Cost.avg = -100118.00, Cost.max = -100118
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100118
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100116, Cost.avg = -100116.00, Cost.max = -100116
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100116
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100079, Cost.avg = -100079.00, Cost.max = -100079
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100079
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100043, Cost.avg = -100043.00, Cost.max = -100043
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100043
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100024, Cost.avg = -100024.00, Cost.max = -100024
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100024
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100011, Cost.avg = -100011.00, Cost.max = -100011
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100011
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99997, Cost.avg = -99997.00, Cost.max = -99997
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99997
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -97962, Cost.avg = -97962.00, Cost.max = -97962
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-97962
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -97943, Cost.avg = -97943.00, Cost.max = -97943
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-97943
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -97900, Cost.avg = -97900.00, Cost.max = -97900
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 36, Trials.avg = 36.0, Trials.max = 36
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-97900
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 0/1 
+Cost.min = -98825, Cost.avg = -98825.00, Cost.max = -98825
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 20, Trials.avg = 20.0, Trials.max = 20
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-98825
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100495, Cost.avg = -100495.00, Cost.max = -100495
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 20, Trials.avg = 20.0, Trials.max = 20
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100495
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 0/1 
+Cost.min = -99089, Cost.avg = -99089.00, Cost.max = -99089
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99089
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198346, Cost.avg = -198346.00, Cost.max = -198346
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198346
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100333, Cost.avg = -100333.00, Cost.max = -100333
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100333
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198764, Cost.avg = -198764.00, Cost.max = -198764
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198764
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100063, Cost.avg = -100063.00, Cost.max = -100063
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100063
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198774, Cost.avg = -198774.00, Cost.max = -198774
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198774
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99066, Cost.avg = -99066.00, Cost.max = -99066
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99066
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198587, Cost.avg = -198587.00, Cost.max = -198587
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198587
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99078, Cost.avg = -99078.00, Cost.max = -99078
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99078
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198597, Cost.avg = -198597.00, Cost.max = -198597
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198597
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99111, Cost.avg = -99111.00, Cost.max = -99111
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99111
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198633, Cost.avg = -198633.00, Cost.max = -198633
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198633
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99136, Cost.avg = -99136.00, Cost.max = -99136
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99136
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198728, Cost.avg = -198728.00, Cost.max = -198728
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198728
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99158, Cost.avg = -99158.00, Cost.max = -99158
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99158
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198800, Cost.avg = -198800.00, Cost.max = -198800
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198800
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99596, Cost.avg = -99596.00, Cost.max = -99596
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99596
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198253, Cost.avg = -198253.00, Cost.max = -198253
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198253
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100055, Cost.avg = -100055.00, Cost.max = -100055
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100055
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198198, Cost.avg = -198198.00, Cost.max = -198198
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198198
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100054, Cost.avg = -100054.00, Cost.max = -100054
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100054
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198541, Cost.avg = -198541.00, Cost.max = -198541
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198541
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99073, Cost.avg = -99073.00, Cost.max = -99073
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99073
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198354, Cost.avg = -198354.00, Cost.max = -198354
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198354
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99074, Cost.avg = -99074.00, Cost.max = -99074
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99074
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198393, Cost.avg = -198393.00, Cost.max = -198393
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198393
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99127, Cost.avg = -99127.00, Cost.max = -99127
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99127
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198672, Cost.avg = -198672.00, Cost.max = -198672
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198672
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99506, Cost.avg = -99506.00, Cost.max = -99506
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99506
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198015, Cost.avg = -198015.00, Cost.max = -198015
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198015
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -99994, Cost.avg = -99994.00, Cost.max = -99994
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-99994
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198043, Cost.avg = -198043.00, Cost.max = -198043
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198043
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100003, Cost.avg = -100003.00, Cost.max = -100003
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100003
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198148, Cost.avg = -198148.00, Cost.max = -198148
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198148
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100029, Cost.avg = -100029.00, Cost.max = -100029
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100029
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198226, Cost.avg = -198226.00, Cost.max = -198226
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198226
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100071, Cost.avg = -100071.00, Cost.max = -100071
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100071
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198291, Cost.avg = -198291.00, Cost.max = -198291
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198291
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100121, Cost.avg = -100121.00, Cost.max = -100121
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100121
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198356, Cost.avg = -198356.00, Cost.max = -198356
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198356
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100169, Cost.avg = -100169.00, Cost.max = -100169
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100169
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198417, Cost.avg = -198417.00, Cost.max = -198417
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198417
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101200, Cost.avg = -101200.00, Cost.max = -101200
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101200
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198485, Cost.avg = -198485.00, Cost.max = -198485
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198485
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101238, Cost.avg = -101238.00, Cost.max = -101238
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101238
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198555, Cost.avg = -198555.00, Cost.max = -198555
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198555
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101270, Cost.avg = -101270.00, Cost.max = -101270
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101270
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198622, Cost.avg = -198622.00, Cost.max = -198622
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198622
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101311, Cost.avg = -101311.00, Cost.max = -101311
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101311
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198672, Cost.avg = -198672.00, Cost.max = -198672
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198672
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101347, Cost.avg = -101347.00, Cost.max = -101347
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101347
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198702, Cost.avg = -198702.00, Cost.max = -198702
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198702
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101394, Cost.avg = -101394.00, Cost.max = -101394
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101394
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198619, Cost.avg = -198619.00, Cost.max = -198619
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198619
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101440, Cost.avg = -101440.00, Cost.max = -101440
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101440
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198704, Cost.avg = -198704.00, Cost.max = -198704
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198704
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101449, Cost.avg = -101449.00, Cost.max = -101449
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101449
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198759, Cost.avg = -198759.00, Cost.max = -198759
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198759
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -100671, Cost.avg = -100671.00, Cost.max = -100671
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-100671
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198664, Cost.avg = -198664.00, Cost.max = -198664
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198664
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101024, Cost.avg = -101024.00, Cost.max = -101024
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101024
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198794, Cost.avg = -198794.00, Cost.max = -198794
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198794
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101039, Cost.avg = -101039.00, Cost.max = -101039
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101039
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198585, Cost.avg = -198585.00, Cost.max = -198585
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198585
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101033, Cost.avg = -101033.00, Cost.max = -101033
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101033
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198798, Cost.avg = -198798.00, Cost.max = -198798
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198798
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101056, Cost.avg = -101056.00, Cost.max = -101056
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101056
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -198883, Cost.avg = -198883.00, Cost.max = -198883
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-198883
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp2_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -101086, Cost.avg = -101086.00, Cost.max = -101086
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-101086
+
+PARAMETER_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.par
+PROBLEM_FILE = /work/racer_ws/src/RACER/swarm_exploration/utils/lkh_mtsp_solver/resource/amtsp_1.atsp
+Successes/Runs = 1/0 
+Cost.min = -199063, Cost.avg = -199063.00, Cost.max = -199063
+Gap.min = -0.0000%, Gap.avg = -0.0000%, Gap.max = -0.0000%
+Trials.min = 18, Trials.avg = 18.0, Trials.max = 18
+Time.min = 0.00 sec., Time.avg = 0.00 sec., Time.max = 0.00 sec.
+Best ATSP solution:
+  Cost = 0_-199063
+
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator

@@ -1,0 +1,57 @@
+{
+  "mode": "annual",
+  "t": 92.072,
+  "wall_seconds": 125.04335228199488,
+  "coverage": 0.9533283594462406,
+  "t90": 89.0,
+  "t95": 92.072,
+  "distance_m": {
+    "0": 16.391964578820783,
+    "1": 15.202516357586099
+  },
+  "contacts": 0,
+  "min_separation_m": 2.290755314946602,
+  "max_measured_speed_mps": 0.6593263356408797,
+  "max_command_speed_mps": 0.6,
+  "max_command_acc_mps2": 0.8000000000000093,
+  "tracking_error_p95_m": 0.047403459814176686,
+  "counts": {
+    "odom_0": 9207,
+    "odom_1": 9207,
+    "estimated_0": 4604,
+    "estimated_1": 4604,
+    "cloud_0": 461,
+    "cloud_1": 461,
+    "observation_1": 230,
+    "native_commands": 8923,
+    "observation_0": 231
+  },
+  "positions": {
+    "0": [
+      1.6494810539232458,
+      -1.3384739123091478,
+      2.547057192799463
+    ],
+    "1": [
+      -1.1898467064722251,
+      -0.85688049875285,
+      1.947249582318707
+    ]
+  },
+  "native_seen": [
+    0,
+    1
+  ],
+  "adapter_command_age_p95_s": 0.03100000000000591,
+  "truth_free_voxels": 12063,
+  "per_drone_coverage": [
+    0.7912625383403796,
+    0.6146066484290806
+  ],
+  "overlap_free_voxels": 5429,
+  "raw_planner_max_speed_mps": 0.5911329509992158,
+  "raw_planner_max_acc_mps2": 0.5617269931423255,
+  "status": "COVERAGE_TARGET",
+  "geometric_collision_events": [],
+  "failure_reason": null
+}

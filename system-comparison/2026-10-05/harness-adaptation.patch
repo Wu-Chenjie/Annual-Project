@@ -1,0 +1,142 @@
+--- 2026-09-28/run.py
++++ 2026-10-05/run.py
+@@ -5,12 +5,12 @@
+ out.mkdir(exist_ok=False)
+ procs=[];files=[];counts={}
+ def run(side):
+- ctx='colima-annual-fusion' if side=='ros2' else 'colima-racer-gvp';container='comparison-'+side+'-0928'
+- env={'COMPARISON_MODE':mode,'COMPARISON_OUTPUT':'/comparison/'+name,'COMPARISON_LIMIT':limit,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','LP_NUM_THREADS':'2','ANNUAL_EXPERIMENT_SEED':'900','ROS_DOMAIN_ID':'73','GZ_PARTITION':'comparison_'+name,'ROS_MASTER_URI':'http://localhost:11328','ROS_HOSTNAME':'localhost','PYTHONDONTWRITEBYTECODE':'1','PYTHONPYCACHEPREFIX':'/tmp/comparison-pycache-'+name}
++ ctx='colima-annual-fusion' if side=='ros2' else 'colima-racer-gvp';container='comparison-'+side+'-1005'
++ env={'COMPARISON_MODE':mode,'COMPARISON_OUTPUT':'/study/'+name,'COMPARISON_LIMIT':limit,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','LP_NUM_THREADS':'2','ANNUAL_EXPERIMENT_SEED':'900','ROS_DOMAIN_ID':'74','GZ_PARTITION':'comparison_'+name,'ROS_MASTER_URI':'http://localhost:11328','ROS_HOSTNAME':'localhost','PYTHONDONTWRITEBYTECODE':'1','PYTHONPYCACHEPREFIX':'/tmp/comparison-pycache-'+name}
+  setup='/workspace/ros2_ws/install/setup.bash' if side=='ros2' else '/work/racer_ws/devel/setup.bash' if mode=='racer' else '/comparison/gvp_ws/devel/setup.bash'
+  cmd=['docker','--context',ctx,'exec','-i']
+  for k,v in env.items():cmd+=['-e',k+'='+v]
+- cmd += [container,'bash','-lc','source '+shlex.quote(setup)+' && exec python3 -u /comparison/supervisor.py '+side+' '+mode]
++ cmd += [container,'bash','-lc','source '+shlex.quote(setup)+' && exec python3 -u /study/supervisor.py '+side+' '+mode]
+  f=(out/(side+'-supervisor.log')).open('wb');files.append(f)
+  p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=f,bufsize=65536);procs.append(p);return p
+ 
+--- 2026-09-28/supervisor.py
++++ 2026-10-05/supervisor.py
+@@ -8,11 +8,11 @@
+ try:
+  if side=='ros1':
+   master=start(['roscore','-p','11328'],'roscore');time.sleep(2)
+-  launch=start(['roslaunch','/comparison/'+mode+'.launch'],'planner');time.sleep(2)
+-  bridge=start(['python3','-u','/comparison/bridge_ros1.py',mode],'transport-ros1',True)
++  launch=start(['roslaunch','/study/'+mode+'.launch'],'planner');time.sleep(2)
++  bridge=start(['python3','-u','/study/bridge_ros1.py',mode],'transport-ros1',True)
+  else:
+-  bridge=start(['python3','-u','/comparison/bridge_ros2.py'],'observer',True)
+-  launch=start(['ros2','launch','/comparison/common.launch.py'],'simulator')
++  bridge=start(['python3','-u','/study/bridge_ros2.py'],'observer',True)
++  launch=start(['ros2','launch','/study/common.launch.py'],'simulator')
+  while not (out/'STOP').exists() and not (out/'result.json').exists():
+   if bridge.poll() is not None:break
+   if launch.poll() is not None:(out/(side+'-launch-failed.txt')).write_text(str(launch.returncode));break
+@@ -28,3 +28,7 @@
+  for p in children:
+   try:p.wait(timeout=2)
+   except subprocess.TimeoutExpired:pass
++
++ from experiment_processes import terminate_partition
++ result=terminate_partition(os.environ["GZ_PARTITION"])
++ (out/(side+"-process-cleanup.json")).write_text(__import__("json").dumps(result,indent=2))
+--- 2026-09-28/common_mapper.py
++++ 2026-10-05/common_mapper.py
+@@ -79,6 +79,7 @@
+         origin = position+rotation@np.array([0., 0., .4])
+         world = points@rotation.T+origin
+         cells, values = self.map.integrate(origin, world[~self_return], hits[~self_return])
++        ray_cell_count = len(cells)
+         key = tuple(cells.T)
+         self.belief[key] = np.clip(self.belief[key]+np.where(values == 1, 1.2, -.45), -3., 3.)
+         self.belief[key] = np.where(values == 1, np.maximum(self.belief[key], 1.2), self.belief[key])
+@@ -99,7 +100,9 @@
+                       source=self.id, sensor_session=self.session, sequence=self.sequence, time=stamp, indices=cells.tolist(), values=values.tolist(),
+                       measured_indices=measured_cells.tolist(), measured_values=measured_values.tolist(), full_snapshot=full_snapshot,
+                       origin=self.map.origin.tolist(), shape=list(map(int, self.map.shape)),
+-                      sensor='gazebo_gpu_lidar', pose_source='estimated_odometry', point_count=n)
++                      sensor='gazebo_gpu_lidar', pose_source='estimated_odometry', point_count=n,
++                      integration_completed=True, ray_cell_count=ray_cell_count, map_version=int(self.map.version),
++                      sensor_position=position.tolist(), sensor_yaw=float(np.arctan2(rotation[1,0],rotation[0,0])), pose_time=t)
+         self.pub.publish(String(data=json.dumps(packet, separators=(',', ':'))))
+ 
+ 
+--- 2026-09-28/racer-single.xml
++++ 2026-10-05/racer-single.xml
+@@ -20,7 +20,7 @@
+ 
+ 
+   
+-  <include file="/comparison/racer-planner.xml">
++  <include file="/study/racer-planner.xml">
+ 
+     <arg name="drone_id" value="$(arg drone_id)" />
+     <arg name="drone_num" value="$(arg drone_num)" />
+--- 2026-09-28/bridge_ros2.py
++++ 2026-10-05/bridge_ros2.py
+@@ -29,9 +29,9 @@
+ class Bridge(Node):
+  def __init__(self):
+   super().__init__('comparison_observer',parameter_overrides=[rclpy.parameter.Parameter('use_sim_time',value=True)])
+-  self.geometry=json.loads(Path('/comparison/map.json').read_text())['obstacles'];self.geometric_hits=[];self.bad_tracking={};self.failure=None
+-  self.t=0.;self.last_report=-1.;self.begin=time.monotonic();self.truth=VoxelTruth('/comparison/map.json');self.observed=VoxelMap(self.truth.bounds);self.per_observed=[VoxelMap(self.truth.bounds) for _ in range(2)]
+-  self.starts=json.loads(Path('/comparison/map.json').read_text())['search_starts'];self.cmd={};self.last_pos={};self.distance=defaultdict(float);self.count=defaultdict(int);self.maxspeed=0.;self.minimum=None;self.contacts=0;self.air=set();self.t95=None;self.t90=None;self.done=False;self.delays=[];self.est_last={};self.subs=[];self.pubs=[];self.posepub=[];self.native_seen=set();self.max_command_speed=0.;self.max_command_acc=0.;self.tracking=[]
++  self.geometry=json.loads(Path('/study/map.json').read_text())['obstacles'];self.geometric_hits=[];self.bad_tracking={};self.failure=None
++  self.t=0.;self.last_report=-1.;self.begin=time.monotonic();self.truth=VoxelTruth('/study/map.json');self.observed=VoxelMap(self.truth.bounds);self.per_observed=[VoxelMap(self.truth.bounds) for _ in range(2)]
++  self.starts=json.loads(Path('/study/map.json').read_text())['search_starts'];self.cmd={};self.last_pos={};self.distance=defaultdict(float);self.count=defaultdict(int);self.maxspeed=0.;self.minimum=None;self.contacts=0;self.air=set();self.t95=None;self.t90=None;self.done=False;self.delays=[];self.est_last={};self.subs=[];self.pubs=[];self.posepub=[];self.native_seen=set();self.max_command_speed=0.;self.max_command_acc=0.;self.tracking=[]
+   self.stream=gzip.open(out/'sensor-stream.jsonl.gz','wt',compresslevel=1);self.executed=(out/'executed-commands.jsonl').open('w');self.contact_log=(out/'contacts.jsonl').open('w')
+   self.log=(out/'trajectory.csv').open('w');self.csv=csv.writer(self.log);self.csv.writerow(['t','i','x','y','z','speed'])
+   self.cover=(out/'coverage.jsonl').open('w');self.commands=(out/'commands.jsonl').open('w')
+@@ -40,13 +40,19 @@
+    for topic,typ,cb,qos in [('estimated_odometry',Odometry,self.estimated,qos_profile_sensor_data),('odometry',Odometry,self.odom,qos_profile_sensor_data),('lidar/points',PointCloud2,self.cloud,qos_profile_sensor_data),('contacts',Contacts,self.contact,qos_profile_sensor_data),('observation',String,self.obs,QoSProfile(depth=10,durability=DurabilityPolicy.TRANSIENT_LOCAL)),('trajectory_target',MultiDOFJointTrajectory,self.target,10)]:
+     self.subs.append(self.create_subscription(typ,f'/drone_{i}/{topic}',lambda m,i=i,cb=cb:cb(i,m),qos))
+    self.pubs.append(self.create_publisher(MultiDOFJointTrajectory,f'/drone_{i}/trajectory_target',1));self.posepub.append(self.create_publisher(PoseStamped,f'/drone_{i}/target',1))
++  self.native_files={n:(out/(n+".jsonl")).open("w") for n in ("peer_states", "execution-evidence", "command-evidence")}
+   self.native_yaw={}
+   if mode=='annual':
+    for i in range(2):
++    for topic,name in [('peer_state','peer_states'),('view_execution','execution-evidence'),('view_command','command-evidence')]:
++     self.subs.append(self.create_subscription(String,f'/drone_{i}/{topic}',lambda m,i=i,name=name:self.capture_native(i,name,m),QoSProfile(depth=10,durability=DurabilityPolicy.TRANSIENT_LOCAL)))
+     self.subs.append(self.create_subscription(PoseStamped,f'/drone_{i}/native_target',lambda m,i=i:self.annual_pose(i,m),1))
+     self.subs.append(self.create_subscription(MultiDOFJointTrajectory,f'/drone_{i}/native_trajectory_target',lambda m,i=i:self.annual_traj(i,m),1))
+   self.envelopes=[Envelope([p[0],p[1],.1]) for p in self.starts];self.last_control=0.;self.raw_maxspeed=0.;self.raw_maxacc=0.
+   self.create_timer(.033,self.tick)
++ def capture_native(self,i,name,m):
++  packet=json.loads(m.data);packet.update(drone=i,receipt_time=self.t,receipt_wall_time=time.monotonic())
++  self.native_files[name].write(json.dumps(packet)+'\n')
+  def annual_pose(self,i,m):
+   q=m.pose.orientation;self.native_yaw[i]=math.atan2(2*(q.w*q.z+q.x*q.y),1-2*(q.y*q.y+q.z*q.z))
+  def annual_traj(self,i,m):
+@@ -139,4 +145,5 @@
+ try:
+  while rclpy.ok() and not b.done:rclpy.spin_once(b,timeout_sec=.1)
+ finally:
++ for file in b.native_files.values():file.close()
+  b.stream.close();b.executed.close();b.contact_log.close();b.log.close();b.commands.close();b.cover.close();b.destroy_node();rclpy.shutdown()
+--- 2026-09-28/common.launch.py
++++ 2026-10-05/common.launch.py
+@@ -10,15 +10,15 @@
+  sys.path.insert(0,str(share/'launch'))
+  from scene import generate
+  out=Path(os.environ['COMPARISON_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
+- mode=os.environ['COMPARISON_MODE'];data=json.loads(Path('/comparison/map.json').read_text());starts=data['search_starts']
+- world,bridge=generate(share,'/comparison/map.json',out/'scene',starts[0],starts=starts,lidar=True)
++ mode=os.environ['COMPARISON_MODE'];data=json.loads(Path('/study/map.json').read_text());starts=data['search_starts']
++ world,bridge=generate(share,'/study/map.json',out/'scene',starts[0],starts=starts,lidar=True)
+  common={'use_sim_time':True}
+  nodes=[SetEnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH',str(prefix/'lib')),TimerAction(period=8.,actions=[ExecuteProcess(cmd=['gz','sim','-r','-s','--headless-rendering','--seed','900',world],output='screen')]),Node(package='ros_gz_bridge',executable='parameter_bridge',parameters=[{'config_file':bridge}],output='screen')]
+  for i,start in enumerate(starts):
+   ns=f'drone_{i}'
+   for exe,params in [('localization_measurement_node.py',{'drone_id':i}),('state_estimator_node.py',{'drone_id':i})]:
+    nodes.append(Node(package='annual_swarm',executable=exe,namespace=ns,parameters=[common,params],output='screen'))
+-  nodes.append(ExecuteProcess(cmd=['python3','/comparison/common_mapper.py','--ros-args','-r','__ns:=/'+ns,'-p','use_sim_time:=true','-p','drone_id:='+str(i),'-p','bounds:='+json.dumps(json.dumps(data['bounds']))],output='screen'))
++  nodes.append(ExecuteProcess(cmd=['python3','/study/common_mapper.py','--ros-args','-r','__ns:=/'+ns,'-p','use_sim_time:=true','-p','drone_id:='+str(i),'-p','bounds:='+json.dumps(json.dumps(data['bounds']))],output='screen'))
+   if mode=='annual':
+    nodes.append(Node(package='annual_swarm',executable='decentralized_agent_node.py',namespace=ns,parameters=[str(share/'config/exploration_priority.yaml'),common,{'drone_id':i,'bounds':json.dumps(data['bounds']),'fleet_starts':json.dumps(starts),'output_dir':str(out)}],output='screen'))
+    nodes.append(Node(package='annual_swarm',executable='view_executor_node.py',namespace=ns,parameters=[common,{'drone_id':i,'start':json.dumps(start),'fleet_starts':json.dumps(starts)}],remappings=[('target','native_target'),('trajectory_target','native_trajectory_target')],output='screen'))
+--- 2026-09-28/racer.launch
++++ 2026-10-05/racer.launch
+@@ -1 +1 @@
+-<launch><param name="use_sim_time" value="true" /><include file="/comparison/racer-single.xml"><arg name="drone_id" value="1" /><arg name="drone_num" value="2" /><arg name="map_size_x" value="14" /><arg name="map_size_y" value="14" /><arg name="map_size_z" value="3.5" /><arg name="odom_prefix" value="/common/odom" /><arg name="simulation" value="false" /><arg name="sensor_pose_topic" value="/common/sensor_pose_1" /></include><include file="/comparison/racer-single.xml"><arg name="drone_id" value="2" /><arg name="drone_num" value="2" /><arg name="map_size_x" value="14" /><arg name="map_size_y" value="14" /><arg name="map_size_z" value="3.5" /><arg name="odom_prefix" value="/common/odom" /><arg name="simulation" value="false" /><arg name="sensor_pose_topic" value="/common/sensor_pose_2" /></include></launch>+<launch><param name="use_sim_time" value="true" /><include file="/study/racer-single.xml"><arg name="drone_id" value="1" /><arg name="drone_num" value="2" /><arg name="map_size_x" value="14" /><arg name="map_size_y" value="14" /><arg name="map_size_z" value="3.5" /><arg name="odom_prefix" value="/common/odom" /><arg name="simulation" value="false" /><arg name="sensor_pose_topic" value="/common/sensor_pose_1" /></include><include file="/study/racer-single.xml"><arg name="drone_id" value="2" /><arg name="drone_num" value="2" /><arg name="map_size_x" value="14" /><arg name="map_size_y" value="14" /><arg name="map_size_z" value="3.5" /><arg name="odom_prefix" value="/common/odom" /><arg name="simulation" value="false" /><arg name="sensor_pose_topic" value="/common/sensor_pose_2" /></include></launch>

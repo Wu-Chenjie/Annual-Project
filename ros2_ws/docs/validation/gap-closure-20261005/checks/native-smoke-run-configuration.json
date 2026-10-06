@@ -1,0 +1,19 @@
+{
+  "arguments": {
+    "output_dir": "/workspace/artifacts/todo-execution/gap-closure-native-smoke-904",
+    "seed": 904,
+    "map": "/tmp/annual-gap-closure-20261005/next_project/maps/search_fusion_3d.json",
+    "faults": "none",
+    "simulation_limit": 90.0,
+    "wall_limit": 240.0,
+    "observer": "/tmp/annual-gap-closure-20261005/ros2_ws/install/annual_swarm/lib/annual_swarm/record_observation_evidence.py"
+  },
+  "map_sha256": "ffc12e87b4491eeb917aa240bfe2379e255092335d6b89c5e79e899a1de9ba0d",
+  "environment": {
+    "ANNUAL_EXPERIMENT_SEED": "904",
+    "GZ_PARTITION": "annual_todo_f25e437715a54c04b8f4145c168e37bc",
+    "ROS_DOMAIN_ID": "38"
+  },
+  "cpu_assignment": 6,
+  "memory_assignment_gib": 8
+}

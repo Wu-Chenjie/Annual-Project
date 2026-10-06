@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "status": "PASS_WITH_STOP_PROOF",
+  "errors": [],
+  "proposals": 18,
+  "captured_curve_commands": 17,
+  "lease_intervals": 17,
+  "handoffs": [
+    {
+      "token": "1:9aaedb8d:401008",
+      "old_token": "1:9aaedb8d:401007",
+      "authorized_at": 105.60000000000001,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 6.798699777552591e-17,
+        "acceleration": 8.582937747229195e-17,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      }
+    }
+  ],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "note": "Only retained-lease task-end-censored stops are recognized; no consumption or lease retirement is fabricated.",
+  "read_only_stop_proofs": [
+    {
+      "token": "1:9aaedb8d:401008",
+      "old_token": "1:9aaedb8d:401007",
+      "executed_stop_at": 107.516,
+      "stop_epoch": 401009,
+      "last_old_progress": 8.980000000000004,
+      "boundary": 10.893147136142268,
+      "held_until": 108.4,
+      "task_end_censored_at": 108.405,
+      "consumed": false,
+      "classification": "cancelled_before_boundary_with_leases_retained"
+    }
+  ],
+  "original_audit": "native-protocol-audit.json"
+}

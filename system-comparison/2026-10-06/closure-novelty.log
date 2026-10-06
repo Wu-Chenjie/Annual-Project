@@ -1,0 +1,10 @@
+{
+  "definition": "First raw-sensor observed-known and scored observed-free voxel timestamps; actual cloud time; same-time ties credit lower drone ID; each voxel counted once.",
+  "observation_scope": "Whole sensor stream within (service_start, service_end], distinct from online planned-view target cells.",
+  "mission_new_team_free_cells": 5556,
+  "mission_new_team_free_volume_m3": 150.01199999999997,
+  "effective_new_free_cells_per_sim_s": 77.08957708957709,
+  "explore_completed_service_windows": 10,
+  "actual_zero_new_known_service_windows": 1,
+  "limitations": "Novelty is first evidence in recorded raw-sensor/common-mapper replay, using estimated localization. It differs from task-footprint utility and does not imply all transit or repeated rays are wasteful."
+}

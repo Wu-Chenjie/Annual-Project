@@ -1,5 +1,7 @@
 # 室内无人机集群：ROS 2 / Gazebo 仿真
 
+本次归档（2026-10-06）包含[当前工程待办](RACER_GVP_ENGINEERING_TODO.md)、[最新开发配对及完整证据](system-comparison/2026-10-06/README.md)、[规划器优化可行性核对](planner-optimization/2026-10-06-feasibility/README.md)和[归档范围/本地检查](docs/progress-snapshot-20261006.md)。最新结果来自小规模开发检查，正式 E01–E10 与其余70项矩阵仍未完成。
+
 正在按[工程TODO执行记录](ros2_ws/TODO_EXECUTION.md)推进团队新增信息账本、运动中授权交接、规划墙钟预算、私有缓存复用与任务生命周期。一套融合入口保持不变；正式五种子配对、专项场景和消融尚未全部验收。[第一版原生开发录像及完整原始证据](ros2_ws/docs/validation/todo-development/README.md)已保存，不能把开发单次结果当成正式性能结论。
 
 历史[新配色录像（1080p，62.47 秒）](ros2_ws/docs/validation/palette-video/palette-exploration.mp4)：该次890.5 s达到95%三维覆盖，最终覆盖率95.07%，总航程402.4 m，零接触。[当次源码与独立审计](ros2_ws/docs/validation/palette-video/README.md)保留。

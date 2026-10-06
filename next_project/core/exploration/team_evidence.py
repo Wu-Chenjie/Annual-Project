@@ -98,19 +98,41 @@ def expected_traffic_delay(path, peers, now, speed=.6, diagnostic_radius=2.):
     points = np.asarray(path, float)
     if len(points) < 2:
         return 0.
+    # Arc-length samples make the estimate independent of path vertex density.
+    lengths = np.linalg.norm(np.diff(points, axis=0), axis=1)
+    cumulative = np.r_[0., np.cumsum(lengths)]; total = cumulative[-1]
+    if total < 1e-8: return 0.
+    n = max(1, int(np.ceil(total/.3-1e-10)))
+    stations = (np.arange(n)+.5)*total/n
+    points = np.column_stack([np.interp(stations,cumulative,points[:,k]) for k in range(points.shape[1])])
+    weights = np.full(n,total/n/speed); arrivals = stations/speed
     delay = 0.
     for peer in peers.values():
         if not -.1 <= now-peer.get('time', -np.inf) < 3.:
             continue
+        peer_delay = 0.
         for intent in intent_records(peer):
             if not intent.get('committed') or intent.get('retiring'):
                 continue
             other = np.asarray(intent.get('path', []), float)
             if not len(other): continue
-            distance = np.linalg.norm(points[:, None, :2]-other[None, :, :2], axis=2)
-            overlap = np.any(distance < diagnostic_radius, axis=1)
+            # The consumed prefix no longer occupies a corridor. Pending
+            # routes keep their complete footprint until actual consumption.
+            if peer.get('execution', {}).get('token') == intent.get('token') and peer.get('position') is not None:
+                index = int(np.argmin(np.linalg.norm(other-np.asarray(peer['position']), axis=1)))
+                other = np.vstack([peer['position'], other[index:]])
+            # Distance to segments, rather than vertices, catches a long
+            # two-vertex corridor crossing just as a dense sampled route does.
+            if len(other) == 1:
+                distance = np.linalg.norm(points[:, :2]-other[0, :2], axis=1)
+            else:
+                a = other[:-1, :2]; delta = np.diff(other[:, :2], axis=0)
+                projection = np.sum((points[:, None, :2]-a[None])*delta[None], axis=2)/np.maximum(np.sum(delta*delta, axis=1), 1e-12)
+                nearest = a[None]+np.clip(projection, 0., 1.)[:, :, None]*delta[None]
+                distance = np.linalg.norm(points[:, None, :2]-nearest, axis=2).min(axis=1)
+            remaining = max(0., predicted_peer_completion(peer, intent, now)-now)
+            overlap = (distance < diagnostic_radius) & (arrivals < remaining)
             if overlap.any():
-                own_time = float(np.linalg.norm(np.diff(points, axis=0), axis=1).sum())/speed
-                remaining = predicted_peer_completion(peer, intent, now)-now
-                delay += min(own_time*float(overlap.mean()), max(0., remaining))
+                peer_delay = max(peer_delay, min(float(weights[overlap].sum()), remaining))
+        delay += peer_delay
     return delay

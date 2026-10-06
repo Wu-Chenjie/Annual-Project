@@ -1,0 +1,2 @@
+{"epoch": 400001, "cancel": true, "scan": true, "reason": "incarnation_start", "drone": 1, "receipt_time": 0.41400000000000003, "receipt_wall_time": 144842.176102071}
+{"epoch": 400001, "cancel": true, "scan": true, "reason": "incarnation_start", "drone": 0, "receipt_time": 0.42600000000000005, "receipt_wall_time": 144842.193812838}

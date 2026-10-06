@@ -1,0 +1,144 @@
+{
+  "definition": "First raw-sensor observed-known and scored observed-free voxel timestamps; actual cloud time; same-time ties credit lower drone ID; each voxel counted once.",
+  "observation_scope": "Whole sensor stream within (service_start, service_end], distinct from online planned-view target cells.",
+  "mission_new_team_free_cells": 5556,
+  "mission_new_team_free_volume_m3": 150.01199999999997,
+  "effective_new_free_cells_per_sim_s": 77.08957708957709,
+  "explore_completed_service_windows": 10,
+  "actual_zero_new_known_service_windows": 1,
+  "services": [
+    {
+      "drone": 1,
+      "token": "1:10b3e7a5:400002",
+      "purpose": "explore",
+      "region": 6,
+      "start": 21.200000000000003,
+      "end": 25.200000000000003,
+      "online_planned_view_team_new_cells": 26,
+      "actual_sensor_window_team_new_known_cells": 131,
+      "actual_sensor_window_team_new_free_cells": 123
+    },
+    {
+      "drone": 0,
+      "token": "0:9294a8c8:400002",
+      "purpose": "explore",
+      "region": 30,
+      "start": 22.001,
+      "end": 28.441000000000003,
+      "online_planned_view_team_new_cells": 13,
+      "actual_sensor_window_team_new_known_cells": 579,
+      "actual_sensor_window_team_new_free_cells": 504
+    },
+    {
+      "drone": 1,
+      "token": "1:10b3e7a5:400003",
+      "purpose": "explore",
+      "region": 31,
+      "start": 27.6,
+      "end": 32.401,
+      "online_planned_view_team_new_cells": 0,
+      "actual_sensor_window_team_new_known_cells": 0,
+      "actual_sensor_window_team_new_free_cells": 0
+    },
+    {
+      "drone": 0,
+      "token": "0:9294a8c8:400003",
+      "purpose": "explore",
+      "region": 41,
+      "start": 28.441000000000003,
+      "end": 33.2,
+      "online_planned_view_team_new_cells": 3,
+      "actual_sensor_window_team_new_known_cells": 598,
+      "actual_sensor_window_team_new_free_cells": 499
+    },
+    {
+      "drone": 1,
+      "token": "1:10b3e7a5:400004",
+      "purpose": "explore",
+      "region": 48,
+      "start": 43.6,
+      "end": 54.0,
+      "online_planned_view_team_new_cells": 12,
+      "actual_sensor_window_team_new_known_cells": 13,
+      "actual_sensor_window_team_new_free_cells": 0
+    },
+    {
+      "drone": 1,
+      "token": "1:10b3e7a5:400006",
+      "purpose": "explore",
+      "region": 6,
+      "start": 55.202000000000005,
+      "end": 62.00000000000001,
+      "online_planned_view_team_new_cells": 14,
+      "actual_sensor_window_team_new_known_cells": 14,
+      "actual_sensor_window_team_new_free_cells": 10
+    },
+    {
+      "drone": 0,
+      "token": "0:9294a8c8:400008",
+      "purpose": "explore",
+      "region": 56,
+      "start": 55.6,
+      "end": 63.021,
+      "online_planned_view_team_new_cells": 139,
+      "actual_sensor_window_team_new_known_cells": 1853,
+      "actual_sensor_window_team_new_free_cells": 1529
+    },
+    {
+      "drone": 0,
+      "token": "0:9294a8c8:400009",
+      "purpose": "explore",
+      "region": 56,
+      "start": 63.021,
+      "end": 68.4,
+      "online_planned_view_team_new_cells": 90,
+      "actual_sensor_window_team_new_known_cells": 1279,
+      "actual_sensor_window_team_new_free_cells": 894
+    },
+    {
+      "drone": 1,
+      "token": "1:10b3e7a5:400007",
+      "purpose": "explore",
+      "region": 42,
+      "start": 68.4,
+      "end": 84.80000000000001,
+      "online_planned_view_team_new_cells": 0,
+      "actual_sensor_window_team_new_known_cells": 10,
+      "actual_sensor_window_team_new_free_cells": 0
+    },
+    {
+      "drone": 0,
+      "token": "0:9294a8c8:400010",
+      "purpose": "explore",
+      "region": 58,
+      "start": 72.4,
+      "end": 76.0,
+      "online_planned_view_team_new_cells": 31,
+      "actual_sensor_window_team_new_known_cells": 45,
+      "actual_sensor_window_team_new_free_cells": 12
+    }
+  ],
+  "coverage_replay": {
+    "recomputed": {
+      "coverage": 0.9534112575644533,
+      "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+      "legacy_center_free_coverage": 0.9197668848794508,
+      "truth_free_voxels": 12063,
+      "observed_free_voxels": 11501,
+      "unobserved_free_voxels": 510,
+      "falsely_occupied_free_voxels": 52
+    },
+    "logged_coverage": 0.9533283594462406,
+    "difference": 8.289811821271531e-05,
+    "integrated_frames": [
+      231,
+      231
+    ],
+    "logged_observation_frames": [
+      231,
+      230
+    ],
+    "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+  },
+  "limitations": "Novelty is first evidence in recorded raw-sensor/common-mapper replay, using estimated localization. It differs from task-footprint utility and does not imply all transit or repeated rays are wasteful."
+}

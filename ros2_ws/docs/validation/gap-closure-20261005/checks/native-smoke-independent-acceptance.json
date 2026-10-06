@@ -1,0 +1,70 @@
+{
+  "passed": false,
+  "gates": {
+    "all_truth_streams_recorded": true,
+    "no_recorded_unexpected_landings": true,
+    "zero_contacts": true,
+    "sampled_separation": true,
+    "reference_speed": true,
+    "reference_acceleration": true,
+    "final_map_matches": false
+  },
+  "task_start": 15.500000000000002,
+  "task_end": 106.206,
+  "truth_pose": {
+    "0": {
+      "samples": 9071,
+      "first_time": 15.501,
+      "last_time": 106.201,
+      "min_height_m": 1.4996469441721763,
+      "max_height_m": 2.8506901877715656,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.010000000000005116,
+      "maximum_pose_difference_speed_mps": 0.6486035840566309
+    },
+    "1": {
+      "samples": 9071,
+      "first_time": 15.501,
+      "last_time": 106.201,
+      "min_height_m": 1.0444383261245997,
+      "max_height_m": 2.2530014926243287,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.010000000000005116,
+      "maximum_pose_difference_speed_mps": 0.6336047161383321
+    },
+    "2": {
+      "samples": 9071,
+      "first_time": 15.501,
+      "last_time": 106.201,
+      "min_height_m": 1.0514586475540413,
+      "max_height_m": 2.549757068431691,
+      "unexpected_landing_samples": 0,
+      "maximum_sample_gap_s": 0.010000000000005116,
+      "maximum_pose_difference_speed_mps": 0.6089164727678578
+    }
+  },
+  "tracking": {
+    "0": {
+      "samples": 332,
+      "p95_error_m": 0.03725926556371315,
+      "maximum_error_m": 0.05194308808992332
+    },
+    "1": {
+      "samples": 298,
+      "p95_error_m": 0.03204484483307069,
+      "maximum_error_m": 0.038574207256998796
+    },
+    "2": {
+      "samples": 308,
+      "p95_error_m": 0.029867360453338317,
+      "maximum_error_m": 0.04625648167125965
+    }
+  },
+  "max_logged_reference_speed_mps": 0.5911321208663924,
+  "max_logged_reference_acceleration_mps2": 0.5584769748610614,
+  "sensor_map": {
+    "passed": false,
+    "reason": "Final sensor map absent; incomplete run retained"
+  },
+  "note": "Sampled truth and active-reference checks; finite-difference true speed is distinct from reference limits. Incomplete runs need not have a final map."
+}

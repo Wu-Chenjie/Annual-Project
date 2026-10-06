@@ -1,0 +1,48 @@
+{
+  "mode": "annual",
+  "t": 60.386,
+  "wall_seconds": 73.49159772100006,
+  "coverage": 0.8019563955898201,
+  "t90": null,
+  "t95": null,
+  "distance_m": {
+    "0": 10.941364397795322,
+    "1": 9.046293735051014
+  },
+  "contacts": 0,
+  "min_separation_m": 1.6129720499742233,
+  "max_measured_speed_mps": 0.6497417005710787,
+  "max_command_speed_mps": 0.5911304020351255,
+  "max_command_acc_mps2": 0.5305074228946035,
+  "tracking_error_p95_m": 0.18360351789071566,
+  "counts": {
+    "odom_0": 6039,
+    "odom_1": 6039,
+    "cloud_0": 302,
+    "cloud_1": 302,
+    "estimated_0": 3019,
+    "estimated_1": 3019,
+    "native_commands": 6034,
+    "observation_0": 151,
+    "observation_1": 151
+  },
+  "positions": {
+    "0": [
+      1.937085236318454,
+      0.749251009534882,
+      1.955454189160241
+    ],
+    "1": [
+      -1.0523554234373178,
+      1.0497478148937773,
+      1.9489173935633881
+    ]
+  },
+  "native_seen": [
+    0,
+    1
+  ],
+  "adapter_command_age_p95_s": 0.031999999999996476,
+  "truth_free_voxels": 12063,
+  "status": "TIME_LIMIT"
+}

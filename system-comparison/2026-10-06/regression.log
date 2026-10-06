@@ -1,0 +1,23 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+.................................................................F...... [ 84%]
+...................................................                      [100%]
+=================================== FAILURES ===================================
+_ test_corridor_cost_is_vertex_density_invariant_and_not_double_counted_per_peer _
+
+    def test_corridor_cost_is_vertex_density_invariant_and_not_double_counted_per_peer():
+        path = [[0.,0.,1.5],[6.,0.,1.5]]
+        other = [[3.,-3.,1.5],[3.,3.,1.5]]
+        sparse = expected_traffic_delay(path, {1:peer(other)}, 10.)
+        dense = expected_traffic_delay(np.linspace(path[0],path[1],21), {1:peer(np.linspace(other[0],other[1],21).tolist())}, 10.)
+>       assert sparse > 0. and sparse == pytest.approx(dense)
+E       assert (7.0 > 0.0 and 7.0 == 6.75 ± 6.7e-06
+E         comparison failed
+E         Obtained: 7.0
+E         Expected: 6.75 ± 6.7e-06)
+
+/study-root/Annual-Project/ros2_ws/src/annual_swarm/test/test_service_cost.py:48: AssertionError
+=========================== short test summary info ============================
+FAILED ../study-root/Annual-Project/ros2_ws/src/annual_swarm/test/test_service_cost.py::test_corridor_cost_is_vertex_density_invariant_and_not_double_counted_per_peer
+1 failed, 338 passed in 36.36s

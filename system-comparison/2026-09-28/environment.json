@@ -1,0 +1,8 @@
+{
+  "annual_git_head": "3e0199c46639428363d3078ce065d09067d45f11",
+  "ros1_source_repos": "local source snapshots; no .git directories",
+  "runtime": [
+    "sha256:fb21aaf4adcf4e957e6824a29978dcf32acda04172f953c3b1abfd9e60158175\naarch64\nPRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\n79958707e4d50876e08595662769244e5093a41d11607646e6dd916c13790458  /workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node\n",
+    "sha256:2a7ec51d137a672ccbd62fddacbd03ba0362c65f49f854a4dac8f2fa92d4c00b\naarch64\nNAME=\"Ubuntu\"\nVERSION=\"20.04.6 LTS (Focal Fossa)\"\nID=ubuntu\nc2865de1f9ac4eac56d54ac9d17ce4d3d0dbe33271d17da263eced744a12daa0  /work/racer_ws/devel/lib/exploration_manager/exploration_node\n9d04af3997c064c4712f30ef8052a7154c89ce1e4fb96dee4bf89d511b063395  /comparison/gvp_ws/devel/lib/murder_swarm/murder_swarm_node\n"
+  ]
+}

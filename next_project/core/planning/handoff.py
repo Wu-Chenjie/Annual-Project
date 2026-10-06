@@ -15,6 +15,24 @@ def future_boundary_time(curve, progress, lead):
     return float(boundary) if boundary<curve.duration-.4 else None
 
 
+def moving_boundary_time(curve, progress, lead):
+    """Latest feasible boundary before longitudinal deceleration, never clip lead.
+
+    Preparing near the end of cruise gives actual old-service frames time to
+    arrive. When preparation is already late, preserve the existing feasible
+    boundary during deceleration. Never manufacture a window by clipping lead.
+    """
+    earliest = future_boundary_time(curve, progress, lead)
+    if earliest is None:
+        return None
+    times = np.linspace(earliest, curve.duration-.4, max(2, int(curve.duration/.05)+1))
+    _, velocities, accelerations, _, _ = curve.sample_many(times)
+    speeds = np.linalg.norm(velocities, axis=1)
+    increasing = np.sum(velocities*accelerations, axis=1) >= -1e-4
+    candidates = times[(speeds >= .1) & increasing]
+    return float(candidates[-1]) if len(candidates) else earliest
+
+
 def continuity(old, new, progress):
     left = old.sample(progress); right = new.sample(0.)
     return dict(position=float(np.linalg.norm(left[0]-right[0])),

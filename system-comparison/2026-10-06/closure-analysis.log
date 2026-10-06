@@ -1,0 +1,92 @@
+{
+  "checks": {
+    "identical_physics": true,
+    "installed_sources_verified": true,
+    "frozen_harness_unchanged": true,
+    "identical_world": true,
+    "identical_denominator": true,
+    "baseline-900-r1_safety": true,
+    "candidate-closure-900_safety": true
+  },
+  "gates": {
+    "T95": true,
+    "low_speed": true,
+    "distance": true,
+    "safety": true
+  },
+  "metrics": {
+    "baseline-900-r1": {
+      "exploration_t95_s": 88.405,
+      "mission_total_distance_m": 33.887545692010946,
+      "low_speed_fraction": 0.5560470141064965,
+      "service_diagnostics": {
+        "explore_services": 14,
+        "online_zero_team_gain": 0,
+        "consecutive_same_region_services": 0,
+        "idle_stale_active_packets": 0,
+        "idle_stale_pinned_bid_packets": 0,
+        "planning_wall_p95_s": 4.822754341003019,
+        "events": {
+          "incarnation_ready": 2,
+          "planning_submitted": 41,
+          "planning_result": 41,
+          "path_proposed": 16,
+          "path_committed": 16,
+          "next_view_ready": 23,
+          "terminal_observation_completed": 14,
+          "view_observed": 14,
+          "region_service": 14,
+          "region_low_yield": 2,
+          "task_gain_invalidated": 2,
+          "handoff_preparation_timing": 17,
+          "next_view_adopted": 7,
+          "handoff_proposed": 2,
+          "handoff_authorized": 1,
+          "lease_cancellation_requested": 1,
+          "pair_cvrp_prepared": 1,
+          "handoff_cancelled": 1
+        },
+        "note": "Same-region services may observe different headings/altitudes; this count is not a wasted-flight ratio. Online team gain uses received evidence."
+      }
+    },
+    "candidate-closure-900": {
+      "exploration_t95_s": 72.072,
+      "mission_total_distance_m": 29.072171124803035,
+      "low_speed_fraction": 0.5128968253968266,
+      "service_diagnostics": {
+        "explore_services": 10,
+        "online_zero_team_gain": 2,
+        "consecutive_same_region_services": 1,
+        "idle_stale_active_packets": 0,
+        "idle_stale_pinned_bid_packets": 10,
+        "planning_wall_p95_s": 4.971111128681512,
+        "events": {
+          "incarnation_ready": 2,
+          "planning_submitted": 35,
+          "planning_result": 34,
+          "path_proposed": 12,
+          "path_committed": 12,
+          "handoff_preparation_timing": 17,
+          "next_view_ready": 16,
+          "handoff_refit_timing": 10,
+          "terminal_observation_completed": 8,
+          "view_observed": 10,
+          "region_service": 10,
+          "region_low_yield": 3,
+          "task_lifecycle_invalidated": 1,
+          "handoff_proposed": 5,
+          "handoff_quorum_ready": 5,
+          "handoff_cancelled": 3,
+          "task_gain_invalidated": 1,
+          "handoff_authorized": 2,
+          "handoff_consumed": 2,
+          "reservation_retired": 4,
+          "next_view_adopted": 1,
+          "lease_cancellation_requested": 2,
+          "pair_cvrp_prepared": 1
+        },
+        "note": "Same-region services may observe different headings/altitudes; this count is not a wasted-flight ratio. Online team gain uses received evidence."
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+stationary_scaling verified
+direct_trajectory verified
+voxel_sets verified
+array_trees verified
+Traceback (most recent call last):
+  File "/Users/wuchenjie/Desktop/大创计划调研/planner-optimization/2026-10-06-feasibility/check_feasibility.py", line 237, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/wuchenjie/Desktop/大创计划调研/planner-optimization/2026-10-06-feasibility/check_feasibility.py", line 232, in main
+    report[name]=function();print(name,'verified',flush=True)
+                 ~~~~~~~~^^
+  File "/Users/wuchenjie/Desktop/大创计划调研/planner-optimization/2026-10-06-feasibility/check_feasibility.py", line 148, in snapshots
+    local=np.arange(128,dtype=np.int8);block=shared_memory.SharedMemory(create=True,size=local.nbytes)
+                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/multiprocessing/shared_memory.py", line 95, in __init__
+    self._fd = _posixshmem.shm_open(
+               ~~~~~~~~~~~~~~~~~~~~^
+        name,
+        ^^^^^
+        self._flags,
+        ^^^^^^^^^^^^
+        mode=self._mode
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+PermissionError: [Errno 1] Operation not permitted: '/psm_09f4db2d'

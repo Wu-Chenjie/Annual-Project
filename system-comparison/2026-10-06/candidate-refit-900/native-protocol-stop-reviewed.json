@@ -1,0 +1,45 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 17,
+  "captured_curve_commands": 15,
+  "lease_intervals": 15,
+  "handoffs": [
+    {
+      "token": "0:32545e8b:400003",
+      "old_token": "0:32545e8b:400002",
+      "authorized_at": 28.0,
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 8.99704593533875e-16,
+        "acceleration": 3.759830553602424e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 31.103
+    },
+    {
+      "token": "1:7adf1942:400009",
+      "old_token": "1:7adf1942:400008",
+      "authorized_at": 64.4,
+      "continuity": {
+        "position": 4.440892098500626e-16,
+        "velocity": 9.002333230070863e-16,
+        "acceleration": 1.9347852391722996e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 65.64
+    }
+  ],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "note": "Only retained-lease task-end-censored stops are recognized; no consumption or lease retirement is fabricated.",
+  "read_only_stop_proofs": [],
+  "original_audit": "native-protocol-audit.json"
+}

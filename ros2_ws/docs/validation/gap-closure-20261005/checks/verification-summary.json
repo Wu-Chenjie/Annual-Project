@@ -1,0 +1,12 @@
+{
+  "source_files": 272,
+  "current_source_differences": [],
+  "pytest_cases": 311,
+  "cpp_controller_tests": 1,
+  "ctest_tasks": 26,
+  "colcon_reported_including_wrappers": 337,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "source_archive_sha256": "8d19cc4e9cbb19fead3604c935b02fa64ba4bc2ce57a618228cb24b907114413"
+}

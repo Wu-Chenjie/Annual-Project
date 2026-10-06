@@ -1,0 +1,484 @@
+... logging to /root/.ros/log/02185234-bb47-11f1-b6a6-5255551de53e/roslaunch-colima-racer-gvp-781.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/comparison/racer.launch
+[1mstarted roslaunch server http://localhost:44667/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /acvrp_solver_1/exploration/drone_id: 1
+ * /acvrp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_1/exploration/problem_id: 2
+ * /acvrp_solver_2/exploration/drone_id: 2
+ * /acvrp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_2/exploration/problem_id: 2
+ * /exploration_node_1/astar/allocate_num: 1000000
+ * /exploration_node_1/astar/lambda_heu: 10000.0
+ * /exploration_node_1/astar/max_search_time: 0.001
+ * /exploration_node_1/astar/resolution_astar: 0.3
+ * /exploration_node_1/bspline/limit_acc: 0.8
+ * /exploration_node_1/bspline/limit_ratio: 1.1
+ * /exploration_node_1/bspline/limit_vel: 0.6
+ * /exploration_node_1/exploration/am: 0.8
+ * /exploration_node_1/exploration/drone_id: 1
+ * /exploration_node_1/exploration/drone_num: 2.0
+ * /exploration_node_1/exploration/init_plan_num: 2
+ * /exploration_node_1/exploration/max_decay: 0.8
+ * /exploration_node_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/refine_local: True
+ * /exploration_node_1/exploration/refined_num: 7
+ * /exploration_node_1/exploration/refined_radius: 5.0
+ * /exploration_node_1/exploration/top_view_num: 15
+ * /exploration_node_1/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/vm: 0.6
+ * /exploration_node_1/exploration/w_dir: 1.5
+ * /exploration_node_1/exploration/yd: 0.65
+ * /exploration_node_1/exploration/ydd: 0.8
+ * /exploration_node_1/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_1/frontier/candidate_rmax: 1.5
+ * /exploration_node_1/frontier/candidate_rmin: 1.0
+ * /exploration_node_1/frontier/candidate_rnum: 3
+ * /exploration_node_1/frontier/cluster_min: 100
+ * /exploration_node_1/frontier/cluster_size_xy: 2.0
+ * /exploration_node_1/frontier/cluster_size_z: 10.0
+ * /exploration_node_1/frontier/down_sample: 3
+ * /exploration_node_1/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_1/frontier/min_candidate_dist: 0.5
+ * /exploration_node_1/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_1/frontier/min_visib_num: 30
+ * /exploration_node_1/fsm/attempt_interval: 0.1
+ * /exploration_node_1/fsm/gain_thresh: 10
+ * /exploration_node_1/fsm/pair_opt_interval: 0.5
+ * /exploration_node_1/fsm/replan_time: 0.2
+ * /exploration_node_1/fsm/sync_interval: 0.2
+ * /exploration_node_1/fsm/thresh_replan1: 0.2
+ * /exploration_node_1/fsm/thresh_replan2: 0.2
+ * /exploration_node_1/fsm/thresh_replan3: 1.5
+ * /exploration_node_1/fsm/wait_delete_duration: 0.05
+ * /exploration_node_1/heading_planner/half_vert_num: 5
+ * /exploration_node_1/heading_planner/lambda1: 2.0
+ * /exploration_node_1/heading_planner/lambda2: 1.0
+ * /exploration_node_1/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_1/heading_planner/w: 20000.0
+ * /exploration_node_1/heading_planner/weight_type: 1.0
+ * /exploration_node_1/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_1/manager/clearance_threshold: 0.2
+ * /exploration_node_1/manager/control_points_distance: 0.5
+ * /exploration_node_1/manager/dynamic_environment: 0
+ * /exploration_node_1/manager/local_segment_length: 6.0
+ * /exploration_node_1/manager/max_acc: 0.8
+ * /exploration_node_1/manager/max_jerk: 4.0
+ * /exploration_node_1/manager/max_vel: 0.6
+ * /exploration_node_1/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_1/manager/min_time: True
+ * /exploration_node_1/manager/relax_time1: 0.3
+ * /exploration_node_1/manager/relax_time2: 1.5
+ * /exploration_node_1/manager/use_active_perception: True
+ * /exploration_node_1/manager/use_geometric_path: True
+ * /exploration_node_1/manager/use_kinodynamic_path: True
+ * /exploration_node_1/manager/use_optimization: True
+ * /exploration_node_1/manager/use_topo_path: False
+ * /exploration_node_1/map_ros/cx: 324.0879821777344
+ * /exploration_node_1/map_ros/cy: 239.10362243652344
+ * /exploration_node_1/map_ros/depth_filter_margin: 2
+ * /exploration_node_1/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_1/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_1/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_1/map_ros/frame_id: world
+ * /exploration_node_1/map_ros/fx: 385.69793701171875
+ * /exploration_node_1/map_ros/fy: 385.69793701171875
+ * /exploration_node_1/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_1/map_ros/show_all_map: True
+ * /exploration_node_1/map_ros/show_esdf_time: False
+ * /exploration_node_1/map_ros/show_occ_time: False
+ * /exploration_node_1/map_ros/skip_pixel: 2
+ * /exploration_node_1/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_1/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_1/optimization/algorithm1: 15
+ * /exploration_node_1/optimization/algorithm2: 11
+ * /exploration_node_1/optimization/dist0: 0.7
+ * /exploration_node_1/optimization/ld_dist: 10.0
+ * /exploration_node_1/optimization/ld_end: 0.5
+ * /exploration_node_1/optimization/ld_feasi: 2.0
+ * /exploration_node_1/optimization/ld_guide: 1.5
+ * /exploration_node_1/optimization/ld_smooth: 5.0
+ * /exploration_node_1/optimization/ld_start: 100.0
+ * /exploration_node_1/optimization/ld_swarm: 5.0
+ * /exploration_node_1/optimization/ld_time: 1.5
+ * /exploration_node_1/optimization/ld_view: 0.0
+ * /exploration_node_1/optimization/ld_waypt: 7.0
+ * /exploration_node_1/optimization/max_acc: 0.8
+ * /exploration_node_1/optimization/max_iteration_num1: 2
+ * /exploration_node_1/optimization/max_iteration_num2: 2000
+ * /exploration_node_1/optimization/max_iteration_num3: 200
+ * /exploration_node_1/optimization/max_iteration_num4: 200
+ * /exploration_node_1/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_1/optimization/max_iteration_time2: 0.005
+ * /exploration_node_1/optimization/max_iteration_time3: 0.003
+ * /exploration_node_1/optimization/max_iteration_time4: 0.003
+ * /exploration_node_1/optimization/max_vel: 0.6
+ * /exploration_node_1/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_1/partitioning/consistent_cost2: 8.0
+ * /exploration_node_1/partitioning/consistent_cost: -5.0
+ * /exploration_node_1/partitioning/grid_size: 5.0
+ * /exploration_node_1/partitioning/min_free: 3000
+ * /exploration_node_1/partitioning/min_frontier: 100
+ * /exploration_node_1/partitioning/min_unknown: 4000
+ * /exploration_node_1/partitioning/use_swarm_tf: False
+ * /exploration_node_1/partitioning/w_unknown: 0.0
+ * /exploration_node_1/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/max_dist: 4.5
+ * /exploration_node_1/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/vis_dist: 1.0
+ * /exploration_node_1/sdf_map/box_max_x: 6.0
+ * /exploration_node_1/sdf_map/box_max_y: 6.0
+ * /exploration_node_1/sdf_map/box_max_z: 3.0
+ * /exploration_node_1/sdf_map/box_min_x: -6.0
+ * /exploration_node_1/sdf_map/box_min_y: -6.0
+ * /exploration_node_1/sdf_map/box_min_z: 0.0
+ * /exploration_node_1/sdf_map/default_dist: 0.5
+ * /exploration_node_1/sdf_map/ground_height: -0.1
+ * /exploration_node_1/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_1/sdf_map/local_map_margin: 50
+ * /exploration_node_1/sdf_map/map_size_x: 14
+ * /exploration_node_1/sdf_map/map_size_y: 14
+ * /exploration_node_1/sdf_map/map_size_z: 3.5
+ * /exploration_node_1/sdf_map/max_ray_length: 4.5
+ * /exploration_node_1/sdf_map/min_ray_length: 0.1
+ * /exploration_node_1/sdf_map/no_drone_1: False
+ * /exploration_node_1/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_1/sdf_map/optimistic: True
+ * /exploration_node_1/sdf_map/p_hit: 0.65
+ * /exploration_node_1/sdf_map/p_max: 0.9
+ * /exploration_node_1/sdf_map/p_min: 0.12
+ * /exploration_node_1/sdf_map/p_miss: 0.35
+ * /exploration_node_1/sdf_map/p_occ: 0.8
+ * /exploration_node_1/sdf_map/resolution: 0.1
+ * /exploration_node_1/sdf_map/signed_dist: False
+ * /exploration_node_1/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_1/search/allocate_num: 100000
+ * /exploration_node_1/search/check_num: 10
+ * /exploration_node_1/search/horizon: 5.0
+ * /exploration_node_1/search/init_max_tau: 1.0
+ * /exploration_node_1/search/lambda_heu: 10.0
+ * /exploration_node_1/search/margin: 0.2
+ * /exploration_node_1/search/max_acc: 0.8
+ * /exploration_node_1/search/max_tau: 0.8
+ * /exploration_node_1/search/max_vel: 0.6
+ * /exploration_node_1/search/optimistic: False
+ * /exploration_node_1/search/resolution_astar: 0.025
+ * /exploration_node_1/search/time_resolution: 0.8
+ * /exploration_node_1/search/vel_margin: 0.25
+ * /exploration_node_1/search/w_time: 10.0
+ * /exploration_node_2/astar/allocate_num: 1000000
+ * /exploration_node_2/astar/lambda_heu: 10000.0
+ * /exploration_node_2/astar/max_search_time: 0.001
+ * /exploration_node_2/astar/resolution_astar: 0.3
+ * /exploration_node_2/bspline/limit_acc: 0.8
+ * /exploration_node_2/bspline/limit_ratio: 1.1
+ * /exploration_node_2/bspline/limit_vel: 0.6
+ * /exploration_node_2/exploration/am: 0.8
+ * /exploration_node_2/exploration/drone_id: 2
+ * /exploration_node_2/exploration/drone_num: 2.0
+ * /exploration_node_2/exploration/init_plan_num: 2
+ * /exploration_node_2/exploration/max_decay: 0.8
+ * /exploration_node_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/refine_local: True
+ * /exploration_node_2/exploration/refined_num: 7
+ * /exploration_node_2/exploration/refined_radius: 5.0
+ * /exploration_node_2/exploration/top_view_num: 15
+ * /exploration_node_2/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/vm: 0.6
+ * /exploration_node_2/exploration/w_dir: 1.5
+ * /exploration_node_2/exploration/yd: 0.65
+ * /exploration_node_2/exploration/ydd: 0.8
+ * /exploration_node_2/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_2/frontier/candidate_rmax: 1.5
+ * /exploration_node_2/frontier/candidate_rmin: 1.0
+ * /exploration_node_2/frontier/candidate_rnum: 3
+ * /exploration_node_2/frontier/cluster_min: 100
+ * /exploration_node_2/frontier/cluster_size_xy: 2.0
+ * /exploration_node_2/frontier/cluster_size_z: 10.0
+ * /exploration_node_2/frontier/down_sample: 3
+ * /exploration_node_2/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_2/frontier/min_candidate_dist: 0.5
+ * /exploration_node_2/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_2/frontier/min_visib_num: 30
+ * /exploration_node_2/fsm/attempt_interval: 0.1
+ * /exploration_node_2/fsm/gain_thresh: 10
+ * /exploration_node_2/fsm/pair_opt_interval: 0.5
+ * /exploration_node_2/fsm/replan_time: 0.2
+ * /exploration_node_2/fsm/sync_interval: 0.2
+ * /exploration_node_2/fsm/thresh_replan1: 0.2
+ * /exploration_node_2/fsm/thresh_replan2: 0.2
+ * /exploration_node_2/fsm/thresh_replan3: 1.5
+ * /exploration_node_2/fsm/wait_delete_duration: 0.05
+ * /exploration_node_2/heading_planner/half_vert_num: 5
+ * /exploration_node_2/heading_planner/lambda1: 2.0
+ * /exploration_node_2/heading_planner/lambda2: 1.0
+ * /exploration_node_2/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_2/heading_planner/w: 20000.0
+ * /exploration_node_2/heading_planner/weight_type: 1.0
+ * /exploration_node_2/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_2/manager/clearance_threshold: 0.2
+ * /exploration_node_2/manager/control_points_distance: 0.5
+ * /exploration_node_2/manager/dynamic_environment: 0
+ * /exploration_node_2/manager/local_segment_length: 6.0
+ * /exploration_node_2/manager/max_acc: 0.8
+ * /exploration_node_2/manager/max_jerk: 4.0
+ * /exploration_node_2/manager/max_vel: 0.6
+ * /exploration_node_2/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_2/manager/min_time: True
+ * /exploration_node_2/manager/relax_time1: 0.3
+ * /exploration_node_2/manager/relax_time2: 1.5
+ * /exploration_node_2/manager/use_active_perception: True
+ * /exploration_node_2/manager/use_geometric_path: True
+ * /exploration_node_2/manager/use_kinodynamic_path: True
+ * /exploration_node_2/manager/use_optimization: True
+ * /exploration_node_2/manager/use_topo_path: False
+ * /exploration_node_2/map_ros/cx: 324.0879821777344
+ * /exploration_node_2/map_ros/cy: 239.10362243652344
+ * /exploration_node_2/map_ros/depth_filter_margin: 2
+ * /exploration_node_2/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_2/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_2/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_2/map_ros/frame_id: world
+ * /exploration_node_2/map_ros/fx: 385.69793701171875
+ * /exploration_node_2/map_ros/fy: 385.69793701171875
+ * /exploration_node_2/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_2/map_ros/show_all_map: True
+ * /exploration_node_2/map_ros/show_esdf_time: False
+ * /exploration_node_2/map_ros/show_occ_time: False
+ * /exploration_node_2/map_ros/skip_pixel: 2
+ * /exploration_node_2/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_2/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_2/optimization/algorithm1: 15
+ * /exploration_node_2/optimization/algorithm2: 11
+ * /exploration_node_2/optimization/dist0: 0.7
+ * /exploration_node_2/optimization/ld_dist: 10.0
+ * /exploration_node_2/optimization/ld_end: 0.5
+ * /exploration_node_2/optimization/ld_feasi: 2.0
+ * /exploration_node_2/optimization/ld_guide: 1.5
+ * /exploration_node_2/optimization/ld_smooth: 5.0
+ * /exploration_node_2/optimization/ld_start: 100.0
+ * /exploration_node_2/optimization/ld_swarm: 5.0
+ * /exploration_node_2/optimization/ld_time: 1.5
+ * /exploration_node_2/optimization/ld_view: 0.0
+ * /exploration_node_2/optimization/ld_waypt: 7.0
+ * /exploration_node_2/optimization/max_acc: 0.8
+ * /exploration_node_2/optimization/max_iteration_num1: 2
+ * /exploration_node_2/optimization/max_iteration_num2: 2000
+ * /exploration_node_2/optimization/max_iteration_num3: 200
+ * /exploration_node_2/optimization/max_iteration_num4: 200
+ * /exploration_node_2/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_2/optimization/max_iteration_time2: 0.005
+ * /exploration_node_2/optimization/max_iteration_time3: 0.003
+ * /exploration_node_2/optimization/max_iteration_time4: 0.003
+ * /exploration_node_2/optimization/max_vel: 0.6
+ * /exploration_node_2/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_2/partitioning/consistent_cost2: 8.0
+ * /exploration_node_2/partitioning/consistent_cost: -5.0
+ * /exploration_node_2/partitioning/grid_size: 5.0
+ * /exploration_node_2/partitioning/min_free: 3000
+ * /exploration_node_2/partitioning/min_frontier: 100
+ * /exploration_node_2/partitioning/min_unknown: 4000
+ * /exploration_node_2/partitioning/use_swarm_tf: False
+ * /exploration_node_2/partitioning/w_unknown: 0.0
+ * /exploration_node_2/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/max_dist: 4.5
+ * /exploration_node_2/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/vis_dist: 1.0
+ * /exploration_node_2/sdf_map/box_max_x: 6.0
+ * /exploration_node_2/sdf_map/box_max_y: 6.0
+ * /exploration_node_2/sdf_map/box_max_z: 3.0
+ * /exploration_node_2/sdf_map/box_min_x: -6.0
+ * /exploration_node_2/sdf_map/box_min_y: -6.0
+ * /exploration_node_2/sdf_map/box_min_z: 0.0
+ * /exploration_node_2/sdf_map/default_dist: 0.5
+ * /exploration_node_2/sdf_map/ground_height: -0.1
+ * /exploration_node_2/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_2/sdf_map/local_map_margin: 50
+ * /exploration_node_2/sdf_map/map_size_x: 14
+ * /exploration_node_2/sdf_map/map_size_y: 14
+ * /exploration_node_2/sdf_map/map_size_z: 3.5
+ * /exploration_node_2/sdf_map/max_ray_length: 4.5
+ * /exploration_node_2/sdf_map/min_ray_length: 0.1
+ * /exploration_node_2/sdf_map/no_drone_1: False
+ * /exploration_node_2/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_2/sdf_map/optimistic: True
+ * /exploration_node_2/sdf_map/p_hit: 0.65
+ * /exploration_node_2/sdf_map/p_max: 0.9
+ * /exploration_node_2/sdf_map/p_min: 0.12
+ * /exploration_node_2/sdf_map/p_miss: 0.35
+ * /exploration_node_2/sdf_map/p_occ: 0.8
+ * /exploration_node_2/sdf_map/resolution: 0.1
+ * /exploration_node_2/sdf_map/signed_dist: False
+ * /exploration_node_2/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_2/search/allocate_num: 100000
+ * /exploration_node_2/search/check_num: 10
+ * /exploration_node_2/search/horizon: 5.0
+ * /exploration_node_2/search/init_max_tau: 1.0
+ * /exploration_node_2/search/lambda_heu: 10.0
+ * /exploration_node_2/search/margin: 0.2
+ * /exploration_node_2/search/max_acc: 0.8
+ * /exploration_node_2/search/max_tau: 0.8
+ * /exploration_node_2/search/max_vel: 0.6
+ * /exploration_node_2/search/optimistic: False
+ * /exploration_node_2/search/resolution_astar: 0.025
+ * /exploration_node_2/search/time_resolution: 0.8
+ * /exploration_node_2/search/vel_margin: 0.25
+ * /exploration_node_2/search/w_time: 10.0
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /traj_server_1/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/max_dist: 4.5
+ * /traj_server_1/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/vis_dist: 1.0
+ * /traj_server_1/traj_server/drone_id: 1
+ * /traj_server_1/traj_server/drone_num: 2
+ * /traj_server_1/traj_server/pub_traj_id: 4
+ * /traj_server_1/traj_server/time_forward: 1.5
+ * /traj_server_2/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/max_dist: 4.5
+ * /traj_server_2/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/vis_dist: 1.0
+ * /traj_server_2/traj_server/drone_id: 2
+ * /traj_server_2/traj_server/drone_num: 2
+ * /traj_server_2/traj_server/pub_traj_id: 4
+ * /traj_server_2/traj_server/time_forward: 1.5
+ * /tsp_solver_1/exploration/drone_id: 1
+ * /tsp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_1/exploration/problem_id: 1
+ * /tsp_solver_2/exploration/drone_id: 2
+ * /tsp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_2/exploration/problem_id: 1
+ * /use_sim_time: True
+
+NODES
+  /
+    acvrp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    acvrp_solver_2 (lkh_mtsp_solver/mtsp_node)
+    exploration_node_1 (exploration_manager/exploration_node)
+    exploration_node_2 (exploration_manager/exploration_node)
+    traj_server_1 (plan_manage/traj_server)
+    traj_server_2 (plan_manage/traj_server)
+    tsp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    tsp_solver_2 (lkh_mtsp_solver/mtsp_node)
+[33m[WARN] [1790604910.122408206]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790604910.136600423]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790604910.188537629]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790604910.206817181]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790604910.243579053]: [Traj server]: init...[0m
+[33m[WARN] [1790604910.278577960]: [Traj server]: init...[0m
+0
+0
+0
+0
+[33m[WARN] [1790604924.442381955, 1.018000000]: no odom[0m
+[33m[WARN] [1790604924.442634623, 1.018000000]: wait for init[0m
+[33m[WARN] [1790604924.446272191, 1.018000000]: [Traj server]: ready.[0m
+[33m[WARN] [1790604924.448019522, 1.018000000]: [Traj server]: ready.[0m
+[33m[WARN] [1790604924.450039323, 1.018000000]: wait for init[0m
+[33m[WARN] [1790604925.611192193, 2.047000000]: wait for init[0m
+[33m[WARN] [1790604925.612571007, 2.047000000]: wait for init[0m
+[33m[WARN] [1790604926.678147738, 3.051000000]: wait for trigger.[0m
+[33m[WARN] [1790604926.680122267, 3.060999999]: wait for trigger.[0m
+[33m[WARN] [1790604927.112502641, 3.601000000]: Init grid allocation.[0m
+[33m[WARN] [1790604927.114289284, 3.601000000]: Init grid allocation.[0m
+[33m[WARN] [1790604927.118288032, 3.601000000]: Init grid allocation.[0m
+[33m[WARN] [1790604927.123008349, 3.601000000]: Init grid allocation.[0m
+[33m[WARN] [1790604927.123476792, 3.601000000]: Empty dominance.[0m
+[33m[WARN] [1790604927.561995067, 4.004999999]: Empty dominance.[0m
+[33m[WARN] [1790604927.798359565, 4.062000000]: wait for trigger.[0m
+[33m[WARN] [1790604928.024871306, 4.370000000]: wait for trigger.[0m
+[33m[WARN] [1790604928.031934794, 4.408000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790604928.137123696, 4.408000000]: Drone 1 send opt request to 2, pair opt t: 0.000000, allocate t: 0.000000[0m
+[33m[WARN] [1790604928.141091387, 4.408000000]: get response 1[0m
+[33m[WARN] [1790604928.793448153, 5.004999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790604928.928700704, 5.004999999]: Larger cost after reallocation[0m
+[31m[ERROR] [1790604928.929006982, 5.004999999]: Path 1 inconsistent[0m
+[33m[WARN] [1790604928.929277200, 5.004999999]: Drone 1 send opt request to 2, pair opt t: 0.000000, allocate t: 0.000000[0m
+[33m[WARN] [1790604929.064617253, 5.062000000]: wait for trigger.[0m
+[33m[WARN] [1790604929.511182966, 5.447000000]: wait for trigger.[0m
+[33m[WARN] [1790604929.516486908, 5.504999999]: get response 1[0m
+[33m[WARN] [1790604929.992671799, 6.004999999]: Pair opt 1 & 2[0m
+[33m[WARN] [1790604929.999253338, 6.004999999]: Grid 10 is rediscovered[0m
+[33m[WARN] [1790604930.105451577, 6.004999999]: Drone 1 send opt request to 2, pair opt t: 0.000000, allocate t: 0.000000[0m
+[33m[WARN] [1790604930.241220886, 6.072000000]: wait for trigger.[0m
+[33m[WARN] [1790604930.729639766, 6.543000000]: get response 1[0m
+[33m[WARN] [1790604930.734768120, 6.610000000]: wait for trigger.[0m
+[33m[WARN] [1790604931.486622443, 7.197000000]: wait for trigger.[0m
+[33m[WARN] [1790604931.958024610, 7.495000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790604932.011072829, 7.601000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790604932.011356429, 7.601000000]: Drone 1 send opt request to 2, pair opt t: 0.106000, allocate t: 0.096000[0m
+[33m[WARN] [1790604932.019450641, 7.601000000]: Grid 8 is rediscovered[0m
+[33m[WARN] [1790604932.487105268, 8.005000000]: wait for trigger.[0m
+[33m[WARN] [1790604932.490846888, 8.005000000]: get response 1[0m
+[33m[WARN] [1790604932.503590590, 8.005000000]: Grid 10 is rediscovered[0m
+[33m[WARN] [1790604932.737462676, 8.207000000]: wait for trigger.[0m
+[33m[WARN] [1790604933.289818800, 8.563000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790604933.356881023, 8.611000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790604933.357223110, 8.611000000]: Drone 1 send opt request to 2, pair opt t: 0.048000, allocate t: 0.000000[0m
+[33m[WARN] [1790604934.043854005, 9.025000000]: wait for trigger.[0m
+[33m[WARN] [1790604934.048582201, 9.092000000]: get response 1[0m
+[33m[WARN] [1790604934.061348622, 9.207000000]: wait for trigger.[0m
+[33m[WARN] [1790604934.545478275, 9.611000000]: Grid 8 is rediscovered[0m
+[33m[WARN] [1790604934.550524588, 9.611000000]: Grid 11 is rediscovered[0m
+[33m[WARN] [1790604935.268078270, 10.044000000]: wait for trigger.[0m
+[33m[WARN] [1790604935.285086436, 10.207000000]: wait for trigger.[0m
+[33m[WARN] [1790604936.495641704, 11.114000000]: wait for trigger.[0m
+[33m[WARN] [1790604936.746346910, 11.387000000]: wait for trigger.[0m
+[33m[WARN] [1790604937.474965955, 12.005000000]: Grid 7 is rediscovered[0m
+[33m[WARN] [1790604938.237977770, 12.441000000]: wait for trigger.[0m
+[33m[WARN] [1790604938.718706390, 12.916000000]: wait for trigger.[0m
+[33m[WARN] [1790604940.706894238, 15.425000000]: wait for trigger.[0m
+[33m[WARN] [1790604940.744235483, 15.425000000]: Grid 15 is rediscovered[0m
+[33m[WARN] [1790604943.868741748, 18.286999999]: wait for trigger.[0m
+[33m[WARN] [1790604944.387099381, 18.760000000]: wait for trigger.[0m
+[33m[WARN] [1790604947.512109190, 21.890000000]: wait for trigger.[0m
+[33m[WARN] [1790604947.530838758, 21.890000000]: Start expl pos: -3.99137  2.99758 0.618358[0m
+[33m[WARN] [1790604947.561296896, 21.890000000]: init plan.[0m
+[33m[WARN] [1790604948.012113109, 22.364999999]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790604948.480211041, 22.856000000]: start flight[0m
+[33m[WARN] [1790604948.483743598, 22.856000000]: Grid 14 is rediscovered[0m
+[33m[WARN] [1790604948.499031613, 22.856000000]: init plan.[0m
+Stack trace (most recent call last) in thread 911:
+#8    Object "[0xffffffffffffffff]", at 0xffffffffffffffff, in 
+#7    Object "/lib/aarch64-linux-gnu/libc.so.6", at 0xef323d96f66b, in 
+#6    Object "/lib/aarch64-linux-gnu/libpthread.so.0", at 0xef323dd83623, in 
+#5    Object "/lib/aarch64-linux-gnu/libstdc++.so.6", at 0xef323dbacf9b, in 
+#4    Object "/work/racer_ws/devel/lib/exploration_manager/exploration_node", at 0xab9ba9f74fdf, in fast_planner::FastExplorationFSM::visualize(int)
+#3    Object "/work/racer_ws/devel/lib/libtraj_utils.so", at 0xef323e18e487, in fast_planner::PlanningVisualization::drawCubes(std::vector<Eigen::Matrix<double, 3, 1, 0, 3, 1>, std::allocator<Eigen::Matrix<double, 3, 1, 0, 3, 1> > > const&, double const&, Eigen::Matrix<double, 4, 1, 0, 4, 1> const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int const&, int const&)
+#2    Object "/work/racer_ws/devel/lib/libtraj_utils.so", at 0xef323e193d37, in void ros::Publisher::publish<visualization_msgs::Marker_<std::allocator<void> > >(visualization_msgs::Marker_<std::allocator<void> > const&) const
+#1    Object "/lib/aarch64-linux-gnu/libc.so.6", at 0xef323d8beaab, in abort
+#0    Object "/lib/aarch64-linux-gnu/libc.so.6", at 0xef323d8d1d88, in gsignal
+Aborted (Signal sent by tkill() 809 0)
+
+[1mROS_MASTER_URI=http://localhost:11328[0m
+]2;/comparison/racer.launch http://localhost:11328
+[1mprocess[exploration_node_1-1]: started with pid [795][0m
+[1mprocess[tsp_solver_1-2]: started with pid [796][0m
+[1mprocess[acvrp_solver_1-3]: started with pid [797][0m
+[1mprocess[traj_server_1-4]: started with pid [807][0m
+[1mprocess[exploration_node_2-5]: started with pid [809][0m
+[1mprocess[tsp_solver_2-6]: started with pid [810][0m
+[1mprocess[acvrp_solver_2-7]: started with pid [813][0m
+[1mprocess[traj_server_2-8]: started with pid [822][0m
+[traj_server_2-8] killing on exit
+[acvrp_solver_2-7] killing on exit
+[tsp_solver_2-6] killing on exit
+[exploration_node_2-5] killing on exit
+[traj_server_1-4] killing on exit
+[tsp_solver_1-2] killing on exit
+[acvrp_solver_1-3] killing on exit
+[exploration_node_1-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m
