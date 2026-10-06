@@ -1,0 +1,363 @@
+{
+  "schema": "annual.execution-diagnostics/1",
+  "run": "/workspace/artifacts/todo-execution/formal-10/main-no_fault-900-combined",
+  "mission_start": 15.500000000000002,
+  "mission_end": 415.5,
+  "low_speed_threshold_mps": 0.1,
+  "expected_fleet_s": 1200.0,
+  "classified_execution_fleet_s": 1200.0000000000332,
+  "pose_speed_covered_fleet_s": 1200.0000000001028,
+  "actual_low_speed_fleet_s": 617.861000000016,
+  "actual_low_speed_fraction": 0.514884166666636,
+  "actual_motion_fleet_s": 582.1390000000108,
+  "maximum_sampled_pose_speed_mps": 0.6505287615764124,
+  "residence_by_phase_fleet_s": {
+    "planning_wait": 115.99700000000023,
+    "allocation_wait": 121.60299999999992,
+    "reservation_wait": 95.60699999999996,
+    "execution": 720.0160000000328,
+    "observation_dwell": 78.98000000000026,
+    "view_observed": 2.9959999999999845,
+    "navigation_reobserve": 58.200000000000045,
+    "safety_recovery": 6.600999999999942
+  },
+  "low_speed_by_phase_fleet_s": {
+    "planning_wait": 115.71600000000028,
+    "allocation_wait": 118.81099999999995,
+    "reservation_wait": 95.60699999999996,
+    "execution": 187.94299999999953,
+    "observation_dwell": 78.3760000000003,
+    "view_observed": 2.9959999999999845,
+    "navigation_reobserve": 14.21100000000007,
+    "safety_recovery": 4.200999999999965
+  },
+  "residence_by_uav_s": {
+    "1": {
+      "planning_wait": 23.505000000000038,
+      "allocation_wait": 31.602000000000263,
+      "reservation_wait": 27.196999999999825,
+      "execution": 236.91199999999972,
+      "observation_dwell": 22.182000000000052,
+      "navigation_reobserve": 58.200000000000045,
+      "view_observed": 0.40200000000004366
+    },
+    "2": {
+      "allocation_wait": 58.88799999999988,
+      "planning_wait": 40.19500000000014,
+      "reservation_wait": 41.21000000000008,
+      "execution": 221.30999999999997,
+      "observation_dwell": 33.80100000000006,
+      "view_observed": 1.595999999999922,
+      "safety_recovery": 2.999999999999943
+    },
+    "0": {
+      "allocation_wait": 31.11299999999978,
+      "planning_wait": 52.29700000000004,
+      "reservation_wait": 27.20000000000005,
+      "execution": 261.794,
+      "observation_dwell": 22.997000000000142,
+      "view_observed": 0.9980000000000189,
+      "safety_recovery": 3.600999999999999
+    }
+  },
+  "planning_request_counts": {
+    "planning_result": 259
+  },
+  "unmatched_request_results": 0,
+  "request_overlap_status": "RECORDED",
+  "planning_request_union_fleet_s": 563.8350000000014,
+  "planning_execution_overlap_fleet_s": 563.83500000001,
+  "planning_during_actual_motion_fleet_s": 302.19800000000123,
+  "planning_during_low_speed_fleet_s": 261.63700000000017,
+  "handoff": {
+    "ready_views": 187,
+    "proposed": 23,
+    "authorized": 21,
+    "consumed": 21,
+    "proposed_to_consumed_ratio": 0.9130434782608695,
+    "cancelled_reasons": {
+      "late_or_conflicting_authorization": 1,
+      "latest_team_gain_empty": 1
+    },
+    "proposal_to_authorization_sim_s": {
+      "samples": 21,
+      "p50": 1.1000000000000085,
+      "p95": 1.2019999999999982,
+      "maximum": 1.2020000000000053
+    },
+    "attempts": [
+      {
+        "token": "1:2770f687:2001005",
+        "drone": 1,
+        "proposed": 34.5,
+        "authorized": 35.6,
+        "consumed": 37.6,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.17500763633777702,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001006",
+        "drone": 1,
+        "proposed": 40.0,
+        "authorized": 41.202000000000005,
+        "consumed": 42.400000000000006,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.025120312440670117,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400008",
+        "drone": 0,
+        "proposed": 58.50000000000001,
+        "authorized": null,
+        "consumed": null,
+        "cancelled": 59.6,
+        "cancellation_reason": "late_or_conflicting_authorization",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "0:7bb9a460:400009",
+        "drone": 0,
+        "proposed": 62.00000000000001,
+        "authorized": null,
+        "consumed": null,
+        "cancelled": 63.2,
+        "cancellation_reason": "latest_team_gain_empty",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "1:2770f687:2001008",
+        "drone": 1,
+        "proposed": 66.0,
+        "authorized": 67.2,
+        "consumed": 67.60000000000001,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.11496294401336112,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001010",
+        "drone": 1,
+        "proposed": 76.0,
+        "authorized": 77.202,
+        "consumed": 78.4,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.13797547194062368,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400014",
+        "drone": 0,
+        "proposed": 90.0,
+        "authorized": 91.2,
+        "consumed": 92.4,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.32462842628552274,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400016",
+        "drone": 0,
+        "proposed": 99.5,
+        "authorized": 100.4,
+        "consumed": 102.80000000000001,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.23048938484004514,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001013",
+        "drone": 1,
+        "proposed": 112.5,
+        "authorized": 113.60000000000001,
+        "consumed": 114.80000000000001,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.4137534537458329,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400022",
+        "drone": 0,
+        "proposed": 134.502,
+        "authorized": 135.601,
+        "consumed": 136.8,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.5220455239627062,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400023",
+        "drone": 0,
+        "proposed": 139.5,
+        "authorized": 140.4,
+        "consumed": 141.60000000000002,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.14764316138553316,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400029",
+        "drone": 0,
+        "proposed": 183.51500000000001,
+        "authorized": 184.4,
+        "consumed": 186.8,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.164164472318327,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001023",
+        "drone": 1,
+        "proposed": 211.543,
+        "authorized": 212.4,
+        "consumed": 218.0,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.43485866889801245,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400033",
+        "drone": 0,
+        "proposed": 212.5,
+        "authorized": 213.60000000000002,
+        "consumed": 214.401,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.3027836635373842,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001024",
+        "drone": 1,
+        "proposed": 220.501,
+        "authorized": 221.602,
+        "consumed": 222.4,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.47487473497603905,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:410e1628:2001032",
+        "drone": 2,
+        "proposed": 230.50400000000002,
+        "authorized": 231.602,
+        "consumed": 232.401,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.5861837476601354,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400039",
+        "drone": 0,
+        "proposed": 273.5,
+        "authorized": 274.401,
+        "consumed": 276.401,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.272839804431282,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001030",
+        "drone": 1,
+        "proposed": 280.0,
+        "authorized": 281.201,
+        "consumed": 282.40000000000003,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.250775256354595,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:7bb9a460:400042",
+        "drone": 0,
+        "proposed": 304.00100000000003,
+        "authorized": 305.20000000000005,
+        "consumed": 306.40000000000003,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.14375030594773583,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:410e1628:2001048",
+        "drone": 2,
+        "proposed": 307.5,
+        "authorized": 308.40000000000003,
+        "consumed": 310.8,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.03134545435719017,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001034",
+        "drone": 1,
+        "proposed": 314.5,
+        "authorized": 315.6,
+        "consumed": 318.0,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.07288611792863592,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001045",
+        "drone": 1,
+        "proposed": 389.0,
+        "authorized": 390.0,
+        "consumed": 391.6,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.5354695386106038,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:2770f687:2001046",
+        "drone": 1,
+        "proposed": 394.5,
+        "authorized": 395.60200000000003,
+        "consumed": 398.0,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.11938463912143277,
+        "terminal_state": "consumed"
+      }
+    ],
+    "rolling_latency_evidence": []
+  },
+  "limitations": [
+    "Low speed uses finite differences of sampled physical poses, not commanded reference speed.",
+    "Phase labels identify recorded execution states; low-speed tracking is not automatically planning delay.",
+    "Intervals with stale/missing execution or pose samples are unclassified, never silently zero.",
+    "Planning intervals include queue, compute and delivery. Parallel work is unioned per UAV, not summed as mission delay.",
+    "Ready views are not one-to-one with handoff proposals; ready-to-consumed is not an adoption success rate.",
+    "Legacy baseline lacks request submission IDs; request/flight overlap remains unavailable."
+  ],
+  "input_sha256": {
+    "summary.json": "45b023f81c6608ae4ecfaf9be186bd44c674916e3bfca7184da0246830675666",
+    "trajectory.csv": "8172c19e2e66a8ad0817035170adfc19565c22331789ace0023395665898e3bc",
+    "execution-evidence.jsonl": "6aeada56aa8fad9244a1ac8dbca53e2d2cf90dc3fea973d013f00110c91dc5a9",
+    "peer_states.jsonl": "07730d0847bb60a623b0919db9e2c53a0bc03a057a56c9d453c4413c02ba4596",
+    "drone_1/events.jsonl": "33f51cc8b4ca2f91ca2593ba688ee6ca8ff75c6bb77164fc745ae8f35756aebe",
+    "drone_0/events.jsonl": "e21f52facd986a4dc3e1043f9a90bef5e523d6f82b979642f8aba8cbed15f191",
+    "drone_2/events.jsonl": "33f1732e08105fc2c2071e410db581d7fa9a7335e8d9785735eb8307c2694d90"
+  },
+  "tool_sha256": "471deddd967cf4d74068d382a1b8b62c64ba8ded83c0c9a3be33b4e1521ab2c3"
+}

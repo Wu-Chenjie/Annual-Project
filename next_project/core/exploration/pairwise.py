@@ -83,7 +83,7 @@ def solve_pair(ids, start_costs, between, demands, owners, pair, pinned=None, ca
         raise ValueError('Pair interaction window is bounded at 12 regions')
     pinned = pinned or {}; starts = np.array(start_costs, float); between = np.array(between, float)
     demands = np.asarray(demands, float); fixed_loads = np.asarray(fixed_loads, float)
-    if starts.shape != (2, n) or between.shape != (n, n) or demands.shape != (n,) or np.any(demands < 0):
+    if starts.shape != (2, n) or between.shape not in ((n, n), (2, n, n)) or demands.shape != (n,) or np.any(demands < 0):
         raise ValueError('Invalid CVRP dimensions/demands')
     if fixed_loads.shape != (2,) or not np.isfinite(fixed_loads).all() or np.any(fixed_loads < 0):
         raise ValueError('Invalid frozen outside-window workload')
@@ -91,7 +91,7 @@ def solve_pair(ids, start_costs, between, demands, owners, pair, pinned=None, ca
         reward_weights = np.asarray(reward_weights, float)
         if reward_weights.shape != (n,) or not np.isfinite(reward_weights).all() or np.any(reward_weights < 0):
             raise ValueError('Invalid information rewards')
-    tables = [subset_tours(starts[i], between, reward_weights, latency_weight) for i in range(2)]
+    tables = [subset_tours(starts[i], between if between.ndim == 2 else between[i], reward_weights, latency_weight) for i in range(2)]
     total_mask = (1 << n)-1
     volumes = np.zeros(1 << n)
     for mask in range(1, 1 << n):

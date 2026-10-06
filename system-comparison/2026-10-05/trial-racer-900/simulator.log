@@ -1,0 +1,60 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-10-05-11-27-20-499023-e4a7e2fce5db-793
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [parameter_bridge-1]: process started with pid [796]
+[INFO] [localization_measurement_node.py-2]: process started with pid [797]
+[INFO] [state_estimator_node.py-3]: process started with pid [798]
+[INFO] [python3-4]: process started with pid [799]
+[INFO] [controller_node-5]: process started with pid [800]
+[INFO] [localization_measurement_node.py-6]: process started with pid [801]
+[INFO] [state_estimator_node.py-7]: process started with pid [802]
+[INFO] [python3-8]: process started with pid [803]
+[INFO] [controller_node-9]: process started with pid [804]
+[controller_node-5] [INFO] [1791199640.689577695] [drone_0.controller]: Controller: pid
+[controller_node-9] [INFO] [1791199640.689601945] [drone_1.controller]: Controller: pid
+[parameter_bridge-1] [INFO] [1791199641.726611196] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.727861023] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/lidar/points (gz.msgs.PointCloudPacked) -> /drone_0/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.734537827] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/odometry (gz.msgs.Odometry) -> /drone_0/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.739222890] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/imu (gz.msgs.IMU) -> /drone_0/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.740474051] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/contacts (gz.msgs.Contacts) -> /drone_0/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.742256584] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_0/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_0/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.744609241] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/lidar/points (gz.msgs.PointCloudPacked) -> /drone_1/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.744962322] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/odometry (gz.msgs.Odometry) -> /drone_1/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.745373862] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/imu (gz.msgs.IMU) -> /drone_1/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.745608611] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/contacts (gz.msgs.Contacts) -> /drone_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791199641.746332650] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_1/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_1/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[INFO] [gz-10]: process started with pid [954]
+[parameter_bridge-1] [INFO] [1791199650.922766845] [ros_gz_bridge]: Passing message from ROS actuator_msgs/msg/Actuators to Gazebo gz.msgs.Actuators (showing msg only once per type)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [gz-10]: sending signal 'SIGINT' to process[gz-10]
+[INFO] [controller_node-9]: sending signal 'SIGINT' to process[controller_node-9]
+[INFO] [python3-8]: sending signal 'SIGINT' to process[python3-8]
+[INFO] [state_estimator_node.py-7]: sending signal 'SIGINT' to process[state_estimator_node.py-7]
+[INFO] [localization_measurement_node.py-6]: sending signal 'SIGINT' to process[localization_measurement_node.py-6]
+[INFO] [controller_node-5]: sending signal 'SIGINT' to process[controller_node-5]
+[INFO] [python3-4]: sending signal 'SIGINT' to process[python3-4]
+[ERROR] [localization_measurement_node.py-6]: process has died [pid 801, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_nl1jcmig --params-file /tmp/launch_params_9m2y6bb1'].
+[INFO] [state_estimator_node.py-3]: sending signal 'SIGINT' to process[state_estimator_node.py-3]
+[ERROR] [controller_node-5]: process has died [pid 800, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node --ros-args -r __ns:=/drone_0 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/flight.yaml --params-file /tmp/launch_params_5wytqkqy --params-file /tmp/launch_params_yw1b5qgy -r odometry:=estimated_odometry'].
+[ERROR] [state_estimator_node.py-7]: process has died [pid 802, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_a9g22_em --params-file /tmp/launch_params_gkbdqf_t'].
+[INFO] [localization_measurement_node.py-2]: sending signal 'SIGINT' to process[localization_measurement_node.py-2]
+[INFO] [parameter_bridge-1]: sending signal 'SIGINT' to process[parameter_bridge-1]
+[ERROR] [python3-4]: process has died [pid 799, exit code -2, cmd 'python3 /study/common_mapper.py --ros-args -r __ns:=/drone_0 -p use_sim_time:=true -p drone_id:=0 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].
+[parameter_bridge-1] [INFO] [1791199690.998653598] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ERROR] [state_estimator_node.py-3]: process has died [pid 798, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_1w55ijec --params-file /tmp/launch_params_hgywi4nb'].
+[controller_node-5] [INFO] [1791199690.999299388] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-9] [INFO] [1791199691.004182497] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-9] [INFO] [1791199691.023435102] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[python3-8] Traceback (most recent call last):
+[python3-8]   File "/study/common_mapper.py", line 120, in <module>
+[python3-8]     main()
+[python3-8]   File "/study/common_mapper.py", line 116, in main
+[python3-8]     node.destroy_node()
+[python3-8]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1968, in destroy_node
+[python3-8]     self.__node.destroy_when_not_in_use()
+[python3-8] KeyboardInterrupt
+[parameter_bridge-1] [INFO] [1791199691.100326854] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ERROR] [localization_measurement_node.py-2]: process has died [pid 797, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_i1xczsng --params-file /tmp/launch_params_kb5fdu9p'].
+[INFO] [parameter_bridge-1]: process has finished cleanly [pid 796]
+[INFO] [controller_node-9]: process has finished cleanly [pid 804]
+[INFO] [gz-10]: process has finished cleanly [pid 954]
+[ERROR] [python3-8]: process has died [pid 803, exit code -2, cmd 'python3 /study/common_mapper.py --ros-args -r __ns:=/drone_1 -p use_sim_time:=true -p drone_id:=1 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].

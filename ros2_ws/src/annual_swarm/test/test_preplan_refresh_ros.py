@@ -12,6 +12,42 @@ from core.planning.path_quality import Candidate,RankedPathPool
 from core.exploration.regions import RegionTask
 
 
+def test_cached_endpoint_view_can_refit_from_future_motion_without_executing_before_observation(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    from core.planning.handoff import validate_handoff
+    rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                    '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+    node=ExplorationAgent()
+    try:
+        node.now=lambda:10.;node.epoch=1
+        node.replica.map.state[:]=0;node.replica.map.state[24:]=-1;node.replica.map.rebuild()
+        old=interpolate(np.array([[2.25,2.25,1.65],[4.05,2.25,1.65]]),[14.],0.,0.)
+        node.intent=dict(token='old',epoch=1,committed=True,purpose='explore',trajectory=old.to_dict())
+        node.execution=dict(epoch=1,trajectory_time=1.);node.position=old.sample(1.)[0];node.yaw=0.
+        goal=np.array([6.15,3.15,1.65]);node.owners={8:0}
+        node.tasks[8]=RegionTask(8,[[6.,0.,0.],[8.,8.,4.]],100,[goal],goal)
+        node.fusion.graph.regions[8]=dict(status='activeR')
+        cached=interpolate(np.array([[4.05,2.25,1.65],goal]),[16.],0.,0.)
+        pool=RankedPathPool();pool.rank([Candidate('cached','test',0,cached.path(.15),{'score':0.},0,5.,65.)])
+        selection=dict(pool=pool,yaw=0.,gain=1.,lookahead=None,objective=1.,trajectory=cached,
+                       trajectory_candidate='cached',transit=True,purpose='transit_reobserve')
+        node.preplanned=dict(epoch=1,time=9.,region=8,selection=selection,position=[4.05,2.25,1.65],request_id='cached',boundary=None)
+        jobs=[]
+        def submit(function,*args,**kwargs):
+            jobs.append((function,args,kwargs));return SimpleNamespace(done=lambda:False)
+        monkeypatch.setattr(node.worker,'submit',submit)
+        node.adopt_moving_preplan(10.)
+        assert node.pending_intent is None and node.intent['token']=='old' and node.epoch==1
+        assert node.future_kind=='moving_fit' and len(jobs)==1 and node.preplanned is None
+        function,args,kwargs=jobs[0];result=function(*args,**kwargs)
+        curve=result['selection']['trajectory'];boundary=node.future_boundary
+        assert max(validate_handoff(old,curve,boundary['trajectory_time'],1.).values())<1e-5
+        assert curve.limits()['speed']<=.601 and node.replica.map.safe_path(curve.path())
+        assert len(result['selection']['curve_alternatives'])==1
+    finally:
+        node.worker.shutdown();node.log.close();node.paths.close();node.destroy_node();rclpy.shutdown()
+
+
 @pytest.mark.parametrize('now',[20.,35.])
 @pytest.mark.parametrize('after_fit_change',['none','cooldown','split','completed','owner'])
 def test_live_reserve_is_refitted_at_rest_with_fresh_request_and_new_authorization(tmp_path,now,after_fit_change):

@@ -161,7 +161,7 @@ class ExplorationPriority:
         return 1.+min(self.config.aging_bonus_max, self.config.aging_per_minute*max(0., wait_s)/60.)
 
     def rank(self, runtime, tasks, local_ids, costs, position, now, services, excluded_cells=frozenset(),
-             observed_mask=None, preferred=(), team_only=False, peers=None):
+             observed_mask=None, preferred=(), team_only=False, peers=None, motion_time=None):
         self.update_map(runtime)
         self._geometry_cache = {}; self.cycle += 1
         self.diagnostics = dict(raycasts=0, refined_regions=0, cached_regions=0, bound_regions=0)
@@ -179,7 +179,8 @@ class ExplorationPriority:
             self.first_seen.setdefault(rid, self.first_seen.get(getattr(task, 'parent', -1), now))
             feedback = services.get(rid, {})
             wait = max(0., now-max(self.first_seen[rid], feedback.get('stamp', -np.inf)))
-            travel = costs.distance(position, task.entry)/self.config.speed
+            distance = costs.distance(position, task.entry)
+            travel = motion_time(distance) if motion_time is not None else distance/self.config.speed
             travel_times[rid] = travel; waits[rid] = wait
             volume = task.unknown*unit
             if rid not in local_ids and team_only:
@@ -277,7 +278,8 @@ class ExplorationPriority:
                 delay = expected_traffic_delay(route, peers, now) if route is not None else 0.
                 scores[rid]['traffic_delay_s'] = delay
                 scores[rid]['score'] *= (self.config.observation_s+travel)/(self.config.observation_s+travel+delay) if np.isfinite(travel) else 0.
-                scores[rid]['information_reward'] = scores[rid]['score']*(self.config.observation_s+travel) if np.isfinite(travel) else 0.
+                # Routing already charges the delay as elapsed seconds. Keep
+                # its information numerator unchanged rather than charge twice.
             if team_only:
                 from .team_evidence import regional_evidence, may_reactivate
                 failed = feedback.get('failed_view', {})

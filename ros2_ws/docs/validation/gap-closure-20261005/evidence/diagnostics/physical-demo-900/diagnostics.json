@@ -1,0 +1,309 @@
+{
+  "schema": "annual.execution-diagnostics/1",
+  "run": "/workspace/artifacts/todo-execution/candidate-10c-physical-demo-900",
+  "mission_start": 16.001,
+  "mission_end": 568.5010000000001,
+  "low_speed_threshold_mps": 0.1,
+  "expected_fleet_s": 1657.5000000000005,
+  "classified_execution_fleet_s": 1657.5000000000455,
+  "pose_speed_covered_fleet_s": 1657.5000000001132,
+  "actual_low_speed_fleet_s": 875.3000000000244,
+  "actual_low_speed_fraction": 0.5280844645550314,
+  "actual_motion_fleet_s": 782.2000000000191,
+  "maximum_sampled_pose_speed_mps": 0.6580220644251642,
+  "residence_by_phase_fleet_s": {
+    "allocation_wait": 133.0650000000008,
+    "planning_wait": 287.46699999999987,
+    "reservation_wait": 110.7939999999999,
+    "execution": 1000.598000000045,
+    "observation_dwell": 87.58999999999986,
+    "view_observed": 3.390000000000029,
+    "navigation_reobserve": 30.595999999999975,
+    "safety_recovery": 4.0
+  },
+  "low_speed_by_phase_fleet_s": {
+    "allocation_wait": 127.50200000000099,
+    "planning_wait": 283.966,
+    "reservation_wait": 110.7939999999999,
+    "execution": 252.0819999999996,
+    "observation_dwell": 87.13800000000002,
+    "view_observed": 3.390000000000029,
+    "navigation_reobserve": 7.8779999999999575,
+    "safety_recovery": 2.5500000000000114
+  },
+  "residence_by_uav_s": {
+    "0": {
+      "allocation_wait": 54.811000000000575,
+      "planning_wait": 124.22499999999988,
+      "reservation_wait": 29.166999999999838,
+      "execution": 305.915,
+      "observation_dwell": 20.385999999999846,
+      "view_observed": 0.3959999999999724,
+      "navigation_reobserve": 17.599999999999994
+    },
+    "1": {
+      "planning_wait": 99.8809999999999,
+      "allocation_wait": 33.41700000000016,
+      "reservation_wait": 33.81500000000012,
+      "execution": 343.5989999999999,
+      "observation_dwell": 27.395000000000074,
+      "view_observed": 1.3969999999999914,
+      "navigation_reobserve": 12.995999999999981
+    },
+    "2": {
+      "allocation_wait": 44.837000000000074,
+      "planning_wait": 63.36100000000006,
+      "reservation_wait": 47.81199999999994,
+      "execution": 351.084,
+      "observation_dwell": 39.80899999999993,
+      "view_observed": 1.5970000000000653,
+      "safety_recovery": 4.0
+    }
+  },
+  "planning_request_counts": {
+    "planning_result": 335
+  },
+  "unmatched_request_results": 0,
+  "request_overlap_status": "RECORDED",
+  "planning_request_union_fleet_s": 1052.7150000000015,
+  "planning_execution_overlap_fleet_s": 1052.7150000000433,
+  "planning_during_actual_motion_fleet_s": 521.1100000000013,
+  "planning_during_low_speed_fleet_s": 531.6050000000002,
+  "handoff": {
+    "ready_views": 198,
+    "proposed": 18,
+    "authorized": 15,
+    "consumed": 14,
+    "proposed_to_consumed_ratio": 0.7777777777777778,
+    "cancelled_reasons": {
+      "late_or_conflicting_authorization": 2,
+      "execution_missed_boundary": 1,
+      "latest_team_gain_empty": 1
+    },
+    "proposal_to_authorization_sim_s": {
+      "samples": 15,
+      "p50": 0.9979999999999905,
+      "p95": 1.2016000000000013,
+      "maximum": 1.203000000000003
+    },
+    "attempts": [
+      {
+        "token": "1:8bcb3192:2800005",
+        "drone": 1,
+        "proposed": 32.001000000000005,
+        "authorized": 33.202000000000005,
+        "consumed": 34.800000000000004,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.49354751054999285,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:8bcb3192:2800006",
+        "drone": 1,
+        "proposed": 45.5,
+        "authorized": null,
+        "consumed": null,
+        "cancelled": 46.401,
+        "cancellation_reason": "late_or_conflicting_authorization",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "2:210b3fb9:2647008",
+        "drone": 2,
+        "proposed": 50.5,
+        "authorized": 51.6,
+        "consumed": null,
+        "cancelled": 52.400000000000006,
+        "cancellation_reason": "execution_missed_boundary",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "0:3590df75:2500009",
+        "drone": 0,
+        "proposed": 63.504000000000005,
+        "authorized": 64.4,
+        "consumed": 65.202,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.6010472336693846,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:8bcb3192:2800013",
+        "drone": 1,
+        "proposed": 86.0,
+        "authorized": 87.203,
+        "consumed": 89.2,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.12670243415920068,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647019",
+        "drone": 2,
+        "proposed": 128.5,
+        "authorized": null,
+        "consumed": null,
+        "cancelled": 129.6,
+        "cancellation_reason": "late_or_conflicting_authorization",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "0:3590df75:2500020",
+        "drone": 0,
+        "proposed": 166.537,
+        "authorized": 167.60000000000002,
+        "consumed": 168.80100000000002,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.485704603858967,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "1:8bcb3192:2800025",
+        "drone": 1,
+        "proposed": 185.04000000000002,
+        "authorized": 186.0,
+        "consumed": 187.603,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.2630317854919461,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647028",
+        "drone": 2,
+        "proposed": 189.0,
+        "authorized": 190.0,
+        "consumed": 193.60000000000002,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.12416452373108086,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:3590df75:2500027",
+        "drone": 0,
+        "proposed": 246.64300000000003,
+        "authorized": 247.60000000000002,
+        "consumed": 251.60100000000003,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.30927306136730764,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647037",
+        "drone": 2,
+        "proposed": 257.0,
+        "authorized": 258.0,
+        "consumed": 260.404,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.22663468529924075,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:3590df75:2500029",
+        "drone": 0,
+        "proposed": 263.00100000000003,
+        "authorized": 264.0,
+        "consumed": 266.40000000000003,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.3021284171292674,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647047",
+        "drone": 2,
+        "proposed": 325.0,
+        "authorized": null,
+        "consumed": null,
+        "cancelled": 326.00100000000003,
+        "cancellation_reason": "latest_team_gain_empty",
+        "speed_at_consumption": null,
+        "terminal_state": "cancelled"
+      },
+      {
+        "token": "1:8bcb3192:2800044",
+        "drone": 1,
+        "proposed": 361.50100000000003,
+        "authorized": 362.401,
+        "consumed": 363.20000000000005,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.6239226607482394,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647054",
+        "drone": 2,
+        "proposed": 379.5,
+        "authorized": 380.40000000000003,
+        "consumed": 384.8,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.2229263139796336,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "0:3590df75:2500042",
+        "drone": 0,
+        "proposed": 407.5,
+        "authorized": 408.41,
+        "consumed": 410.0,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.13831943701710966,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647058",
+        "drone": 2,
+        "proposed": 413.5,
+        "authorized": 414.40000000000003,
+        "consumed": 417.6,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.09325134339774023,
+        "terminal_state": "consumed"
+      },
+      {
+        "token": "2:210b3fb9:2647070",
+        "drone": 2,
+        "proposed": 505.00500000000005,
+        "authorized": 506.00300000000004,
+        "consumed": 507.60400000000004,
+        "cancelled": null,
+        "cancellation_reason": null,
+        "speed_at_consumption": 0.22376315894249477,
+        "terminal_state": "consumed"
+      }
+    ],
+    "rolling_latency_evidence": []
+  },
+  "limitations": [
+    "Low speed uses finite differences of sampled physical poses, not commanded reference speed.",
+    "Phase labels identify recorded execution states; low-speed tracking is not automatically planning delay.",
+    "Intervals with stale/missing execution or pose samples are unclassified, never silently zero.",
+    "Planning intervals include queue, compute and delivery. Parallel work is unioned per UAV, not summed as mission delay.",
+    "Ready views are not one-to-one with handoff proposals; ready-to-consumed is not an adoption success rate.",
+    "Legacy baseline lacks request submission IDs; request/flight overlap remains unavailable."
+  ],
+  "input_sha256": {
+    "summary.json": "93a37bd5571629ae5f21be5f075be2fa41885adff4db8ee190600740b871c4fa",
+    "trajectory.csv": "3bb8a14063916a2a6b021ec909c1281af455e3dea834fa86ff2169fbe3158989",
+    "execution-evidence.jsonl": "37afe675906e0cfb6924aabaef1fbcfec1db69f5302c5cae5c321e17e0fa673a",
+    "peer_states.jsonl": "e1630fb756e5893c0d7fccf4cfdc6cc5fc994d8c9ac85aa6542486fd342f2845",
+    "drone_1/events.jsonl": "378d255259520dfbb9668993950b36b1765dd17bd7a0ba7e4d796134b0947aeb",
+    "drone_0/events.jsonl": "b18bb436c2538fcac358e03afcfbfd6c35257cabea2ef36faeb0b7b35cc1b625",
+    "drone_2/events.jsonl": "daec6177af82b892bdf7df5472f2a6665229a957563ba5f9e041692de0d06efd"
+  },
+  "tool_sha256": "471deddd967cf4d74068d382a1b8b62c64ba8ded83c0c9a3be33b4e1521ab2c3"
+}

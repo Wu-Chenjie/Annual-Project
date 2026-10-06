@@ -1,0 +1,65 @@
+[
+  {
+    "clip": "moving-handoff",
+    "duration_s": 15.9,
+    "expected_duration_s": 15.932921802942587,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "moving-handoff.png"
+  },
+  {
+    "clip": "dynamic-backup",
+    "duration_s": 34.4,
+    "expected_duration_s": 34.33881045205396,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "dynamic-backup.png"
+  },
+  {
+    "clip": "necessary-transit",
+    "duration_s": 28.0,
+    "expected_duration_s": 28.079772574084643,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "necessary-transit.png"
+  },
+  {
+    "clip": "low-yield-exit",
+    "duration_s": 17.1,
+    "expected_duration_s": 17.14341955962948,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "low-yield-exit.png"
+  },
+  {
+    "clip": "evidence-reactivation",
+    "duration_s": 17.1,
+    "expected_duration_s": 17.04384562701648,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "evidence-reactivation.png"
+  },
+  {
+    "clip": "tail-coordination",
+    "duration_s": 35.0,
+    "expected_duration_s": 34.97113588787977,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "tail-coordination.png"
+  },
+  {
+    "clip": "tail-90-to-95",
+    "duration_s": 240.5,
+    "expected_duration_s": 240.57895897499986,
+    "width": 1920,
+    "height": 1080,
+    "fps": "10/1",
+    "frame": "tail-90-to-95.png"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "planning_results": 53,
+  "planning_wall_p50_s": 0.6917434610000441,
+  "planning_wall_p95_s": 1.4836599935999852,
+  "planning_wall_max_s": 3.753847043999997,
+  "actual_handoff_count": 5,
+  "terminal_frame_completions": 19,
+  "explore_services": 22,
+  "online_zero_team_gain_explore_services": 4,
+  "online_gain_note": "Received team evidence only, not an offline global duplicate-exploration ratio."
+}

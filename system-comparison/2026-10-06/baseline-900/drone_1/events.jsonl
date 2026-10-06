@@ -1,0 +1,2 @@
+{"type": "incarnation_ready", "drone": 1, "time": 5.2, "monotonic_wall_time": 144847.759146117, "incarnation": "bf3fde49149549a1a1cacf2e5c096593", "epoch": 400001}
+{"type": "planning_submitted", "drone": 1, "time": 16.0, "monotonic_wall_time": 144860.157244616, "incarnation": "bf3fde49149549a1a1cacf2e5c096593", "request_id": "1:1", "map_version": 40, "epoch": 400001}

@@ -1,0 +1,91 @@
+<launch><param name="use_sim_time" value="true" /><node name="murder_1" pkg="murder_swarm" type="murder_swarm_node" output="screen">
+        <rosparam command="load" file="$(find block_map)/color/Paranoid.yaml" />
+        <rosparam command="load" file="$(find murder_swarm)/resource/murder_maze4.yaml" />
+        <rosparam command="load" file="$(find block_map)/color/color_id.yaml" />
+        <param name="Exp/UAV_id" value="1" type="int" />
+        <param name="Exp/drone_num" value="2" type="int" />
+        <param name="Exp/takeoff_x" value="-4.0" />
+        <param name="Exp/takeoff_y" value="-3.0" />
+        <param name="Exp/takeoff_z" value="1.0" />
+
+        <remap from="/depth" to="/firefly1/vi_sensor/camera_depth/depth/disparity" />
+        <remap from="/pointcloud" to="/pcl_render_node/cloud_1" />
+        <remap from="/odom" to="/common/odom_1" />
+        <remap from="/vi_odom" to="/common/sensor_odom_1" />
+        <remap from="/block_map/caminfo" to="/firefly1/vi_sensor/camera_depth/depth/camera_info" />
+        <remap from="/Murder/Traj" to="/Murder/Traj1" />
+        <remap from="/Murder/Show" to="/Murder/Show1" />
+
+        <remap from="/drone_1/pose_send" to="/Communication/pose_send" />
+        <remap from="/drone_1/DTG_send" to="/Communication/DTG_send" />
+        <remap from="/drone_1/traj_send" to="/Communication/traj_send" />
+        <remap from="/drone_1/job_send" to="/Communication/job_send" />
+        <remap from="/drone_1/state_send" to="/Communication/state_send" />
+        <remap from="/drone_1/DTGAns_send" to="/Communication/DTGAns_send" />
+        <remap from="/drone_1/map_send" to="/Communication/map_send" />
+
+        <remap from="/drone_1/pose_rec" to="/Communication/pose_rec" />
+        <remap from="/drone_1/DTG_rec" to="/Communication/DTG_rec" />
+        <remap from="/drone_1/traj_rec" to="/Communication/traj_rec" />
+        <remap from="/drone_1/job_rec" to="/Communication/job_rec" />
+        <remap from="/drone_1/state_rec" to="/Communication/state_rec" />
+        <remap from="/drone_1/DTGAns_rec" to="/Communication/DTGAns_rec" />
+        <remap from="/drone_1/map_rec" to="/Communication/map_rec" />
+        <remap from="/drone_1/mapreq_rec" to="/Communication/mapreq_rec" />
+
+
+    <param name="Exp/takeoff_z" value="1.2" type="double" /><param name="opt/MaxVel" value="0.6" type="double" /><param name="opt/MaxAcc" value="0.8" type="double" /><param name="opt/YawVel" value="0.65" type="double" /><param name="opt/YawAcc" value="0.8" type="double" /><param name="Frontier/cam_hor" value="2.0943951023931953" type="double" /><param name="Frontier/cam_ver" value="2.0943951023931953" type="double" /><param name="block_map/sensor_max_range" value="4.5" type="double" /><param name="block_map/CamtoBody_Quater_x" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_y" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_z" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_w" value="1.0" type="double" /><param name="block_map/CamtoBody_z" value="0.4" type="double" /><param name="Exp/minX" value="-6.0" type="double" /><param name="Exp/maxX" value="6.0" type="double" /><param name="block_map/minX" value="-6.0" type="double" /><param name="block_map/maxX" value="6.0" type="double" /><param name="Exp/minY" value="-6.0" type="double" /><param name="Exp/maxY" value="6.0" type="double" /><param name="block_map/minY" value="-6.0" type="double" /><param name="block_map/maxY" value="6.0" type="double" /><param name="Exp/minZ" value="0.0" type="double" /><param name="Exp/maxZ" value="3.0" type="double" /><param name="block_map/minZ" value="0.0" type="double" /><param name="block_map/maxZ" value="3.0" type="double" /><param name="block_map/bline_occ_range" value=".1" type="double" /><param name="block_map/show_block" value="false" type="bool" /><param name="Exp/robot_sizeX" value="0.64" type="double" /><param name="Exp/robot_sizeY" value="0.64" type="double" /><param name="Exp/robot_sizeZ" value="0.16" type="double" /></node><node name="traj_exc_node1" pkg="traj_exc" type="traj_exc_node" output="screen">
+        <rosparam command="load" file="$(find murder_swarm)/resource/murder_maze4.yaml" />
+        <remap from="/odom" to="/common/odom_1" />
+        <remap from="/trajectory_cmd" to="/Murder/Traj1" />
+        <remap from="/command/trajectory" to="/common/command_1" />
+        
+        <param name="Exp/takeoff_x" value="-4.0" />
+        <param name="Exp/takeoff_y" value="-3.0" />
+        <param name="Exp/takeoff_z" value="1.0" />
+    <param name="Exp/takeoff_z" value="1.2" type="double" /><param name="opt/MaxVel" value="0.6" type="double" /><param name="opt/MaxAcc" value="0.8" type="double" /><param name="opt/YawVel" value="0.65" type="double" /><param name="opt/YawAcc" value="0.8" type="double" /><param name="Frontier/cam_hor" value="2.0943951023931953" type="double" /><param name="Frontier/cam_ver" value="2.0943951023931953" type="double" /><param name="block_map/sensor_max_range" value="4.5" type="double" /><param name="block_map/CamtoBody_Quater_x" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_y" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_z" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_w" value="1.0" type="double" /><param name="block_map/CamtoBody_z" value="0.4" type="double" /><param name="Exp/minX" value="-6.0" type="double" /><param name="Exp/maxX" value="6.0" type="double" /><param name="block_map/minX" value="-6.0" type="double" /><param name="block_map/maxX" value="6.0" type="double" /><param name="Exp/minY" value="-6.0" type="double" /><param name="Exp/maxY" value="6.0" type="double" /><param name="block_map/minY" value="-6.0" type="double" /><param name="block_map/maxY" value="6.0" type="double" /><param name="Exp/minZ" value="0.0" type="double" /><param name="Exp/maxZ" value="3.0" type="double" /><param name="block_map/minZ" value="0.0" type="double" /><param name="block_map/maxZ" value="3.0" type="double" /></node><node name="murder_2" pkg="murder_swarm" type="murder_swarm_node" output="screen">
+        <rosparam command="load" file="$(find block_map)/color/Paranoid.yaml" />
+        <rosparam command="load" file="$(find murder_swarm)/resource/murder_maze4.yaml" />
+        <rosparam command="load" file="$(find block_map)/color/color_id.yaml" />
+        <param name="Exp/UAV_id" value="2" type="int" />
+        <param name="Exp/drone_num" value="2" type="int" />
+        <param name="Exp/takeoff_x" value="-4.0" />
+        <param name="Exp/takeoff_y" value="3.0" />
+        <param name="Exp/takeoff_z" value="1.0" />
+
+        <remap from="/depth" to="/firefly2/vi_sensor/camera_depth/depth/disparity" />
+        <remap from="/pointcloud" to="/pcl_render_node/cloud_2" />
+        <remap from="/odom" to="/common/odom_2" />
+        <remap from="/vi_odom" to="/common/sensor_odom_2" />
+        <remap from="/block_map/caminfo" to="/firefly2/vi_sensor/camera_depth/depth/camera_info" />
+        <remap from="/Murder/Traj" to="/Murder/Traj2" />
+        <remap from="/Murder/Show" to="/Murder/Show2" />
+
+        <remap from="/drone_2/pose_send" to="/Communication/pose_send" />
+        <remap from="/drone_2/DTG_send" to="/Communication/DTG_send" />
+        <remap from="/drone_2/traj_send" to="/Communication/traj_send" />
+        <remap from="/drone_2/job_send" to="/Communication/job_send" />
+        <remap from="/drone_2/state_send" to="/Communication/state_send" />
+        <remap from="/drone_2/DTGAns_send" to="/Communication/DTGAns_send" />
+        <remap from="/drone_2/map_send" to="/Communication/map_send" />
+
+        <remap from="/drone_2/pose_rec" to="/Communication/pose_rec" />
+        <remap from="/drone_2/DTG_rec" to="/Communication/DTG_rec" />
+        <remap from="/drone_2/traj_rec" to="/Communication/traj_rec" />
+        <remap from="/drone_2/job_rec" to="/Communication/job_rec" />
+        <remap from="/drone_2/state_rec" to="/Communication/state_rec" />
+        <remap from="/drone_2/DTGAns_rec" to="/Communication/DTGAns_rec" />
+        <remap from="/drone_2/map_rec" to="/Communication/map_rec" />
+        <remap from="/drone_2/mapreq_rec" to="/Communication/mapreq_rec" />
+
+
+    <param name="Exp/takeoff_z" value="1.2" type="double" /><param name="opt/MaxVel" value="0.6" type="double" /><param name="opt/MaxAcc" value="0.8" type="double" /><param name="opt/YawVel" value="0.65" type="double" /><param name="opt/YawAcc" value="0.8" type="double" /><param name="Frontier/cam_hor" value="2.0943951023931953" type="double" /><param name="Frontier/cam_ver" value="2.0943951023931953" type="double" /><param name="block_map/sensor_max_range" value="4.5" type="double" /><param name="block_map/CamtoBody_Quater_x" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_y" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_z" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_w" value="1.0" type="double" /><param name="block_map/CamtoBody_z" value="0.4" type="double" /><param name="Exp/minX" value="-6.0" type="double" /><param name="Exp/maxX" value="6.0" type="double" /><param name="block_map/minX" value="-6.0" type="double" /><param name="block_map/maxX" value="6.0" type="double" /><param name="Exp/minY" value="-6.0" type="double" /><param name="Exp/maxY" value="6.0" type="double" /><param name="block_map/minY" value="-6.0" type="double" /><param name="block_map/maxY" value="6.0" type="double" /><param name="Exp/minZ" value="0.0" type="double" /><param name="Exp/maxZ" value="3.0" type="double" /><param name="block_map/minZ" value="0.0" type="double" /><param name="block_map/maxZ" value="3.0" type="double" /><param name="block_map/bline_occ_range" value=".1" type="double" /><param name="block_map/show_block" value="false" type="bool" /><param name="Exp/robot_sizeX" value="0.64" type="double" /><param name="Exp/robot_sizeY" value="0.64" type="double" /><param name="Exp/robot_sizeZ" value="0.16" type="double" /></node><node name="traj_exc_node2" pkg="traj_exc" type="traj_exc_node" output="screen">
+        <rosparam command="load" file="$(find murder_swarm)/resource/murder_maze4.yaml" />
+        <remap from="/odom" to="/common/odom_2" />
+        <remap from="/trajectory_cmd" to="/Murder/Traj2" />
+        <remap from="/command/trajectory" to="/common/command_2" />
+        
+        <param name="Exp/takeoff_x" value="-4.0" />
+        <param name="Exp/takeoff_y" value="3.0" />
+        <param name="Exp/takeoff_z" value="1.0" />
+    <param name="Exp/takeoff_z" value="1.2" type="double" /><param name="opt/MaxVel" value="0.6" type="double" /><param name="opt/MaxAcc" value="0.8" type="double" /><param name="opt/YawVel" value="0.65" type="double" /><param name="opt/YawAcc" value="0.8" type="double" /><param name="Frontier/cam_hor" value="2.0943951023931953" type="double" /><param name="Frontier/cam_ver" value="2.0943951023931953" type="double" /><param name="block_map/sensor_max_range" value="4.5" type="double" /><param name="block_map/CamtoBody_Quater_x" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_y" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_z" value="0.0" type="double" /><param name="block_map/CamtoBody_Quater_w" value="1.0" type="double" /><param name="block_map/CamtoBody_z" value="0.4" type="double" /><param name="Exp/minX" value="-6.0" type="double" /><param name="Exp/maxX" value="6.0" type="double" /><param name="block_map/minX" value="-6.0" type="double" /><param name="block_map/maxX" value="6.0" type="double" /><param name="Exp/minY" value="-6.0" type="double" /><param name="Exp/maxY" value="6.0" type="double" /><param name="block_map/minY" value="-6.0" type="double" /><param name="block_map/maxY" value="6.0" type="double" /><param name="Exp/minZ" value="0.0" type="double" /><param name="Exp/maxZ" value="3.0" type="double" /><param name="block_map/minZ" value="0.0" type="double" /><param name="block_map/maxZ" value="3.0" type="double" /></node><include file="$(find swarm_exp_bridge)/launch/local_tcp.launch"><arg name="sim_id" value="1" /><arg name="sim_num" value="2" /></include><param name="/sim1_bridge_exp_tcp_sim/drone_num" value="2" type="int" /><param name="/sim1_bridge_exp_tcp_sim/sim_ip_1" value="127.0.0.1" type="str" /></launch>

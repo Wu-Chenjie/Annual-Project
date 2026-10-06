@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/study/bridge_ros2.py", line 149, in <module>
+    b.stream.close();b.executed.close();b.contact_log.close();b.log.close();b.commands.close();b.cover.close();b.destroy_node();rclpy.shutdown()
+                                                                                                               ^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1968, in destroy_node
+    self.__node.destroy_when_not_in_use()
+KeyboardInterrupt

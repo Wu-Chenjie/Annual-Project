@@ -1,0 +1,80 @@
+<launch>
+    <arg name="drone_id" default="1" />
+    <arg name="drone_num" default="1" /> 
+    <arg name="init_x" default="0" />
+    <arg name="init_y" default="0" />
+    <arg name="init_z" default="0" /> 
+    <arg name="map_size_x" default="22" />
+    <arg name="map_size_y" default="22" />
+    <arg name="map_size_z" default="3.5" />
+    <arg name="odom_prefix" default="odom" />
+    <arg name="simulation" default="false" />
+    <arg name="odometry_topic" default="$(arg odom_prefix)_$(arg drone_id)" />
+    
+    <arg name="sensor_pose_topic" default="/pcl_render_node/sensor_pose_$(arg drone_id)" /> 
+    <arg name="depth_topic" default="/pcl_render_node/depth_$(arg drone_id)" /> 
+    <arg name="cx" default="324.0879821777344" />
+    <arg name="cy" default="239.10362243652344" />
+    <arg name="fx" default="385.69793701171875" />
+    <arg name="fy" default="385.69793701171875" />
+
+
+  
+  <include file="/comparison/racer-planner.xml">
+
+    <arg name="drone_id" value="$(arg drone_id)" />
+    <arg name="drone_num" value="$(arg drone_num)" />
+    <arg name="map_size_x" value="$(arg map_size_x)" />
+    <arg name="map_size_y" value="$(arg map_size_y)" />
+    <arg name="map_size_z" value="$(arg map_size_z)" />
+
+    <arg name="odometry_topic" default="$(arg odometry_topic)" />
+    <arg name="sensor_pose_topic" value="$(arg sensor_pose_topic)" /> 
+
+    
+    
+    
+    
+    <arg name="depth_topic" value="$(arg depth_topic)" /> 
+
+    <arg name="cloud_topic" value="/pcl_render_node/cloud_$(arg drone_id)" />
+
+    
+    <arg name="cx" value="$(arg cx)" />
+    <arg name="cy" value="$(arg cy)" />
+    <arg name="fx" value="$(arg fx)" />
+    <arg name="fy" value="$(arg fy)" />
+
+    
+    <arg name="max_vel" value=".6" />
+    <arg name="max_acc" value=".8" />
+    
+    <arg name="simulation" value="$(arg simulation)" />
+  </include>
+
+  
+  <node pkg="plan_manage" name="traj_server_$(arg drone_id)" type="traj_server" output="screen">
+    <remap from="/odom_world" to="$(arg odom_prefix)_$(arg drone_id)" />
+
+    <remap from="/planning/bspline" to="/planning/bspline_$(arg drone_id)" />
+    <remap from="/planning/replan" to="/planning/replan_$(arg drone_id)" />
+    <remap from="/planning/new" to="/planning/new_$(arg drone_id)" />
+    
+    <remap from="/position_cmd" to="planning/pos_cmd_$(arg drone_id)" />
+    <remap from="planning/position_cmd_vis" to="planning/position_cmd_vis_$(arg drone_id)" />
+    <remap from="planning/travel_traj" to="planning/travel_traj_$(arg drone_id)" />
+
+    <param name="traj_server/time_forward" value="1.5" type="double" />
+    <param name="traj_server/pub_traj_id" value="4" type="int" />
+    <param name="traj_server/drone_id" value="$(arg drone_id)" type="int" />
+    <param name="traj_server/drone_num" value="$(arg drone_num)" type="int" />
+    
+    <param name="perception_utils/top_angle" value="1.0471975511965976" type="double" />
+    <param name="perception_utils/left_angle" value="1.0471975511965976" type="double" />
+    <param name="perception_utils/right_angle" value="1.0471975511965976" type="double" />
+    <param name="perception_utils/max_dist" value="4.5" type="double" />
+    <param name="perception_utils/vis_dist" value="1.0" type="double" />
+  </node>
+
+  
+  </launch>

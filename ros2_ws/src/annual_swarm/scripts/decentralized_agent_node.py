@@ -19,18 +19,20 @@ import planning_runtime  # installed core module location
 from core.exploration.decentralized import MapReplica, PeerLedger, remainder, tracking_recovery
 from core.exploration.sparse_graph import SparseTopology
 from core.exploration.fusion import FusionPlanner, reusable_trajectory, compute_worker
+from core.exploration.service_selection import view_gain_retained, live_execution_bids
 from core.exploration.priority import PriorityConfig, service_cells, service_result
 from core.exploration.team_evidence import known_mask, service_accounting, regional_evidence, team_new_cells, intent_records
 from core.exploration.mrdtg import observation_grid
 from core.exploration.planning_budget import PlanningRequest, abort_worker
 from core.exploration.pairwise import PairExchange
 from core.planning.continuous_trajectory import optimize_trajectory, ContinuousTrajectory
-from core.planning.handoff import future_boundary_time
+from core.planning.handoff import moving_boundary_time
+from core.planning.handoff_timing import HandoffTiming
 from core.exploration.regions import RegionTasks, ObservationPlanner, insertion_bids, visible_cells
 from core.planning.path_quality import PathQualityEvaluator, RankedPathPool, Candidate, resample
 
 
-def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=None):
+def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=None, start_boundary=None):
     begin = time.monotonic()
     selection['pool'].revalidate(position, runtime, PathQualityEvaluator(), runtime.version, now=now)
     if selection['pool'].active is None: raise ValueError('No live safe reserve')
@@ -40,7 +42,8 @@ def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=Non
             curve = optimize_trajectory(
                 candidate.path, runtime, yaw, selection['yaw'], speed_limit=.15 if rid < 0 else .6,
                 acceleration_limit=.2 if rid < 0 else .8, deadline_wall=deadline_wall,
-                preserve_route=candidate is not selection['pool'].active)
+                preserve_route=candidate is not selection['pool'].active,
+                **(start_boundary or {}))
             points=curve.path(.15)
             distances=(runtime.signed_distances(points) if hasattr(runtime,'signed_distances') else
                        np.array([runtime.signed_distance(p) for p in points]))
@@ -52,6 +55,7 @@ def fit_selection(selection, runtime, position, yaw, rid, now, deadline_wall=Non
             if any(np.mean(np.linalg.norm(resample(curve.path(.15))-resample(other.path(.15)),axis=1)) < selection['pool'].diversity_m
                    for other in curves.values()):continue
             curves[candidate.id] = curve; valid.append(candidate)
+            if start_boundary is not None: break
         except ValueError:
             continue
         except TimeoutError:
@@ -87,6 +91,7 @@ class ExplorationAgent(Node):
         self.intent = None; self.selection = None; self.active = None; self.epoch = 0
         self.cached_pending = None; self.retiring = None; self.stop_epoch = None; self.stop_since = None; self.speed = 0.
         self.preplanned = None
+        self.preparation_token = None
         self.pending_intent = None; self.pending_selection = None; self.retiring_extra = []
         self.pending_service = None
         self.motion_blocked = False
@@ -124,6 +129,7 @@ class ExplorationAgent(Node):
         self.future = None; self.future_epoch = None; self.last_submit = -10.
         self.request = None; self.request_sequence = 0; self.worker_retry_after = 0.
         self.planning_deadline_s = float(self.declare_parameter('planning_deadline_s', 12.).value)
+        self.handoff_timing = HandoffTiming(planning_default_s=self.planning_deadline_s)
         self.future_boundary = None
         self.future_kind = 'plan'; self.fit_pending = None
         self.observation_timeout_s = float(self.declare_parameter('observation_timeout_s',1.5).value)
@@ -170,7 +176,20 @@ class ExplorationAgent(Node):
         return self.get_clock().now().nanoseconds*1e-9
 
     def event(self, kind, **values):
-        event = dict(type=kind, drone=self.id, time=self.now(), incarnation=self.fusion.graph.replica.session, **values)
+        wall = time.monotonic()
+        self.handoff_timing.observe_clock(self.now(), wall)
+        if kind in ('planning_result', 'planning_timeout', 'planning_failed') and 'total_wall_s' in values:
+            self.handoff_timing.record_planning(values['total_wall_s'])
+            if getattr(self,'future_kind',None) in ('fit','moving_fit'):
+                self.handoff_timing.record_fitting(values['total_wall_s'])
+        if kind in ('path_proposed', 'handoff_proposed'):
+            self.handoff_timing.proposed(values['token'], wall)
+        elif kind in ('path_committed', 'handoff_quorum_ready'):
+            self.handoff_timing.authorized(values['token'], wall)
+        elif kind in ('handoff_cancelled', 'reservation_retired'):
+            self.handoff_timing.cancelled(values['token'])
+        event = dict(type=kind, drone=self.id, time=self.now(), monotonic_wall_time=wall,
+                     incarnation=self.fusion.graph.replica.session, **values)
         self.events.append(event); self.log.write(json.dumps(event)+'\n'); self.log.flush()
 
     def odom(self, m):
@@ -279,7 +298,10 @@ class ExplorationAgent(Node):
             intent['path'] = remainder(self.position, intent['path']).tolist()
         pending = copy.deepcopy(self.pending_intent)
         if pending: pending.pop('trajectory', None)
-        bids = dict(self.bids)
+        # Leases can retire after a worker result was accepted. Recheck at
+        # publication so its old execution preference cannot outlive the lease.
+        bids = live_execution_bids(self.bids,
+            [self.intent,self.pending_intent,self.retiring]+self.retiring_extra)
         if pending and pending.get('committed'): bids[pending['region']] = -1e6
         return dict(drone=self.id, session=self.fusion.graph.replica.session, epoch=self.epoch,
                     rejoin_ready=self.rejoin_ready, stopped=self.speed < .08 and self.execution.get('arrived', False),
@@ -307,6 +329,7 @@ class ExplorationAgent(Node):
         if self.position is None:
             return
         t = self.now(); self.ready = self.execution.get('ready', False)
+        self.handoff_timing.observe_clock(t, time.monotonic())
         if t-self.last_map_dump >= 20.:
             np.savez_compressed(self.output/'map_latest.npz', state=self.replica.map.state,
                 bounds=self.replica.map.bounds, resolution=self.replica.map.resolution, position=self.position, yaw=self.yaw)
@@ -357,7 +380,7 @@ class ExplorationAgent(Node):
             self.begin_service()
             self.publish(self.command_pub, dict(epoch=self.epoch, path=self.intent['path'], yaw=self.intent['yaw'],
                                                region=self.active, token=self.intent['token'], candidate_id=self.intent['candidate_id'],
-                                               trajectory=self.intent.get('trajectory')))
+                                               trajectory=self.intent.get('trajectory'), observation_grid=self.intent.get('observation_grid')))
             self.event('path_committed', token=self.intent['token'], region=self.active, quorum=self.intent['voters'],
                        predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'],
                        exploration_priority=self.selection.get('priority'))
@@ -369,6 +392,8 @@ class ExplorationAgent(Node):
                            actual_start=self.position.tolist(), actual_speed=self.speed, map_version=self.replica.map.version,
                            team_gain_estimate=self.selection['gain'])
         if self.intent and self.intent.get('committed') and self.execution.get('arrived') and self.execution.get('epoch') == self.intent.get('epoch', self.epoch):
+            self.event('terminal_observation_completed', token=self.intent['token'], purpose=self.intent.get('purpose','explore'),
+                       proof=self.execution.get('observation_proof'))
             self.cancel_pending('current_view_finished')
             self.finish_service('terminal_sensor_dwell')
             self.intent = None; self.selection = None
@@ -479,9 +504,19 @@ class ExplorationAgent(Node):
                        total_wall_s=time.monotonic()-self.request.submitted_wall,
                        dispatch_queue_wall_s=result.get('worker_started_wall',self.request.submitted_wall)-self.request.submitted_wall,
                        result_delivery_wall_s=time.monotonic()-result.get('worker_finished_wall',time.monotonic()),
-                       result_age_sim_s=t-self.request.submitted_sim, stage_wall_s=result.get('stages', {}) if self.future_kind == 'fit' else result['fusion'].diagnostics.get('stage_wall_s'),
+                       result_age_sim_s=t-self.request.submitted_sim, phase=self.future_kind,
+                       stage_wall_s=result.get('stages', {}) if self.future_kind in ('fit','moving_fit') else result['fusion'].diagnostics.get('stage_wall_s'),
                        rejection=rejection, input_map_version=self.request.map_version, current_map_version=self.replica.map.version)
             if rejection:
+                return
+            if self.future_kind == 'moving_fit':
+                self.preplanned = dict(epoch=self.epoch, position=self.future_boundary['position'], region=self.fit_region,
+                    selection=result['selection'], time=self.request.submitted_sim, anticipatory=True,
+                    boundary=self.future_boundary, request_id=self.request.identifier)
+                if self.intent is not None:
+                    self.adopt_moving_preplan(t)
+                else:
+                    self.adopt_preplan(t)
                 return
             if self.future_kind == 'fit':
                 rid = self.fit_region
@@ -506,6 +541,8 @@ class ExplorationAgent(Node):
                                    loads=offer['result']['loads'], capacity=offer['result']['capacity'], fixed_loads=offer['result'].get('fixed_loads'))
             self.last_plan = result['wall']; self.graph = result['graph']; self.tasks = result['tasks']
             self.bids, self.tour, self.workload = result['bids'], result['tour'], result['workload']
+            self.bids = live_execution_bids(self.bids,
+                [self.intent,self.pending_intent,self.retiring]+self.retiring_extra)
             self.graph_seq += 1; snapshot = self.graph.snapshot(); snapshot['sequence'] = self.graph_seq
             snapshot['exploration_priority'] = self.fusion.priority_layer
             self.publish(self.graph_pub, snapshot)
@@ -537,7 +574,10 @@ class ExplorationAgent(Node):
             self.future = self.worker.submit(fit_selection, selection, runtime, self.position.copy(), self.yaw, rid, t,
                                              deadline_wall=self.request.submitted_wall+self.planning_deadline_s-1.)
             return
-        if t-self.last_submit < (10. if self.motion_blocked else 2.):
+        fresh_segment = (self.intent and self.intent.get('committed') and
+                         self.execution.get('epoch') == self.intent.get('epoch') and
+                         self.preparation_token != self.intent['token'])
+        if not fresh_segment and t-self.last_submit < (10. if self.motion_blocked else 2. if self.intent else .25):
             return
         if time.monotonic() < self.worker_retry_after or self.pending_intent:
             return
@@ -558,9 +598,11 @@ class ExplorationAgent(Node):
         if self.intent and self.execution.get('epoch') == self.intent.get('epoch'):
             curve = ContinuousTrajectory.from_dict(self.intent['trajectory'])
             progress = self.execution.get('trajectory_time', 0.)
-            # Pipeline lead includes measured worker latency and two peer ACKs.
-            lead = max(4., min(12., self.last_plan+2.4))
-            handoff_time = future_boundary_time(curve,progress,lead)
+            timing = self.handoff_timing.estimate()
+            lead = timing['lead_sim_s']
+            handoff_time = moving_boundary_time(curve,progress,lead)
+            self.event('handoff_preparation_timing', old_token=self.intent['token'], trajectory_progress=progress,
+                       selected_boundary=handoff_time, ready_window_available=handoff_time is not None, **timing)
             if handoff_time is not None:
                 p, v, a, h, rate = curve.sample(handoff_time)
                 anticipated = dict(position=p.tolist(), yaw=h, start_velocity=v.tolist(), start_acceleration=a.tolist(),
@@ -568,6 +610,7 @@ class ExplorationAgent(Node):
                 self.future_boundary = dict(from_epoch=self.intent['epoch'], from_token=self.intent['token'],
                                             trajectory_time=handoff_time, **anticipated)
         self.last_submit = t
+        if fresh_segment: self.preparation_token = self.intent['token']
         self.future_epoch = self.epoch
         self.future_kind = 'plan'
         self.request_sequence += 1
@@ -579,6 +622,7 @@ class ExplorationAgent(Node):
             active, recent, dict(self.cooldown), reservations, self.epoch, t, True,
             copy.deepcopy(self.ledger.states), dict(self.pair.overrides), dict(self.pair.last_success),
             copy.deepcopy(self.service_feedback), anticipated, not self.motion_blocked,
+            own_state=self.state(),
             deadline_wall=self.request.submitted_wall+self.planning_deadline_s-1.)
 
     def set_motion_blocked(self, blocked, reason=None):
@@ -627,8 +671,12 @@ class ExplorationAgent(Node):
                 self.event('region_low_yield', region=self.active, new_cells=gained, retry_after=feedback['defer_until'])
             # Write last so restart replay restores streaks and successful resets.
             self.event('region_service', region=self.active, feedback=feedback)
-            if feedback['low_yield_streak']:
-                self.active = None
+        # Execution pins a region only while its service is live. A successful
+        # terminal view must release it too; otherwise the next graph/tour sees
+        # a fictitious active service and a permanently preferred bid.
+        if self.bids.get(self.active, 0.) <= -1e5:
+            self.bids.pop(self.active)
+        self.active = None
 
     def service_clock_fields(self,end):
         return dict(first_observed=self.replica.first_observed,start=self.service_start,end=end) if self.observation and self.observation.get('sensor')=='gazebo_gpu_lidar' else {}
@@ -674,11 +722,19 @@ class ExplorationAgent(Node):
             self.cancel_pending('execution_missed_boundary'); return
         if not intent.get('committed'):
             if progress >= boundary['trajectory_time']-.15 or t-intent['created'] > 6. or self.ledger.loses(intent):
-                self.cancel_pending('late_or_conflicting_authorization'); return
+                reason = ('old_service_insufficient_at_boundary' if not self.old_service_ready() else
+                          'late_or_conflicting_authorization')
+                self.cancel_pending(reason); return
             lifecycle=self.task_lifecycle_reason(intent['region'],self.pending_selection,t)
             if lifecycle:
                 self.cancel_pending('latest_task_lifecycle:'+lifecycle);return
             if not self.ledger.quorum(intent['token'], t, intent['voters']):return
+            if 'quorum_ready_at' not in intent:
+                intent['quorum_ready_at'] = t
+                self.event('handoff_quorum_ready', token=intent['token'], old_token=self.intent['token'])
+            # Reserve in advance; sending an execution command still requires
+            # real old-service observations. Peer promises cannot satisfy this.
+            if not self.old_service_ready(): return
             self.update_local_geometry()
             runtime = self.reserved_map()
             if not runtime.safe_path(intent['path']):
@@ -687,31 +743,79 @@ class ExplorationAgent(Node):
             cells = team_new_cells(visible_cells(runtime, intent['path'][-1], intent['yaw'])-
                                    self.fusion.priority.committed_cells(runtime,self.ledger.states,t,arrival),
                                    known_mask(runtime, self.fusion.graph.observed_mask(runtime)))
-            if intent['purpose'] == 'explore' and not cells:
-                self.cancel_pending('latest_team_gain_empty'); return
+            if intent['purpose'] == 'explore' and not view_gain_retained(
+                    len(cells), self.pending_selection.get('planned_team_cells',0)):
+                self.cancel_pending('latest_team_gain_collapsed'); return
             intent['committed'] = True; intent['committed_at'] = t; self.commits += 1
             self.pending_service=dict(cells=service_cells(self.replica.map,self.tasks.get(intent['region']),intent['path'][-1],intent['yaw']),
                 team_before=known_mask(self.replica.map,self.fusion.graph.observed_mask(self.replica.map)),
                 known=int(np.count_nonzero(self.replica.map.state!=-1)))
             self.publish(self.command_pub, dict(epoch=intent['epoch'], path=intent['path'], yaw=intent['yaw'],
-                region=intent['region'], token=intent['token'], candidate_id=intent['candidate_id'], trajectory=intent['trajectory'], handoff=boundary))
+                region=intent['region'], token=intent['token'], candidate_id=intent['candidate_id'], trajectory=intent['trajectory'], handoff=boundary,
+                observation_grid=intent['observation_grid']))
             self.event('handoff_authorized', token=intent['token'], old_token=self.intent['token'],
-                       trajectory_time=boundary['trajectory_time'], quorum=intent['voters'])
+                       trajectory_time=boundary['trajectory_time'], quorum=intent['voters'],
+                       quorum_ready_at=intent['quorum_ready_at'],
+                       sensor_gate_wait_sim_s=t-intent['quorum_ready_at'],
+                       old_service_target_cells=self.view_target_cells.tolist(),
+                       old_service_observed_cells=int(np.count_nonzero(
+                           known_mask(self.replica.map,self.fusion.graph.observed_mask(self.replica.map))[self.view_target_cells])),
+                       old_service_required_fraction=.6 if self.intent.get('purpose')=='explore' else 0.,
+                       old_service_purpose=self.intent.get('purpose'),
+                       old_service_evidence='private_observations_and_received_actual_receipts')
+
+    def old_service_ready(self):
+        if self.intent.get('purpose') != 'explore': return True
+        actual_known = known_mask(self.replica.map, self.fusion.graph.observed_mask(self.replica.map))
+        delivered = int(np.count_nonzero(actual_known[self.view_target_cells]))
+        return delivered >= .6*len(self.view_target_cells)
+
+    def refit_moving_preplan(self, t):
+        pending=self.preplanned
+        if self.future is not None or not self.intent.get('committed') or self.intent.get('recovery'):return
+        if pending['epoch'] != self.epoch or t-pending['time']>15.:
+            self.preplanned=None;return
+        rid=pending['region'];selection=pending['selection']
+        if self.task_lifecycle_reason(rid,selection,t):self.preplanned=None;return
+        if self.execution.get('epoch')!=self.intent['epoch']:return
+        old=ContinuousTrajectory.from_dict(self.intent['trajectory'])
+        progress=self.execution.get('trajectory_time',0.);timing=self.handoff_timing.estimate(fitting=True)
+        when=moving_boundary_time(old,progress,timing['lead_sim_s'])
+        if pending.get('refit_window_logged') != (self.intent['token'],when is not None):
+            self.event('handoff_refit_timing',old_token=self.intent['token'],trajectory_progress=progress,
+                       selected_boundary=when,ready_window_available=when is not None,**timing)
+            pending['refit_window_logged']=(self.intent['token'],when is not None)
+        if when is None:return
+        p,v,a,h,rate=old.sample(when)
+        self.future_boundary=dict(from_epoch=self.intent['epoch'],from_token=self.intent['token'],trajectory_time=when,
+                                  position=p.tolist(),yaw=h)
+        boundary=dict(start_velocity=v.tolist(),start_acceleration=a.tolist(),start_yaw_rate=rate,
+                      start_yaw_acceleration=old.yaw_acceleration(when))
+        runtime=self.reserved_map();self.request_sequence+=1;self.future_kind='moving_fit';self.fit_region=rid
+        self.future_epoch=self.epoch
+        self.request=PlanningRequest(f'{self.id}:moving_fit:{self.request_sequence}',self.fusion.graph.replica.session,
+            self.epoch,runtime.version,t,time.monotonic(),self.planning_deadline_s)
+        self.event('planning_submitted',request_id=self.request.identifier,map_version=runtime.version,epoch=self.epoch,phase='moving_fit')
+        self.future=self.worker.submit(fit_selection,copy.deepcopy(selection),runtime,p,h,rid,t,
+            deadline_wall=self.request.submitted_wall+self.planning_deadline_s-1.,start_boundary=boundary)
+        self.preplanned=None;self.last_submit=t
 
     def adopt_moving_preplan(self, t):
         pending = self.preplanned; boundary = pending.get('boundary')
-        if not boundary or self.pending_intent or self.intent.get('recovery'): return
+        if self.pending_intent or self.intent.get('recovery'): return
+        if not boundary:
+            self.refit_moving_preplan(t);return
         if (pending['epoch'] != self.epoch or t-pending['time'] > 15. or
                 boundary['from_token'] != self.intent['token'] or
                 self.execution.get('trajectory_time', 0.) >= boundary['trajectory_time']-.8):
             self.preplanned = None; return
+        if boundary['trajectory_time']-self.execution.get('trajectory_time', 0.) > 5.5: return
         rid = pending['region']; selection = pending['selection']
         if self.owners.get(rid) != self.id: return
         if self.task_lifecycle_reason(rid,selection,t):self.preplanned=None;return
-        # Leaving early requires real sensor service of the old predicted cells.
+        # Only a proposal is prepared here; real old-service evidence is fenced
+        # again immediately before authorization in manage_pending.
         actual_known=known_mask(self.replica.map,self.fusion.graph.observed_mask(self.replica.map))
-        delivered=int(np.count_nonzero(actual_known[self.view_target_cells]))
-        if self.intent.get('purpose') == 'explore' and delivered < .6*len(self.view_target_cells): return
         curve = selection.get('trajectory')
         if curve is None: self.preplanned = None; return
         runtime = self.reserved_map()
@@ -719,7 +823,8 @@ class ExplorationAgent(Node):
         if not selection.get('transit'):
             arrival=t+max(0.,boundary['trajectory_time']-self.execution.get('trajectory_time',0.))+curve.duration
             cells=visible_cells(runtime,curve.path()[-1],selection['yaw'])-self.fusion.priority.committed_cells(runtime,self.ledger.states,t,arrival)
-            if not team_new_cells(cells,actual_known):self.preplanned=None;return
+            if not view_gain_retained(len(team_new_cells(cells,actual_known)), selection.get('planned_team_cells',0)):
+                self.preplanned=None;return
         self.epoch += 1
         self.pending_intent = dict(token=f'{self.id}:{self.fusion.graph.replica.session[:8]}:{self.epoch}', epoch=self.epoch,
             created=t, region=rid, candidate_id=selection['pool'].active.id,
@@ -731,7 +836,8 @@ class ExplorationAgent(Node):
             expected_observation_cells=sorted(visible_cells(runtime,curve.path()[-1],selection['yaw'])))
         self.pending_selection = selection; self.preplanned = None
         self.event('handoff_proposed', token=self.pending_intent['token'], old_token=self.intent['token'],
-                   region=rid, boundary=boundary, request_id=pending['request_id'])
+                   region=rid, boundary=boundary, request_id=pending['request_id'],
+                   old_service_ready=self.old_service_ready())
         self.record_candidates(self.pending_intent,selection,'handoff_proposed')
 
     def adopt_preplan(self, t):
@@ -801,8 +907,10 @@ class ExplorationAgent(Node):
             cells=(visible_cells(runtime,selection['pool'].active.path[-1],selection['yaw'])-
                 self.fusion.priority.committed_cells(runtime,self.ledger.states,self.now(),arrival))
             cells=team_new_cells(cells,known_mask(runtime,self.fusion.graph.observed_mask(runtime)))
-            if not cells:
-                self.event('task_gain_invalidated',region=rid,remaining_team_cells=len(cells));return
+            planned = selection.get('planned_team_cells', 0)
+            if not view_gain_retained(len(cells), planned):
+                self.event('task_gain_invalidated',region=rid,remaining_team_cells=len(cells),
+                           planned_team_cells=planned, reason='view_gain_collapsed');return
             selection['gain']=len(cells)*runtime.resolution**runtime.state.ndim
         try:
             trajectory = reusable_trajectory(selection, runtime, self.position, self.yaw) if rid >= 0 else None
@@ -857,7 +965,8 @@ class ExplorationAgent(Node):
                 reserve_reuse='Rejoin, revalidate and refit at actual state before a new authorization'))
         self.paths.write(json.dumps(dict(time=self.now(),drone=self.id,epoch=intent['epoch'],region=intent['region'],
             token=intent['token'],phase=phase,purpose=intent['purpose'],active_candidate=intent['candidate_id'],
-            yaw=selection['yaw'],gain_m3=selection['gain'],paths=paths))+'\n');self.paths.flush()
+            yaw=selection['yaw'],gain_m3=selection['gain'],service_cost=selection.get('service_cost'),
+            traffic_delay_s=selection.get('traffic_delay_s',0.),paths=paths))+'\n');self.paths.flush()
 
 
 def main():

@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/study/bridge_ros1.py", line 60, in <module>
+    for line in sys.stdin:
+KeyboardInterrupt

@@ -1,0 +1,22 @@
+{
+  "recomputed": {
+    "coverage": 0.9534112575644533,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "legacy_center_free_coverage": 0.9197668848794508,
+    "truth_free_voxels": 12063,
+    "observed_free_voxels": 11501,
+    "unobserved_free_voxels": 510,
+    "falsely_occupied_free_voxels": 52
+  },
+  "logged_coverage": 0.9533283594462406,
+  "difference": 8.289811821271531e-05,
+  "integrated_frames": [
+    231,
+    231
+  ],
+  "logged_observation_frames": [
+    231,
+    230
+  ],
+  "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+}

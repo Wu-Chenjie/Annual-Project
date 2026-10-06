@@ -1,0 +1,43 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 17,
+  "captured_curve_commands": 14,
+  "lease_intervals": 14,
+  "handoffs": [
+    {
+      "token": "0:9294a8c8:400003",
+      "old_token": "0:9294a8c8:400002",
+      "authorized_at": 25.200000000000003,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 6.938893903907228e-17,
+        "acceleration": 1.3092278833360675e-16,
+        "yaw": 0.0,
+        "yaw_rate": 1.3877787807814457e-17,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 28.441000000000003
+    },
+    {
+      "token": "0:9294a8c8:400009",
+      "old_token": "0:9294a8c8:400008",
+      "authorized_at": 60.00000000000001,
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 1.4037332632488234e-16,
+        "acceleration": 2.0026854743534788e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 63.021
+    }
+  ],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
+}

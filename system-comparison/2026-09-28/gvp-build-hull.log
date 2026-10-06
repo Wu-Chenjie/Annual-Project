@@ -1,0 +1,350 @@
+-- Using CATKIN_DEVEL_PREFIX: /comparison/gvp_ws/devel
+-- Using CMAKE_PREFIX_PATH: /work/gvp_ws/devel;/work/rotors_ws/devel;/opt/ros/noetic
+-- This workspace overlays: /work/gvp_ws/devel;/work/rotors_ws/devel;/opt/ros/noetic
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using Debian Python package layout
+-- Using empy: /usr/lib/python3/dist-packages/em.py
+-- Using CATKIN_ENABLE_TESTING: ON
+-- Call enable_testing()
+-- Using CATKIN_TEST_RESULTS_DIR: /comparison/gvp_ws/build/test_results
+-- Forcing gtest/gmock from source, though one was otherwise available.
+-- Found gtest sources under '/usr/src/googletest': gtests will be built
+-- Found gmock sources under '/usr/src/googletest': gmock will be built
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.10") 
+-- Using Python nosetests: /usr/bin/nosetests3
+-- catkin 0.8.12
+-- BUILD_SHARED_LIBS is on
+-- BUILD_SHARED_LIBS is on
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~  traversing 16 packages in topological order:
+-- ~~  - gcopter
+-- ~~  - swarm_exp_msgs
+-- ~~  - exp_comm_msgs
+-- ~~  - data_statistics
+-- ~~  - multisim_gazebo
+-- ~~  - swarm_data
+-- ~~  - block_map
+-- ~~  - lowres_map
+-- ~~  - frontier_grid
+-- ~~  - multiDTG
+-- ~~  - swarm_exp_bridge
+-- ~~  - yaw_planner
+-- ~~  - ato_test
+-- ~~  - graph_partition
+-- ~~  - murder_swarm
+-- ~~  - traj_exc
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- +++ processing catkin package: 'gcopter'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/gcopter)
+-- +++ processing catkin package: 'swarm_exp_msgs'
+-- ==> add_subdirectory(GVP-MREP/MSGS/swarm_exp_msgs)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- swarm_exp_msgs: 10 messages, 0 services
+-- +++ processing catkin package: 'exp_comm_msgs'
+-- ==> add_subdirectory(GVP-MREP/MSGS/exp_comm_msgs)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- exp_comm_msgs: 8 messages, 0 services
+-- +++ processing catkin package: 'data_statistics'
+-- ==> add_subdirectory(GVP-MREP/data_statistics)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "computation_statistician" of package "data_statistics" for installation
+-- Marking HEADER FILES in "include" folder of package "data_statistics" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "data_statistics" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "data_statistics" for installation
+-- +++ processing catkin package: 'multisim_gazebo'
+-- ==> add_subdirectory(GVP-MREP/Communication/multisim_gazebo)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- multisim_gazebo: 2 messages, 0 services
+-- Marking SHARED_LIBRARY "multi_rotors" of package "multisim_gazebo" for installation
+-- Marking EXECUTABLE "multi_rotors_node" of package "multisim_gazebo" for installation
+-- Marking HEADER FILES in "include" folder of package "multisim_gazebo" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "multisim_gazebo" for installation
+-- Marking SHARED CONTENT FOLDER "worlds" of package "multisim_gazebo" for installation
+-- +++ processing catkin package: 'swarm_data'
+-- ==> add_subdirectory(GVP-MREP/Communication/swarm_data)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "swarm_data" of package "swarm_data" for installation
+-- Marking HEADER FILES in "include" folder of package "swarm_data" for installation
+-- +++ processing catkin package: 'block_map'
+-- ==> add_subdirectory(GVP-MREP/Mapping/block_map)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "block_map_raycast" of package "block_map" for installation
+-- Marking SHARED_LIBRARY "block_map_grid" of package "block_map" for installation
+-- Marking SHARED_LIBRARY "block_map_color" of package "block_map" for installation
+-- Marking HEADER FILES in "include" folder of package "block_map" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "block_map" for installation
+-- +++ processing catkin package: 'lowres_map'
+-- ==> add_subdirectory(GVP-MREP/Mapping/lowres_map)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "lowres_map" of package "lowres_map" for installation
+-- Marking HEADER FILES in "include" folder of package "lowres_map" for installation
+-- +++ processing catkin package: 'frontier_grid'
+-- ==> add_subdirectory(GVP-MREP/Mapping/frontier_grid)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "frontier_grid" of package "frontier_grid" for installation
+-- Marking HEADER FILES in "include" folder of package "frontier_grid" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "frontier_grid" for installation
+-- +++ processing catkin package: 'multiDTG'
+-- ==> add_subdirectory(GVP-MREP/Exploration/multiDTG)
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "multiDTG" of package "multiDTG" for installation
+-- Marking HEADER FILES in "include" folder of package "multiDTG" for installation
+-- +++ processing catkin package: 'swarm_exp_bridge'
+-- ==> add_subdirectory(GVP-MREP/Communication/swarm_bridge)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- +++ processing catkin package: 'yaw_planner'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/yaw_planner)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "yaw_planner" of package "yaw_planner" for installation
+-- Marking HEADER FILES in "include" folder of package "yaw_planner" for installation
+-- +++ processing catkin package: 'ato_test'
+-- ==> add_subdirectory(GVP-MREP/Test/ato_test)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- Marking SHARED CONTENT FOLDER "launch" of package "ato_test" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "ato_test" for installation
+-- Marking SHARED CONTENT FOLDER "worlds" of package "ato_test" for installation
+-- +++ processing catkin package: 'graph_partition'
+-- ==> add_subdirectory(GVP-MREP/Exploration/graph_partition)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "graph_partition" of package "graph_partition" for installation
+-- Marking HEADER FILES in "include" folder of package "graph_partition" for installation
+-- +++ processing catkin package: 'murder_swarm'
+-- ==> add_subdirectory(GVP-MREP/Exploration/murder_swarm)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "murder_swarm" of package "murder_swarm" for installation
+-- Marking SHARED_LIBRARY "murder_swarm_fsm" of package "murder_swarm" for installation
+-- Marking SHARED_LIBRARY "ground" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "murder_swarm_node" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "swarm_trigger" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "ground_node" of package "murder_swarm" for installation
+-- Marking HEADER FILES in "include" folder of package "murder_swarm" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "murder_swarm" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "murder_swarm" for installation
+-- +++ processing catkin package: 'traj_exc'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/traj_exc)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking EXECUTABLE "traj_exc_node" of package "traj_exc" for installation
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /comparison/gvp_ws/build
+[  0%] Built target geometry_msgs_generate_messages_lisp
+[  1%] Built target traj_opt
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_IdPose
+[  1%] Built target std_msgs_generate_messages_lisp
+[  1%] Built target sensor_msgs_generate_messages_lisp
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHHEdge
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgFFEdge
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_SwarmTraj
+[  1%] Built target nav_msgs_generate_messages_lisp
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHFEdge
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHNode
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgFNode
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgBag
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_IdOdom
+[  1%] Built target _swarm_exp_msgs_generate_messages_check_deps_LocalTraj
+[  1%] Built target std_msgs_generate_messages_cpp
+[  1%] Built target sensor_msgs_generate_messages_cpp
+[  1%] Built target geometry_msgs_generate_messages_cpp
+[  1%] Built target nav_msgs_generate_messages_cpp
+[  1%] Built target sensor_msgs_generate_messages_nodejs
+[  1%] Built target std_msgs_generate_messages_nodejs
+[  1%] Built target geometry_msgs_generate_messages_nodejs
+[  1%] Built target nav_msgs_generate_messages_nodejs
+[  1%] Built target sensor_msgs_generate_messages_py
+[  1%] Built target geometry_msgs_generate_messages_py
+[  1%] Built target std_msgs_generate_messages_py
+[  1%] Built target nav_msgs_generate_messages_py
+[  1%] Built target sensor_msgs_generate_messages_eus
+[  1%] Built target std_msgs_generate_messages_eus
+[  1%] Built target geometry_msgs_generate_messages_eus
+[  1%] Built target nav_msgs_generate_messages_eus
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_IdPoseC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_DtgBagAnswer
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_DtgBagC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmTrajC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmStateC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_MapC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmJobC
+[  1%] Built target tf2_msgs_generate_messages_cpp
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_MapReqC
+[  1%] Built target rosgraph_msgs_generate_messages_py
+[  1%] Built target roscpp_generate_messages_lisp
+[  1%] Built target rosgraph_msgs_generate_messages_lisp
+[  1%] Built target rosgraph_msgs_generate_messages_eus
+[  1%] Built target rosgraph_msgs_generate_messages_cpp
+[  1%] Built target roscpp_generate_messages_nodejs
+[  1%] Built target roscpp_generate_messages_py
+[  1%] Built target rosgraph_msgs_generate_messages_nodejs
+[  1%] Built target roscpp_generate_messages_eus
+[  1%] Built target roscpp_generate_messages_cpp
+[  1%] Built target actionlib_msgs_generate_messages_py
+[  1%] Built target actionlib_msgs_generate_messages_nodejs
+[  1%] Built target actionlib_msgs_generate_messages_cpp
+[  1%] Built target actionlib_msgs_generate_messages_eus
+[  1%] Built target actionlib_msgs_generate_messages_lisp
+[  1%] Built target tf2_msgs_generate_messages_py
+[  1%] Built target tf2_msgs_generate_messages_nodejs
+[  1%] Built target actionlib_generate_messages_eus
+[  1%] Built target tf_generate_messages_cpp
+[  1%] Built target tf2_msgs_generate_messages_lisp
+[  1%] Built target tf_generate_messages_lisp
+[  1%] Built target tf_generate_messages_nodejs
+[  1%] Built target actionlib_generate_messages_lisp
+[  1%] Built target tf2_msgs_generate_messages_eus
+[  1%] Built target actionlib_generate_messages_cpp
+[  1%] Built target actionlib_generate_messages_nodejs
+[  1%] Built target tf_generate_messages_eus
+[  1%] Built target tf_generate_messages_py
+[  1%] Built target actionlib_generate_messages_py
+[  1%] Built target gazebo_msgs_generate_messages_py
+[  1%] Built target _multisim_gazebo_generate_messages_check_deps_IdOdom
+[  1%] Built target std_srvs_generate_messages_eus
+[  1%] Built target _multisim_gazebo_generate_messages_check_deps_states
+[  1%] Built target gazebo_msgs_generate_messages_lisp
+[  1%] Built target gazebo_msgs_generate_messages_eus
+[  1%] Built target trajectory_msgs_generate_messages_lisp
+[  1%] Built target trajectory_msgs_generate_messages_nodejs
+[  1%] Built target gazebo_msgs_generate_messages_nodejs
+[  1%] Built target trajectory_msgs_generate_messages_eus
+[  1%] Built target std_srvs_generate_messages_nodejs
+[  1%] Built target std_srvs_generate_messages_cpp
+[  1%] Built target trajectory_msgs_generate_messages_py
+[  1%] Built target gazebo_msgs_generate_messages_cpp
+[  1%] Built target std_srvs_generate_messages_lisp
+[  1%] Built target std_srvs_generate_messages_py
+[  1%] Built target trajectory_msgs_generate_messages_cpp
+[  2%] Built target multisim_gazebo_generate_messages_lisp
+[  3%] Built target multisim_gazebo_generate_messages_cpp
+[  5%] Built target multisim_gazebo_generate_messages_nodejs
+[  5%] Built target visualization_msgs_generate_messages_py
+[  5%] Built target visualization_msgs_generate_messages_cpp
+[  5%] Built target visualization_msgs_generate_messages_eus
+[  5%] Built target visualization_msgs_generate_messages_lisp
+[  5%] Built target visualization_msgs_generate_messages_nodejs
+[  5%] Built target topic_tools_generate_messages_nodejs
+[  5%] Built target pcl_ros_gencfg
+[  5%] Built target dynamic_reconfigure_generate_messages_py
+[  5%] Built target pcl_msgs_generate_messages_py
+[  5%] Built target pcl_msgs_generate_messages_nodejs
+[  5%] Built target nodelet_generate_messages_eus
+[  5%] Built target pcl_msgs_generate_messages_eus
+[  5%] Built target topic_tools_generate_messages_cpp
+[  5%] Built target pcl_msgs_generate_messages_lisp
+[  5%] Built target nodelet_generate_messages_py
+[  5%] Built target bond_generate_messages_lisp
+[  5%] Built target bond_generate_messages_cpp
+[  5%] Built target bond_generate_messages_eus
+[  5%] Built target dynamic_reconfigure_generate_messages_lisp
+[  5%] Built target dynamic_reconfigure_gencfg
+[  5%] Built target nodelet_generate_messages_cpp
+[  5%] Built target dynamic_reconfigure_generate_messages_eus
+[  5%] Built target nodelet_generate_messages_lisp
+[  5%] Built target nodelet_generate_messages_nodejs
+[  5%] Built target topic_tools_generate_messages_py
+[  5%] Built target bond_generate_messages_nodejs
+[  5%] Built target bond_generate_messages_py
+[  5%] Built target topic_tools_generate_messages_lisp
+[  5%] Built target dynamic_reconfigure_generate_messages_nodejs
+[  5%] Built target pcl_msgs_generate_messages_cpp
+[  5%] Built target nodelet_topic_tools_gencfg
+[  5%] Built target dynamic_reconfigure_generate_messages_cpp
+[  5%] Built target topic_tools_generate_messages_eus
+[  5%] Built target mav_msgs_generate_messages_cpp
+[  5%] Built target mav_msgs_generate_messages_py
+[  5%] Built target mav_msgs_generate_messages_nodejs
+[  5%] Built target mav_msgs_generate_messages_lisp
+[  5%] Built target mav_msgs_generate_messages_eus
+[ 13%] Built target swarm_exp_msgs_generate_messages_lisp
+[ 18%] Built target swarm_exp_msgs_generate_messages_cpp
+[ 25%] Built target swarm_exp_msgs_generate_messages_nodejs
+[ 34%] Built target swarm_exp_msgs_generate_messages_py
+[ 40%] Built target swarm_exp_msgs_generate_messages_eus
+[ 45%] Built target exp_comm_msgs_generate_messages_cpp
+[ 51%] Built target exp_comm_msgs_generate_messages_lisp
+[ 53%] Built target computation_statistician
+[ 55%] Built target multisim_gazebo_generate_messages_py
+[ 57%] Built target multisim_gazebo_generate_messages_eus
+[ 59%] Built target yaw_planner
+[ 59%] Built target swarm_exp_msgs_generate_messages
+[ 64%] Built target exp_comm_msgs_generate_messages_eus
+[ 71%] Built target exp_comm_msgs_generate_messages_py
+[ 76%] Built target exp_comm_msgs_generate_messages_nodejs
+[ 76%] Built target multisim_gazebo_generate_messages
+[ 77%] Built target multi_rotors
+[ 78%] Built target traj_exc_node
+[ 78%] Built target exp_comm_msgs_generate_messages
+[ 80%] Built target swarm_data
+[ 81%] Built target swarm_exp_bridge_tcp_sim
+[ 82%] Built target swarm_exp_bridge_tcp
+[ 84%] Built target multi_rotors_node
+[ 85%] Built target block_map_color
+[ 86%] Built target block_map_raycast
+Scanning dependencies of target block_map_grid
+[ 86%] Building CXX object GVP-MREP/Mapping/block_map/CMakeFiles/block_map_grid.dir/src/block_map.cpp.o
+[ 87%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libblock_map_grid.so
+[ 87%] Built target block_map_grid
+Scanning dependencies of target lowres_map
+[ 87%] Building CXX object GVP-MREP/Mapping/lowres_map/CMakeFiles/lowres_map.dir/src/lowres_map.cpp.o
+[ 88%] Building CXX object GVP-MREP/Mapping/lowres_map/CMakeFiles/lowres_map.dir/src/path_search.cpp.o
+[ 89%] Linking CXX shared library /comparison/gvp_ws/devel/lib/liblowres_map.so
+[ 89%] Built target lowres_map
+Scanning dependencies of target frontier_grid
+[ 89%] Building CXX object GVP-MREP/Mapping/frontier_grid/CMakeFiles/frontier_grid.dir/src/frontier_grid.cpp.o
+[ 90%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libfrontier_grid.so
+[ 90%] Built target frontier_grid
+Scanning dependencies of target multiDTG
+[ 90%] Building CXX object GVP-MREP/Exploration/multiDTG/CMakeFiles/multiDTG.dir/src/multiDTG.cpp.o
+[ 91%] Building CXX object GVP-MREP/Exploration/multiDTG/CMakeFiles/multiDTG.dir/src/multiDTG_path_search.cpp.o
+[ 92%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmultiDTG.so
+[ 92%] Built target multiDTG
+Scanning dependencies of target graph_partition
+[ 92%] Building CXX object GVP-MREP/Exploration/graph_partition/CMakeFiles/graph_partition.dir/src/graph_partition.cpp.o
+[ 93%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libgraph_partition.so
+[ 93%] Built target graph_partition
+[ 94%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/swarm_trigger
+[ 94%] Built target swarm_trigger
+Scanning dependencies of target ground
+[ 94%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/ground.dir/src/ground.cpp.o
+Scanning dependencies of target murder_swarm
+[ 94%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm.dir/src/murder.cpp.o
+[ 95%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libground.so
+[ 95%] Built target ground
+Scanning dependencies of target ground_node
+[ 96%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/ground_node.dir/src/ground_node.cpp.o
+[ 97%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmurder_swarm.so
+[ 97%] Built target murder_swarm
+Scanning dependencies of target murder_swarm_fsm
+[ 97%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm_fsm.dir/src/murderFSM.cpp.o
+[ 97%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/ground_node
+[ 97%] Built target ground_node
+[ 98%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmurder_swarm_fsm.so
+[ 98%] Built target murder_swarm_fsm
+Scanning dependencies of target murder_swarm_node
+[100%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm_node.dir/src/murder_node.cpp.o
+[100%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/murder_swarm_node
+[100%] Built target murder_swarm_node
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+Base path: /comparison/gvp_ws
+Source space: /comparison/gvp_ws/src
+Build space: /comparison/gvp_ws/build
+Devel space: /comparison/gvp_ws/devel
+Install space: /comparison/gvp_ws/install
+####
+#### Running command: "cmake /comparison/gvp_ws/src -DCATKIN_DEVEL_PREFIX=/comparison/gvp_ws/devel -DCMAKE_INSTALL_PREFIX=/comparison/gvp_ws/install -G Unix Makefiles" in "/comparison/gvp_ws/build"
+####
+####
+#### Running command: "make -j3 -l3" in "/comparison/gvp_ws/build"
+####

@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 17,
+  "captured_curve_commands": 15,
+  "lease_intervals": 15,
+  "handoffs": [
+    {
+      "token": "0:48a615e1:400003",
+      "old_token": "0:48a615e1:400002",
+      "authorized_at": 25.200000000000003,
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 2.8609792490763985e-16,
+        "acceleration": 3.357306211760598e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 28.46
+    },
+    {
+      "token": "0:48a615e1:400005",
+      "old_token": "0:48a615e1:400004",
+      "authorized_at": 42.400000000000006,
+      "continuity": {
+        "position": 2.5438405243138006e-16,
+        "velocity": 1.7134158651466658e-16,
+        "acceleration": 4.762013547619927e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 3.469446951953614e-18
+      },
+      "executed_at": 46.620000000000005
+    },
+    {
+      "token": "0:48a615e1:400007",
+      "old_token": "0:48a615e1:400006",
+      "authorized_at": 61.6,
+      "continuity": {
+        "position": 7.691850745534255e-16,
+        "velocity": 7.590346262156983e-16,
+        "acceleration": 8.940947483618947e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 63.46
+    },
+    {
+      "token": "0:48a615e1:400012",
+      "old_token": "0:48a615e1:400011",
+      "authorized_at": 96.0,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 1.0251746094776502e-15,
+        "acceleration": 7.286334217524245e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 96.44000000000001
+    }
+  ],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
+}

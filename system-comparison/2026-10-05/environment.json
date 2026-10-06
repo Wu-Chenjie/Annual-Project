@@ -1,0 +1,32 @@
+{
+  "profiles": {
+    "annual_fusion": {
+      "cpus": 6,
+      "memory_gib": 8,
+      "role": "Common Gazebo/ROS2 runtime and Annual planner"
+    },
+    "racer_gvp": {
+      "cpus": 6,
+      "memory_gib": 8,
+      "role": "Native ROS1 RACER or GVP planners; shared Gazebo remains in annual_fusion"
+    }
+  },
+  "ros2": "aarch64\nPRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\nd396c8e4540fc2dfb640ff7244262c73a2a4fe566ebae339aea20489bd1da6d9  /workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node\n11c98bf5452a9fcb7b28b3686188777c0e367674b4ddc7ea4305370ebddf0302  /workspace/ros2_ws/install/annual_swarm/lib/libannual_motor_system.so\n",
+  "ros1": "aarch64\nNAME=\"Ubuntu\"\nVERSION=\"20.04.6 LTS (Focal Fossa)\"\nID=ubuntu\nID_LIKE=debian\nPRETTY_NAME=\"Ubuntu 20.04.6 LTS\"\nVERSION_ID=\"20.04\"\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nVERSION_CODENAME=focal\nUBUNTU_CODENAME=focal\nc2865de1f9ac4eac56d54ac9d17ce4d3d0dbe33271d17da263eced744a12daa0  /work/racer_ws/devel/lib/exploration_manager/exploration_node\nbdb48f3b7507f260aab94899cc2fa6587413fa3c9e316cf4a051cfc87cc04adc  /work/racer_ws/devel/lib/plan_manage/traj_server\n9d04af3997c064c4712f30ef8052a7154c89ce1e4fb96dee4bf89d511b063395  /comparison/gvp_ws/devel/lib/murder_swarm/murder_swarm_node\nc592b6988ee6fe625551b5d35c58a1874a17625c302414531a5806c0091c990c  /comparison/gvp_ws/devel/lib/traj_exc/traj_exc_node\n",
+  "images": {
+    "ros2": "sha256:fb21aaf4adcf4e957e6824a29978dcf32acda04172f953c3b1abfd9e60158175",
+    "ros1": "sha256:2a7ec51d137a672ccbd62fddacbd03ba0362c65f49f854a4dac8f2fa92d4c00b"
+  },
+  "seed": 900,
+  "repetitions": 1,
+  "flight_order": [
+    "annual",
+    "racer",
+    "gvp"
+  ],
+  "limitations": [
+    "Different ROS runtime and CPU allocation; no wall-clock or CPU-efficiency ranking.",
+    "Common governor changes native trajectory tracking; measured velocities are not exactly equal.",
+    "One trial per system on one small map, not a statistical claim."
+  ]
+}

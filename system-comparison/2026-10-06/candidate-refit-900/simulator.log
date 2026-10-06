@@ -1,0 +1,99 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-10-06-07-46-06-564409-92b10a9d71cc-3608
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [parameter_bridge-1]: process started with pid [3611]
+[INFO] [localization_measurement_node.py-2]: process started with pid [3612]
+[INFO] [state_estimator_node.py-3]: process started with pid [3613]
+[INFO] [python3-4]: process started with pid [3614]
+[INFO] [decentralized_agent_node.py-5]: process started with pid [3615]
+[INFO] [view_executor_node.py-6]: process started with pid [3616]
+[INFO] [controller_node-7]: process started with pid [3617]
+[INFO] [localization_measurement_node.py-8]: process started with pid [3618]
+[INFO] [state_estimator_node.py-9]: process started with pid [3619]
+[INFO] [python3-10]: process started with pid [3622]
+[INFO] [decentralized_agent_node.py-11]: process started with pid [3623]
+[INFO] [view_executor_node.py-12]: process started with pid [3624]
+[INFO] [controller_node-13]: process started with pid [3627]
+[controller_node-7] [INFO] [1791272766.729411061] [drone_0.controller]: Controller: pid
+[controller_node-13] [INFO] [1791272766.856288552] [drone_1.controller]: Controller: pid
+[parameter_bridge-1] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[parameter_bridge-1] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[parameter_bridge-1] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[parameter_bridge-1] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[parameter_bridge-1] [INFO] [1791272767.884242856] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.885071728] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/lidar/points (gz.msgs.PointCloudPacked) -> /drone_0/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.897366664] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/odometry (gz.msgs.Odometry) -> /drone_0/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.903744518] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/imu (gz.msgs.IMU) -> /drone_0/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.904421357] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/contacts (gz.msgs.Contacts) -> /drone_0/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.908982094] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_0/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_0/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.916328307] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/lidar/points (gz.msgs.PointCloudPacked) -> /drone_1/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.916489054] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/odometry (gz.msgs.Odometry) -> /drone_1/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.916591689] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/imu (gz.msgs.IMU) -> /drone_1/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.916681234] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/contacts (gz.msgs.Contacts) -> /drone_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-1] [INFO] [1791272767.916769653] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_1/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_1/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[INFO] [gz-14]: process started with pid [3835]
+[gz-14] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[gz-14] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[gz-14] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[gz-14] Couldn't find a preferred IP via the getifaddrs() call; I'm assuming that your IP address is 127.0.0.1.  This should work for local processes, but will almost certainly not work if you have remote processes.Report to the disc-zmq development team to seek a fix.
+[parameter_bridge-1] [INFO] [1791272776.934597943] [ros_gz_bridge]: Passing message from ROS actuator_msgs/msg/Actuators to Gazebo gz.msgs.Actuators (showing msg only once per type)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[parameter_bridge-1] [INFO] [1791272896.382199320] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-7] [INFO] [1791272896.382689425] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-13] [INFO] [1791272896.383018073] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [gz-14]: sending signal 'SIGINT' to process[gz-14]
+[INFO] [controller_node-13]: sending signal 'SIGINT' to process[controller_node-13]
+[INFO] [view_executor_node.py-12]: sending signal 'SIGINT' to process[view_executor_node.py-12]
+[INFO] [decentralized_agent_node.py-11]: sending signal 'SIGINT' to process[decentralized_agent_node.py-11]
+[INFO] [python3-10]: sending signal 'SIGINT' to process[python3-10]
+[ERROR] [controller_node-13]: process has died [pid 3627, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node --ros-args -r __ns:=/drone_1 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/flight.yaml --params-file /tmp/launch_params_wke5id38 --params-file /tmp/launch_params_5tzxjs6k -r odometry:=estimated_odometry'].
+[INFO] [state_estimator_node.py-9]: sending signal 'SIGINT' to process[state_estimator_node.py-9]
+[INFO] [localization_measurement_node.py-8]: sending signal 'SIGINT' to process[localization_measurement_node.py-8]
+[INFO] [controller_node-7]: sending signal 'SIGINT' to process[controller_node-7]
+[ERROR] [view_executor_node.py-12]: process has died [pid 3624, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/view_executor_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_431a2txg --params-file /tmp/launch_params_n5m6dzqc -r target:=native_target -r trajectory_target:=native_trajectory_target'].
+[INFO] [view_executor_node.py-6]: sending signal 'SIGINT' to process[view_executor_node.py-6]
+[ERROR] [localization_measurement_node.py-8]: process has died [pid 3618, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_65oxpqmv --params-file /tmp/launch_params_e8u7g4m9'].
+[INFO] [decentralized_agent_node.py-5]: sending signal 'SIGINT' to process[decentralized_agent_node.py-5]
+[ERROR] [controller_node-7]: process has died [pid 3617, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node --ros-args -r __ns:=/drone_0 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/flight.yaml --params-file /tmp/launch_params_a2qixbbx --params-file /tmp/launch_params_m8rhfkic -r odometry:=estimated_odometry'].
+[ERROR] [state_estimator_node.py-9]: process has died [pid 3619, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_fa2lx56b --params-file /tmp/launch_params_h_80l2sd'].
+[INFO] [python3-4]: sending signal 'SIGINT' to process[python3-4]
+[ERROR] [python3-10]: process has died [pid 3622, exit code -2, cmd 'python3 /study/common_mapper.py --ros-args -r __ns:=/drone_1 -p use_sim_time:=true -p drone_id:=1 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].
+[INFO] [state_estimator_node.py-3]: sending signal 'SIGINT' to process[state_estimator_node.py-3]
+[ERROR] [view_executor_node.py-6]: process has died [pid 3616, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/view_executor_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_3p27_z9_ --params-file /tmp/launch_params_ve05sm8h -r target:=native_target -r trajectory_target:=native_trajectory_target'].
+[INFO] [localization_measurement_node.py-2]: sending signal 'SIGINT' to process[localization_measurement_node.py-2]
+[ERROR] [python3-4]: process has died [pid 3614, exit code -2, cmd 'python3 /study/common_mapper.py --ros-args -r __ns:=/drone_0 -p use_sim_time:=true -p drone_id:=0 -p bounds:="[[-6.0, -6.0, 0.0], [6.0, 6.0, 3.0]]"'].
+[INFO] [parameter_bridge-1]: sending signal 'SIGINT' to process[parameter_bridge-1]
+[ERROR] [state_estimator_node.py-3]: process has died [pid 3613, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_61pzhwud --params-file /tmp/launch_params_71delk7s'].
+[ERROR] [localization_measurement_node.py-2]: process has died [pid 3612, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_e8ksr_2m --params-file /tmp/launch_params_y1d8my9i'].
+[decentralized_agent_node.py-11] Traceback (most recent call last):
+[decentralized_agent_node.py-11]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 980, in <module>
+[decentralized_agent_node.py-11]     main()
+[decentralized_agent_node.py-11]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 975, in main
+[decentralized_agent_node.py-11]     node.log.close(); node.paths.close(); node.destroy_node()
+[decentralized_agent_node.py-11]                                           ^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-11]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1968, in destroy_node
+[decentralized_agent_node.py-11]     self.__node.destroy_when_not_in_use()
+[decentralized_agent_node.py-11] KeyboardInterrupt
+[decentralized_agent_node.py-5] Traceback (most recent call last):
+[decentralized_agent_node.py-5]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 980, in <module>
+[decentralized_agent_node.py-5]     main()
+[decentralized_agent_node.py-5]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py", line 970, in main
+[decentralized_agent_node.py-5]     rclpy.spin(node)
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 247, in spin
+[decentralized_agent_node.py-5]     executor.spin_once()
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+[decentralized_agent_node.py-5]     self._spin_once_impl(timeout_sec)
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 918, in _spin_once_impl
+[decentralized_agent_node.py-5]     raise handler.exception()
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/task.py", line 286, in _execute_coroutine_step
+[decentralized_agent_node.py-5]     result = coro.send(None)
+[decentralized_agent_node.py-5]              ^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 584, in handler
+[decentralized_agent_node.py-5]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 470, in _take_subscription
+[decentralized_agent_node.py-5]     msg_info = sub.handle.take_message(sub.msg_type, sub.raw)
+[decentralized_agent_node.py-5]                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[decentralized_agent_node.py-5] RuntimeError: Unable to convert call argument '0' to Python object (#define PYBIND11_DETAILED_ERROR_MESSAGES or compile in debug mode for details)
+[parameter_bridge-1] [INFO] [1791272896.529272851] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [parameter_bridge-1]: process has finished cleanly [pid 3611]
+[INFO] [gz-14]: process has finished cleanly [pid 3835]
+[ERROR] [decentralized_agent_node.py-11]: process has died [pid 3623, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py --ros-args -r __ns:=/drone_1 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/exploration_priority.yaml --params-file /tmp/launch_params_u3rvsmd1 --params-file /tmp/launch_params_xva5ybpi'].
+[ERROR] [decentralized_agent_node.py-5]: process has died [pid 3615, exit code 1, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/decentralized_agent_node.py --ros-args -r __ns:=/drone_0 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/exploration_priority.yaml --params-file /tmp/launch_params_3m4atlih --params-file /tmp/launch_params_wl3mu3dl'].

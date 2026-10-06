@@ -1,0 +1,32 @@
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+... logging to /root/.ros/log/c5ded558-bb4c-11f1-a433-5255551de53e/roslaunch-colima-racer-gvp-8901.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;roscore
+[1mstarted roslaunch server http://localhost:39529/[0m
+ros_comm version 1.17.4
+
+
+SUMMARY
+========
+
+PARAMETERS
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+
+NODES
+
+auto-starting new master
+[1mprocess[master]: started with pid [8909][0m
+[1mROS_MASTER_URI=http://localhost:11328/[0m
+]2;roscore http://localhost:11328/
+[1msetting /run_id to c5ded558-bb4c-11f1-a433-5255551de53e[0m
+[1mprocess[rosout-1]: started with pid [8919][0m
+started core service [/rosout]
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

@@ -1,0 +1,23 @@
+[WARN] [1791199942.751744601] [rcl.logging_rosout]: Publisher already registered for node name: 'pointcloud_mapper'. If this is due to multiple nodes with the same name then all logs for the logger named 'pointcloud_mapper' will go out over the existing publisher. As soon as any node with that name is destructed it will unregister the publisher, preventing any further logs for that name from being published on the rosout topic.
+{
+  "recomputed": {
+    "coverage": 0.962861643040703,
+    "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+    "legacy_center_free_coverage": 0.9303049656714035,
+    "truth_free_voxels": 12063,
+    "observed_free_voxels": 11615,
+    "unobserved_free_voxels": 430,
+    "falsely_occupied_free_voxels": 18
+  },
+  "logged_coverage": 0.9633590317499793,
+  "difference": -0.0004973887092762919,
+  "integrated_frames": [
+    141,
+    141
+  ],
+  "logged_observation_frames": [
+    141,
+    141
+  ],
+  "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+}

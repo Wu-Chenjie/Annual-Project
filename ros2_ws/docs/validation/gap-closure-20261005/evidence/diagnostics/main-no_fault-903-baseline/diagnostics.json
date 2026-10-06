@@ -1,0 +1,92 @@
+{
+  "schema": "annual.execution-diagnostics/1",
+  "run": "/workspace/artifacts/todo-execution/formal-10/main-no_fault-903-baseline",
+  "mission_start": 14.505,
+  "mission_end": 718.504,
+  "low_speed_threshold_mps": 0.1,
+  "expected_fleet_s": 2111.9970000000003,
+  "classified_execution_fleet_s": 2111.687000000007,
+  "pose_speed_covered_fleet_s": 2111.687000000013,
+  "actual_low_speed_fleet_s": 1286.9370000000072,
+  "actual_low_speed_fraction": 0.6094354892557463,
+  "actual_motion_fleet_s": 824.7500000000016,
+  "maximum_sampled_pose_speed_mps": 0.6693038594026668,
+  "residence_by_phase_fleet_s": {
+    "allocation_wait": 217.01899999999947,
+    "planning_wait": 423.525,
+    "reservation_wait": 174.7930000000001,
+    "execution": 1290.1450000000073,
+    "view_observed": 4.003000000000199,
+    "safety_hold": 2.201999999999998
+  },
+  "low_speed_by_phase_fleet_s": {
+    "allocation_wait": 213.6059999999995,
+    "planning_wait": 417.9560000000002,
+    "reservation_wait": 174.7930000000001,
+    "execution": 474.37700000000024,
+    "view_observed": 4.003000000000199,
+    "safety_hold": 2.201999999999998
+  },
+  "residence_by_uav_s": {
+    "0": {
+      "allocation_wait": 84.08799999999981,
+      "planning_wait": 162.8560000000001,
+      "reservation_wait": 46.59200000000012,
+      "execution": 406.95099999999996,
+      "view_observed": 1.2070000000000647,
+      "safety_hold": 2.201999999999998
+    },
+    "1": {
+      "allocation_wait": 58.47599999999992,
+      "planning_wait": 145.629,
+      "reservation_wait": 59.35800000000002,
+      "execution": 439.44100000000014,
+      "view_observed": 0.9910000000000139
+    },
+    "2": {
+      "allocation_wait": 74.45499999999973,
+      "planning_wait": 115.03999999999986,
+      "reservation_wait": 68.84299999999995,
+      "execution": 443.7530000000004,
+      "view_observed": 1.8050000000001205
+    }
+  },
+  "planning_request_counts": {
+    "planning_result": 304
+  },
+  "unmatched_request_results": 304,
+  "request_overlap_status": "UNAVAILABLE_WITHOUT_COMPLETE_REQUEST_BOUNDARIES",
+  "planning_request_union_fleet_s": null,
+  "planning_execution_overlap_fleet_s": null,
+  "planning_during_actual_motion_fleet_s": null,
+  "planning_during_low_speed_fleet_s": null,
+  "handoff": {
+    "ready_views": 151,
+    "proposed": 0,
+    "authorized": 0,
+    "consumed": 0,
+    "proposed_to_consumed_ratio": null,
+    "cancelled_reasons": {},
+    "proposal_to_authorization_sim_s": null,
+    "attempts": [],
+    "rolling_latency_evidence": []
+  },
+  "limitations": [
+    "Low speed uses finite differences of sampled physical poses, not commanded reference speed.",
+    "Phase labels identify recorded execution states; low-speed tracking is not automatically planning delay.",
+    "Intervals with stale/missing execution or pose samples are unclassified, never silently zero.",
+    "Planning intervals include queue, compute and delivery. Parallel work is unioned per UAV, not summed as mission delay.",
+    "Ready views are not one-to-one with handoff proposals; ready-to-consumed is not an adoption success rate.",
+    "Legacy baseline lacks request submission IDs; request/flight overlap remains unavailable."
+  ],
+  "input_sha256": {
+    "summary.json": "260ea24b340dfc68090a1cf43ed30f1219796db2f5e73f3782724a851d5216b1",
+    "trajectory.csv": "5bd9ab96c0faec7e9ad091b186994c24df85c3275315e57aba8f94b6ff2809c2",
+    "execution-evidence.jsonl": "e637431301393b033e1b1703f6ffdfe29b481410495c6768e80bc39ef4c11a2b",
+    "peer_states.jsonl": "770cc260440835482b351e2a436fbaf0d82d30df7b2abb1a93018a05728a6708",
+    "drone_1/events.jsonl": "d623f5a64f13e62d7a40145e5e6dba2ccf03039c55ac188f3d3beb87e86ed63e",
+    "drone_0/events.jsonl": "89259c4d9567b5c3e5ac0b2c1e1e6749b93dde453de26de438f71d9826b69a50",
+    "drone_2/events.jsonl": "1d18d66d4c4c078dc7214f43cac873774aca0c32456e045890510d2d18e30aa5"
+  },
+  "tool_sha256": "471deddd967cf4d74068d382a1b8b62c64ba8ded83c0c9a3be33b4e1521ab2c3"
+}

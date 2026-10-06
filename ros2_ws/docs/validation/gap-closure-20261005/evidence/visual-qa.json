@@ -1,0 +1,47 @@
+{
+  "visual_inspection_completed": true,
+  "source_flight_policy": "candidate-10a",
+  "playback_multiplier": 1,
+  "continuous": true,
+  "hud_mission_start_sim_s": 16.001,
+  "frames_inspected": [
+    "dynamic-backup.png",
+    "evidence-reactivation.png",
+    "low-yield-exit.png",
+    "moving-handoff-after.png",
+    "moving-handoff.png",
+    "necessary-transit.png",
+    "tail-90-to-95.png",
+    "tail-coordination.png"
+  ],
+  "notes": [
+    "Seven midpoint frames inspected; moving handoff also inspected after the event, with HUD moving=1.",
+    "Native Gazebo left and RViz right retained at 1920x1080, 10 fps.",
+    "HUD t is mission elapsed; event clocks are absolute simulation seconds.",
+    "Video content verifies a recorded event sequence; causal performance benefits require separate evidence."
+  ],
+  "tail_support_actual_execution": {
+    "token": "1:8bcb3192:2800052",
+    "packets": 2,
+    "first": [
+      {
+        "drone": 1,
+        "time": 544.202,
+        "token": "1:8bcb3192:2800052",
+        "epoch": 2800052,
+        "reason": "tracking_view",
+        "trajectory_time": 0.1209999999999809
+      }
+    ],
+    "last": [
+      {
+        "drone": 1,
+        "time": 544.4,
+        "token": "1:8bcb3192:2800052",
+        "epoch": 2800052,
+        "reason": "tracking_view",
+        "trajectory_time": 0.31899999999996
+      }
+    ]
+  }
+}

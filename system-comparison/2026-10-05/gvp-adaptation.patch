@@ -1,0 +1,952 @@
+--- original/Communication/swarm_data/src/swarm_data.cpp
++++ adapted/Communication/swarm_data/src/swarm_data.cpp
+@@ -35,7 +35,7 @@
+     // if(is_ground_){
+     //     debug_l_.open("/home/charliedog/rosprojects/MURDER/debug_d.txt", std::ios::out);
+     // }
+-    double t = ros::WallTime::now().toSec() - 100.0;
++    double t = ros::Time::now().toSec() - 100.0;
+     pose_pub_g_t_ = job_pub_g_t_ = t;
+     ba_.id = self_id_;
+ 
+@@ -45,13 +45,13 @@
+     jobs_.resize(drone_num);
+     states_.resize(drone_num);
+     swarm_root_.resize(drone_num);
+-    for(int i = 0; i < drone_num; i++) start_t_.emplace_back(ros::WallTime::now().toSec() - 2000.0);
++    for(int i = 0; i < drone_num; i++) start_t_.emplace_back(ros::Time::now().toSec() - 2000.0);
+     for(int i = 0; i < drone_num; i++) {
+-        states_[i].pub_t = ros::WallTime::now().toSec() - 2000.0;
++        states_[i].pub_t = ros::Time::now().toSec() - 2000.0;
+         states_[i].from_uav = i + 1;
+     }
+ 
+-    for(auto &t : Pose_t_) t = ros::WallTime().now().toSec() - 1000.0;
++    for(auto &t : Pose_t_) t = ros::Time().now().toSec() - 1000.0;
+ 
+     if(show_swarm_traj_)
+         show_pub_ = nh.advertise<visualization_msgs::Marker>("/drone_" + to_string(self_id_) + "/swarm_vis", 100);
+@@ -105,7 +105,7 @@
+ 
+     if(!(flags_ & 96)) return;
+     swarm_exp_msgs::IdPose IDP_l, IDP_g;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+ 
+     /* pub local */
+     IDP_l.id = self_id_;
+@@ -180,7 +180,7 @@
+                 ba.emplace_back(false);
+             }
+         }
+-        bag_answer_.push_back({ros::WallTime::now().toSec(), DTGB_msg});
++        bag_answer_.push_back({ros::Time::now().toSec(), DTGB_msg});
+     }
+     swarm_pub_ffe_.clear();
+     swarm_pub_fn_.clear();
+@@ -199,7 +199,7 @@
+ }
+ 
+ void SwarmDataManager::DTGAnsTimerCallback(const ros::TimerEvent &e){
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     for(list<pair<double, swarm_exp_msgs::DtgBag>>::iterator ba = bag_answer_.begin(); ba != bag_answer_.end(); ba++){
+         if(ba->second.to_uavs.empty()){
+             list<pair<double, swarm_exp_msgs::DtgBag>>::iterator erase_it = ba;
+@@ -348,7 +348,7 @@
+     if(msg->JobState & 4){
+         jobs_[msg->from_uav - 1].clear();
+         trajs_[msg->from_uav - 1].clear();
+-        start_t_[msg->from_uav - 1] = ros::WallTime::now().toSec() - 100.0;
++        start_t_[msg->from_uav - 1] = ros::Time::now().toSec() - 100.0;
+     }
+     jobs_[msg->from_uav - 1].emplace_back(*msg);
+ }
+--- original/Communication/swarm_data/include/swarm_data/swarm_data.h
++++ adapted/Communication/swarm_data/include/swarm_data/swarm_data.h
+@@ -204,7 +204,7 @@
+ inline void SwarmDataManager::SetPose(const nav_msgs::Odometry &odom){
+     flags_ |= 96;
+     Poses_[self_id_-1] = odom.pose.pose;
+-    Pose_t_[self_id_-1] = ros::WallTime::now().toSec();
++    Pose_t_[self_id_-1] = ros::Time::now().toSec();
+ }
+ 
+ inline void SwarmDataManager::SetTraj(Trajectory<5> &traj, const double &s_t){
+@@ -336,7 +336,7 @@
+ //     for(auto &lhfe : swarm_pub_hfe_){
+ //         if(lhfe.f_id == f_id){
+ //             lhfe.erase = false;
+-//             lhfe.pub_t = ros::WallTime().toSec();
++//             lhfe.pub_t = ros::Time().toSec();
+ //             new_l_e = false;
+ //             break;
+ //         }
+@@ -345,7 +345,7 @@
+ //         swarm_exp_msgs::DtgHFEdge edge;
+ //         edge.f_id = f_id;
+ //         edge.erase = false;
+-//         edge.pub_t = ros::WallTime().toSec();
++//         edge.pub_t = ros::Time().toSec();
+ //         edge.hfe_id = self_id_;
+ //         swarm_pub_hfe_.emplace_back(edge);
+ //     }
+@@ -360,7 +360,7 @@
+ //                 (lhhe.tail_h_id == head_id && lhhe.head_h_id == tail_id)){
+ //             lhhe.points_idx.clear();
+ //             lhhe.erase = true;
+-//             lhhe.pub_t = ros::WallTime().toSec();
++//             lhhe.pub_t = ros::Time().toSec();
+ //             new_l_e = false;
+ //             break;
+ //         }
+@@ -369,7 +369,7 @@
+ //         swarm_exp_msgs::DtgHHEdge edge;
+ //         edge.head_h_id = head_id;
+ //         edge.tail_h_id = tail_id;
+-//         edge.pub_t = ros::WallTime().toSec();
++//         edge.pub_t = ros::Time().toSec();
+ //         edge.erase = true;
+ //         edge.hhe_id = self_id_;
+ //         swarm_pub_hhe_.emplace_back(edge);
+@@ -401,7 +401,7 @@
+             lhfe.points_idx = path;
+             lhfe.vp_id = vp_id;
+             // lhfe.erase = false;
+-            lhfe.pub_t = ros::WallTime().toSec();
++            lhfe.pub_t = ros::Time().toSec();
+             new_l_e = false;
+             break;
+         }
+@@ -412,7 +412,7 @@
+         edge.f_id = tail_id;
+         edge.vp_id = vp_id;
+         // edge.erase = false;
+-        edge.pub_t = ros::WallTime().toSec();
++        edge.pub_t = ros::Time().toSec();
+         edge.points_idx = path;
+         // edge.hfe_id = self_id_;
+         swarm_pub_hfe_.emplace_back(edge);
+@@ -428,7 +428,7 @@
+                 (lhhe.tail_h_id == head_id && lhhe.head_h_id == tail_id)){
+             lhhe.points_idx = path;
+             // lhhe.erase = false;
+-            lhhe.pub_t = ros::WallTime().toSec();
++            lhhe.pub_t = ros::Time().toSec();
+             new_l_e = false;
+             break;
+         }
+@@ -439,7 +439,7 @@
+         edge.tail_h_id = tail_id;
+         edge.points_idx = path;
+         // edge.erase = false;
+-        edge.pub_t = ros::WallTime().toSec();
++        edge.pub_t = ros::Time().toSec();
+         // edge.hhe_id = self_id_;
+         swarm_pub_hhe_.emplace_back(edge);
+     }
+@@ -451,7 +451,7 @@
+     if(jobstate & 2){
+     }
+     job_msg.from_uav = self_id_;
+-    job_msg.pub_t = ros::WallTime::now().toSec();
++    job_msg.pub_t = ros::Time::now().toSec();
+     job_msg.JobState = jobstate;
+     job_msg.target_hn = target_hn;
+     job_msg.target_fn = target_fn;
+@@ -474,7 +474,7 @@
+     for(auto &h : connect_h) state_msg.connect_hn.emplace_back(h.second);
+     for(auto &h : connect_h) state_msg.hn_pos_idx.emplace_back(h.first);
+     for(auto &d : dist_to_connect_h) state_msg.dist_to_connect_hn.emplace_back(float(d));
+-    state_msg.pub_t = ros::WallTime::now().toSec();
++    state_msg.pub_t = ros::Time::now().toSec();
+     if(local_f.size() != dist_to_local_f.size()) ROS_ERROR("error state send f");
+     if(connect_f.size() != dist_to_connect_f.size()) ROS_ERROR("error state send connect f");
+     if(connect_h.size() != dist_to_connect_h.size()) ROS_ERROR("error state send h");
+--- original/Communication/multisim_gazebo/src/multi_rotors.cpp
++++ adapted/Communication/multisim_gazebo/src/multi_rotors.cpp
+@@ -35,7 +35,7 @@
+ }
+ 
+ void MultiRotors::StatesCallback(const multisim_gazebo::statesConstPtr& msg){
+-    double dt = abs((msg->stamp - ros::WallTime::now().toSec()));
++    double dt = abs((msg->stamp - ros::Time::now().toSec()));
+     // if(dt > 0.1){
+     //     ROS_ERROR("from %d delay%f", msg->from_computer, dt);
+     // }
+@@ -54,14 +54,14 @@
+ }
+ 
+ void MultiRotors::StatesTimerCallback(const ros::TimerEvent& e){
+-    ros::WallTime cs = ros::WallTime::now();
++    ros::Time cs = ros::Time::now();
+     multisim_gazebo::states msg;
+     msg.odoms.resize(local_num_);
+     for(int i = 0; i < local_num_; i++){
+         msg.odoms[i].odoms = odoms_[local_ids_[i] - 1];
+         msg.odoms[i].id = local_ids_[i];
+     }
+-    msg.stamp = ros::WallTime::now().toSec();
++    msg.stamp = ros::Time::now().toSec();
+     states_pub_.publish(msg);
+     for(int i = 0; i < robot_num_; i++){
+         bool local_flag = false;
+@@ -82,8 +82,8 @@
+ 
+         odoms_show_pub_[i].publish(odoms_[i]);
+     }
+-    if((ros::WallTime::now() - cs).toSec() > 1/set_freq_)
+-        cout<<"call spent:"<<(ros::WallTime::now() - cs).toSec()<<endl;
++    if((ros::Time::now() - cs).toSec() > 1/set_freq_)
++        cout<<"call spent:"<<(ros::Time::now() - cs).toSec()<<endl;
+ }
+ 
+ void MultiRotors::OdomCallback(const nav_msgs::OdometryConstPtr& msg){
+--- original/Communication/swarm_bridge/src/bridge_ros_tcp_sim.cpp
++++ adapted/Communication/swarm_bridge/src/bridge_ros_tcp_sim.cpp
+@@ -8,7 +8,7 @@
+ }
+ 
+ bool checkTolerableDelay(const double &msg_stamp) {
+-  return abs((ros::WallTime::now().toSec() - msg_stamp)) <= max_tolerable_delay_;
++  return abs((ros::Time::now().toSec() - msg_stamp)) <= max_tolerable_delay_;
+ }
+ 
+ bool isBridgeMsgValidForDrones(const ros::Time &msg_stamp, const int msg_id) {
+@@ -208,7 +208,7 @@
+ 	exp_comm_msgs::SwarmTrajC traj;
+ 	traj.coef_p = msg->coef_p;
+ 	traj.order_p = msg->order_p;
+-	traj.pub_t = ros::WallTime::now().toSec();
++	traj.pub_t = ros::Time::now().toSec();
+ 	traj.start_t = msg->start_t;
+ 	traj.t_p = msg->t_p;
+   traj.id = msg->from_uav;
+@@ -283,7 +283,7 @@
+ 	bag.HHedges = msg->HHedges;
+ 	bag.Hnodes = msg->Hnodes;
+ 	bag.id = msg->id;
+-	bag.pub_t = ros::WallTime::now().toSec();
++	bag.pub_t = ros::Time::now().toSec();
+   bag.from_uav = msg->from_uav;
+ 
+   list<uint8_t> to_computer;
+--- original/Communication/swarm_bridge/src/bridge_ros_tcp.cpp
++++ adapted/Communication/swarm_bridge/src/bridge_ros_tcp.cpp
+@@ -8,7 +8,7 @@
+ }
+ 
+ bool checkTolerableDelay(const double &msg_stamp) {
+-  return abs((ros::WallTime::now().toSec() - msg_stamp)) <= max_tolerable_delay_;
++  return abs((ros::Time::now().toSec() - msg_stamp)) <= max_tolerable_delay_;
+ }
+ 
+ bool isBridgeMsgValidForDrones(const ros::Time &msg_stamp, const int msg_id) {
+@@ -167,7 +167,7 @@
+ 	exp_comm_msgs::SwarmTrajC traj;
+ 	traj.coef_p = msg->coef_p;
+ 	traj.order_p = msg->order_p;
+-	traj.pub_t = ros::WallTime::now().toSec();
++	traj.pub_t = ros::Time::now().toSec();
+ 	traj.start_t = msg->start_t;
+ 	traj.t_p = msg->t_p;
+   traj.id = self_id_;
+@@ -197,7 +197,7 @@
+ 	bag.HHedges = msg->HHedges;
+ 	bag.Hnodes = msg->Hnodes;
+ 	bag.id = msg->id;
+-	bag.pub_t = ros::WallTime::now().toSec();
++	bag.pub_t = ros::Time::now().toSec();
+   bag.from_uav = self_id_;
+ 	for(auto &to_id : msg->to_uavs){
+ 	  // bridge->sendMsgToAll("/swarm_DTG", bag);
+--- original/Trajectory/traj_exc/src/traj_exc_node.cpp
++++ adapted/Trajectory/traj_exc/src/traj_exc_node.cpp
+@@ -90,7 +90,7 @@
+     }
+     else if(traj_state_ == 2){
+         // cout<<traj_.getPieceNum()<<endl;
+-        double cur_t = ros::WallTime::now().toSec();
++        double cur_t = ros::Time::now().toSec();
+         if(cur_t - start_t_> traj_.getTotalDuration()){
+             cur_t = start_t_ + traj_.getTotalDuration() - 1e-4;
+             v.setZero();
+@@ -135,9 +135,9 @@
+ }
+ 
+ void Showcmd(Eigen::Vector3d pos, double yaw){
+-    static double last_update = ros::WallTime::now().toSec();
+-    if(ros::WallTime::now().toSec() - last_update < 0.08) return;
+-    last_update = ros::WallTime::now().toSec();
++    static double last_update = ros::Time::now().toSec();
++    if(ros::Time::now().toSec() - last_update < 0.08) return;
++    last_update = ros::Time::now().toSec();
+     visualization_msgs::MarkerArray mka;
+     mka.markers.resize(1);
+     mka.markers[0].header.frame_id = "world";
+@@ -233,7 +233,7 @@
+ 
+ bool TryUpdateTraj(){
+     if(trajs_.empty()) return false;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     if(trajs_.front().start_t > cur_t) return false;
+     if(trajs_.front().state == 1){
+         traj_state_ = 1;
+@@ -299,7 +299,7 @@
+     google::ParseCommandLineFlags(&argc, &argv, true);
+     google::InstallFailureSignalHandler();
+ 
+-    init_t_ = ros::WallTime::now().toSec();
++    init_t_ = ros::Time::now().toSec();
+     bool auto_takeoff;
+     traj_state_ = -1;
+     ready_ = false;
+@@ -320,9 +320,7 @@
+     nh_private.param(ns + "/opt/YawAcc", max_yawdd_, 1.5);
+ 
+     if(auto_takeoff){
+-        std_msgs::EmptyPtr e;
+-        ros::Duration(3.0).sleep();
+-        Takeoff(e);
++        ready_ = true; // common simulator handles takeoff; /start_trigger starts planner
+     }
+     else{
+         takeoff_sub_ = nh.subscribe("/takeoff", 1, &Takeoff);
+--- original/Exploration/murder_swarm/src/murderFSM.cpp
++++ adapted/Exploration/murder_swarm/src/murderFSM.cpp
+@@ -10,7 +10,7 @@
+     M_planner_.init(nh, nh_private);
+ 
+ 
+-    finish_t_ = ros::WallTime::now().toSec();
++    finish_t_ = ros::Time::now().toSec();
+     exploring_ = false;
+     state_ = M_State::SLEEP;
+ }
+@@ -25,15 +25,15 @@
+ void MurderFSM::TriggerCallback(const std_msgs::EmptyConstPtr &msg){
+     start_trigger_ = true;
+     exploring_ = true;
+-    start_t_ = ros::WallTime::now().toSec();
++    start_t_ = ros::Time::now().toSec();
+ }
+ 
+ void MurderFSM::FSMCallback(const ros::TimerEvent &e){
+     bool exc_plan = true;
+-    int ap = M_planner_.AllowPlan(ros::WallTime::now().toSec());
++    int ap = M_planner_.AllowPlan(ros::Time::now().toSec());
+     
+     if(state_ != FINISH){
+-        finish_t_ = ros::WallTime::now().toSec();
++        finish_t_ = ros::Time::now().toSec();
+     }
+ 
+     if(ap == 0) exc_plan = true; // allow plan                                                                           
+@@ -91,7 +91,7 @@
+             break;
+         }
+         case M_State::FINISH :{
+-            if(ros::WallTime::now().toSec() - start_t_ > 20.0) M_planner_.BroadCastFinish();
++            if(ros::Time::now().toSec() - start_t_ > 20.0) M_planner_.BroadCastFinish();
+             if(ap == 2){                                       //traj is still free, wait till reach free place
+                 M_planner_.SetPlanInterval(0.009);
+                 break;
+@@ -103,7 +103,7 @@
+                 break;
+             }
+             else{
+-                if(ros::WallTime::now().toSec() - finish_t_ > finish_hold_duration_){
++                if(ros::Time::now().toSec() - finish_t_ > finish_hold_duration_){
+                     // if(M_planner_.GoHome()){
+                         M_planner_.SetPlanInterval(2.0);
+                     //     break;
+--- original/Exploration/murder_swarm/src/ground.cpp
++++ adapted/Exploration/murder_swarm/src/ground.cpp
+@@ -122,7 +122,7 @@
+     mka.markers[0].color.r = 0.3;
+     mka.markers[0].color.g = 0.9;
+     mka.markers[0].color.b = 0.2;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     geometry_msgs::Point pt;
+     for(int i = 0; i < SDM_.drone_num_; i++){
+         mka.markers[i] = mka.markers[0];
+--- original/Exploration/murder_swarm/src/murder.cpp
++++ adapted/Exploration/murder_swarm/src/murder.cpp
+@@ -67,13 +67,13 @@
+     last_safe_ = init_pose_.head(3);
+     home_p_ = init_pose_.head(3);
+ 
+-    last_map_update_t_ = ros::WallTime::now().toSec();
++    last_map_update_t_ = ros::Time::now().toSec();
+     traj_end_t_ = last_map_update_t_ - 0.1;
+     have_odom_ = false;
+     target_f_id_ = -1;
+     target_v_id_ = -1;
+     sensor_flag_ = false;
+-    if(FG_.sensor_type_ == SensorType::CAMERA){
++    if(false){
+         depth_sub_.reset(new message_filters::Subscriber<sensor_msgs::Image>(nh_, "/depth", 10));
+         vi_odom_sub_.reset(new message_filters::Subscriber<nav_msgs::Odometry>(nh_, "/vi_odom", 10));
+         sync_image_odom_.reset(new message_filters::Synchronizer<SyncPolicyImageOdom>(
+@@ -133,7 +133,7 @@
+ }
+ 
+ void Murder::SetPlanInterval(const double &intv){
+-    plan_t_ = ros::WallTime::now().toSec() + intv;
++    plan_t_ = ros::Time::now().toSec() + intv;
+     sensor_flag_ = false;
+     FG_.sample_flag_ = false;
+ }
+@@ -141,8 +141,8 @@
+ bool Murder::GoHome(){
+     Eigen::Vector3d ps, vs, as, pe, ve, ae;
+     double ys, yds, ydds, ye, yde, ydde;
+-    double hand_t = ros::WallTime::now().toSec() + reach_out_t_; 
+-    double cur_t = ros::WallTime::now().toSec();
++    double hand_t = ros::Time::now().toSec() + reach_out_t_; 
++    double cur_t = ros::Time::now().toSec();
+     if(hand_t > traj_end_t_){
+         hand_t = cur_t;
+         ps = p_;
+@@ -193,8 +193,8 @@
+     ROS_WARN("id:%d local plan!", SDM_.self_id_);
+     Eigen::Vector3d ps, vs, as, pe, ve, ae;
+     double ys, yds, ydds, ye, yde, ydde;
+-    double hand_t = ros::WallTime::now().toSec() + reach_out_t_; 
+-    double cur_t = ros::WallTime::now().toSec();
++    double hand_t = ros::Time::now().toSec() + reach_out_t_; 
++    double cur_t = ros::Time::now().toSec();
+ 
+     /* get start status */
+     if(hand_t > traj_end_t_){
+@@ -393,10 +393,10 @@
+ 
+     Eigen::Vector3d ps, vs, as, pe, ve, ae;
+     double ys, yds, ydds, ye, yde, ydde;
+-    double hand_t = ros::WallTime::now().toSec() + reach_out_t_; 
+-    double cur_t = ros::WallTime::now().toSec();
++    double hand_t = ros::Time::now().toSec() + reach_out_t_; 
++    double cur_t = ros::Time::now().toSec();
+     if(hand_t > traj_end_t_){
+-        hand_t = ros::WallTime::now().toSec();
++        hand_t = ros::Time::now().toSec();
+         ps = p_;
+         vs = v_;
+         as.setZero();
+@@ -626,7 +626,7 @@
+ }
+ 
+ bool Murder::TrajCheck(){
+-    double cur_t = max(ros::WallTime::now().toSec(), traj_start_t_);
++    double cur_t = max(ros::Time::now().toSec(), traj_start_t_);
+ 
+     if(cur_t > replan_t_ - 1e-3) return false;
+ 
+@@ -652,7 +652,7 @@
+ }
+ 
+ bool Murder::SwarmFeasiCheck(){
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     double tc;
+     vector<Eigen::Vector3d> swarm_p;
+     Eigen::Vector3d cur_p;
+@@ -737,7 +737,7 @@
+ }
+ 
+ int Murder::Replan(const bool &new_target, const bool &ignore_duration){
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     if(!ignore_duration && cur_t - traj_start_t_ < exc_duration_) return 0;
+     Eigen::Vector4d target_pose;
+     Eigen::Vector3d ps, vs, as, pe, ve, ae;
+@@ -763,7 +763,7 @@
+     Eigen::Vector3d target_pos = target_pose.block(0, 0, 3, 1);
+ 
+     /* try to plan a new traj. If fails, change to plan mode */
+-    double hand_t = ros::WallTime::now().toSec() + reach_out_t_; 
++    double hand_t = ros::Time::now().toSec() + reach_out_t_; 
+     if(hand_t > traj_end_t_){
+         ps = p_;
+         vs = v_;
+@@ -837,7 +837,7 @@
+ 
+ int Murder::ViewPointsCheck(const double &t){
+     list<int> local_f;
+-    double start_t = ros::WallTime::now().toSec();
++    double start_t = ros::Time::now().toSec();
+     double remain_t = t;
+     MDTG_.GetAllLocalFroVps(local_f);
+     for(auto &f : local_f){
+@@ -851,7 +851,7 @@
+             }
+             FG_.f_grid_[f].last_strong_check_ = start_t + strong_check_interval_;
+         }
+-        remain_t = ros::WallTime::now().toSec() - start_t;//not right
++        remain_t = ros::Time::now().toSec() - start_t;//not right
+         if(remain_t < 0) break;
+     }
+     
+@@ -1102,9 +1102,9 @@
+ 
+ void Murder::ImgOdomCallback(const sensor_msgs::ImageConstPtr& img,
+                             const nav_msgs::OdometryConstPtr& odom){
+-    if(ros::WallTime::now().toSec() - last_map_update_t_ < 0.2 || !have_odom_) return;
+-    last_map_update_t_ = ros::WallTime::now().toSec(); 
+-    ros::WallTime t0 = ros::WallTime::now();
++    if(ros::Time::now().toSec() - last_map_update_t_ < 0.2 || !have_odom_) return;
++    last_map_update_t_ = ros::Time::now().toSec(); 
++    ros::Time t0 = ros::Time::now();
+     BM_.OdomCallback(odom);
+     // if(FG_.sensor_type_ == SensorType::CAMERA)
+     BM_.InsertImg(img);
+@@ -1115,13 +1115,14 @@
+ 
+ void Murder::PCLOdomCallback(const sensor_msgs::PointCloud2ConstPtr& pcl,
+                             const nav_msgs::OdometryConstPtr& odom){
+-    if(ros::WallTime::now().toSec() - last_map_update_t_ < 0.1 || !have_odom_) return;
+-    last_map_update_t_ = ros::WallTime::now().toSec(); 
+-    ros::WallTime t0 = ros::WallTime::now();
++    if(ros::Time::now().toSec() - last_map_update_t_ < 0.1 || !have_odom_) return;
++    last_map_update_t_ = ros::Time::now().toSec(); 
++    ros::Time t0 = ros::Time::now();
+     BM_.OdomCallback(odom);
+     
+     BM_.InsertPcl(pcl);
+-    // cout<<"dt11111111111111: "<<ros::WallTime::now().toSec() - last_map_update_t_<<endl;
++    BM_.ClearPhysicalHull(odom);
++    // cout<<"dt11111111111111: "<<ros::Time::now().toSec() - last_map_update_t_<<endl;
+     FG_.UpdateFrontier(BM_.newly_register_idx_);
+     MDTG_.Update(robot_pose_, !sensor_flag_);
+     sensor_flag_ = true;
+--- original/Exploration/murder_swarm/include/murder_swarm/ground.h
++++ adapted/Exploration/murder_swarm/include/murder_swarm/ground.h
+@@ -61,7 +61,7 @@
+ 
+ 
+ inline void Ground::LoadVisModels(){
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     for(int i = 0; i < SDM_.drone_num_; i++){
+         if(abs(cur_t - SDM_.Pose_t_[i]) < 0.2) poses_[i] = SDM_.Poses_[i];
+         vis_models_.markers[i*5 + 0].header.stamp = ros::Time::now();
+--- original/Exploration/graph_partition/src/graph_partition.cpp
++++ adapted/Exploration/graph_partition/src/graph_partition.cpp
+@@ -21,7 +21,7 @@
+     state_timer_ = nh.createTimer(ros::Duration(0.1), &GraphVoronoiPartition::StateTimerCallback, this);
+     GVP_timer_ = nh.createTimer(ros::Duration(1.0 / par_freq), &GraphVoronoiPartition::PartitionTimerCallback, this);
+ 
+-    last_new_job_.resize(SDM_->drone_num_, ros::WallTime::now().toSec() - 1000.0);
++    last_new_job_.resize(SDM_->drone_num_, ros::Time::now().toSec() - 1000.0);
+     swarm_job_f_dist_.resize(SDM_->drone_num_, 9999.0);
+     swarm_job_f_.resize(SDM_->drone_num_, -1);
+     swarm_job_h_dist_.resize(SDM_->drone_num_, 9999.0);
+@@ -34,7 +34,7 @@
+     swarm_connect_f_id_.resize(SDM_->drone_num_);
+     swarm_connect_h_dist_.resize(SDM_->drone_num_);
+     swarm_connect_h_.resize(SDM_->drone_num_);
+-    last_state_pub_t_ = ros::WallTime::now().toSec() - 100.0;
++    last_state_pub_t_ = ros::Time::now().toSec() - 100.0;
+ }
+ 
+ void GraphVoronoiPartition::LocalGVP(){
+@@ -779,7 +779,7 @@
+ 
+ bool GraphVoronoiPartition::GetBestTarget(list<pair<double, list<Eigen::Vector3d>>> &d_p, list<h_ptr> &hn_l, f_ptr &fn_t,
+                             list<Eigen::Vector3d> &path, Eigen::Vector4d &t_state, pair<int, int> &f_v, int &h_id){
+-    double tc = ros::WallTime::now().toSec();
++    double tc = ros::Time::now().toSec();
+     do {
+         list<pair<double, list<Eigen::Vector3d>>>::iterator d_p_it = d_p.begin();
+         list<h_ptr>::iterator hn_it = hn_l.begin();
+@@ -872,7 +872,7 @@
+         // SDM_->states_[i].clear();
+     }
+     /* state send */
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     if(cur_t - last_state_pub_t_ > 1.0 && !SDM_->is_ground_){
+ 
+         list<uint16_t> local_fn_send;
+--- original/Exploration/graph_partition/include/graph_partition/graph_partition.h
++++ adapted/Exploration/graph_partition/include/graph_partition/graph_partition.h
+@@ -137,7 +137,7 @@
+                                             const double &dist_to_hn, const int &target_fn, const double &dist_to_fn){
+     int idx = SDM_->self_id_ - 1;
+     SDM_->SetJob(jobstate, target_hn, dist_to_hn, target_fn, dist_to_fn);
+-    last_new_job_[idx] = ros::WallTime().now().toSec();
++    last_new_job_[idx] = ros::Time().now().toSec();
+     swarm_job_f_dist_[idx] = dist_to_fn;
+     swarm_job_f_[idx] = target_fn;
+     swarm_job_h_dist_[idx] = dist_to_hn;
+--- original/Test/ato_test/src/swarm_data_test.cpp
++++ adapted/Test/ato_test/src/swarm_data_test.cpp
+@@ -58,7 +58,7 @@
+     for(int i = 0; i < SDM_ptr_->Poses_.size(); i++){
+         if(i + 1 == SDM_ptr_->self_id_) continue;
+         SDM_ptr_->Poses_[i] = swarm_pose_;
+-        SDM_ptr_->Pose_t_[i] = ros::WallTime::now().toSec();
++        SDM_ptr_->Pose_t_[i] = ros::Time::now().toSec();
+         gazebo_msgs::SetModelState state_srv;
+         state_srv.request.model_state.reference_frame = "world";
+         state_srv.request.model_state.model_name = all_mns_[i];
+@@ -114,8 +114,8 @@
+ void ImgOdomCallback(const sensor_msgs::ImageConstPtr& img,
+                                const nav_msgs::OdometryConstPtr& odom)
+ {
+-    static double last = ros::WallTime::now().toSec();
+-    if(ros::WallTime::now().toSec() - last < 0.1) return;
++    static double last = ros::Time::now().toSec();
++    if(ros::Time::now().toSec() - last < 0.1) return;
+     Quaterniond qua;
+     Eigen::Matrix4d robot_pose;
+     robot_pose.setOnes();
+@@ -130,12 +130,12 @@
+ 
+     robot_pose.block(0, 0, 3, 3) = qua.toRotationMatrix();
+     robot_pose.block(0, 3, 3, 1) = robot_pos_;
+-    ros::WallTime t0 = ros::WallTime::now();
++    ros::Time t0 = ros::Time::now();
+     BM_ptr_->OdomCallback(odom);
+     BM_ptr_->InsertImg(img);
+     LRM_ptr_->SetEternalNode(robot_pos_);
+     LRM_ptr_->UpdateLocalBBX(robot_pose, BM_ptr_->cur_pcl_);
+-    cout<<"cost:"<<(ros::WallTime::now() - t0).toSec()<<endl;
++    cout<<"cost:"<<(ros::Time::now() - t0).toSec()<<endl;
+     last = t0.toSec();
+ }
+ 
+--- original/Test/ato_test/src/cmd_repub.cpp
++++ adapted/Test/ato_test/src/cmd_repub.cpp
+@@ -25,7 +25,7 @@
+ void RepubCallback(const swarm_exp_msgs::SwarmTrajConstPtr &traj){
+     if(!have_init_t_){
+         have_init_t_ = true;
+-        dt_ = ros::WallTime::now().toSec() - traj->start_t;
++        dt_ = ros::Time::now().toSec() - traj->start_t;
+     }
+     swarm_exp_msgs::SwarmTraj tr = *traj;
+     tr.start_t += dt_;
+--- original/Test/ato_test/src/cmd_test.cpp
++++ adapted/Test/ato_test/src/cmd_test.cpp
+@@ -112,7 +112,7 @@
+     }
+     else if(traj_state_ == 2){
+         // cout<<traj_.getPieceNum()<<endl;
+-        double cur_t = ros::WallTime::now().toSec();
++        double cur_t = ros::Time::now().toSec();
+         if(cur_t - start_t_> traj_.getTotalDuration()){
+             cur_t = start_t_ + traj_.getTotalDuration() - 1e-4;
+         }
+@@ -171,9 +171,9 @@
+ }
+ 
+ void Showcmd(Eigen::Vector3d pos, double yaw){
+-    static double last_update = ros::WallTime::now().toSec();
+-    if(ros::WallTime::now().toSec() - last_update < 0.08) return;
+-    last_update = ros::WallTime::now().toSec();
++    static double last_update = ros::Time::now().toSec();
++    if(ros::Time::now().toSec() - last_update < 0.08) return;
++    last_update = ros::Time::now().toSec();
+     visualization_msgs::MarkerArray mka;
+     mka.markers.resize(1);
+     mka.markers[0].header.frame_id = "world";
+@@ -259,7 +259,7 @@
+ 
+ bool TryUpdateTraj(){
+     if(trajs_.empty()) return false;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     if(trajs_.front().start_t > cur_t) return false;
+ 
+     traj_state_ = 2;
+@@ -305,7 +305,7 @@
+     google::ParseCommandLineFlags(&argc, &argv, true);
+     google::InstallFailureSignalHandler();
+ 
+-    init_t_ = ros::WallTime::now().toSec();
++    init_t_ = ros::Time::now().toSec();
+     traj_state_ = -1;
+     ready_ = false;
+     command_real_pub_ = nh.advertise<mavros_msgs::PositionTarget>("/mavros/setpoint_raw/local", 5);
+--- original/data_statistics/src/computation_statistician.cpp
++++ adapted/data_statistics/src/computation_statistician.cpp
+@@ -38,13 +38,13 @@
+     cout<<"command:"<<command<<endl;
+     cout<<"path_:"<<path_<<endl;
+     system(command.c_str());
+-    start_t_ = ros::WallTime::now().toSec();
++    start_t_ = ros::Time::now().toSec();
+ 
+     for(int i = 0; i < data_size_; i++){
+         cost_list_[i] = 0;
+         max_list_[i] = 0;
+         cost_temp_list_[i] = 0;
+-        starttime_list_[i] = ros::WallTime::now();
++        starttime_list_[i] = ros::Time::now();
+         nh_private_.param(ns + "/Computation/data_name"+to_string(i), name_list_[i], name_list_[i]);
+         ofdata_list_[i].open(path_+"/"+name_list_[i]+to_string(id)+".txt", std::ios::out);
+         oft_list_[i].open(path_+"/"+name_list_[i]+to_string(id)+"_t"+".txt", std::ios::out);
+@@ -62,7 +62,7 @@
+         printf("\033[0;31m ERROR dataid! dataid should be less than %d\033[0m\n", dataid);
+         return;
+     }
+-    starttime_list_[dataid] = ros::WallTime::now();
++    starttime_list_[dataid] = ros::Time::now();
+ }
+ 
+ void ComputationStatistician::EndTimer(int dataid){
+@@ -70,8 +70,8 @@
+         printf("\033[0;31m ERROR dataid! The dataid should be less than %d\033[0m\n", data_size_);
+         return;
+     }
+-    double cost = (ros::WallTime::now() - starttime_list_[dataid]).toSec();
+-    double  t = ros::WallTime::now().toSec() - start_t_;
++    double cost = (ros::Time::now() - starttime_list_[dataid]).toSec();
++    double  t = ros::Time::now().toSec() - start_t_;
+     if(cost > max_list_[dataid]) max_list_[dataid] = cost;
+     cost_temp_list_[dataid] = cost;
+     cost_list_[dataid] += cost;
+@@ -85,7 +85,7 @@
+         printf("\033[0;31m ERROR dataid! The dataid should be less than %d\033[0m\n", vdata_size_);
+         return;
+     }
+-    double  t = ros::WallTime::now().toSec() - start_t_;
++    double  t = ros::Time::now().toSec() - start_t_;
+     volume_list_[id] += v;
+     ofvdata_list_[id]<<to_string(volume_list_[id])<<endl;
+     ofvt_list_[id]<<t<<endl;
+@@ -96,7 +96,7 @@
+         printf("\033[0;31m ERROR dataid! The dataid should be less than %d\033[0m\n", vdata_size_);
+         return;
+     }
+-    double  t = ros::WallTime::now().toSec() - start_t_;
++    double  t = ros::Time::now().toSec() - start_t_;
+     // ROS_ERROR("id:%d %d",id, vdata_size_);
+     volume_list_[id] = v;
+     ofvdata_list_[id]<<to_string(volume_list_[id])<<endl;
+@@ -113,7 +113,7 @@
+ //     if(dataid < 0 || dataid >= data_size_){
+ //         printf("\033[0;31m ERROR dataid! The dataid should be less than %d\033[0m\n", data_size_);
+ //     }
+-//     cost_temp_list_[dataid] = (starttime_list_[dataid] - ros::WallTime::now()).toSec();
++//     cost_temp_list_[dataid] = (starttime_list_[dataid] - ros::Time::now()).toSec();
+ //     printf("\033[0;32m %s spend %lfs\033[0m\n", name_list_[dataid].c_str(), cost_temp_list_[dataid]);
+ // }
+ 
+--- original/data_statistics/include/data_statistics/computation_statistician.h
++++ adapted/data_statistics/include/data_statistics/computation_statistician.h
+@@ -49,7 +49,7 @@
+ 
+     vector<double> volume_list_; 
+ 
+-    vector<ros::WallTime> starttime_list_;
++    vector<ros::Time> starttime_list_;
+     vector<std::string> name_list_;
+     vector<std::string> vname_list_;
+ 
+--- original/Mapping/block_map/src/block_map.cpp
++++ adapted/Mapping/block_map/src/block_map.cpp
+@@ -114,7 +114,7 @@
+     // if(SDM_->is_ground_){
+     //     debug_l_.open("/home/charliedog/rosprojects/MURDER/debug.txt", std::ios::out);
+     // }
+-    start_t_ = ros::WallTime::now().toSec();
++    start_t_ = ros::Time::now().toSec();
+     req_flag_ = false;
+     finish_flag_ = false;
+     if(SDM_->drone_num_ > 1){  //swarm exploration
+@@ -124,7 +124,7 @@
+         swarm_pose_.resize(drone_num);
+         cout<<"robots_scale_:"<<robots_scale.transpose()<<endl;
+         for(int i = 0; i < drone_num; i++) robots_scale_.emplace_back(robots_scale);
+-        for(auto &sp : swarm_pose_) sp.first = ros::WallTime::now().toSec() - 1000.0;
++        for(auto &sp : swarm_pose_) sp.first = ros::Time::now().toSec() - 1000.0;
+         self_id_ = SDM_->self_id_;
+     }
+     else {
+@@ -218,8 +218,8 @@
+ 
+     // have_odom_ = false;
+     have_cam_param_ = false;
+-    last_odom_ = ros::WallTime::now().toSec() + 100000.0;
+-    last_update_ = ros::WallTime::now().toSec() - 10.0;
++    last_odom_ = ros::Time::now().toSec() + 100000.0;
++    last_update_ = ros::Time::now().toSec() - 10.0;
+     cout<<"last_update_:"<<last_update_<<endl;
+     update_interval_ = 1 / update_interval_;
+     cout<<"update_interval_:"<<update_interval_<<endl;
+@@ -316,8 +316,8 @@
+ }
+ 
+ void BlockMap::InsertPCLCallback(const sensor_msgs::PointCloud2ConstPtr &pcl){
+-    if(!bline_ && have_cam_param_ && ros::Time::now().toSec() - last_odom_ < 0.02 && ros::WallTime::now().toSec() - last_update_ > update_interval_){
+-        last_update_ = ros::WallTime::now().toSec();
++    if(!bline_ && have_cam_param_ && ros::Time::now().toSec() - last_odom_ < 0.02 && ros::Time::now().toSec() - last_update_ > update_interval_){
++        last_update_ = ros::Time::now().toSec();
+ 
+         InsertPcl(pcl);
+         // have_odom_ = false;
+@@ -325,11 +325,11 @@
+ }
+ 
+ void BlockMap::InsertDepthCallback(const sensor_msgs::ImageConstPtr &img){
+-    if(!bline_ && have_cam_param_ && ros::Time::now().toSec() - last_odom_ < 0.02 && ros::WallTime::now().toSec() - last_update_ > update_interval_){
+-        last_update_ = ros::WallTime::now().toSec();
++    if(!bline_ && have_cam_param_ && ros::Time::now().toSec() - last_odom_ < 0.02 && ros::Time::now().toSec() - last_update_ > update_interval_){
++        last_update_ = ros::Time::now().toSec();
+ 
+         InsertImg(img);
+-        // cout<<"cost:"<<ros::WallTime::now().toSec() - last_update_<<"s"<<endl;
++        // cout<<"cost:"<<ros::Time::now().toSec() - last_update_<<"s"<<endl;
+         // have_odom_ = false;
+     }
+ }
+@@ -443,7 +443,7 @@
+             SDM_->swarm_sub_map_.pop_front();
+         }
+         
+-        if((SDM_->req_flag_ && vis_mode_) || double(SDM_->finish_num_) / SDM_->drone_num_ > SDM_->finish_thresh_ && !finish_flag_ && ros::WallTime::now(). toSec() - start_t_ > min_finish_t_){
++        if((SDM_->req_flag_ && vis_mode_) || double(SDM_->finish_num_) / SDM_->drone_num_ > SDM_->finish_thresh_ && !finish_flag_ && ros::Time::now(). toSec() - start_t_ > min_finish_t_){
+             finish_flag_ = true;
+ 
+             exp_comm_msgs::MapReqC mq;
+@@ -506,7 +506,7 @@
+         }
+     }
+     else{
+-        double cur_t = ros::WallTime::now().toSec();
++        double cur_t = ros::Time::now().toSec();
+         if(SDM_->finish_list_[SDM_->self_id_ - 1] && !finish_flag_ && SDM_->req_flag_){
+             finish_flag_ = true;
+             list<Eigen::Vector3d> pts;
+@@ -944,7 +944,7 @@
+     else{
+         for(uint8_t i = 0; i < 8; i++){
+             if(!SBS_[f_id].to_pub_[i]){
+-                swarm_pub_block_.push_back({{f_id, i}, ros::WallTime::now().toSec()});
++                swarm_pub_block_.push_back({{f_id, i}, ros::Time::now().toSec()});
+                 SBS_[f_id].to_pub_[i] = true;
+             }
+         }
+@@ -1027,4 +1027,17 @@
+         mk.points.emplace_back(pt);
+     }
+     debug_pub_.publish(mk);
+-}+}
++// Common-platform adapter: the physical hull occupied by the estimated robot
++// is known free of environmental obstacles. No truth geometry is consulted.
++void BlockMap::ClearPhysicalHull(const nav_msgs::OdometryConstPtr &odom){
++ Eigen::Quaterniond q(odom->pose.pose.orientation.w,odom->pose.pose.orientation.x,odom->pose.pose.orientation.y,odom->pose.pose.orientation.z);
++ Eigen::Vector3d p(odom->pose.pose.position.x,odom->pose.pose.position.y,odom->pose.pose.position.z);
++ std::vector<Eigen::Vector3d> pts; std::vector<uint8_t> states;
++ for(double x=-.32;x<=.321;x+=.04) for(double y=-.32;y<=.321;y+=.04) for(double z=-.08;z<=.081;z+=.04){
++  Eigen::Vector3d v=p+q.toRotationMatrix()*Eigen::Vector3d(x,y,z);
++  if(InsideMap(v)){pts.push_back(v);states.push_back(2);}
++ }
++ InseartVox(pts,states);
++ newly_register_idx_.insert(newly_register_idx_.end(),pts.begin(),pts.end());
++}
+--- original/Mapping/block_map/include/block_map/block_map.h
++++ adapted/Mapping/block_map/include/block_map/block_map.h
+@@ -119,6 +119,7 @@
+      * @param odom 
+      */
+     void OdomCallback(const nav_msgs::OdometryConstPtr &odom);
++    void ClearPhysicalHull(const nav_msgs::OdometryConstPtr &odom);
+ 
+     void SendSwarmBlockMap(const int &f_id, const bool &send_now);
+ 
+--- original/Mapping/lowres_map/src/lowres_map.cpp
++++ adapted/Mapping/lowres_map/src/lowres_map.cpp
+@@ -174,7 +174,7 @@
+ void LowResMap::UpdateLocalBBX(const Eigen::Matrix4d rob_pose, vector<Eigen::Vector3d> &occ_list){
+     mtx_.lock();
+     Robot_pose_ = rob_pose;
+-    ros::WallTime start = ros::WallTime::now();
++    ros::Time start = ros::Time::now();
+ 
+     Robot_pos_ = Robot_pose_.block(0,3,3,1);
+     Eigen::Vector3i robot_pid;
+@@ -200,7 +200,7 @@
+ bool LowResMap::UpdateLocalTopo(const Eigen::Matrix4d rob_pose, vector<Eigen::Vector3d> &occ_list, bool clear_x){
+     mtx_.lock();
+     Robot_pose_ = rob_pose;
+-    ros::WallTime start = ros::WallTime::now();
++    ros::Time start = ros::Time::now();
+     Robot_pos_ = Robot_pose_.block(0,3,3,1);
+     Eigen::Vector3i robot_pid;
+     PostoId3(Robot_pos_, robot_pid);
+--- original/Mapping/lowres_map/src/path_search.cpp
++++ adapted/Mapping/lowres_map/src/path_search.cpp
+@@ -3,24 +3,24 @@
+ namespace lowres{
+ bool LowResMap::GetPath(const Eigen::Vector3d &start, const Eigen::Vector3d &end, vector<Eigen::Vector3d> &path, bool local, int search_num){
+     int workid;
+-    // ros::WallTime startT = ros::WallTime::now();
++    // ros::Time startT = ros::Time::now();
+     while(!GetWorker(workid)){
+         ros::Duration(1e-5).sleep();
+     }
+     // ROS_WARN("start a*");
+-    //  std::cout << "\033[0;34m GetWorker: \033[0m"<<(ros::WallTime::now() - startT).toSec() << std::endl;
++    //  std::cout << "\033[0;34m GetWorker: \033[0m"<<(ros::Time::now() - startT).toSec() << std::endl;
+     return Astar(start, end, path, workid, search_num, local);
+     
+ }
+ 
+ bool LowResMap::GetPath(const Eigen::Vector3d &start, const Eigen::Vector3d &end, list<Eigen::Vector3d> &path, bool local, int search_num){
+     int workid;
+-    // ros::WallTime startT = ros::WallTime::now();
++    // ros::Time startT = ros::Time::now();
+     while(!GetWorker(workid)){
+         ros::Duration(1e-5).sleep();
+     }
+     // ROS_WARN("start a*");
+-    //  std::cout << "\033[0;34m GetWorker: \033[0m"<<(ros::WallTime::now() - startT).toSec() << std::endl;
++    //  std::cout << "\033[0;34m GetWorker: \033[0m"<<(ros::Time::now() - startT).toSec() << std::endl;
+     return Astar(start, end, path, workid, search_num, local);
+     
+ }
+--- original/Mapping/frontier_grid/src/frontier_grid.cpp
++++ adapted/Mapping/frontier_grid/src/frontier_grid.cpp
+@@ -106,8 +106,8 @@
+                         CF.up_(dim) = remain_d + v_it(dim) * node_scale_ + origin_(dim);
+                         vox_num(dim) = floor((CF.up_(dim) - CF.down_(dim)) / resolution_);
+                     }
+-                    CF.last_sample_ = ros::WallTime::now().toSec();
+-                    CF.last_strong_check_ = ros::WallTime::now().toSec();
++                    CF.last_sample_ = ros::Time::now().toSec();
++                    CF.last_strong_check_ = ros::Time::now().toSec();
+                 }
+                 CF.unknown_num_ = vox_num(0) * vox_num(1) * vox_num(2);
+                 CF.thresh_num_ = floor((1.0 - obs_thresh_) * CF.unknown_num_);
+@@ -206,7 +206,7 @@
+     Eigen::Vector3d vp_pos;
+     int vp_id;
+     bool flag = false;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     for(auto &idx : idxs){
+         if(idx < 0 || idx  >= f_grid_.size() || f_grid_[idx].f_state_ == 2) continue;
+         f_grid_[idx].flags_.reset(1);
+@@ -517,7 +517,7 @@
+ void FrontierGrid::ExpandFrontier(const int &idx, const bool &local_exp){
+     Eigen::Vector3i n(1, node_num_(0), node_num_(0) * node_num_(1));
+     Eigen::Vector3i id3;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     if(!Idx2Posi(idx, id3)) return;
+     for(int dim = 0; dim < 3; dim++){
+         if(id3(dim) != 0){
+@@ -634,7 +634,7 @@
+     Eigen::Vector3d up, low;
+     Eigen::Vector3i up_id3, low_id3, it;
+     int f_id;
+-    double cur_t = ros::WallTime::now().toSec();
++    double cur_t = ros::Time::now().toSec();
+     up = Robot_pos_ + Eigen::Vector3d::Ones() * sensor_range_;
+     low = Robot_pos_ - Eigen::Vector3d::Ones() * sensor_range_;
+     for(int dim = 0; dim < 3; dim++){

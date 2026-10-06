@@ -1,0 +1,22 @@
+[
+  {
+    "token": "0:9294a8c8:400003",
+    "event_time": 28.8,
+    "old_curve_boundary_time": 6.404399980894804,
+    "actual_event_speed_mps": 0.3471544713554027,
+    "boundary_reference_speed_mps": 0.43070999355172107,
+    "longitudinal_acceleration_product": -0.07181127238648072,
+    "before_deceleration": false,
+    "note": "Analytic old-curve boundary phase; actual speed is sampled at agent receipt, not exact executor transition."
+  },
+  {
+    "token": "0:9294a8c8:400009",
+    "event_time": 63.6,
+    "old_curve_boundary_time": 7.38106094438042,
+    "actual_event_speed_mps": 0.11374036251250688,
+    "boundary_reference_speed_mps": 0.08493847989271726,
+    "longitudinal_acceleration_product": -0.014532204763709216,
+    "before_deceleration": false,
+    "note": "Analytic old-curve boundary phase; actual speed is sampled at agent receipt, not exact executor transition."
+  }
+]

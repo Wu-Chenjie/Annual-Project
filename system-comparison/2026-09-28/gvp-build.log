@@ -1,0 +1,685 @@
+-- The C compiler identification is GNU 9.4.0
+-- The CXX compiler identification is GNU 9.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Using CATKIN_DEVEL_PREFIX: /comparison/gvp_ws/devel
+-- Using CMAKE_PREFIX_PATH: /work/gvp_ws/devel;/work/rotors_ws/devel;/opt/ros/noetic
+-- This workspace overlays: /work/gvp_ws/devel;/work/rotors_ws/devel;/opt/ros/noetic
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using Debian Python package layout
+-- Found PY_em: /usr/lib/python3/dist-packages/em.py  
+-- Using empy: /usr/lib/python3/dist-packages/em.py
+-- Using CATKIN_ENABLE_TESTING: ON
+-- Call enable_testing()
+-- Using CATKIN_TEST_RESULTS_DIR: /comparison/gvp_ws/build/test_results
+-- Forcing gtest/gmock from source, though one was otherwise available.
+-- Found gtest sources under '/usr/src/googletest': gtests will be built
+-- Found gmock sources under '/usr/src/googletest': gmock will be built
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.10") 
+-- Found Threads: TRUE  
+-- Using Python nosetests: /usr/bin/nosetests3
+-- catkin 0.8.12
+-- BUILD_SHARED_LIBS is on
+-- BUILD_SHARED_LIBS is on
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~  traversing 16 packages in topological order:
+-- ~~  - gcopter
+-- ~~  - swarm_exp_msgs
+-- ~~  - exp_comm_msgs
+-- ~~  - data_statistics
+-- ~~  - multisim_gazebo
+-- ~~  - swarm_data
+-- ~~  - block_map
+-- ~~  - lowres_map
+-- ~~  - frontier_grid
+-- ~~  - multiDTG
+-- ~~  - swarm_exp_bridge
+-- ~~  - yaw_planner
+-- ~~  - ato_test
+-- ~~  - graph_partition
+-- ~~  - murder_swarm
+-- ~~  - traj_exc
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- +++ processing catkin package: 'gcopter'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/gcopter)
+-- +++ processing catkin package: 'swarm_exp_msgs'
+-- ==> add_subdirectory(GVP-MREP/MSGS/swarm_exp_msgs)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- swarm_exp_msgs: 10 messages, 0 services
+-- +++ processing catkin package: 'exp_comm_msgs'
+-- ==> add_subdirectory(GVP-MREP/MSGS/exp_comm_msgs)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- exp_comm_msgs: 8 messages, 0 services
+-- +++ processing catkin package: 'data_statistics'
+-- ==> add_subdirectory(GVP-MREP/data_statistics)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "computation_statistician" of package "data_statistics" for installation
+-- Marking HEADER FILES in "include" folder of package "data_statistics" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "data_statistics" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "data_statistics" for installation
+-- +++ processing catkin package: 'multisim_gazebo'
+-- ==> add_subdirectory(GVP-MREP/Communication/multisim_gazebo)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- multisim_gazebo: 2 messages, 0 services
+-- Marking SHARED_LIBRARY "multi_rotors" of package "multisim_gazebo" for installation
+-- Marking EXECUTABLE "multi_rotors_node" of package "multisim_gazebo" for installation
+-- Marking HEADER FILES in "include" folder of package "multisim_gazebo" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "multisim_gazebo" for installation
+-- Marking SHARED CONTENT FOLDER "worlds" of package "multisim_gazebo" for installation
+-- +++ processing catkin package: 'swarm_data'
+-- ==> add_subdirectory(GVP-MREP/Communication/swarm_data)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "swarm_data" of package "swarm_data" for installation
+-- Marking HEADER FILES in "include" folder of package "swarm_data" for installation
+-- +++ processing catkin package: 'block_map'
+-- ==> add_subdirectory(GVP-MREP/Mapping/block_map)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "block_map_raycast" of package "block_map" for installation
+-- Marking SHARED_LIBRARY "block_map_grid" of package "block_map" for installation
+-- Marking SHARED_LIBRARY "block_map_color" of package "block_map" for installation
+-- Marking HEADER FILES in "include" folder of package "block_map" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "block_map" for installation
+-- +++ processing catkin package: 'lowres_map'
+-- ==> add_subdirectory(GVP-MREP/Mapping/lowres_map)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "lowres_map" of package "lowres_map" for installation
+-- Marking HEADER FILES in "include" folder of package "lowres_map" for installation
+-- +++ processing catkin package: 'frontier_grid'
+-- ==> add_subdirectory(GVP-MREP/Mapping/frontier_grid)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "frontier_grid" of package "frontier_grid" for installation
+-- Marking HEADER FILES in "include" folder of package "frontier_grid" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "frontier_grid" for installation
+-- +++ processing catkin package: 'multiDTG'
+-- ==> add_subdirectory(GVP-MREP/Exploration/multiDTG)
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "multiDTG" of package "multiDTG" for installation
+-- Marking HEADER FILES in "include" folder of package "multiDTG" for installation
+-- +++ processing catkin package: 'swarm_exp_bridge'
+-- ==> add_subdirectory(GVP-MREP/Communication/swarm_bridge)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- +++ processing catkin package: 'yaw_planner'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/yaw_planner)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "yaw_planner" of package "yaw_planner" for installation
+-- Marking HEADER FILES in "include" folder of package "yaw_planner" for installation
+-- +++ processing catkin package: 'ato_test'
+-- ==> add_subdirectory(GVP-MREP/Test/ato_test)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+WARNING: package 'gazebo_msgs' is deprecated (This package has been deprecated as of January 2025 with Gazebo classic 11 reaching
+      end-of-life. Users are highly encouraged to migrate to the new Gazebo
+      using our migration guides (https://gazebosim.org/docs/latest/gazebo_classic_migration))
+-- Marking SHARED CONTENT FOLDER "launch" of package "ato_test" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "ato_test" for installation
+-- Marking SHARED CONTENT FOLDER "worlds" of package "ato_test" for installation
+-- +++ processing catkin package: 'graph_partition'
+-- ==> add_subdirectory(GVP-MREP/Exploration/graph_partition)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "graph_partition" of package "graph_partition" for installation
+-- Marking HEADER FILES in "include" folder of package "graph_partition" for installation
+-- +++ processing catkin package: 'murder_swarm'
+-- ==> add_subdirectory(GVP-MREP/Exploration/murder_swarm)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking SHARED_LIBRARY "murder_swarm" of package "murder_swarm" for installation
+-- Marking SHARED_LIBRARY "murder_swarm_fsm" of package "murder_swarm" for installation
+-- Marking SHARED_LIBRARY "ground" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "murder_swarm_node" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "swarm_trigger" of package "murder_swarm" for installation
+-- Marking EXECUTABLE "ground_node" of package "murder_swarm" for installation
+-- Marking HEADER FILES in "include" folder of package "murder_swarm" for installation
+-- Marking SHARED CONTENT FOLDER "launch" of package "murder_swarm" for installation
+-- Marking SHARED CONTENT FOLDER "rviz" of package "murder_swarm" for installation
+-- +++ processing catkin package: 'traj_exc'
+-- ==> add_subdirectory(GVP-MREP/Trajectory/traj_exc)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- Marking EXECUTABLE "traj_exc_node" of package "traj_exc" for installation
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /comparison/gvp_ws/build
+Scanning dependencies of target geometry_msgs_generate_messages_lisp
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_IdPose
+[  0%] Built target geometry_msgs_generate_messages_lisp
+Scanning dependencies of target std_msgs_generate_messages_lisp
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_IdPose
+[  0%] Built target std_msgs_generate_messages_lisp
+Scanning dependencies of target sensor_msgs_generate_messages_lisp
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgHHEdge
+[  0%] Built target sensor_msgs_generate_messages_lisp
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_SwarmTraj
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHHEdge
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgFFEdge
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_SwarmTraj
+Scanning dependencies of target nav_msgs_generate_messages_lisp
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgFFEdge
+[  0%] Built target nav_msgs_generate_messages_lisp
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgHFEdge
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgHNode
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHFEdge
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgHNode
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgFNode
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_DtgBag
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgFNode
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_DtgBag
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_IdOdom
+Scanning dependencies of target _swarm_exp_msgs_generate_messages_check_deps_LocalTraj
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_IdOdom
+[  0%] Built target _swarm_exp_msgs_generate_messages_check_deps_LocalTraj
+Scanning dependencies of target std_msgs_generate_messages_cpp
+Scanning dependencies of target sensor_msgs_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_cpp
+[  0%] Built target sensor_msgs_generate_messages_cpp
+Scanning dependencies of target traj_opt
+Scanning dependencies of target geometry_msgs_generate_messages_cpp
+Scanning dependencies of target nav_msgs_generate_messages_cpp
+[  1%] Building CXX object GVP-MREP/Trajectory/gcopter/CMakeFiles/traj_opt.dir/src/traj_opt.cpp.o
+[  1%] Built target geometry_msgs_generate_messages_cpp
+[  1%] Built target nav_msgs_generate_messages_cpp
+Scanning dependencies of target sensor_msgs_generate_messages_nodejs
+Scanning dependencies of target std_msgs_generate_messages_nodejs
+[  1%] Built target sensor_msgs_generate_messages_nodejs
+[  1%] Built target std_msgs_generate_messages_nodejs
+Scanning dependencies of target geometry_msgs_generate_messages_nodejs
+Scanning dependencies of target nav_msgs_generate_messages_nodejs
+[  1%] Built target geometry_msgs_generate_messages_nodejs
+[  1%] Built target nav_msgs_generate_messages_nodejs
+Scanning dependencies of target sensor_msgs_generate_messages_py
+Scanning dependencies of target geometry_msgs_generate_messages_py
+[  1%] Built target sensor_msgs_generate_messages_py
+[  1%] Built target geometry_msgs_generate_messages_py
+Scanning dependencies of target std_msgs_generate_messages_py
+Scanning dependencies of target nav_msgs_generate_messages_py
+[  1%] Built target std_msgs_generate_messages_py
+[  1%] Built target nav_msgs_generate_messages_py
+Scanning dependencies of target std_msgs_generate_messages_eus
+Scanning dependencies of target sensor_msgs_generate_messages_eus
+[  1%] Built target std_msgs_generate_messages_eus
+[  1%] Built target sensor_msgs_generate_messages_eus
+Scanning dependencies of target geometry_msgs_generate_messages_eus
+Scanning dependencies of target nav_msgs_generate_messages_eus
+[  1%] Built target geometry_msgs_generate_messages_eus
+[  1%] Built target nav_msgs_generate_messages_eus
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_IdPoseC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_DtgBagAnswer
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_IdPoseC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_DtgBagAnswer
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_DtgBagC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_SwarmTrajC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_DtgBagC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmTrajC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_SwarmStateC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_MapC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmStateC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_MapC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_SwarmJobC
+Scanning dependencies of target _exp_comm_msgs_generate_messages_check_deps_MapReqC
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_SwarmJobC
+Scanning dependencies of target tf2_msgs_generate_messages_cpp
+[  1%] Built target _exp_comm_msgs_generate_messages_check_deps_MapReqC
+[  1%] Built target tf2_msgs_generate_messages_cpp
+Scanning dependencies of target roscpp_generate_messages_lisp
+Scanning dependencies of target rosgraph_msgs_generate_messages_py
+[  1%] Built target roscpp_generate_messages_lisp
+[  1%] Built target rosgraph_msgs_generate_messages_py
+Scanning dependencies of target rosgraph_msgs_generate_messages_eus
+Scanning dependencies of target rosgraph_msgs_generate_messages_lisp
+[  1%] Built target rosgraph_msgs_generate_messages_eus
+[  1%] Built target rosgraph_msgs_generate_messages_lisp
+Scanning dependencies of target rosgraph_msgs_generate_messages_cpp
+Scanning dependencies of target roscpp_generate_messages_nodejs
+[  1%] Built target rosgraph_msgs_generate_messages_cpp
+[  1%] Built target roscpp_generate_messages_nodejs
+Scanning dependencies of target roscpp_generate_messages_py
+Scanning dependencies of target rosgraph_msgs_generate_messages_nodejs
+[  1%] Built target roscpp_generate_messages_py
+[  1%] Built target rosgraph_msgs_generate_messages_nodejs
+Scanning dependencies of target roscpp_generate_messages_eus
+Scanning dependencies of target roscpp_generate_messages_cpp
+[  1%] Built target roscpp_generate_messages_eus
+[  1%] Built target roscpp_generate_messages_cpp
+Scanning dependencies of target actionlib_msgs_generate_messages_py
+[  1%] Built target actionlib_msgs_generate_messages_py
+Scanning dependencies of target actionlib_msgs_generate_messages_nodejs
+[  1%] Built target actionlib_msgs_generate_messages_nodejs
+Scanning dependencies of target actionlib_msgs_generate_messages_cpp
+[  1%] Built target actionlib_msgs_generate_messages_cpp
+Scanning dependencies of target actionlib_msgs_generate_messages_eus
+[  1%] Built target actionlib_msgs_generate_messages_eus
+Scanning dependencies of target actionlib_msgs_generate_messages_lisp
+[  1%] Built target actionlib_msgs_generate_messages_lisp
+Scanning dependencies of target tf2_msgs_generate_messages_py
+[  1%] Built target tf2_msgs_generate_messages_py
+Scanning dependencies of target tf2_msgs_generate_messages_nodejs
+[  1%] Built target tf2_msgs_generate_messages_nodejs
+Scanning dependencies of target actionlib_generate_messages_eus
+Scanning dependencies of target tf_generate_messages_cpp
+[  1%] Built target actionlib_generate_messages_eus
+[  1%] Built target tf_generate_messages_cpp
+Scanning dependencies of target tf2_msgs_generate_messages_lisp
+Scanning dependencies of target tf_generate_messages_lisp
+[  1%] Built target tf2_msgs_generate_messages_lisp
+[  1%] Built target tf_generate_messages_lisp
+Scanning dependencies of target tf_generate_messages_nodejs
+Scanning dependencies of target actionlib_generate_messages_lisp
+[  1%] Built target tf_generate_messages_nodejs
+[  1%] Built target actionlib_generate_messages_lisp
+Scanning dependencies of target tf2_msgs_generate_messages_eus
+Scanning dependencies of target actionlib_generate_messages_cpp
+[  1%] Built target tf2_msgs_generate_messages_eus
+[  1%] Built target actionlib_generate_messages_cpp
+Scanning dependencies of target actionlib_generate_messages_nodejs
+[  1%] Built target actionlib_generate_messages_nodejs
+Scanning dependencies of target tf_generate_messages_eus
+[  1%] Built target tf_generate_messages_eus
+Scanning dependencies of target tf_generate_messages_py
+[  1%] Built target tf_generate_messages_py
+Scanning dependencies of target actionlib_generate_messages_py
+[  1%] Built target actionlib_generate_messages_py
+Scanning dependencies of target _multisim_gazebo_generate_messages_check_deps_IdOdom
+Scanning dependencies of target gazebo_msgs_generate_messages_py
+[  1%] Built target gazebo_msgs_generate_messages_py
+[  1%] Built target _multisim_gazebo_generate_messages_check_deps_IdOdom
+Scanning dependencies of target _multisim_gazebo_generate_messages_check_deps_states
+Scanning dependencies of target std_srvs_generate_messages_eus
+[  1%] Built target std_srvs_generate_messages_eus
+[  1%] Built target _multisim_gazebo_generate_messages_check_deps_states
+Scanning dependencies of target gazebo_msgs_generate_messages_lisp
+[  1%] Built target gazebo_msgs_generate_messages_lisp
+Scanning dependencies of target gazebo_msgs_generate_messages_eus
+[  1%] Built target gazebo_msgs_generate_messages_eus
+Scanning dependencies of target trajectory_msgs_generate_messages_lisp
+[  1%] Built target trajectory_msgs_generate_messages_lisp
+Scanning dependencies of target trajectory_msgs_generate_messages_nodejs
+[  1%] Built target trajectory_msgs_generate_messages_nodejs
+Scanning dependencies of target gazebo_msgs_generate_messages_nodejs
+[  1%] Built target gazebo_msgs_generate_messages_nodejs
+Scanning dependencies of target trajectory_msgs_generate_messages_eus
+Scanning dependencies of target std_srvs_generate_messages_nodejs
+[  1%] Built target trajectory_msgs_generate_messages_eus
+[  1%] Built target std_srvs_generate_messages_nodejs
+Scanning dependencies of target std_srvs_generate_messages_cpp
+[  1%] Built target std_srvs_generate_messages_cpp
+Scanning dependencies of target trajectory_msgs_generate_messages_py
+Scanning dependencies of target gazebo_msgs_generate_messages_cpp
+[  1%] Built target trajectory_msgs_generate_messages_py
+[  1%] Built target gazebo_msgs_generate_messages_cpp
+Scanning dependencies of target std_srvs_generate_messages_lisp
+Scanning dependencies of target std_srvs_generate_messages_py
+[  1%] Built target std_srvs_generate_messages_py
+[  1%] Built target std_srvs_generate_messages_lisp
+Scanning dependencies of target multisim_gazebo_generate_messages_lisp
+Scanning dependencies of target trajectory_msgs_generate_messages_cpp
+[  2%] Built target trajectory_msgs_generate_messages_cpp
+[  2%] Generating Lisp code from multisim_gazebo/IdOdom.msg
+Scanning dependencies of target multisim_gazebo_generate_messages_cpp
+[  3%] Generating C++ code from multisim_gazebo/IdOdom.msg
+[  3%] Generating Lisp code from multisim_gazebo/states.msg
+[  3%] Built target multisim_gazebo_generate_messages_lisp
+[  3%] Generating C++ code from multisim_gazebo/states.msg
+Scanning dependencies of target multisim_gazebo_generate_messages_nodejs
+[  4%] Generating Javascript code from multisim_gazebo/IdOdom.msg
+[  4%] Built target multisim_gazebo_generate_messages_cpp
+[  5%] Generating Javascript code from multisim_gazebo/states.msg
+Scanning dependencies of target visualization_msgs_generate_messages_py
+[  5%] Built target visualization_msgs_generate_messages_py
+Scanning dependencies of target visualization_msgs_generate_messages_cpp
+[  5%] Built target multisim_gazebo_generate_messages_nodejs
+[  5%] Built target visualization_msgs_generate_messages_cpp
+Scanning dependencies of target visualization_msgs_generate_messages_eus
+Scanning dependencies of target visualization_msgs_generate_messages_lisp
+[  5%] Built target visualization_msgs_generate_messages_eus
+[  5%] Built target visualization_msgs_generate_messages_lisp
+Scanning dependencies of target visualization_msgs_generate_messages_nodejs
+Scanning dependencies of target topic_tools_generate_messages_nodejs
+[  5%] Built target visualization_msgs_generate_messages_nodejs
+Scanning dependencies of target pcl_ros_gencfg
+[  5%] Built target topic_tools_generate_messages_nodejs
+[  5%] Built target pcl_ros_gencfg
+Scanning dependencies of target dynamic_reconfigure_generate_messages_py
+Scanning dependencies of target pcl_msgs_generate_messages_py
+[  5%] Built target dynamic_reconfigure_generate_messages_py
+[  5%] Built target pcl_msgs_generate_messages_py
+Scanning dependencies of target pcl_msgs_generate_messages_nodejs
+[  5%] Built target pcl_msgs_generate_messages_nodejs
+Scanning dependencies of target nodelet_generate_messages_eus
+[  5%] Built target nodelet_generate_messages_eus
+Scanning dependencies of target pcl_msgs_generate_messages_eus
+Scanning dependencies of target topic_tools_generate_messages_cpp
+[  5%] Built target pcl_msgs_generate_messages_eus
+[  5%] Built target topic_tools_generate_messages_cpp
+Scanning dependencies of target pcl_msgs_generate_messages_lisp
+Scanning dependencies of target nodelet_generate_messages_py
+[  5%] Built target pcl_msgs_generate_messages_lisp
+[  5%] Built target nodelet_generate_messages_py
+Scanning dependencies of target bond_generate_messages_lisp
+[  5%] Built target bond_generate_messages_lisp
+Scanning dependencies of target bond_generate_messages_cpp
+[  5%] Built target bond_generate_messages_cpp
+Scanning dependencies of target bond_generate_messages_eus
+[  5%] Built target bond_generate_messages_eus
+Scanning dependencies of target dynamic_reconfigure_generate_messages_lisp
+Scanning dependencies of target dynamic_reconfigure_gencfg
+[  5%] Built target dynamic_reconfigure_generate_messages_lisp
+[  5%] Built target dynamic_reconfigure_gencfg
+Scanning dependencies of target dynamic_reconfigure_generate_messages_eus
+Scanning dependencies of target nodelet_generate_messages_cpp
+[  5%] Built target dynamic_reconfigure_generate_messages_eus
+[  5%] Built target nodelet_generate_messages_cpp
+Scanning dependencies of target nodelet_generate_messages_lisp
+[  5%] Built target nodelet_generate_messages_lisp
+Scanning dependencies of target topic_tools_generate_messages_py
+In file included from /comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/gcopter.hpp:31,
+                 from /comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/traj_opt.h:2,
+                 from /comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/src/traj_opt.cpp:1:
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/fastcheck_traj.hpp: In member function ‘bool FastCheckTraj::GetPos(const double&, Eigen::Vector3d&)’:
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/fastcheck_traj.hpp:41:15: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<Eigen::Matrix<double, 3, 1> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+   41 |         if(id >= traj_pts_.size() && traj_pts_.size() == 0) return false;
+      |            ~~~^~~~~~~~~~~~~~~~~~~
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/fastcheck_traj.hpp:42:20: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<Eigen::Matrix<double, 3, 1> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+   42 |         else if(id >= traj_pts_.size()) pt = traj_pts_.back();
+      |                 ~~~^~~~~~~~~~~~~~~~~~~
+[  5%] Built target topic_tools_generate_messages_py
+Scanning dependencies of target nodelet_generate_messages_nodejs
+Scanning dependencies of target bond_generate_messages_nodejs
+[  5%] Built target nodelet_generate_messages_nodejs
+[  5%] Built target bond_generate_messages_nodejs
+Scanning dependencies of target bond_generate_messages_py
+[  5%] Built target bond_generate_messages_py
+Scanning dependencies of target topic_tools_generate_messages_lisp
+[  5%] Built target topic_tools_generate_messages_lisp
+Scanning dependencies of target dynamic_reconfigure_generate_messages_nodejs
+[  5%] Built target dynamic_reconfigure_generate_messages_nodejs
+Scanning dependencies of target pcl_msgs_generate_messages_cpp
+Scanning dependencies of target nodelet_topic_tools_gencfg
+[  5%] Built target pcl_msgs_generate_messages_cpp
+[  5%] Built target nodelet_topic_tools_gencfg
+Scanning dependencies of target dynamic_reconfigure_generate_messages_cpp
+Scanning dependencies of target topic_tools_generate_messages_eus
+[  5%] Built target dynamic_reconfigure_generate_messages_cpp
+[  5%] Built target topic_tools_generate_messages_eus
+Scanning dependencies of target mav_msgs_generate_messages_cpp
+Scanning dependencies of target mav_msgs_generate_messages_py
+[  5%] Built target mav_msgs_generate_messages_cpp
+[  5%] Built target mav_msgs_generate_messages_py
+Scanning dependencies of target mav_msgs_generate_messages_nodejs
+Scanning dependencies of target mav_msgs_generate_messages_lisp
+[  5%] Built target mav_msgs_generate_messages_nodejs
+[  5%] Built target mav_msgs_generate_messages_lisp
+Scanning dependencies of target mav_msgs_generate_messages_eus
+Scanning dependencies of target swarm_exp_msgs_generate_messages_lisp
+[  5%] Built target mav_msgs_generate_messages_eus
+[  6%] Generating Lisp code from swarm_exp_msgs/SwarmTraj.msg
+Scanning dependencies of target swarm_exp_msgs_generate_messages_cpp
+[  7%] Generating C++ code from swarm_exp_msgs/SwarmTraj.msg
+[  7%] Generating Lisp code from swarm_exp_msgs/LocalTraj.msg
+[  7%] Generating C++ code from swarm_exp_msgs/LocalTraj.msg
+[  8%] Generating Lisp code from swarm_exp_msgs/DtgFFEdge.msg
+[  9%] Generating Lisp code from swarm_exp_msgs/DtgHFEdge.msg
+[ 10%] Generating C++ code from swarm_exp_msgs/DtgFFEdge.msg
+[ 10%] Generating Lisp code from swarm_exp_msgs/DtgHHEdge.msg
+[ 11%] Generating C++ code from swarm_exp_msgs/DtgHFEdge.msg
+[ 12%] Generating Lisp code from swarm_exp_msgs/DtgHNode.msg
+[ 12%] Generating C++ code from swarm_exp_msgs/DtgHHEdge.msg
+In file included from /comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/traj_opt.h:2,
+                 from /comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/src/traj_opt.cpp:1:
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/gcopter.hpp: In member function ‘double gcopter::GCOPTER_PolytopeSFC::optimize(Trajectory<5>&, const double&)’:
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/include/gcopter/gcopter.hpp:1341:34: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<Trajectory<5> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+ 1341 |                 for(int i = 0; i < swarm_trajs_.size(); i++){
+      |                                ~~^~~~~~~~~~~~~~~~~~~~~
+[ 13%] Generating Lisp code from swarm_exp_msgs/DtgFNode.msg
+[ 13%] Generating Lisp code from swarm_exp_msgs/DtgBag.msg
+[ 14%] Generating C++ code from swarm_exp_msgs/DtgHNode.msg
+[ 15%] Generating Lisp code from swarm_exp_msgs/IdOdom.msg
+[ 15%] Generating C++ code from swarm_exp_msgs/DtgFNode.msg
+[ 15%] Generating Lisp code from swarm_exp_msgs/IdPose.msg
+[ 15%] Built target swarm_exp_msgs_generate_messages_lisp
+[ 17%] Generating C++ code from swarm_exp_msgs/DtgBag.msg
+Scanning dependencies of target swarm_exp_msgs_generate_messages_nodejs
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/src/traj_opt.cpp: In member function ‘bool AtoTraj::Optimize(const std::vector<Eigen::Matrix<double, 3, 1> >&, const std::vector<Eigen::Matrix<double, -1, 4> >&, const std::vector<Eigen::Matrix<double, 3, -1> >&, const double&, const Matrix3d&, const Matrix3d&, const int&, std::vector<Trajectory<5> >&, std::vector<double>&, std::vector<Eigen::Matrix<double, 3, 1> >&, double)’:
+/comparison/gvp_ws/src/GVP-MREP/Trajectory/gcopter/src/traj_opt.cpp:48:22: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector<Trajectory<5> >::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+   48 |     for(int i = 0; i < trajs.size(); i++){
+      |                    ~~^~~~~~~~~~~~~~
+[ 18%] Generating Javascript code from swarm_exp_msgs/SwarmTraj.msg
+[ 19%] Generating C++ code from swarm_exp_msgs/IdOdom.msg
+[ 20%] Generating Javascript code from swarm_exp_msgs/LocalTraj.msg
+[ 20%] Generating Javascript code from swarm_exp_msgs/DtgFFEdge.msg
+[ 20%] Generating C++ code from swarm_exp_msgs/IdPose.msg
+[ 21%] Generating Javascript code from swarm_exp_msgs/DtgHFEdge.msg
+[ 22%] Generating Javascript code from swarm_exp_msgs/DtgHHEdge.msg
+[ 22%] Built target swarm_exp_msgs_generate_messages_cpp
+Scanning dependencies of target swarm_exp_msgs_generate_messages_py
+[ 22%] Generating Python from MSG swarm_exp_msgs/SwarmTraj
+[ 22%] Generating Javascript code from swarm_exp_msgs/DtgHNode.msg
+[ 23%] Generating Javascript code from swarm_exp_msgs/DtgFNode.msg
+[ 23%] Generating Javascript code from swarm_exp_msgs/DtgBag.msg
+[ 24%] Generating Javascript code from swarm_exp_msgs/IdOdom.msg
+[ 25%] Generating Python from MSG swarm_exp_msgs/LocalTraj
+[ 26%] Generating Javascript code from swarm_exp_msgs/IdPose.msg
+[ 26%] Built target swarm_exp_msgs_generate_messages_nodejs
+[ 27%] Generating Python from MSG swarm_exp_msgs/DtgFFEdge
+Scanning dependencies of target swarm_exp_msgs_generate_messages_eus
+[ 28%] Generating EusLisp code from swarm_exp_msgs/SwarmTraj.msg
+[ 29%] Generating EusLisp code from swarm_exp_msgs/LocalTraj.msg
+[ 29%] Generating Python from MSG swarm_exp_msgs/DtgHFEdge
+[ 29%] Generating EusLisp code from swarm_exp_msgs/DtgFFEdge.msg
+[ 30%] Generating Python from MSG swarm_exp_msgs/DtgHHEdge
+[ 31%] Generating EusLisp code from swarm_exp_msgs/DtgHFEdge.msg
+[ 31%] Generating EusLisp code from swarm_exp_msgs/DtgHHEdge.msg
+[ 31%] Generating Python from MSG swarm_exp_msgs/DtgHNode
+[ 32%] Generating EusLisp code from swarm_exp_msgs/DtgHNode.msg
+[ 34%] Generating Python from MSG swarm_exp_msgs/DtgFNode
+[ 35%] Generating EusLisp code from swarm_exp_msgs/DtgFNode.msg
+[ 35%] Generating EusLisp code from swarm_exp_msgs/DtgBag.msg
+[ 36%] Generating Python from MSG swarm_exp_msgs/DtgBag
+[ 37%] Generating EusLisp code from swarm_exp_msgs/IdOdom.msg
+[ 38%] Generating EusLisp code from swarm_exp_msgs/IdPose.msg
+[ 38%] Generating Python from MSG swarm_exp_msgs/IdOdom
+[ 38%] Generating EusLisp manifest code for swarm_exp_msgs
+[ 39%] Generating Python from MSG swarm_exp_msgs/IdPose
+[ 40%] Generating Python msg __init__.py for swarm_exp_msgs
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+[ 40%] Built target swarm_exp_msgs_generate_messages_py
+Scanning dependencies of target exp_comm_msgs_generate_messages_nodejs
+[ 41%] Generating Javascript code from exp_comm_msgs/DtgBagAnswer.msg
+[ 41%] Generating Javascript code from exp_comm_msgs/DtgBagC.msg
+[ 42%] Generating Javascript code from exp_comm_msgs/SwarmTrajC.msg
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+[ 43%] Generating Javascript code from exp_comm_msgs/IdPoseC.msg
+[ 43%] Built target swarm_exp_msgs_generate_messages_eus
+Scanning dependencies of target exp_comm_msgs_generate_messages_cpp
+[ 43%] Generating Javascript code from exp_comm_msgs/SwarmJobC.msg
+[ 43%] Generating C++ code from exp_comm_msgs/DtgBagAnswer.msg
+[ 44%] Generating Javascript code from exp_comm_msgs/SwarmStateC.msg
+[ 45%] Generating C++ code from exp_comm_msgs/DtgBagC.msg
+[ 46%] Generating Javascript code from exp_comm_msgs/MapC.msg
+[ 46%] Generating Javascript code from exp_comm_msgs/MapReqC.msg
+[ 46%] Generating C++ code from exp_comm_msgs/SwarmTrajC.msg
+[ 46%] Built target exp_comm_msgs_generate_messages_nodejs
+Scanning dependencies of target exp_comm_msgs_generate_messages_lisp
+[ 47%] Generating C++ code from exp_comm_msgs/IdPoseC.msg
+[ 48%] Generating Lisp code from exp_comm_msgs/DtgBagAnswer.msg
+[ 48%] Generating Lisp code from exp_comm_msgs/DtgBagC.msg
+[ 50%] Generating C++ code from exp_comm_msgs/SwarmJobC.msg
+[ 51%] Generating Lisp code from exp_comm_msgs/SwarmTrajC.msg
+[ 51%] Generating C++ code from exp_comm_msgs/SwarmStateC.msg
+[ 52%] Generating Lisp code from exp_comm_msgs/IdPoseC.msg
+[ 53%] Generating Lisp code from exp_comm_msgs/SwarmJobC.msg
+[ 53%] Generating C++ code from exp_comm_msgs/MapC.msg
+[ 54%] Generating Lisp code from exp_comm_msgs/SwarmStateC.msg
+[ 55%] Generating C++ code from exp_comm_msgs/MapReqC.msg
+[ 56%] Generating Lisp code from exp_comm_msgs/MapC.msg
+[ 56%] Generating Lisp code from exp_comm_msgs/MapReqC.msg
+[ 56%] Built target exp_comm_msgs_generate_messages_cpp
+[ 56%] Built target exp_comm_msgs_generate_messages_lisp
+Scanning dependencies of target multisim_gazebo_generate_messages_py
+[ 56%] Generating Python from MSG multisim_gazebo/IdOdom
+Scanning dependencies of target computation_statistician
+[ 57%] Building CXX object GVP-MREP/data_statistics/CMakeFiles/computation_statistician.dir/src/computation_statistician.cpp.o
+[ 58%] Generating Python from MSG multisim_gazebo/states
+[ 59%] Generating Python msg __init__.py for multisim_gazebo
+[ 59%] Built target multisim_gazebo_generate_messages_py
+Scanning dependencies of target multisim_gazebo_generate_messages_eus
+[ 60%] Generating EusLisp code from multisim_gazebo/IdOdom.msg
+[ 61%] Generating EusLisp code from multisim_gazebo/states.msg
+[ 61%] Generating EusLisp manifest code for multisim_gazebo
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+/comparison/gvp_ws/src/GVP-MREP/data_statistics/src/computation_statistician.cpp: In member function ‘void ComputationStatistician::init(ros::NodeHandle&, ros::NodeHandle&)’:
+/comparison/gvp_ws/src/GVP-MREP/data_statistics/src/computation_statistician.cpp:40:11: warning: ignoring return value of ‘int system(const char*)’, declared with attribute warn_unused_result [-Wunused-result]
+   40 |     system(command.c_str());
+      |     ~~~~~~^~~~~~~~~~~~~~~~~
+[ 61%] Built target multisim_gazebo_generate_messages_eus
+Scanning dependencies of target yaw_planner
+[ 62%] Building CXX object GVP-MREP/Trajectory/yaw_planner/CMakeFiles/yaw_planner.dir/src/yaw_planner.cpp.o
+[ 63%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libcomputation_statistician.so
+[ 63%] Built target computation_statistician
+Scanning dependencies of target swarm_exp_msgs_generate_messages
+[ 63%] Built target swarm_exp_msgs_generate_messages
+Scanning dependencies of target exp_comm_msgs_generate_messages_eus
+[ 63%] Generating EusLisp code from exp_comm_msgs/DtgBagAnswer.msg
+[ 64%] Generating EusLisp code from exp_comm_msgs/DtgBagC.msg
+[ 64%] Generating EusLisp code from exp_comm_msgs/SwarmTrajC.msg
+[ 65%] Generating EusLisp code from exp_comm_msgs/IdPoseC.msg
+[ 67%] Generating EusLisp code from exp_comm_msgs/SwarmJobC.msg
+[ 67%] Generating EusLisp code from exp_comm_msgs/SwarmStateC.msg
+[ 68%] Generating EusLisp code from exp_comm_msgs/MapC.msg
+[ 69%] Generating EusLisp code from exp_comm_msgs/MapReqC.msg
+[ 69%] Generating EusLisp manifest code for exp_comm_msgs
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+[ 69%] Built target exp_comm_msgs_generate_messages_eus
+Scanning dependencies of target exp_comm_msgs_generate_messages_py
+[ 70%] Generating Python from MSG exp_comm_msgs/DtgBagAnswer
+[ 70%] Generating Python from MSG exp_comm_msgs/DtgBagC
+[ 71%] Generating Python from MSG exp_comm_msgs/SwarmTrajC
+[ 72%] Generating Python from MSG exp_comm_msgs/IdPoseC
+[ 72%] Generating Python from MSG exp_comm_msgs/SwarmJobC
+[ 73%] Generating Python from MSG exp_comm_msgs/SwarmStateC
+[ 74%] Generating Python from MSG exp_comm_msgs/MapC
+[ 74%] Generating Python from MSG exp_comm_msgs/MapReqC
+[ 75%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libyaw_planner.so
+[ 76%] Generating Python msg __init__.py for exp_comm_msgs
+[ 76%] Built target yaw_planner
+[ 76%] Built target exp_comm_msgs_generate_messages_py
+Scanning dependencies of target multisim_gazebo_generate_messages
+[ 76%] Built target multisim_gazebo_generate_messages
+Scanning dependencies of target exp_comm_msgs_generate_messages
+[ 76%] Built target exp_comm_msgs_generate_messages
+Scanning dependencies of target multi_rotors
+[ 76%] Building CXX object GVP-MREP/Communication/multisim_gazebo/CMakeFiles/multi_rotors.dir/src/multi_rotors.cpp.o
+[ 76%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libtraj_opt.so
+[ 77%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmulti_rotors.so
+[ 77%] Built target traj_opt
+[ 77%] Built target multi_rotors
+Scanning dependencies of target multi_rotors_node
+[ 77%] Building CXX object GVP-MREP/Communication/multisim_gazebo/CMakeFiles/multi_rotors_node.dir/src/multi_rotors_node.cpp.o
+Scanning dependencies of target swarm_data
+[ 78%] Building CXX object GVP-MREP/Communication/swarm_data/CMakeFiles/swarm_data.dir/src/swarm_data.cpp.o
+Scanning dependencies of target traj_exc_node
+[ 78%] Building CXX object GVP-MREP/Trajectory/traj_exc/CMakeFiles/traj_exc_node.dir/src/traj_exc_node.cpp.o
+[ 79%] Linking CXX executable /comparison/gvp_ws/devel/lib/multisim_gazebo/multi_rotors_node
+[ 79%] Built target multi_rotors_node
+Scanning dependencies of target swarm_exp_bridge_tcp_sim
+[ 79%] Building CXX object GVP-MREP/Communication/swarm_bridge/CMakeFiles/swarm_exp_bridge_tcp_sim.dir/src/bridge_ros_tcp_sim.cpp.o
+[ 80%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libswarm_data.so
+[ 80%] Built target swarm_data
+Scanning dependencies of target swarm_exp_bridge_tcp
+[ 80%] Building CXX object GVP-MREP/Communication/swarm_bridge/CMakeFiles/swarm_exp_bridge_tcp.dir/src/bridge_ros_tcp.cpp.o
+[ 81%] Linking CXX executable /comparison/gvp_ws/devel/lib/swarm_exp_bridge/swarm_exp_bridge_tcp_sim
+[ 81%] Built target swarm_exp_bridge_tcp_sim
+Scanning dependencies of target block_map_color
+[ 81%] Building CXX object GVP-MREP/Mapping/block_map/CMakeFiles/block_map_color.dir/src/color_manager.cpp.o
+[ 82%] Linking CXX executable /comparison/gvp_ws/devel/lib/traj_exc/traj_exc_node
+[ 82%] Built target traj_exc_node
+Scanning dependencies of target block_map_raycast
+[ 84%] Building CXX object GVP-MREP/Mapping/block_map/CMakeFiles/block_map_raycast.dir/src/raycast.cpp.o
+[ 85%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libblock_map_color.so
+[ 85%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libblock_map_raycast.so
+[ 85%] Built target block_map_color
+[ 85%] Built target block_map_raycast
+Scanning dependencies of target block_map_grid
+[ 85%] Building CXX object GVP-MREP/Mapping/block_map/CMakeFiles/block_map_grid.dir/src/block_map.cpp.o
+[ 86%] Linking CXX executable /comparison/gvp_ws/devel/lib/swarm_exp_bridge/swarm_exp_bridge_tcp
+[ 86%] Built target swarm_exp_bridge_tcp
+[ 87%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libblock_map_grid.so
+[ 87%] Built target block_map_grid
+Scanning dependencies of target lowres_map
+[ 88%] Building CXX object GVP-MREP/Mapping/lowres_map/CMakeFiles/lowres_map.dir/src/lowres_map.cpp.o
+[ 88%] Building CXX object GVP-MREP/Mapping/lowres_map/CMakeFiles/lowres_map.dir/src/path_search.cpp.o
+[ 89%] Linking CXX shared library /comparison/gvp_ws/devel/lib/liblowres_map.so
+[ 89%] Built target lowres_map
+Scanning dependencies of target frontier_grid
+[ 89%] Building CXX object GVP-MREP/Mapping/frontier_grid/CMakeFiles/frontier_grid.dir/src/frontier_grid.cpp.o
+[ 90%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libfrontier_grid.so
+[ 90%] Built target frontier_grid
+Scanning dependencies of target multiDTG
+[ 90%] Building CXX object GVP-MREP/Exploration/multiDTG/CMakeFiles/multiDTG.dir/src/multiDTG.cpp.o
+[ 91%] Building CXX object GVP-MREP/Exploration/multiDTG/CMakeFiles/multiDTG.dir/src/multiDTG_path_search.cpp.o
+[ 92%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmultiDTG.so
+[ 92%] Built target multiDTG
+Scanning dependencies of target graph_partition
+[ 92%] Building CXX object GVP-MREP/Exploration/graph_partition/CMakeFiles/graph_partition.dir/src/graph_partition.cpp.o
+[ 93%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libgraph_partition.so
+[ 93%] Built target graph_partition
+Scanning dependencies of target swarm_trigger
+[ 93%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/swarm_trigger.dir/src/swarm_trigger.cpp.o
+Scanning dependencies of target ground
+Scanning dependencies of target murder_swarm
+[ 93%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/ground.dir/src/ground.cpp.o
+[ 93%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm.dir/src/murder.cpp.o
+[ 94%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/swarm_trigger
+[ 94%] Built target swarm_trigger
+[ 95%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libground.so
+[ 95%] Built target ground
+Scanning dependencies of target ground_node
+[ 96%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/ground_node.dir/src/ground_node.cpp.o
+[ 97%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmurder_swarm.so
+[ 97%] Built target murder_swarm
+Scanning dependencies of target murder_swarm_fsm
+[ 97%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm_fsm.dir/src/murderFSM.cpp.o
+[ 97%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/ground_node
+[ 97%] Built target ground_node
+[ 98%] Linking CXX shared library /comparison/gvp_ws/devel/lib/libmurder_swarm_fsm.so
+[ 98%] Built target murder_swarm_fsm
+Scanning dependencies of target murder_swarm_node
+[100%] Building CXX object GVP-MREP/Exploration/murder_swarm/CMakeFiles/murder_swarm_node.dir/src/murder_node.cpp.o
+[100%] Linking CXX executable /comparison/gvp_ws/devel/lib/murder_swarm/murder_swarm_node
+[100%] Built target murder_swarm_node
+WARNING: Package name "multiDTG" does not follow the naming conventions. It should start with a lower case letter and only contain lower case letters, digits, underscores, and dashes.
+Base path: /comparison/gvp_ws
+Source space: /comparison/gvp_ws/src
+Build space: /comparison/gvp_ws/build
+Devel space: /comparison/gvp_ws/devel
+Install space: /comparison/gvp_ws/install
+Creating symlink "/comparison/gvp_ws/src/CMakeLists.txt" pointing to "/opt/ros/noetic/share/catkin/cmake/toplevel.cmake"
+####
+#### Running command: "cmake /comparison/gvp_ws/src -DCMAKE_BUILD_TYPE=Release -DCATKIN_DEVEL_PREFIX=/comparison/gvp_ws/devel -DCMAKE_INSTALL_PREFIX=/comparison/gvp_ws/install -G Unix Makefiles" in "/comparison/gvp_ws/build"
+####
+####
+#### Running command: "make -j3 -l3" in "/comparison/gvp_ws/build"
+####

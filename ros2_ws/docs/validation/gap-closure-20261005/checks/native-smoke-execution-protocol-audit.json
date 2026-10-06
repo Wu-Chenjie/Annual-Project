@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "status": "PASS",
+  "errors": [],
+  "proposals": 46,
+  "captured_curve_commands": 42,
+  "lease_intervals": 42,
+  "handoffs": [
+    {
+      "token": "0:1687289b:1206008",
+      "old_token": "0:1687289b:1206007",
+      "authorized_at": 49.2,
+      "continuity": {
+        "position": 1.3322676295501878e-15,
+        "velocity": 9.759943393759652e-16,
+        "acceleration": 8.935021601524638e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 50.14
+    },
+    {
+      "token": "2:bf29a653:1021009",
+      "old_token": "2:bf29a653:1021008",
+      "authorized_at": 55.201,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 2.4276213934271013e-16,
+        "acceleration": 1.355199909595506e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 55.661
+    },
+    {
+      "token": "1:2e1048c6:1206009",
+      "old_token": "1:2e1048c6:1206008",
+      "authorized_at": 58.400000000000006,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 4.3709524189038457e-16,
+        "acceleration": 8.545291686047604e-16,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 58.50000000000001
+    },
+    {
+      "token": "1:2e1048c6:1206014",
+      "old_token": "1:2e1048c6:1206013",
+      "authorized_at": 88.0,
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 2.217712176767239e-15,
+        "acceleration": 3.1929544796101374e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 88.82100000000001
+    },
+    {
+      "token": "2:bf29a653:1021017",
+      "old_token": "2:bf29a653:1021016",
+      "authorized_at": 100.4,
+      "continuity": {
+        "position": 0.0,
+        "velocity": 2.342840229615247e-16,
+        "acceleration": 6.973502068242161e-17,
+        "yaw": 0.0,
+        "yaw_rate": 2.7755575615628914e-17,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 100.72000000000001
+    }
+  ],
+  "cached_route_chains": [],
+  "legacy_cache_labels_without_execution_provenance": [],
+  "legacy_executor_epoch_bindings": 0,
+  "post_cancel_static_hold_packets": 0,
+  "note": "Telemetry verifies captured curve immutability, analytic limits, C2 boundaries, logged ACK sets, regional exclusion and actual executor tokens. It does not certify unrecorded packets or replace collision/true-flight acceptance."
+}

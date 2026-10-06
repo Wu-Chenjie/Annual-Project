@@ -1,0 +1,417 @@
+[
+  {
+    "system": "Annual (current)",
+    "result": {
+      "mode": "annual",
+      "t": 116.654,
+      "wall_seconds": 129.71850745499998,
+      "coverage": 0.9546547293376441,
+      "t90": 113.585,
+      "t95": 116.654,
+      "distance_m": {
+        "0": 22.351007168503685,
+        "1": 20.90082573311009
+      },
+      "contacts": 0,
+      "min_separation_m": 2.346130394346822,
+      "max_measured_speed_mps": 0.7560218716733296,
+      "max_command_speed_mps": 0.6,
+      "max_command_acc_mps2": 0.8000000000000013,
+      "tracking_error_p95_m": 0.03828338138776317,
+      "counts": {
+        "odom_0": 11666,
+        "odom_1": 11666,
+        "cloud_0": 584,
+        "cloud_1": 584,
+        "estimated_0": 5833,
+        "estimated_1": 5833,
+        "native_commands": 11663,
+        "observation_1": 292,
+        "observation_0": 292
+      },
+      "positions": {
+        "0": [
+          4.4862259788083465,
+          0.6774262876300893,
+          1.9479435102230602
+        ],
+        "1": [
+          1.545456632546921,
+          -1.2870498387410543,
+          2.5426181175814544
+        ]
+      },
+      "native_seen": [
+        0,
+        1
+      ],
+      "adapter_command_age_p95_s": 0.03100000000000591,
+      "truth_free_voxels": 12063,
+      "per_drone_coverage": [
+        0.6774434220343198,
+        0.5535936334245213
+      ],
+      "overlap_free_voxels": 3311,
+      "raw_planner_max_speed_mps": 0.5911329820035586,
+      "raw_planner_max_acc_mps2": 0.5604093236538934,
+      "status": "COVERAGE_TARGET",
+      "geometric_collision_events": [],
+      "failure_reason": null
+    },
+    "valid_completed_trial": true,
+    "exploration_t95_s": 96.654,
+    "tail_90_to_95_s": 3.0690000000000026,
+    "mission_distance_m": {
+      "0": 21.099680368100692,
+      "1": 19.627773586949452
+    },
+    "mission_total_distance_m": 40.727453955050144,
+    "sampled_fleet_s": 193.29799999998085,
+    "expected_fleet_s": 193.308,
+    "low_speed_fraction": 0.494542105971137,
+    "pose_difference_low_speed_fraction": 0.49544227048396144,
+    "maximum_pose_difference_speed_mps": 5.59403183336914,
+    "maximum_true_velocity_mps": 0.7560218716733296,
+    "low_speed_definition": "True Gazebo linear speed <0.1 m/s, time-weighted over t=20 through result time; pose-difference estimate reported separately.",
+    "missing_pose_interval_s": {
+      "0": 0.0,
+      "1": 0.0
+    },
+    "final_distinct_team_free_voxels": 11516,
+    "final_overlap_free_voxels": 3311,
+    "final_overlap_fraction_of_team_free": 0.2875130253560264,
+    "overlap_note": "Final observed-free set intersection, not a duplicate-service or wasted-work ratio.",
+    "coverage_replay": {
+      "recomputed": {
+        "coverage": 0.9545718312194313,
+        "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+        "legacy_center_free_coverage": 0.9212837298419287,
+        "truth_free_voxels": 12063,
+        "observed_free_voxels": 11515,
+        "unobserved_free_voxels": 502,
+        "falsely_occupied_free_voxels": 46
+      },
+      "logged_coverage": 0.9546547293376441,
+      "difference": -8.289811821271531e-05,
+      "integrated_frames": [
+        292,
+        292
+      ],
+      "logged_observation_frames": [
+        292,
+        292
+      ],
+      "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+    },
+    "checks": {
+      "reference_speed_cap": true,
+      "reference_acceleration_cap": true,
+      "native_commands_from_both_uavs": true,
+      "recorded_sensor_stream_valid": true,
+      "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+      "recorded_counts": {
+        "clock": 12655,
+        "cloud_0": 584,
+        "cloud_1": 584,
+        "odom_0": 5833,
+        "odom_1": 5833
+      },
+      "recorded_sim_hz": {
+        "clock": 108.48114396426826,
+        "cloud_0": 5.000085764764404,
+        "cloud_1": 5.000085764764404,
+        "odom_0": 50.0,
+        "odom_1": 50.0
+      },
+      "final_coverage_replay_difference": -8.289811821271531e-05,
+      "final_coverage_replay_target": true,
+      "process_cleanup": {
+        "ros2": {
+          "partition": "comparison_trial-annual-900",
+          "signals": [],
+          "remaining": []
+        }
+      }
+    }
+  },
+  {
+    "system": "RACER",
+    "result": {
+      "mode": "racer",
+      "t": 38.907,
+      "wall_seconds": 49.547371795000004,
+      "coverage": 0.9624471524496394,
+      "t90": 35.838,
+      "t95": 38.907,
+      "distance_m": {
+        "0": 12.256512137438795,
+        "1": 10.924376131952165
+      },
+      "contacts": 0,
+      "min_separation_m": 1.4851981102586482,
+      "max_measured_speed_mps": 0.7819175963511873,
+      "max_command_speed_mps": 0.6000000000000001,
+      "max_command_acc_mps2": 0.8000000000000012,
+      "tracking_error_p95_m": 0.06383646434071139,
+      "counts": {
+        "odom_1": 3891,
+        "odom_0": 3891,
+        "cloud_0": 195,
+        "cloud_1": 195,
+        "estimated_1": 1945,
+        "estimated_0": 1945,
+        "observation_0": 97,
+        "observation_1": 97,
+        "native_commands": 3739
+      },
+      "positions": {
+        "1": [
+          2.1003102656663755,
+          3.399972966825207,
+          1.623339404073438
+        ],
+        "0": [
+          1.3668046821506872,
+          -3.3069584271154393,
+          2.3656983719997515
+        ]
+      },
+      "native_seen": [
+        0,
+        1
+      ],
+      "adapter_command_age_p95_s": 0.038000000000000256,
+      "truth_free_voxels": 12063,
+      "per_drone_coverage": [
+        0.7202188510320816,
+        0.6290309209980933
+      ],
+      "overlap_free_voxels": 4646,
+      "raw_planner_max_speed_mps": 1.0773568301636647,
+      "raw_planner_max_acc_mps2": 1.5546352196890183,
+      "status": "COVERAGE_TARGET",
+      "geometric_collision_events": [],
+      "failure_reason": null
+    },
+    "valid_completed_trial": true,
+    "exploration_t95_s": 18.906999999999996,
+    "tail_90_to_95_s": 3.0689999999999955,
+    "mission_distance_m": {
+      "0": 11.005271477016798,
+      "1": 9.651242886379741
+    },
+    "mission_total_distance_m": 20.65651436339654,
+    "sampled_fleet_s": 37.80200000000001,
+    "expected_fleet_s": 37.81399999999999,
+    "low_speed_fraction": 0.04264324638907989,
+    "pose_difference_low_speed_fraction": 0.04182318395852079,
+    "maximum_pose_difference_speed_mps": 6.101913754898061,
+    "maximum_true_velocity_mps": 0.7819175963511873,
+    "low_speed_definition": "True Gazebo linear speed <0.1 m/s, time-weighted over t=20 through result time; pose-difference estimate reported separately.",
+    "missing_pose_interval_s": {
+      "0": 0.0,
+      "1": 0.0
+    },
+    "final_distinct_team_free_voxels": 11610,
+    "final_overlap_free_voxels": 4646,
+    "final_overlap_fraction_of_team_free": 0.4001722652885444,
+    "overlap_note": "Final observed-free set intersection, not a duplicate-service or wasted-work ratio.",
+    "coverage_replay": {
+      "recomputed": {
+        "coverage": 0.9618668656221504,
+        "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+        "legacy_center_free_coverage": 0.9281494491457768,
+        "truth_free_voxels": 12063,
+        "observed_free_voxels": 11603,
+        "unobserved_free_voxels": 406,
+        "falsely_occupied_free_voxels": 54
+      },
+      "logged_coverage": 0.9624471524496394,
+      "difference": -0.0005802868274890072,
+      "integrated_frames": [
+        97,
+        97
+      ],
+      "logged_observation_frames": [
+        97,
+        97
+      ],
+      "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+    },
+    "checks": {
+      "reference_speed_cap": true,
+      "reference_acceleration_cap": true,
+      "native_commands_from_both_uavs": true,
+      "recorded_sensor_stream_valid": true,
+      "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+      "recorded_counts": {
+        "clock": 4166,
+        "cloud_0": 195,
+        "cloud_1": 195,
+        "odom_1": 1945,
+        "odom_0": 1945
+      },
+      "recorded_sim_hz": {
+        "clock": 107.08041958041957,
+        "cloud_0": 5.000257745244601,
+        "cloud_1": 5.000257745244601,
+        "odom_1": 50.0,
+        "odom_0": 50.0
+      },
+      "final_coverage_replay_difference": -0.0005802868274890072,
+      "final_coverage_replay_target": true,
+      "process_cleanup": {
+        "ros2": {
+          "partition": "comparison_trial-racer-900",
+          "signals": [],
+          "remaining": []
+        },
+        "ros1": {
+          "partition": "comparison_trial-racer-900",
+          "signals": [],
+          "remaining": []
+        }
+      }
+    }
+  },
+  {
+    "system": "GVP-MREP",
+    "result": {
+      "mode": "gvp",
+      "t": 56.298,
+      "wall_seconds": 66.56694344899995,
+      "coverage": 0.9633590317499793,
+      "t90": 54.252,
+      "t95": 56.298,
+      "distance_m": {
+        "0": 9.200275036036247,
+        "1": 21.534767828974786
+      },
+      "contacts": 0,
+      "min_separation_m": 4.143504734623721,
+      "max_measured_speed_mps": 0.784330315566689,
+      "max_command_speed_mps": 0.6,
+      "max_command_acc_mps2": 0.8000000000000014,
+      "tracking_error_p95_m": 0.07669988823170723,
+      "counts": {
+        "odom_0": 5630,
+        "odom_1": 5630,
+        "cloud_0": 282,
+        "cloud_1": 282,
+        "estimated_0": 2815,
+        "estimated_1": 2815,
+        "observation_0": 141,
+        "observation_1": 141,
+        "native_commands": 2148
+      },
+      "positions": {
+        "0": [
+          -3.327026476786578,
+          -3.7784131224704973,
+          1.755955754173276
+        ],
+        "1": [
+          3.452513551642629,
+          -1.0696132846772528,
+          1.2831990037195158
+        ]
+      },
+      "native_seen": [
+        0,
+        1
+      ],
+      "adapter_command_age_p95_s": 0.03300000000000125,
+      "truth_free_voxels": 12063,
+      "per_drone_coverage": [
+        0.2979358368565034,
+        0.7605902346016745
+      ],
+      "overlap_free_voxels": 1140,
+      "raw_planner_max_speed_mps": 0.6000000000000001,
+      "raw_planner_max_acc_mps2": 0.8000000000000003,
+      "status": "COVERAGE_TARGET",
+      "geometric_collision_events": [],
+      "failure_reason": null
+    },
+    "valid_completed_trial": true,
+    "exploration_t95_s": 36.298,
+    "tail_90_to_95_s": 2.0459999999999994,
+    "mission_distance_m": {
+      "0": 7.949584839908115,
+      "1": 20.262071717605266
+    },
+    "mission_total_distance_m": 28.211656557513383,
+    "sampled_fleet_s": 72.58199999999817,
+    "expected_fleet_s": 72.596,
+    "low_speed_fraction": 0.31966603290072715,
+    "pose_difference_low_speed_fraction": 0.3196660329007272,
+    "maximum_pose_difference_speed_mps": 0.9914820768366328,
+    "maximum_true_velocity_mps": 0.784330315566689,
+    "low_speed_definition": "True Gazebo linear speed <0.1 m/s, time-weighted over t=20 through result time; pose-difference estimate reported separately.",
+    "missing_pose_interval_s": {
+      "0": 0.0,
+      "1": 0.0
+    },
+    "final_distinct_team_free_voxels": 11621,
+    "final_overlap_free_voxels": 1140,
+    "final_overlap_fraction_of_team_free": 0.09809827037260133,
+    "overlap_note": "Final observed-free set intersection, not a duplicate-service or wasted-work ratio.",
+    "coverage_replay": {
+      "recomputed": {
+        "coverage": 0.962861643040703,
+        "coverage_definition": "observed-free / geometrically fully-free voxels; box/cylinder intersection",
+        "legacy_center_free_coverage": 0.9303049656714035,
+        "truth_free_voxels": 12063,
+        "observed_free_voxels": 11615,
+        "unobserved_free_voxels": 430,
+        "falsely_occupied_free_voxels": 18
+      },
+      "logged_coverage": 0.9633590317499793,
+      "difference": -0.0004973887092762919,
+      "integrated_frames": [
+        141,
+        141
+      ],
+      "logged_observation_frames": [
+        141,
+        141
+      ],
+      "note": "Replay of recorded clock-stamped estimated pose and raw native LiDAR; independent of planner map and logged coverage. Callback receipt ordering and transport pose downsampling may change boundary voxels."
+    },
+    "checks": {
+      "reference_speed_cap": true,
+      "reference_acceleration_cap": true,
+      "native_commands_from_both_uavs": true,
+      "recorded_sensor_stream_valid": true,
+      "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+      "recorded_counts": {
+        "clock": 6072,
+        "cloud_0": 282,
+        "cloud_1": 282,
+        "odom_0": 2815,
+        "odom_1": 2815
+      },
+      "recorded_sim_hz": {
+        "clock": 107.85219399538106,
+        "cloud_0": 5.000177942275526,
+        "cloud_1": 5.000177942275526,
+        "odom_0": 50.0,
+        "odom_1": 50.0
+      },
+      "final_coverage_replay_difference": -0.0004973887092762919,
+      "final_coverage_replay_target": true,
+      "process_cleanup": {
+        "ros2": {
+          "partition": "comparison_trial-gvp-900",
+          "signals": [],
+          "remaining": []
+        },
+        "ros1": {
+          "partition": "comparison_trial-gvp-900",
+          "signals": [],
+          "remaining": []
+        }
+      }
+    }
+  }
+]

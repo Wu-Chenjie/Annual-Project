@@ -1,0 +1,578 @@
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+........................................................................ [ 69%]
+.........................................FF..FFFFF...................... [ 92%]
+..................FFFF                                                   [100%]
+=================================== FAILURES ===================================
+________ test_agent_feedback_persists_streak_and_success_across_restart ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_agent_feedback_persists_s0')
+
+    def test_agent_feedback_persists_streak_and_success_across_restart(tmp_path):
+        config = ROOT/'ros2_ws/src/annual_swarm/config/exploration_priority.yaml'
+        rclpy.init(args=['--ros-args', '--params-file', str(config),
+                        '-p', 'bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', f'output_dir:={tmp_path}'])
+        node = ExplorationAgent()
+        try:
+            assert node.fusion.priority.config.retry_base_s == 15.
+            node.now = lambda: 100.
+            node.position = np.array([2.25, 2.25, 1.65])
+            node.bootstrapped = node.rejoin_ready = True
+            node.replica.map.state[:] = 0
+            node.replica.map.state.ravel()[100:200] = -1
+            node.replica.map.rebuild()
+            def observe(gain):
+                node.intent = dict(committed=True, path=[node.position.tolist()], yaw=0., token='test')
+                node.selection = dict(transit=False); node.active = 7
+                node.view_start_cells = np.arange(100, 200)
+                node.view_start_known = int(np.count_nonzero(node.replica.map.state != -1))
+                node.replica.map.state.ravel()[100:100+gain] = 0
+                node.execution = dict(epoch=node.epoch, arrived=True, ready=True)
+                node.heartbeat()
+>           observe(0)
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:77: in observe
+    node.heartbeat()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <decentralized_agent_node.ExplorationAgent object at 0xf6a8c2742e10>
+
+    
+    def heartbeat(self):
+        if self.position is None:
+            return
+        t = self.now(); self.ready = self.execution.get('ready', False)
+        self.handoff_timing.observe_clock(t, time.monotonic())
+        if t-self.last_map_dump >= 20.:
+            np.savez_compressed(self.output/'map_latest.npz', state=self.replica.map.state,
+                bounds=self.replica.map.bounds, resolution=self.replica.map.resolution, position=self.position, yaw=self.yaw)
+            self.last_map_dump = t
+        if not self.bootstrapped and 'epoch' in self.execution:
+            self.epoch = max(self.epoch, int(self.execution['epoch']), int(t*1e6))+1
+            self.publish(self.command_pub, dict(epoch=self.epoch, cancel=True, scan=True, reason='incarnation_start'))
+            self.bootstrap_pub.publish(String(data=json.dumps(dict(session=self.fusion.graph.replica.session))))
+            self.bootstrapped = True
+        if self.bootstrapped and not self.rejoin_ready:
+            stopped = self.execution.get('epoch') == self.epoch and self.execution.get('arrived') and self.speed < .08
+            if stopped:
+                if self.join_stopped_since is None:self.join_stopped_since = t
+                if t-self.join_stopped_since >= .5:
+                    self.rejoin_ready = True
+                    self.event('incarnation_ready', epoch=self.epoch)
+            else:self.join_stopped_since = None
+        if self.retiring:
+            stopped = self.execution.get('epoch') == self.stop_epoch and self.execution.get('arrived') and self.speed < .08
+            if stopped:
+                if self.stop_since is None:
+                    self.stop_since = t
+                if t-self.stop_since >= .5:
+                    self.event('reservation_retired', token=self.retiring['token'], stop_epoch=self.stop_epoch)
+                    self.retiring = None
+                    self.retiring_extra = []
+            else:
+                self.stop_since = None
+        if self.intent and not self.intent.get('committed') and self.ledger.loses(self.intent):
+            self.withdraw('peer_priority')
+        self.manage_pending(t)
+        self.acks = self.ledger.acknowledge(self.state(), t)
+        if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
+            # Sensing can invalidate an intent while its ACKs are in flight.
+            self.update_local_geometry()
+            runtime = self.reserved_map()
+            if self.intent.get('recovery'):
+                runtime.clearance = .5
+                runtime.recovery_yaw = self.intent['yaw']
+            if not runtime.safe_path(self.intent['path']):
+                self.withdraw('intent_invalidated_before_commit')
+            elif self.intent.get('purpose','explore')=='explore' and not team_new_cells(
+                    visible_cells(runtime,self.intent['path'][-1],self.intent['yaw']),
+                    known_mask(runtime,self.fusion.graph.observed_mask(runtime))):
+                self.withdraw('latest_team_gain_empty_before_commit')
+        if self.intent and not self.intent.get('committed') and self.ledger.quorum(self.intent['token'], t, self.intent.get('voters')):
+            self.intent['committed'] = True; self.intent['committed_at'] = t; self.commits += 1
+            self.begin_service()
+            self.publish(self.command_pub, dict(epoch=self.epoch, path=self.intent['path'], yaw=self.intent['yaw'],
+                                               region=self.active, token=self.intent['token'], candidate_id=self.intent['candidate_id'],
+                                               trajectory=self.intent.get('trajectory'), observation_grid=self.intent['observation_grid']))
+            self.event('path_committed', token=self.intent['token'], region=self.active, quorum=self.intent['voters'],
+                       predicted_frontier_volume_m3=self.selection['gain'], lookahead=self.selection['lookahead'],
+                       exploration_priority=self.selection.get('priority'))
+            if self.selection.get('switch_origin'):
+                origin=self.selection['switch_origin']
+                self.event('cached_route_switched' if origin['candidate']!=self.selection['pool'].active.id else 'cached_route_refitted',
+                           region=self.active, token=self.intent['token'],
+                           candidate=self.selection['pool'].active.id, origin=self.selection['switch_origin'],
+                           actual_start=self.position.tolist(), actual_speed=self.speed, map_version=self.replica.map.version,
+                           team_gain_estimate=self.selection['gain'])
+>       if self.intent and self.intent.get('committed') and self.execution.get('arrived') and self.execution.get('epoch') == self.intent.get('epoch', self.epoch):
+E       KeyError: 'purpose'
+
+ros2_ws/src/annual_swarm/scripts/decentralized_agent_node.py:385: KeyError
+__ test_moving_service_feedback_records_consumed_pose_and_not_unvisited_goal ___
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_moving_service_feedback_r0')
+
+    def test_moving_service_feedback_records_consumed_pose_and_not_unvisited_goal(tmp_path):
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[transit] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_early_handoff_cannot_leav0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf6a8c3a89820>
+peer_case = 'transit'
+
+    @pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+    def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
+        from core.planning.continuous_trajectory import interpolate
+        from core.planning.path_quality import Candidate,RankedPathPool
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[earlier] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_early_handoff_cannot_leav1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf6a8c3a88b00>
+peer_case = 'earlier'
+
+    @pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+    def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
+        from core.planning.continuous_trajectory import interpolate
+        from core.planning.path_quality import Candidate,RankedPathPool
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[later] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_early_handoff_cannot_leav2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf6a8c3a8a300>
+peer_case = 'later'
+
+    @pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+    def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
+        from core.planning.continuous_trajectory import interpolate
+        from core.planning.path_quality import Candidate,RankedPathPool
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[changes_before_authorization] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_early_handoff_cannot_leav3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf6a8c3a8ad50>
+peer_case = 'changes_before_authorization'
+
+    @pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+    def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
+        from core.planning.continuous_trajectory import interpolate
+        from core.planning.path_quality import Candidate,RankedPathPool
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[split_before_authorization] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_early_handoff_cannot_leav4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0xf6a8c3a8b410>
+peer_case = 'split_before_authorization'
+
+    @pytest.mark.parametrize('peer_case',['transit','earlier','later','changes_before_authorization','split_before_authorization'])
+    def test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient(tmp_path,monkeypatch,peer_case):
+        from core.planning.continuous_trajectory import interpolate
+        from core.planning.path_quality import Candidate,RankedPathPool
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_priority_ros.py:155: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+__________ test_wall_watchdog_runs_while_simulation_clock_is_stopped ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_wall_watchdog_runs_while_0')
+
+    def test_wall_watchdog_runs_while_simulation_clock_is_stopped(tmp_path):
+>       rclpy.init(args=['--ros-args','-p','use_sim_time:=true',
+                        '-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_worker_ros.py:35: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'use_sim_time:=true', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[deadline] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_agent_retains_authorized_0')
+fault = 'deadline'
+
+    @pytest.mark.parametrize('fault',['deadline','worker_crash','observation_loss'])
+    def test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss(tmp_path,fault):
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_worker_ros.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[worker_crash] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_agent_retains_authorized_1')
+fault = 'worker_crash'
+
+    @pytest.mark.parametrize('fault',['deadline','worker_crash','observation_loss'])
+    def test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss(tmp_path,fault):
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_worker_ros.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+_ test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[observation_loss] _
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-58/test_agent_retains_authorized_2')
+fault = 'observation_loss'
+
+    @pytest.mark.parametrize('fault',['deadline','worker_crash','observation_loss'])
+    def test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss(tmp_path,fault):
+>       rclpy.init(args=['--ros-args','-p','bounds:="[[0,0,0],[8,8,4]]"',
+                        '-p','fleet_starts:="[[2,2,1.5]]"','-p',f'output_dir:={tmp_path}'])
+
+ros2_ws/src/annual_swarm/test/test_worker_ros.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py:88: in init
+    context.init(args, domain_id=domain_id)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rclpy.context.Context object at 0xf6a8c2742930>
+args = ['--ros-args', '-p', 'bounds:="[[0,0,0],[8,8,4]]"', '-p', 'fleet_starts:="[[2,2,1.5]]"', '-p', ...]
+
+    def init(self,
+             args: Optional[List[str]] = None,
+             *,
+             initialize_logging: bool = True,
+             domain_id: Optional[int] = None) -> None:
+        """
+        Initialize ROS communications for a given context.
+    
+        :param args: List of command line arguments.
+        """
+        # imported locally to avoid loading extensions on module import
+        from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+    
+        global g_logging_ref_count
+        with self._lock:
+            if domain_id is not None and domain_id < 0:
+                raise RuntimeError(
+                    'Domain id ({}) should not be lower than zero.'
+                    .format(domain_id))
+    
+            if self.__context is not None:
+>               raise RuntimeError('Context.init() must only be called once')
+E               RuntimeError: Context.init() must only be called once
+
+/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py:97: RuntimeError
+=========================== short test summary info ============================
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_agent_feedback_persists_streak_and_success_across_restart
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_moving_service_feedback_records_consumed_pose_and_not_unvisited_goal
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[transit]
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[earlier]
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[later]
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[changes_before_authorization]
+FAILED ros2_ws/src/annual_swarm/test/test_priority_ros.py::test_early_handoff_cannot_leave_until_actual_old_service_gain_is_sufficient[split_before_authorization]
+FAILED ros2_ws/src/annual_swarm/test/test_worker_ros.py::test_wall_watchdog_runs_while_simulation_clock_is_stopped
+FAILED ros2_ws/src/annual_swarm/test/test_worker_ros.py::test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[deadline]
+FAILED ros2_ws/src/annual_swarm/test/test_worker_ros.py::test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[worker_crash]
+FAILED ros2_ws/src/annual_swarm/test/test_worker_ros.py::test_agent_retains_authorized_curve_on_planner_fault_and_holds_on_sensor_loss[observation_loss]
+11 failed, 299 passed in 34.21s

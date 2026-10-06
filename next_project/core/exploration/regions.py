@@ -94,7 +94,7 @@ def information_count(cells, observed_mask=None, history_weight=.1):
     return len(cells)-(1.-history_weight)*seen
 
 
-def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latency_weight=.5, traffic_delays=None):
+def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latency_weight=.5, traffic_delays=None, motion_time=None):
     """Joint travel and information-weighted completion time, without post-sorting.
 
     Rewards use information amounts, not information/time (which would count
@@ -111,7 +111,8 @@ def optimize_tour(start, ids, tasks, graph, pinned=None, *, rewards=None, latenc
     def distance(a, b):
         key = (a, b)
         if key not in cache:
-            cache[key] = graph.distance(start if a is None else tasks[a].entry, tasks[b].entry)/.6
+            d = graph.distance(start if a is None else tasks[a].entry, tasks[b].entry)
+            cache[key] = motion_time(d) if motion_time is not None else d/.6
         return cache[key]
     def cost(order):
         return sum(distance(a, b)+service_time(b) for a, b in zip([None]+order, order))
@@ -220,6 +221,15 @@ class ObservationPlanner:
 
     def plan(self, runtime, graph, position, yaw, task, epoch, recent=(), next_goal=None, excluded_cells=frozenset(),
              observed_mask=None, history_weight=.1):
+        choice = self.preview(runtime, graph, position, yaw, task, recent, next_goal,
+                              excluded_cells, observed_mask, history_weight)
+        return self.materialize(runtime, position, yaw, task, epoch, choice,
+                                observed_mask, history_weight) if choice is not None else None
+
+    def preview(self, runtime, graph, position, yaw, task, recent=(), next_goal=None,
+                excluded_cells=frozenset(), observed_mask=None, history_weight=.1):
+        """Ray/route utility only; no multi-planner reserve construction."""
+        from .service_cost import view_service_cost, stopped_motion_time
         options = []
         for point in task.viewpoints:
             path = graph.route(position, point)
@@ -235,10 +245,10 @@ class ObservationPlanner:
                     cells = team_new_cells(cells, observed_mask)
                 if not cells:
                     continue
-                rotation = abs(angle_delta(heading, yaw))/.65
-                # Coupled information/time utility, penalizing needlessly long routes.
-                value = information_count(cells, observed_mask, history_weight)*runtime.resolution**runtime.state.ndim/(1.5+travel+rotation)
-                options.append(dict(position=point, yaw=float(heading), path=path, cells=cells, value=value, travel=travel))
+                cost = view_service_cost(path, yaw, heading, recent)
+                value = information_count(cells, observed_mask, history_weight)*runtime.resolution**runtime.state.ndim/cost['total_s']
+                options.append(dict(position=point, yaw=float(heading), path=path, cells=cells, value=value,
+                                    travel=travel, service_cost=cost))
         if not options:
             return None
         beam = sorted(options, key=lambda o: -o['value'])[:8]
@@ -248,13 +258,18 @@ class ObservationPlanner:
                 extra = information_count(other['cells']-first['cells'], observed_mask, history_weight)*runtime.resolution**runtime.state.ndim
                 if extra <= 0:
                     continue
-                cost = graph.distance(first['position'], other['position'])/.6+abs(angle_delta(other['yaw'], first['yaw']))/.65+1.5
+                cost = max(stopped_motion_time(graph.distance(first['position'], other['position'])),
+                           1.875*abs(angle_delta(other['yaw'], first['yaw']))/.65)+1.5
                 if np.isfinite(cost) and extra/cost > best_second:
                     best_second = extra/cost; second = other
             exit_cost = 0. if next_goal is None else graph.distance(first['position'], next_goal)/.6
             first['objective'] = first['value']+.35*best_second-(.002*exit_cost if np.isfinite(exit_cost) else 0.)
             first['second'] = second
-        choice = max(beam, key=lambda o: o['objective'])
+        return max(beam, key=lambda o: o['objective'])
+
+    def materialize(self, runtime, position, yaw, task, epoch, choice,
+                    observed_mask=None, history_weight=.1):
+        """Build full safe reserves for the selected view on this worker map."""
         # Preserve the original multi-planner quality evaluator and five reserves.
         pool = route_pool(runtime, position, choice['position'], task.id, epoch, max_attempts=6)
         path = choice['path']
@@ -265,12 +280,15 @@ class ObservationPlanner:
         if pool.active is None:
             return None
         effective = information_count(choice['cells'], observed_mask, history_weight)
+        from .service_cost import view_service_cost
         # The selected route's quality enters the observation-motion objective too.
         for candidate in [pool.active]+pool.backups:
-            candidate.quality['observation_motion_cost'] = (candidate.quality['length_m']/.6+
-                abs(angle_delta(choice['yaw'], yaw))/.65+candidate.quality['score']-effective*.025)
+            candidate.quality['service_cost'] = view_service_cost(candidate.path, yaw, choice['yaw'])
+            candidate.quality['observation_motion_cost'] = (candidate.quality['service_cost']['total_s']+
+                candidate.quality['score']-effective*.025)
         candidates = sorted([pool.active]+pool.backups, key=lambda c: c.quality['observation_motion_cost'])
         pool.active, pool.backups = candidates[0], candidates[1:6]
         return dict(pool=pool, yaw=choice['yaw'], gain=effective*runtime.resolution**runtime.state.ndim,
-                    objective=choice['objective'], lookahead=None if choice['second'] is None else
+                    planned_team_cells=len(choice['cells']) if history_weight == 0 else 0,
+                    objective=choice['objective'], service_cost=choice['service_cost'], lookahead=None if choice['second'] is None else
                     dict(position=choice['second']['position'].tolist(), yaw=choice['second']['yaw']))

@@ -1,0 +1,22 @@
+[31mRLException: roscore cannot run as another roscore/master is already running. 
+Please kill other roscore/master processes before relaunching.
+The ROS_MASTER_URI is http://localhost:11328/[0m
+[31mThe traceback for the exception was written to the log file[0m
+... logging to /root/.ros/log/6a85d9ce-bb45-11f1-9a83-5255551de53e/roslaunch-colima-racer-gvp-3204.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;roscore
+[1mstarted roslaunch server http://localhost:39597/[0m
+ros_comm version 1.17.4
+
+
+SUMMARY
+========
+
+PARAMETERS
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+
+NODES
+

@@ -1,0 +1,2228 @@
+... logging to /root/.ros/log/33a85a8a-bb4a-11f1-a9e4-5255551de53e/roslaunch-colima-racer-gvp-3200.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/comparison/racer.launch
+[1mstarted roslaunch server http://localhost:36853/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /acvrp_solver_1/exploration/drone_id: 1
+ * /acvrp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_1/exploration/problem_id: 2
+ * /acvrp_solver_2/exploration/drone_id: 2
+ * /acvrp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_2/exploration/problem_id: 2
+ * /exploration_node_1/astar/allocate_num: 1000000
+ * /exploration_node_1/astar/lambda_heu: 10000.0
+ * /exploration_node_1/astar/max_search_time: 0.001
+ * /exploration_node_1/astar/resolution_astar: 0.3
+ * /exploration_node_1/bspline/limit_acc: 0.8
+ * /exploration_node_1/bspline/limit_ratio: 1.1
+ * /exploration_node_1/bspline/limit_vel: 0.6
+ * /exploration_node_1/exploration/am: 0.8
+ * /exploration_node_1/exploration/drone_id: 1
+ * /exploration_node_1/exploration/drone_num: 2.0
+ * /exploration_node_1/exploration/init_plan_num: 2
+ * /exploration_node_1/exploration/max_decay: 0.8
+ * /exploration_node_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/refine_local: True
+ * /exploration_node_1/exploration/refined_num: 7
+ * /exploration_node_1/exploration/refined_radius: 5.0
+ * /exploration_node_1/exploration/top_view_num: 15
+ * /exploration_node_1/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/vm: 0.6
+ * /exploration_node_1/exploration/w_dir: 1.5
+ * /exploration_node_1/exploration/yd: 0.65
+ * /exploration_node_1/exploration/ydd: 0.8
+ * /exploration_node_1/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_1/frontier/candidate_rmax: 1.5
+ * /exploration_node_1/frontier/candidate_rmin: 1.0
+ * /exploration_node_1/frontier/candidate_rnum: 3
+ * /exploration_node_1/frontier/cluster_min: 100
+ * /exploration_node_1/frontier/cluster_size_xy: 2.0
+ * /exploration_node_1/frontier/cluster_size_z: 10.0
+ * /exploration_node_1/frontier/down_sample: 3
+ * /exploration_node_1/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_1/frontier/min_candidate_dist: 0.5
+ * /exploration_node_1/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_1/frontier/min_visib_num: 30
+ * /exploration_node_1/fsm/attempt_interval: 0.1
+ * /exploration_node_1/fsm/gain_thresh: 10
+ * /exploration_node_1/fsm/pair_opt_interval: 0.5
+ * /exploration_node_1/fsm/replan_time: 0.2
+ * /exploration_node_1/fsm/sync_interval: 0.2
+ * /exploration_node_1/fsm/thresh_replan1: 0.2
+ * /exploration_node_1/fsm/thresh_replan2: 0.2
+ * /exploration_node_1/fsm/thresh_replan3: 1.5
+ * /exploration_node_1/fsm/wait_delete_duration: 0.05
+ * /exploration_node_1/heading_planner/half_vert_num: 5
+ * /exploration_node_1/heading_planner/lambda1: 2.0
+ * /exploration_node_1/heading_planner/lambda2: 1.0
+ * /exploration_node_1/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_1/heading_planner/w: 20000.0
+ * /exploration_node_1/heading_planner/weight_type: 1.0
+ * /exploration_node_1/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_1/manager/clearance_threshold: 0.2
+ * /exploration_node_1/manager/control_points_distance: 0.5
+ * /exploration_node_1/manager/dynamic_environment: 0
+ * /exploration_node_1/manager/local_segment_length: 6.0
+ * /exploration_node_1/manager/max_acc: 0.8
+ * /exploration_node_1/manager/max_jerk: 4.0
+ * /exploration_node_1/manager/max_vel: 0.6
+ * /exploration_node_1/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_1/manager/min_time: True
+ * /exploration_node_1/manager/relax_time1: 0.3
+ * /exploration_node_1/manager/relax_time2: 1.5
+ * /exploration_node_1/manager/use_active_perception: True
+ * /exploration_node_1/manager/use_geometric_path: True
+ * /exploration_node_1/manager/use_kinodynamic_path: True
+ * /exploration_node_1/manager/use_optimization: True
+ * /exploration_node_1/manager/use_topo_path: False
+ * /exploration_node_1/map_ros/cx: 324.0879821777344
+ * /exploration_node_1/map_ros/cy: 239.10362243652344
+ * /exploration_node_1/map_ros/depth_filter_margin: 2
+ * /exploration_node_1/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_1/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_1/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_1/map_ros/frame_id: world
+ * /exploration_node_1/map_ros/fx: 385.69793701171875
+ * /exploration_node_1/map_ros/fy: 385.69793701171875
+ * /exploration_node_1/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_1/map_ros/show_all_map: True
+ * /exploration_node_1/map_ros/show_esdf_time: False
+ * /exploration_node_1/map_ros/show_occ_time: False
+ * /exploration_node_1/map_ros/skip_pixel: 2
+ * /exploration_node_1/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_1/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_1/optimization/algorithm1: 15
+ * /exploration_node_1/optimization/algorithm2: 11
+ * /exploration_node_1/optimization/dist0: 0.7
+ * /exploration_node_1/optimization/ld_dist: 10.0
+ * /exploration_node_1/optimization/ld_end: 0.5
+ * /exploration_node_1/optimization/ld_feasi: 2.0
+ * /exploration_node_1/optimization/ld_guide: 1.5
+ * /exploration_node_1/optimization/ld_smooth: 5.0
+ * /exploration_node_1/optimization/ld_start: 100.0
+ * /exploration_node_1/optimization/ld_swarm: 5.0
+ * /exploration_node_1/optimization/ld_time: 1.5
+ * /exploration_node_1/optimization/ld_view: 0.0
+ * /exploration_node_1/optimization/ld_waypt: 7.0
+ * /exploration_node_1/optimization/max_acc: 0.8
+ * /exploration_node_1/optimization/max_iteration_num1: 2
+ * /exploration_node_1/optimization/max_iteration_num2: 2000
+ * /exploration_node_1/optimization/max_iteration_num3: 200
+ * /exploration_node_1/optimization/max_iteration_num4: 200
+ * /exploration_node_1/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_1/optimization/max_iteration_time2: 0.005
+ * /exploration_node_1/optimization/max_iteration_time3: 0.003
+ * /exploration_node_1/optimization/max_iteration_time4: 0.003
+ * /exploration_node_1/optimization/max_vel: 0.6
+ * /exploration_node_1/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_1/partitioning/consistent_cost2: 8.0
+ * /exploration_node_1/partitioning/consistent_cost: -5.0
+ * /exploration_node_1/partitioning/grid_size: 5.0
+ * /exploration_node_1/partitioning/min_free: 3000
+ * /exploration_node_1/partitioning/min_frontier: 100
+ * /exploration_node_1/partitioning/min_unknown: 4000
+ * /exploration_node_1/partitioning/use_swarm_tf: False
+ * /exploration_node_1/partitioning/w_unknown: 0.0
+ * /exploration_node_1/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/max_dist: 4.5
+ * /exploration_node_1/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/vis_dist: 1.0
+ * /exploration_node_1/sdf_map/box_max_x: 6.0
+ * /exploration_node_1/sdf_map/box_max_y: 6.0
+ * /exploration_node_1/sdf_map/box_max_z: 3.0
+ * /exploration_node_1/sdf_map/box_min_x: -6.0
+ * /exploration_node_1/sdf_map/box_min_y: -6.0
+ * /exploration_node_1/sdf_map/box_min_z: 0.0
+ * /exploration_node_1/sdf_map/default_dist: 0.5
+ * /exploration_node_1/sdf_map/ground_height: -0.1
+ * /exploration_node_1/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_1/sdf_map/local_map_margin: 50
+ * /exploration_node_1/sdf_map/map_size_x: 14
+ * /exploration_node_1/sdf_map/map_size_y: 14
+ * /exploration_node_1/sdf_map/map_size_z: 3.5
+ * /exploration_node_1/sdf_map/max_ray_length: 4.5
+ * /exploration_node_1/sdf_map/min_ray_length: 0.1
+ * /exploration_node_1/sdf_map/no_drone_1: False
+ * /exploration_node_1/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_1/sdf_map/optimistic: True
+ * /exploration_node_1/sdf_map/p_hit: 0.65
+ * /exploration_node_1/sdf_map/p_max: 0.9
+ * /exploration_node_1/sdf_map/p_min: 0.12
+ * /exploration_node_1/sdf_map/p_miss: 0.35
+ * /exploration_node_1/sdf_map/p_occ: 0.8
+ * /exploration_node_1/sdf_map/resolution: 0.1
+ * /exploration_node_1/sdf_map/signed_dist: False
+ * /exploration_node_1/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_1/search/allocate_num: 100000
+ * /exploration_node_1/search/check_num: 10
+ * /exploration_node_1/search/horizon: 5.0
+ * /exploration_node_1/search/init_max_tau: 1.0
+ * /exploration_node_1/search/lambda_heu: 10.0
+ * /exploration_node_1/search/margin: 0.2
+ * /exploration_node_1/search/max_acc: 0.8
+ * /exploration_node_1/search/max_tau: 0.8
+ * /exploration_node_1/search/max_vel: 0.6
+ * /exploration_node_1/search/optimistic: False
+ * /exploration_node_1/search/resolution_astar: 0.025
+ * /exploration_node_1/search/time_resolution: 0.8
+ * /exploration_node_1/search/vel_margin: 0.25
+ * /exploration_node_1/search/w_time: 10.0
+ * /exploration_node_2/astar/allocate_num: 1000000
+ * /exploration_node_2/astar/lambda_heu: 10000.0
+ * /exploration_node_2/astar/max_search_time: 0.001
+ * /exploration_node_2/astar/resolution_astar: 0.3
+ * /exploration_node_2/bspline/limit_acc: 0.8
+ * /exploration_node_2/bspline/limit_ratio: 1.1
+ * /exploration_node_2/bspline/limit_vel: 0.6
+ * /exploration_node_2/exploration/am: 0.8
+ * /exploration_node_2/exploration/drone_id: 2
+ * /exploration_node_2/exploration/drone_num: 2.0
+ * /exploration_node_2/exploration/init_plan_num: 2
+ * /exploration_node_2/exploration/max_decay: 0.8
+ * /exploration_node_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/refine_local: True
+ * /exploration_node_2/exploration/refined_num: 7
+ * /exploration_node_2/exploration/refined_radius: 5.0
+ * /exploration_node_2/exploration/top_view_num: 15
+ * /exploration_node_2/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/vm: 0.6
+ * /exploration_node_2/exploration/w_dir: 1.5
+ * /exploration_node_2/exploration/yd: 0.65
+ * /exploration_node_2/exploration/ydd: 0.8
+ * /exploration_node_2/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_2/frontier/candidate_rmax: 1.5
+ * /exploration_node_2/frontier/candidate_rmin: 1.0
+ * /exploration_node_2/frontier/candidate_rnum: 3
+ * /exploration_node_2/frontier/cluster_min: 100
+ * /exploration_node_2/frontier/cluster_size_xy: 2.0
+ * /exploration_node_2/frontier/cluster_size_z: 10.0
+ * /exploration_node_2/frontier/down_sample: 3
+ * /exploration_node_2/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_2/frontier/min_candidate_dist: 0.5
+ * /exploration_node_2/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_2/frontier/min_visib_num: 30
+ * /exploration_node_2/fsm/attempt_interval: 0.1
+ * /exploration_node_2/fsm/gain_thresh: 10
+ * /exploration_node_2/fsm/pair_opt_interval: 0.5
+ * /exploration_node_2/fsm/replan_time: 0.2
+ * /exploration_node_2/fsm/sync_interval: 0.2
+ * /exploration_node_2/fsm/thresh_replan1: 0.2
+ * /exploration_node_2/fsm/thresh_replan2: 0.2
+ * /exploration_node_2/fsm/thresh_replan3: 1.5
+ * /exploration_node_2/fsm/wait_delete_duration: 0.05
+ * /exploration_node_2/heading_planner/half_vert_num: 5
+ * /exploration_node_2/heading_planner/lambda1: 2.0
+ * /exploration_node_2/heading_planner/lambda2: 1.0
+ * /exploration_node_2/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_2/heading_planner/w: 20000.0
+ * /exploration_node_2/heading_planner/weight_type: 1.0
+ * /exploration_node_2/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_2/manager/clearance_threshold: 0.2
+ * /exploration_node_2/manager/control_points_distance: 0.5
+ * /exploration_node_2/manager/dynamic_environment: 0
+ * /exploration_node_2/manager/local_segment_length: 6.0
+ * /exploration_node_2/manager/max_acc: 0.8
+ * /exploration_node_2/manager/max_jerk: 4.0
+ * /exploration_node_2/manager/max_vel: 0.6
+ * /exploration_node_2/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_2/manager/min_time: True
+ * /exploration_node_2/manager/relax_time1: 0.3
+ * /exploration_node_2/manager/relax_time2: 1.5
+ * /exploration_node_2/manager/use_active_perception: True
+ * /exploration_node_2/manager/use_geometric_path: True
+ * /exploration_node_2/manager/use_kinodynamic_path: True
+ * /exploration_node_2/manager/use_optimization: True
+ * /exploration_node_2/manager/use_topo_path: False
+ * /exploration_node_2/map_ros/cx: 324.0879821777344
+ * /exploration_node_2/map_ros/cy: 239.10362243652344
+ * /exploration_node_2/map_ros/depth_filter_margin: 2
+ * /exploration_node_2/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_2/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_2/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_2/map_ros/frame_id: world
+ * /exploration_node_2/map_ros/fx: 385.69793701171875
+ * /exploration_node_2/map_ros/fy: 385.69793701171875
+ * /exploration_node_2/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_2/map_ros/show_all_map: True
+ * /exploration_node_2/map_ros/show_esdf_time: False
+ * /exploration_node_2/map_ros/show_occ_time: False
+ * /exploration_node_2/map_ros/skip_pixel: 2
+ * /exploration_node_2/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_2/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_2/optimization/algorithm1: 15
+ * /exploration_node_2/optimization/algorithm2: 11
+ * /exploration_node_2/optimization/dist0: 0.7
+ * /exploration_node_2/optimization/ld_dist: 10.0
+ * /exploration_node_2/optimization/ld_end: 0.5
+ * /exploration_node_2/optimization/ld_feasi: 2.0
+ * /exploration_node_2/optimization/ld_guide: 1.5
+ * /exploration_node_2/optimization/ld_smooth: 5.0
+ * /exploration_node_2/optimization/ld_start: 100.0
+ * /exploration_node_2/optimization/ld_swarm: 5.0
+ * /exploration_node_2/optimization/ld_time: 1.5
+ * /exploration_node_2/optimization/ld_view: 0.0
+ * /exploration_node_2/optimization/ld_waypt: 7.0
+ * /exploration_node_2/optimization/max_acc: 0.8
+ * /exploration_node_2/optimization/max_iteration_num1: 2
+ * /exploration_node_2/optimization/max_iteration_num2: 2000
+ * /exploration_node_2/optimization/max_iteration_num3: 200
+ * /exploration_node_2/optimization/max_iteration_num4: 200
+ * /exploration_node_2/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_2/optimization/max_iteration_time2: 0.005
+ * /exploration_node_2/optimization/max_iteration_time3: 0.003
+ * /exploration_node_2/optimization/max_iteration_time4: 0.003
+ * /exploration_node_2/optimization/max_vel: 0.6
+ * /exploration_node_2/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_2/partitioning/consistent_cost2: 8.0
+ * /exploration_node_2/partitioning/consistent_cost: -5.0
+ * /exploration_node_2/partitioning/grid_size: 5.0
+ * /exploration_node_2/partitioning/min_free: 3000
+ * /exploration_node_2/partitioning/min_frontier: 100
+ * /exploration_node_2/partitioning/min_unknown: 4000
+ * /exploration_node_2/partitioning/use_swarm_tf: False
+ * /exploration_node_2/partitioning/w_unknown: 0.0
+ * /exploration_node_2/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/max_dist: 4.5
+ * /exploration_node_2/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/vis_dist: 1.0
+ * /exploration_node_2/sdf_map/box_max_x: 6.0
+ * /exploration_node_2/sdf_map/box_max_y: 6.0
+ * /exploration_node_2/sdf_map/box_max_z: 3.0
+ * /exploration_node_2/sdf_map/box_min_x: -6.0
+ * /exploration_node_2/sdf_map/box_min_y: -6.0
+ * /exploration_node_2/sdf_map/box_min_z: 0.0
+ * /exploration_node_2/sdf_map/default_dist: 0.5
+ * /exploration_node_2/sdf_map/ground_height: -0.1
+ * /exploration_node_2/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_2/sdf_map/local_map_margin: 50
+ * /exploration_node_2/sdf_map/map_size_x: 14
+ * /exploration_node_2/sdf_map/map_size_y: 14
+ * /exploration_node_2/sdf_map/map_size_z: 3.5
+ * /exploration_node_2/sdf_map/max_ray_length: 4.5
+ * /exploration_node_2/sdf_map/min_ray_length: 0.1
+ * /exploration_node_2/sdf_map/no_drone_1: False
+ * /exploration_node_2/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_2/sdf_map/optimistic: True
+ * /exploration_node_2/sdf_map/p_hit: 0.65
+ * /exploration_node_2/sdf_map/p_max: 0.9
+ * /exploration_node_2/sdf_map/p_min: 0.12
+ * /exploration_node_2/sdf_map/p_miss: 0.35
+ * /exploration_node_2/sdf_map/p_occ: 0.8
+ * /exploration_node_2/sdf_map/resolution: 0.1
+ * /exploration_node_2/sdf_map/signed_dist: False
+ * /exploration_node_2/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_2/search/allocate_num: 100000
+ * /exploration_node_2/search/check_num: 10
+ * /exploration_node_2/search/horizon: 5.0
+ * /exploration_node_2/search/init_max_tau: 1.0
+ * /exploration_node_2/search/lambda_heu: 10.0
+ * /exploration_node_2/search/margin: 0.2
+ * /exploration_node_2/search/max_acc: 0.8
+ * /exploration_node_2/search/max_tau: 0.8
+ * /exploration_node_2/search/max_vel: 0.6
+ * /exploration_node_2/search/optimistic: False
+ * /exploration_node_2/search/resolution_astar: 0.025
+ * /exploration_node_2/search/time_resolution: 0.8
+ * /exploration_node_2/search/vel_margin: 0.25
+ * /exploration_node_2/search/w_time: 10.0
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /traj_server_1/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/max_dist: 4.5
+ * /traj_server_1/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/vis_dist: 1.0
+ * /traj_server_1/traj_server/drone_id: 1
+ * /traj_server_1/traj_server/drone_num: 2
+ * /traj_server_1/traj_server/pub_traj_id: 4
+ * /traj_server_1/traj_server/time_forward: 1.5
+ * /traj_server_2/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/max_dist: 4.5
+ * /traj_server_2/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/vis_dist: 1.0
+ * /traj_server_2/traj_server/drone_id: 2
+ * /traj_server_2/traj_server/drone_num: 2
+ * /traj_server_2/traj_server/pub_traj_id: 4
+ * /traj_server_2/traj_server/time_forward: 1.5
+ * /tsp_solver_1/exploration/drone_id: 1
+ * /tsp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_1/exploration/problem_id: 1
+ * /tsp_solver_2/exploration/drone_id: 2
+ * /tsp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_2/exploration/problem_id: 1
+ * /use_sim_time: True
+
+NODES
+  /
+    acvrp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    acvrp_solver_2 (lkh_mtsp_solver/mtsp_node)
+    exploration_node_1 (exploration_manager/exploration_node)
+    exploration_node_2 (exploration_manager/exploration_node)
+    traj_server_1 (plan_manage/traj_server)
+    traj_server_2 (plan_manage/traj_server)
+    tsp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    tsp_solver_2 (lkh_mtsp_solver/mtsp_node)
+[33m[WARN] [1790606281.798531263]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790606281.807058817]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790606281.853290421]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790606281.866591985]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790606281.904302414]: [Traj server]: init...[0m
+[33m[WARN] [1790606281.966594461]: [Traj server]: init...[0m
+0
+0
+0
+0
+[33m[WARN] [1790606295.956395457, 1.008999999]: wait for init[0m
+[33m[WARN] [1790606295.959173136, 1.008999999]: wait for init[0m
+[33m[WARN] [1790606295.968820416, 1.008999999]: [Traj server]: ready.[0m
+[33m[WARN] [1790606295.969367231, 1.008999999]: [Traj server]: ready.[0m
+[33m[WARN] [1790606297.025493364, 2.016999999]: wait for init[0m
+[33m[WARN] [1790606297.026211598, 2.016999999]: wait for init[0m
+[33m[WARN] [1790606298.031795431, 3.020999999]: wait for trigger.[0m
+[33m[WARN] [1790606298.031847123, 3.020999999]: wait for trigger.[0m
+[33m[WARN] [1790606298.519385687, 3.500000000]: Init grid allocation.[0m
+[33m[WARN] [1790606298.520664452, 3.500000000]: Init grid allocation.[0m
+[33m[WARN] [1790606298.524079408, 3.509999999]: Init grid allocation.[0m
+[33m[WARN] [1790606298.526945632, 3.509999999]: Init grid allocation.[0m
+[33m[WARN] [1790606298.527143815, 3.509999999]: Empty dominance.[0m
+[33m[WARN] [1790606298.768648757, 3.750000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606298.850132312, 3.827000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606298.850540349, 3.827000000]: Drone 1 send opt request to 2, pair opt t: 0.077000, allocate t: 0.067000[0m
+[33m[WARN] [1790606298.853274465, 3.827000000]: get response 1[0m
+[33m[WARN] [1790606299.123239130, 4.105000000]: wait for trigger.[0m
+[33m[WARN] [1790606299.251070055, 4.230000000]: wait for trigger.[0m
+[33m[WARN] [1790606299.354484487, 4.336000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606299.467507095, 4.442000000]: Path 2 inconsistent[0m
+[33m[WARN] [1790606299.467867192, 4.442000000]: Drone 1 send opt request to 2, pair opt t: 0.106000, allocate t: 0.106000[0m
+[33m[WARN] [1790606299.471225745, 4.442000000]: get response 1[0m
+[33m[WARN] [1790606299.976073877, 4.951000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606300.054187330, 5.028999999]: Larger cost after reallocation[0m
+[31m[ERROR] [1790606300.054623090, 5.028999999]: Path 1 inconsistent[0m
+[33m[WARN] [1790606300.054896518, 5.028999999]: Drone 1 send opt request to 2, pair opt t: 0.078000, allocate t: 0.068000[0m
+[33m[WARN] [1790606300.140741294, 5.115000000]: wait for trigger.[0m
+[33m[WARN] [1790606300.298823046, 5.269000000]: wait for trigger.[0m
+[33m[WARN] [1790606300.299407629, 5.269000000]: get response 1[0m
+[33m[WARN] [1790606300.834831708, 5.807000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606300.943525403, 5.913000000]: Path 1 inconsistent[0m
+[33m[WARN] [1790606300.943773193, 5.913000000]: Drone 1 send opt request to 2, pair opt t: 0.106000, allocate t: 0.106000[0m
+[33m[WARN] [1790606300.947813671, 5.913000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606301.056442291, 6.019000000]: Grid 10 is rediscovered[0m
+[31m[ERROR] [1790606301.057125133, 6.019000000]: Path 1 inconsistent[0m
+[33m[WARN] [1790606301.057773206, 6.019000000]: Drone 1 send opt request to 2, pair opt t: 0.106000, allocate t: 0.106000[0m
+[33m[WARN] [1790606301.135012307, 6.105000000]: Reject frequent attempt[0m
+[33m[WARN] [1790606301.144228079, 6.115000000]: wait for trigger.[0m
+[33m[WARN] [1790606301.316511136, 6.288000000]: wait for trigger.[0m
+[33m[WARN] [1790606301.318348679, 6.288000000]: get response 2[0m
+[33m[WARN] [1790606301.320670756, 6.288000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606301.346365639, 6.317000000]: Path 1 inconsistent[0m
+[33m[WARN] [1790606301.346552024, 6.317000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.019000[0m
+[33m[WARN] [1790606301.348254583, 6.317000000]: get response 1[0m
+[33m[WARN] [1790606301.878405360, 6.846000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606301.907422819, 6.875000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606301.907744772, 6.875000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.019000[0m
+[33m[WARN] [1790606301.909106536, 6.875000000]: get response 1[0m
+[33m[WARN] [1790606302.151940392, 7.115000000]: wait for trigger.[0m
+[33m[WARN] [1790606302.324705232, 7.288000000]: wait for trigger.[0m
+[33m[WARN] [1790606302.411284458, 7.375000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606302.448941694, 7.403000000]: Drone 1 send opt request to 2, pair opt t: 0.028000, allocate t: 0.028000[0m
+[33m[WARN] [1790606302.451216789, 7.403000000]: get response 1[0m
+[33m[WARN] [1790606302.544319859, 7.500000000]: Grid 8 is rediscovered[0m
+[33m[WARN] [1790606302.951802499, 7.913000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606302.986526435, 7.942000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606302.986777019, 7.942000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606302.987178803, 7.942000000]: get response 1[0m
+[33m[WARN] [1790606303.066517119, 8.018000000]: Grid 10 is rediscovered[0m
+[33m[WARN] [1790606303.192266212, 8.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606303.340869352, 8.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606303.524517755, 8.480000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606303.564379509, 8.518000000]: Larger cost after reallocation[0m
+[31m[ERROR] [1790606303.564495609, 8.518000000]: Path 1 inconsistent[0m
+[33m[WARN] [1790606303.564699211, 8.518000000]: Drone 1 send opt request to 2, pair opt t: 0.038000, allocate t: 0.038000[0m
+[33m[WARN] [1790606303.829244459, 8.778000000]: get response 1[0m
+[33m[WARN] [1790606304.203704096, 9.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606304.350603425, 9.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606304.368770171, 9.316000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606304.415747565, 9.355000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606304.416097489, 9.355000000]: Drone 1 send opt request to 2, pair opt t: 0.039000, allocate t: 0.039000[0m
+[33m[WARN] [1790606304.416395222, 9.355000000]: get response 1[0m
+[33m[WARN] [1790606304.917633466, 9.855000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606304.960337807, 9.893000000]: Drone 1 send opt request to 2, pair opt t: 0.038000, allocate t: 0.038000[0m
+[33m[WARN] [1790606304.960834847, 9.893000000]: get response 1[0m
+[33m[WARN] [1790606305.080412606, 10.009000000]: Grid 8 is rediscovered[0m
+[33m[WARN] [1790606305.217627429, 10.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606305.364869639, 10.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606305.470827550, 10.403000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606305.506668294, 10.431000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606305.506914167, 10.431000000]: Drone 1 send opt request to 2, pair opt t: 0.028000, allocate t: 0.028000[0m
+[33m[WARN] [1790606305.508896908, 10.431000000]: get response 1[0m
+[33m[WARN] [1790606306.039159657, 10.970000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606306.074444291, 10.999000000]: Larger cost after reallocation[0m
+[31m[ERROR] [1790606306.074760157, 10.999000000]: Path 1 inconsistent[0m
+[33m[WARN] [1790606306.075058223, 10.999000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606306.075509490, 10.999000000]: get response 1[0m
+[33m[WARN] [1790606306.229652064, 11.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606306.375446717, 11.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606306.839851720, 11.759000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606306.876370804, 11.797000000]: Drone 1 send opt request to 2, pair opt t: 0.038000, allocate t: 0.028000[0m
+[33m[WARN] [1790606306.878900652, 11.797000000]: get response 1[0m
+[33m[WARN] [1790606307.096365622, 12.018000000]: Grid 7 is rediscovered[0m
+[33m[WARN] [1790606307.232860460, 12.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606307.379251327, 12.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606307.417125964, 12.335000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606307.463619490, 12.374000000]: Drone 1 send opt request to 2, pair opt t: 0.039000, allocate t: 0.039000[0m
+[33m[WARN] [1790606307.464006559, 12.374000000]: get response 1[0m
+[33m[WARN] [1790606307.995632364, 12.912000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606308.019036894, 12.931000000]: Drone 1 send opt request to 2, pair opt t: 0.019000, allocate t: 0.019000[0m
+[33m[WARN] [1790606308.019415333, 12.931000000]: get response 1[0m
+[33m[WARN] [1790606308.242184078, 13.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606308.386845582, 13.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606308.539983195, 13.451000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606308.572708800, 13.480000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606308.573964261, 13.480000000]: get response 1[0m
+[33m[WARN] [1790606309.090850492, 13.999000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606309.121605236, 14.028000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606309.245396351, 14.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606309.362801316, 14.268000000]: get response 1[0m
+[33m[WARN] [1790606309.391968017, 14.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606309.897921493, 14.797000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606309.936668398, 14.835000000]: Drone 1 send opt request to 2, pair opt t: 0.038000, allocate t: 0.029000[0m
+[33m[WARN] [1790606309.939405808, 14.835000000]: get response 1[0m
+[33m[WARN] [1790606310.257439329, 15.153000000]: wait for trigger.[0m
+[33m[WARN] [1790606310.404711011, 15.297000000]: wait for trigger.[0m
+[33m[WARN] [1790606310.461833058, 15.355000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606310.500104100, 15.384000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606310.500512513, 15.384000000]: get response 1[0m
+[33m[WARN] [1790606311.035571451, 15.912000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606311.070781880, 15.941000000]: Drone 1 send opt request to 2, pair opt t: 0.029000, allocate t: 0.029000[0m
+[33m[WARN] [1790606311.071193711, 15.941000000]: get response 1[0m
+[33m[WARN] [1790606311.276285998, 16.155000000]: wait for trigger.[0m
+[33m[WARN] [1790606311.423389930, 16.301999999]: wait for trigger.[0m
+[33m[WARN] [1790606311.569902858, 16.448000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606311.595745648, 16.466000000]: Drone 1 send opt request to 2, pair opt t: 0.018000, allocate t: 0.018000[0m
+[33m[WARN] [1790606311.597994063, 16.475000000]: get response 1[0m
+[33m[WARN] [1790606312.124501144, 16.996999999]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606312.157198985, 17.024000000]: Drone 1 send opt request to 2, pair opt t: 0.027000, allocate t: 0.027000[0m
+[33m[WARN] [1790606312.293143340, 17.161000000]: wait for trigger.[0m
+[33m[WARN] [1790606312.396630182, 17.262000000]: get response 1[0m
+[33m[WARN] [1790606312.438763405, 17.307999999]: wait for trigger.[0m
+[33m[WARN] [1790606312.919488189, 17.783000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606312.951642925, 17.801999999]: Drone 1 send opt request to 2, pair opt t: 0.019000, allocate t: 0.019000[0m
+[33m[WARN] [1790606312.954613410, 17.811000000]: get response 1[0m
+[33m[WARN] [1790606313.304989010, 18.167000000]: wait for trigger.[0m
+[33m[WARN] [1790606313.454279910, 18.314000000]: wait for trigger.[0m
+[33m[WARN] [1790606313.473841811, 18.332000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606313.508083465, 18.359000000]: Drone 1 send opt request to 2, pair opt t: 0.027000, allocate t: 0.027000[0m
+[33m[WARN] [1790606313.508597305, 18.359000000]: get response 1[0m
+[33m[WARN] [1790606314.035219568, 18.890000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606314.067780841, 18.917000000]: Drone 1 send opt request to 2, pair opt t: 0.027000, allocate t: 0.027000[0m
+[33m[WARN] [1790606314.068329865, 18.917000000]: get response 1[0m
+[33m[WARN] [1790606314.322821381, 19.173999999]: wait for trigger.[0m
+[33m[WARN] [1790606314.469861072, 19.320000000]: wait for trigger.[0m
+[33m[WARN] [1790606314.582531796, 19.429999999]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606314.609757069, 19.457000000]: Drone 1 send opt request to 2, pair opt t: 0.027000, allocate t: 0.027000[0m
+[33m[WARN] [1790606314.611629880, 19.457000000]: get response 1[0m
+[33m[WARN] [1790606315.139033950, 19.987000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606315.157766103, 19.996999999]: Start expl pos: -3.99923  2.99668  1.20244[0m
+[33m[WARN] [1790606315.171274062, 20.015000000]: Drone 1 send opt request to 2, pair opt t: 0.028000, allocate t: 0.028000[0m
+[33m[WARN] [1790606315.171827172, 20.015000000]: Start expl pos: -4.00598 -3.00315  1.20601[0m
+[33m[WARN] [1790606315.182307034, 20.024000000]: init plan.[0m
+[33m[WARN] [1790606315.208291103, 20.051999999]: init plan.[0m
+[33m[WARN] [1790606315.208640152, 20.051999999]: get response 1[0m
+[33m[WARN] [1790606315.362269679, 20.207000000]: start flight[0m
+[33m[WARN] [1790606315.371775554, 20.216000000]: Drone 2, [-20.207000,0.000000,-0.000000,0.000000], [time, length, vel, energy][0m
+[33m[WARN] [1790606315.372481782, 20.216000000]: start flight[0m
+[33m[WARN] [1790606315.377804484, 20.225000000]: Drone 1, [-20.216000,0.000000,-0.000000,0.000000], [time, length, vel, energy][0m
+[33m[WARN] [1790606315.735142522, 20.582000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606315.785725051, 20.628000000]: Drone 1 send opt request to 2, pair opt t: 0.046000, allocate t: 0.046000[0m
+[33m[WARN] [1790606315.789078519, 20.628000000]: get response 1[0m
+[33m[WARN] [1790606316.227858883, 21.012000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606316.268478766, 21.048999999]: init plan.[0m
+[33m[WARN] [1790606316.348236250, 21.131000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606316.375546565, 21.149000000]: Drone 1 send opt request to 2, pair opt t: 0.018000, allocate t: 0.018000[0m
+[33m[WARN] [1790606316.376246206, 21.149000000]: get response 1[0m
+[33m[WARN] [1790606316.446765281, 21.222000000]: Drone 2, [1.006000,0.069707,0.069291,0.118151], [time, length, vel, energy][0m
+[33m[WARN] [1790606316.453849947, 21.231000000]: Drone 1, [1.006000,0.097852,0.097268,0.170864], [time, length, vel, energy][0m
+[33m[WARN] [1790606316.547123185, 21.323000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606316.574134101, 21.350000000]: init plan.[0m
+[33m[WARN] [1790606316.655645544, 21.423000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606316.916866631, 21.689000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606316.956790625, 21.725000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606316.961019614, 21.734000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606316.962203705, 21.734000000]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606316.997752054, 21.762000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.018722451, 21.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.064136146, 21.826000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.070508747, 21.835000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.103071521, 21.862000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.104687245, 21.862000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606317.141061423, 21.899000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.173039987, 21.936000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.173554078, 21.936000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.205235285, 21.963000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.220709352, 21.981000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.253126928, 22.009000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.274407146, 22.036000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.310356695, 22.064000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.321011603, 22.082000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.352108477, 22.109000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.373982784, 22.137000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606317.384106301, 22.146000000]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606317.406281092, 22.164000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.420670491, 22.182999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.453750981, 22.210000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.477344981, 22.237999999]: Drone 2, [2.012000,0.423569,0.210521,0.192909], [time, length, vel, energy][0m
+[33m[WARN] [1790606317.478218876, 22.237999999]: Drone 1, [2.003000,0.486764,0.243017,0.947560], [time, length, vel, energy][0m
+[33m[WARN] [1790606317.478263565, 22.237999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.510128406, 22.265000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.522177594, 22.283000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606317.524880528, 22.283000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.557346920, 22.310999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.579231440, 22.338000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.603257155, 22.356000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.623905433, 22.384000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.652508144, 22.411000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.678351392, 22.439000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.701611016, 22.457000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.724089708, 22.484000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.752894812, 22.503000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.779271035, 22.539000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606317.798206165, 22.557999999]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606317.811535326, 22.567000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.825630787, 22.585000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.860216404, 22.612999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.875195974, 22.631000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.902361842, 22.658000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.928713386, 22.686000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606317.958580103, 22.713000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606317.959010985, 22.713000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606317.981672769, 22.731000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.011343305, 22.768000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.031200812, 22.786000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.061813903, 22.814000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.076531800, 22.832000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.105853578, 22.859000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.131483220, 22.887000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.159053665, 22.914000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.176843389, 22.932999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.203382652, 22.951000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.214803234, 22.969000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606318.232079910, 22.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.265287255, 23.015000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.283209754, 23.033000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.321986424, 23.070000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.337632577, 23.088000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.373959273, 23.125000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.374513633, 23.125000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606318.400399986, 23.143000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.434335196, 23.179999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.438187162, 23.189000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.472058589, 23.216000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.483659637, 23.234000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606318.492873325, 23.243999999]: Drone 1, [3.018000,1.274643,0.422347,2.449782], [time, length, vel, energy][0m
+[33m[WARN] [1790606318.493123450, 23.243999999]: Drone 2, [3.027000,1.105823,0.365320,3.264043], [time, length, vel, energy][0m
+[31m[ERROR] [1790606318.519185766, 23.262000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.537943724, 23.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.574971604, 23.326000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.583350374, 23.335000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.618974969, 23.362999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.632586605, 23.381000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606318.632586730, 23.381000000]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606318.675907005, 23.417000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.690915672, 23.435999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.731422957, 23.472000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.735862009, 23.481000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.774602244, 23.518000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.787822726, 23.536000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.824609694, 23.564000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.835210450, 23.582000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.871309365, 23.618999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.890318782, 23.637000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.922835282, 23.664000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.935164902, 23.682999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606318.970296251, 23.710000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606318.989855359, 23.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.020297531, 23.765000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.035155372, 23.783000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606319.045306445, 23.792000000]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606319.066678459, 23.811000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.094343410, 23.838000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.127067889, 23.865999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.140348276, 23.884000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.174239130, 23.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.195541317, 23.939000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.234241407, 23.975000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.239864884, 23.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.281268743, 24.021000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.283377838, 24.021000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606319.295253773, 24.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.328331804, 24.067000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.348896623, 24.085000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.387763630, 24.121999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.389856885, 24.131000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.424459011, 24.167000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.443889346, 24.185999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.484882457, 24.222000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.491470374, 24.231000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606319.510684185, 24.250000000]: Drone 2, [4.034000,1.558967,0.386457,4.106666], [time, length, vel, energy][0m
+[33m[WARN] [1790606319.511703903, 24.250000000]: Drone 1, [4.025000,1.804264,0.448264,2.869647], [time, length, vel, energy][0m
+[31m[ERROR] [1790606319.526166547, 24.259000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.545663249, 24.286000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606319.573435753, 24.314000000]: Replan: cluster covered=====================================[0m
+[31m[ERROR] [1790606319.586514206, 24.323000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.591582072, 24.332000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.626287333, 24.359000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.646986469, 24.387000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.683355769, 24.414000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.691586174, 24.432999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.726848713, 24.460000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.748026130, 24.487999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.786378297, 24.524000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.793986599, 24.533000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.831212286, 24.570000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.850227997, 24.588000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.889116723, 24.615999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.901231361, 24.634000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606319.946516993, 24.679999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606319.955450666, 24.689000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.001952071, 24.734000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.002743133, 24.734000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.047353386, 24.771000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.062045436, 24.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.117952668, 24.835000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.122488268, 24.835000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.158692069, 24.871999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.160789867, 24.881000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.198409751, 24.908000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.217312156, 24.936000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.256877637, 24.972000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.262260661, 24.981000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.302358658, 25.018000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.315479340, 25.027000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606320.323282406, 25.036000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.363966738, 25.073000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.367574625, 25.082000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.405556690, 25.118999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.423373927, 25.137000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.459038626, 25.164000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.471228092, 25.182999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.511864234, 25.219000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.516662590, 25.219000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606320.547381775, 25.256000000]: Drone 2, [5.040000,1.948943,0.386695,5.230452], [time, length, vel, energy][0m
+[33m[WARN] [1790606320.549402744, 25.256000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606320.549513215, 25.256000000]: Drone 1, [5.031000,2.413082,0.479643,3.725913], [time, length, vel, energy][0m
+[31m[ERROR] [1790606320.589790761, 25.292000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.592378971, 25.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.628318598, 25.329000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.631007817, 25.338000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.667027693, 25.365999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.677944566, 25.384000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.717125063, 25.420000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.737197511, 25.439000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606320.738833620, 25.439000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.779450793, 25.475000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.782836861, 25.484000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.817332266, 25.512000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.837732503, 25.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.873043900, 25.567000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.883416292, 25.585000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.921798599, 25.621999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.930542635, 25.631000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606320.962991101, 25.658000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606320.965095194, 25.658000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606320.971888965, 25.667000000]: Grid 2 is rediscovered[0m
+[33m[WARN] [1790606321.008181560, 25.704000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.056229489, 25.750000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.056715857, 25.750000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.101907400, 25.795000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.102636097, 25.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.155537368, 25.850000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.156251350, 25.850000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606321.159241344, 25.850000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606321.167182146, 25.859000000]: Empty dominance.[0m
+[33m[WARN] [1790606321.167580345, 25.859000000]: No grid[0m
+[31m[ERROR] [1790606321.212631026, 25.905000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.215149784, 25.905000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.261687875, 25.951000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.262419074, 25.951000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.307801962, 25.996999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.308657306, 25.996999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.355486209, 26.042000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.358299574, 26.042000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.404923624, 26.097000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.406862510, 26.097000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606321.412407572, 26.097000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.454330690, 26.143000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.484334351, 26.170000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.533637115, 26.216000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.538258050, 26.216000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606321.581325489, 26.262000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606321.581406696, 26.262000000]: Drone 1, [6.037000,3.381049,0.560055,7.063319], [time, length, vel, energy][0m
+[31m[ERROR] [1790606321.590387268, 26.262000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.593293137, 26.271000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.641259024, 26.317000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.641903013, 26.317000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.694168382, 26.371999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.694543528, 26.371999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.744827366, 26.417000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.747977065, 26.426999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.795481764, 26.472000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.797269366, 26.472000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.842302746, 26.518000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.842884787, 26.518000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.883512883, 26.554999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.883998542, 26.554999999]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606321.889650783, 26.564000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606321.931189000, 26.600000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606321.961451166, 26.628000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.002269606, 26.673000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.005262269, 26.673000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.051064325, 26.719000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.053217109, 26.719000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.096320525, 26.765000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.097283715, 26.765000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.140427192, 26.811000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.141667646, 26.811000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.186147749, 26.856000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.189216116, 26.856000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.231573201, 26.902000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.234241284, 26.902000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.277964635, 26.948000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.278841281, 26.948000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.318772237, 26.984000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.319695365, 26.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.362526103, 27.032000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.363873276, 27.032000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606322.374415628, 27.041000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.411704930, 27.077000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.435890850, 27.105000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.462589443, 27.132000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.463030914, 27.132000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.490227088, 27.160000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.517563458, 27.187000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.546742082, 27.214999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.563938467, 27.233000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.590569985, 27.260000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.608618921, 27.278999999]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606322.608623173, 27.278999999]: Drone 1, [7.044000,4.102839,0.582459,7.782247], [time, length, vel, energy][0m
+[33m[WARN] [1790606322.617783585, 27.288000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.646926024, 27.315000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.664199656, 27.333999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.692173303, 27.361000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.716951978, 27.388000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.752903153, 27.407000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.775452588, 27.434000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.805769239, 27.461999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.817659806, 27.480000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606322.826886209, 27.489000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.854931975, 27.507000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.874523224, 27.535000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.901153657, 27.553000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.930704842, 27.589999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606322.954964633, 27.608000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606322.977303964, 27.635000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.004050580, 27.663000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.021906504, 27.681000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.049790606, 27.708999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.077775383, 27.736000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.106046053, 27.763000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.124506820, 27.782000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.156239262, 27.809000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.179924056, 27.836999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.211988622, 27.864000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.224847840, 27.882000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.252450760, 27.900999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.278617504, 27.937000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.303720966, 27.955999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.326158762, 27.983000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.349581593, 28.001000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.383127774, 28.038000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.411333328, 28.065000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.428436167, 28.083999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.452524497, 28.102000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.482942115, 28.138000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.505351147, 28.157000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.528641370, 28.184000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.549849677, 28.202000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.583750494, 28.239000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.608443459, 28.257000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.629640803, 28.285000000]: Drone 1, [8.051000,4.934902,0.612955,12.384518], [time, length, vel, energy][0m
+[33m[WARN] [1790606323.629965757, 28.285000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606323.630325228, 28.285000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.652690905, 28.303000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.685685186, 28.339999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.711317412, 28.358000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.730614848, 28.385000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.758425246, 28.403999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.778532503, 28.431000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.802741518, 28.449000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.836566130, 28.486000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.863827463, 28.513000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.882082919, 28.532000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.902992452, 28.550000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.936262829, 28.586999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606323.958603994, 28.605000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606323.985299877, 28.632000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.010302872, 28.650999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.040193977, 28.687000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.063207019, 28.705999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.084206014, 28.733000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.107115212, 28.751000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.140384631, 28.788000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.166291869, 28.806000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.168933898, 28.815000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606324.197363272, 28.843000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.228935259, 28.870000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.240676627, 28.888000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.269453466, 28.907000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.285557514, 28.934000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.314122331, 28.952000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.340362486, 28.989000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.370458235, 29.016999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.394048566, 29.035000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.425884351, 29.062000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.445216721, 29.089999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.472782455, 29.108000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.491891922, 29.135000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.518182477, 29.153999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.537018140, 29.181000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.562481741, 29.199000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.584600461, 29.227000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606324.613895643, 29.254000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.639869999, 29.272999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.642203748, 29.282000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606324.649631877, 29.291000000]: Drone 1, [9.066000,5.689899,0.627609,18.189328], [time, length, vel, energy][0m
+[33m[WARN] [1790606324.649900887, 29.291000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606324.671845854, 29.309000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.694895915, 29.336999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.726785226, 29.364000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.741221858, 29.382000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.767330197, 29.400999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.800604868, 29.437000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.829036326, 29.464999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.843749513, 29.483000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.867907836, 29.501000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.898568658, 29.538000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.925240529, 29.565000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.945070398, 29.583999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606324.967504943, 29.602000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606324.998799374, 29.638000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.026322212, 29.666000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.029149708, 29.666000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606325.058792772, 29.693000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.087974397, 29.721000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.101829613, 29.739000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.128444622, 29.766999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.146679277, 29.785000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.170353108, 29.803000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.216013302, 29.846000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.251111217, 29.882000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.253025965, 29.882000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.280235397, 29.910000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.304093070, 29.937000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.335140502, 29.964999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.352417511, 29.983000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.382621689, 30.010000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.408393986, 30.038000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.435127679, 30.065000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.454395725, 30.083999999]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606325.463730765, 30.083999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.487301086, 30.111000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.512358442, 30.138000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.539899872, 30.157000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.559247291, 30.184000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.589201261, 30.202000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.616907107, 30.239000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.644397012, 30.266999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.662162557, 30.285000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606325.671786866, 30.294000000]: Drone 1, [10.069000,6.578660,0.653358,23.834305], [time, length, vel, energy][0m
+[33m[WARN] [1790606325.672236383, 30.294000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606325.692091555, 30.312000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.717529726, 30.339999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.743716688, 30.367000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.762186002, 30.385000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.792618044, 30.413000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.808445703, 30.431000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.838614989, 30.458999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.863706070, 30.486000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.892899909, 30.513000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.893577665, 30.513000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606325.928120428, 30.550000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.953785796, 30.568000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606325.964002610, 30.586999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606325.989365035, 30.605000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.014336139, 30.632000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.041804033, 30.660000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.067090545, 30.687000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.092407030, 30.705999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.113312728, 30.733000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.136825186, 30.751000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.169013231, 30.788000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.193586386, 30.806000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.213428802, 30.833999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.236280181, 30.852000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.267921160, 30.888000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.291702295, 30.907000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.305170400, 30.925000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606326.338226837, 30.952000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.362015934, 30.980000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.369740544, 30.989000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.404926295, 31.016999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.418281011, 31.035000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.446643393, 31.062000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.471956126, 31.089999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.498672395, 31.117000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.518665386, 31.135000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.545379361, 31.163000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.564366976, 31.181000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.593525256, 31.208999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.618277876, 31.236000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.641621083, 31.254000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.666352818, 31.282000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606326.683717329, 31.300000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606326.683995010, 31.300000000]: Drone 1, [11.075000,7.461943,0.673765,25.011839], [time, length, vel, energy][0m
+[31m[ERROR] [1790606326.695749050, 31.309000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.719679968, 31.336999999]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606326.731669001, 31.346000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.758708973, 31.373000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.781826151, 31.391999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.811521491, 31.419000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.828130583, 31.437000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.850132704, 31.455999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.872137951, 31.483000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.889494750, 31.492000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.928923788, 31.538000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.948788674, 31.556000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606326.974076186, 31.583999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606326.992854029, 31.593000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.030253136, 31.638000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.051839549, 31.657000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.074918958, 31.684000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.091534511, 31.693000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.129985685, 31.739000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.147518197, 31.757000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.166437027, 31.775999999]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606327.177258685, 31.785000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.194690939, 31.803000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.234606303, 31.839999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.256757623, 31.858000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.278287091, 31.885000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.299880716, 31.903999999]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.324308674, 31.931000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.346065088, 31.949000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.378741960, 31.986000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.401722028, 32.005000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.427883477, 32.033000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.449217180, 32.051000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.480512028, 32.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.501591271, 32.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.528260974, 32.133000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.548165671, 32.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.582218773, 32.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.603166533, 32.206000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.603847040, 32.206000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606327.643132089, 32.234000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.676558877, 32.270000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.689993008, 32.289000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606327.707608061, 32.307000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606327.708381406, 32.307000000]: Drone 1, [12.073000,8.305746,0.687960,29.556516], [time, length, vel, energy][0m
+[31m[ERROR] [1790606327.720256048, 32.316000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.733919835, 32.334000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.770650525, 32.362000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.790548302, 32.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.829688029, 32.417000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.837809879, 32.435000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.869123945, 32.462000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.882319165, 32.481000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.913478987, 32.508000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.937140562, 32.536000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606327.967944122, 32.563000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606327.982895219, 32.581000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.022436897, 32.609000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.023240048, 32.618000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606328.063075164, 32.654000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.093087121, 32.682000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.095653529, 32.682000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.130377715, 32.718000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.143600990, 32.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.177600607, 32.764000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.189750929, 32.783000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.226790481, 32.810000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.248370516, 32.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.278831697, 32.865000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.294896184, 32.883000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.327495267, 32.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.349604941, 32.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.384017889, 32.965000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.395943807, 32.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.431839454, 33.011000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.444230022, 33.029000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606328.461003612, 33.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.492037705, 33.075000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.496273947, 33.075000000]: Grid 20 is rediscovered[0m
+[33m[WARN] [1790606328.513530321, 33.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.531148876, 33.112000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.552961277, 33.139000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.569677797, 33.148000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.598056105, 33.185000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.618377552, 33.203000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.646161895, 33.231000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.664967835, 33.249000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.700613441, 33.286000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.720239457, 33.304000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.727687179, 33.313000000]: Drone 1, [13.088000,9.302847,0.710792,34.153386], [time, length, vel, energy][0m
+[33m[WARN] [1790606328.728200853, 33.313000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606328.746164372, 33.331000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.766061565, 33.350000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.800238604, 33.386000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.821379169, 33.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.849812045, 33.432000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.871296907, 33.450000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.894888572, 33.478000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606328.906101759, 33.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.923819655, 33.505000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606328.951110252, 33.533000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606328.976943287, 33.551000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.005861906, 33.587000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.033965200, 33.606000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.053771140, 33.633000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.077010629, 33.651000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.107869718, 33.688000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.132701169, 33.706000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.154248562, 33.734000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.178064756, 33.752000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.210038110, 33.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.238745081, 33.816000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.257908491, 33.834000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.286512911, 33.862000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.311871084, 33.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.334761607, 33.908000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.335247058, 33.908000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606329.374586301, 33.944000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.398862225, 33.971000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.404874187, 33.981000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.432741823, 34.008000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.459617045, 34.036000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.482109786, 34.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.505375621, 34.081000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.531602978, 34.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.559710359, 34.136000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.581191969, 34.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.608926246, 34.182000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.633050093, 34.200000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.666428941, 34.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.691445610, 34.264000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.709210321, 34.283000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.738272137, 34.310000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.744809779, 34.319000000]: Drone 1, [14.094000,10.131355,0.718842,37.924734], [time, length, vel, energy][0m
+[33m[WARN] [1790606329.744848465, 34.319000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606329.755524508, 34.328000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606329.770975730, 34.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.799535211, 34.365000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.800968636, 34.365000000]: Grid 26 is rediscovered[0m
+[33m[WARN] [1790606329.823175025, 34.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.843631040, 34.411000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.866835303, 34.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.893559658, 34.465000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.912439218, 34.484000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.935189755, 34.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606329.967282043, 34.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606329.987938324, 34.557000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.012649340, 34.584000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.033566377, 34.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.074215650, 34.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.097657823, 34.658000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.122729936, 34.685000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.150968423, 34.712000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.168194365, 34.731000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.190573925, 34.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.204856938, 34.767000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606330.242646031, 34.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.272423787, 34.822000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.277428080, 34.831000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.305822854, 34.859000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.330363326, 34.886000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.347289743, 34.895000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.376992087, 34.932000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.402921796, 34.950000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.433538221, 34.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.456668947, 35.005000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.484093194, 35.033000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.508460622, 35.051000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.537771812, 35.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.562758966, 35.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.583112096, 35.133000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.602675956, 35.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.637610331, 35.188000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606330.652411812, 35.197000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.681586725, 35.225000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.704991172, 35.252000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.727530811, 35.270000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.742701976, 35.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.766436337, 35.307000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.778102042, 35.325000000]: Drone 1, [15.100000,10.573487,0.700231,41.714849], [time, length, vel, energy][0m
+[33m[WARN] [1790606330.778174662, 35.325000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606330.787130221, 35.334000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.810298132, 35.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.844089770, 35.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.865360650, 35.408000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.898450686, 35.435000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.916506668, 35.453000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.944630056, 35.481000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606330.967819812, 35.499000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606330.998300295, 35.536000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.019686357, 35.554000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.045432391, 35.581000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.069323163, 35.600000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.090100422, 35.627000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606331.106237820, 35.636000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.127782920, 35.664000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.149119542, 35.682000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.179790578, 35.709000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.201129159, 35.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.231218654, 35.764000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.246767300, 35.783000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.277569818, 35.810000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.304089071, 35.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.333949369, 35.865000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.350558378, 35.883000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.379491504, 35.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.404591714, 35.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.431917662, 35.965000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.452437458, 35.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.481160354, 36.011000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.506137670, 36.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.530449987, 36.057000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.544456320, 36.075000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606331.561829169, 36.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.589904866, 36.112000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.611759496, 36.139000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.634402729, 36.158000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.655184031, 36.185000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.677338978, 36.203000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.707064500, 36.231000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.733761467, 36.258000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.760683796, 36.286000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.785967765, 36.304000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.805452461, 36.331000000]: Drone 1, [16.106000,11.273263,0.699942,59.359814], [time, length, vel, energy][0m
+[33m[WARN] [1790606331.805491731, 36.331000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606331.805652394, 36.331000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.829182737, 36.350000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.859815796, 36.386000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.882721493, 36.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.908542522, 36.432000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.935789430, 36.450000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.964797886, 36.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606331.992868706, 36.514000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606331.994281203, 36.514000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606332.014843646, 36.533000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.035538363, 36.551000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.071903287, 36.587000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.091412036, 36.606000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.123167239, 36.633000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.141620336, 36.651000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.178706620, 36.688000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.200336847, 36.706000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.279748658, 36.734000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.312361498, 36.743000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.350251516, 36.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.365957907, 36.798000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.395185264, 36.834000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.416871977, 36.853000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.450785175, 36.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.475542672, 36.908000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.500568221, 36.935000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.521858736, 36.953000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.522200573, 36.953000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606332.559996086, 36.990000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.583703309, 37.017000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.600072240, 37.036000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.619451007, 37.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.645412232, 37.081000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.661484305, 37.090000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.702935062, 37.136000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.722791694, 37.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.748983783, 37.182000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.771549310, 37.200000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.802775874, 37.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.821277078, 37.255000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.848140879, 37.283000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.866021189, 37.292000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.901894617, 37.337000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606332.902053155, 37.337000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606332.902363101, 37.337000000]: Drone 1, [17.103000,12.111256,0.708136,62.710120], [time, length, vel, energy][0m
+[31m[ERROR] [1790606332.921937717, 37.356000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606332.931046519, 37.365000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606332.966733520, 37.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606332.988823602, 37.420000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.007453328, 37.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.027567672, 37.456000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.052225495, 37.484000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.071376566, 37.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.107028925, 37.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.124157735, 37.548000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.154075061, 37.584000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.172420146, 37.593000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.207741923, 37.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.229784355, 37.658000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.254115765, 37.685000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.274109799, 37.703000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.301688498, 37.731000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.319213214, 37.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.344837603, 37.776000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606333.359983047, 37.786000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.374110274, 37.804000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.408445558, 37.831000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.434865720, 37.859000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.462418197, 37.886000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.485057678, 37.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.505556297, 37.932000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.526849814, 37.950000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.561184889, 37.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.581523387, 38.005000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.607034470, 38.033000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.630078611, 38.051000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.661000356, 38.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.687058795, 38.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.706560374, 38.133000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.733369230, 38.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.764480737, 38.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.787492695, 38.206000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.789312396, 38.206000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606333.831095152, 38.252000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.862540409, 38.279000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.867757224, 38.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606333.898044360, 38.316000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.913478782, 38.334000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606333.922954267, 38.343000000]: Drone 1, [18.118000,12.841738,0.708783,63.931848], [time, length, vel, energy][0m
+[33m[WARN] [1790606333.923039351, 38.343000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606333.940801436, 38.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606333.969424032, 38.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.003522114, 38.417000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.016274529, 38.435000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.047543823, 38.462000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.062650456, 38.481000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.090330455, 38.508000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.118088661, 38.536000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.153349908, 38.563000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.164197871, 38.581000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.198934980, 38.609000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.211670345, 38.627000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606334.229737541, 38.636000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.259807693, 38.673000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.303225016, 38.709000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.331786581, 38.737000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.332591734, 38.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.361096854, 38.773000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.370829427, 38.783000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.400480495, 38.810000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.425818282, 38.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.459890977, 38.865000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.473798344, 38.883000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.506349403, 38.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.531119407, 38.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.568539524, 38.975000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.577139739, 38.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.610181543, 39.002000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.633227060, 39.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.664982972, 39.066000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.678573722, 39.084000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606334.690034449, 39.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.729948063, 39.130000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.763625060, 39.167000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.797382722, 39.194000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.798155066, 39.194000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.828000064, 39.222000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.832194369, 39.231000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.862792244, 39.258000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.885407170, 39.286000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606334.918598925, 39.313000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.932598087, 39.331000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606334.949286636, 39.350000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606334.949819235, 39.350000000]: Drone 1, [19.124000,13.538585,0.707937,70.744684], [time, length, vel, energy][0m
+[31m[ERROR] [1790606334.963006242, 39.359000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606334.985443038, 39.386000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.017575138, 39.414000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.036708992, 39.432000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.076078417, 39.468000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.089110555, 39.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.123527254, 39.514000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.137109751, 39.533000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606335.147436745, 39.533000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.177354446, 39.569000000]: Larger cost after reallocation[0m
+[31m[ERROR] [1790606335.688792496, 40.063000000]: Total time too long!!![0m
+[33m[WARN] [1790606335.697085432, 40.072000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.721307996, 40.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.742411751, 40.118000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.768754415, 40.145000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.786204219, 40.164000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.812507948, 40.182000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.842125624, 40.218000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.879334970, 40.255000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.888419135, 40.264000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606335.915768928, 40.292000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606335.916294857, 40.292000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606335.978737605, 40.356000000]: Drone 1, [20.131000,14.199558,0.705358,78.864459], [time, length, vel, energy][0m
+[33m[WARN] [1790606335.978926699, 40.356000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606336.406596177, 40.776000000]: Total time too long!!![0m
+[33m[WARN] [1790606336.411731619, 40.786000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.437876434, 40.804000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.460187043, 40.831000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.484397725, 40.859000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.502370249, 40.877000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.529993470, 40.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.557936685, 40.932000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.586196099, 40.959000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.605706141, 40.978000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.631028337, 40.996000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.664899723, 41.033000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.696192111, 41.060000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.706670264, 41.078000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.735107184, 41.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.762394321, 41.133000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.789238111, 41.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.807381428, 41.179000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.834445328, 41.206000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.862703200, 41.234000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.888070211, 41.252000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.907119772, 41.279000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.931335708, 41.298000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.961767833, 41.334000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606336.987138804, 41.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606336.991240604, 41.362000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606336.991240479, 41.362000000]: Drone 1, [21.137000,14.774417,0.698984,81.660935], [time, length, vel, energy][0m
+[33m[WARN] [1790606337.010579935, 41.380000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.037300414, 41.398000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.062596264, 41.426000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.091958229, 41.453000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.115275465, 41.481000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.145324691, 41.508000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.161407061, 41.526000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.193943071, 41.554000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.217690814, 41.581000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.251308156, 41.609000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.269906117, 41.627000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.300768040, 41.654000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.320752652, 41.682000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.346558882, 41.700000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.369009144, 41.728000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.396605101, 41.755000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.423846424, 41.783000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.448435795, 41.801000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.469065105, 41.828000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.495410855, 41.846000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.525223962, 41.883000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.553686978, 41.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.570131196, 41.929000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.598241453, 41.956000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.626919243, 41.984000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.657201751, 42.002000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.672134881, 42.029000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.698616407, 42.048000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.726237961, 42.084000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.756543439, 42.103000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.774747995, 42.130000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.802522167, 42.158000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.821327273, 42.176000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.846644634, 42.194000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.879771814, 42.231000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.904491668, 42.258000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.922825580, 42.276000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606337.947031052, 42.295000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606337.947723648, 42.295000000]: Replan: periodic call=======================================[0m
+[33m[WARN] [1790606338.025026405, 42.377000000]: Drone 1, [22.143000,15.275913,0.689875,82.083324], [time, length, vel, energy][0m
+[33m[WARN] [1790606338.025100401, 42.377000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606338.705186024, 43.045000000]: Total time too long!!![0m
+[33m[WARN] [1790606338.713123741, 43.054000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.738669299, 43.072000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606338.759353344, 43.100000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.787214601, 43.127000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606338.805447671, 43.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.835642261, 43.173000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606338.859804836, 43.200000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.890681767, 43.228000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606338.907508134, 43.246000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606338.914586964, 43.246000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.934814989, 43.273000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606338.968758578, 43.301000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606338.997371252, 43.328000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.010014404, 43.347000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.037201240, 43.374000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.046793201, 43.383000000]: Drone 1, [23.158000,15.865993,0.685119,82.565624], [time, length, vel, energy][0m
+[33m[WARN] [1790606339.046930936, 43.383000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606339.063310705, 43.401000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.099162997, 43.429000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.111324909, 43.447000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.136697088, 43.465000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.164387802, 43.502000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.188142340, 43.520000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.211423933, 43.548000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.237656668, 43.575000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.267946139, 43.603000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.296805936, 43.630000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.314631553, 43.648000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.339572309, 43.667000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.342181363, 43.676000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606339.376091976, 43.703000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.399351017, 43.731000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.416405248, 43.749000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.442262587, 43.767000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.462457179, 43.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.486685078, 43.813000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.522706038, 43.850000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.548302122, 43.868000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.567250758, 43.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.591637737, 43.914000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.624225815, 43.950000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.647756157, 43.968000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.669759653, 43.996000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.698864115, 44.014000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.727251718, 44.051000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.753730493, 44.078000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.755645992, 44.078000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606339.785890148, 44.106000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.809159152, 44.133000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.828429032, 44.151000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.855117453, 44.170000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.874192277, 44.197000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.904168216, 44.215000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.932116308, 44.252000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606339.957732235, 44.279000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606339.976563729, 44.298000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.002256235, 44.316000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.031633959, 44.353000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.057053662, 44.371000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.068274353, 44.389000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606340.068710321, 44.389000000]: Drone 1, [24.164000,16.877125,0.698441,83.036549], [time, length, vel, energy][0m
+[33m[WARN] [1790606340.079386740, 44.398000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.106777387, 44.417000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.137548515, 44.453000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.162754528, 44.472000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.173655809, 44.490000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606340.185272239, 44.499000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.208943361, 44.517000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.231237127, 44.545000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.255546109, 44.563000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.285200387, 44.600000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.313600913, 44.618000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.332869501, 44.645000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.356099777, 44.664000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.388352771, 44.700000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.409838300, 44.718000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.433305111, 44.746000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.455695550, 44.764000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.489615335, 44.801000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.514641550, 44.828000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.534571635, 44.846000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.553667554, 44.865000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.588594508, 44.901000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.606492370, 44.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.635892604, 44.947000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.657086321, 44.965000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.690758231, 45.002000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.715916554, 45.020000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.752827000, 45.048999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.778944969, 45.076000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.800077906, 45.103000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.826704921, 45.121000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.848807550, 45.148000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.871947197, 45.167000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.903568208, 45.203000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.928922504, 45.222000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.952235947, 45.249000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606340.973236150, 45.267000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606340.996283376, 45.295000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.015598862, 45.313000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.052366404, 45.350000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.074889243, 45.368000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.094972446, 45.395000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606341.095193306, 45.395000000]: Drone 1, [25.170000,17.771564,0.706061,83.349597], [time, length, vel, energy][0m
+[33m[WARN] [1790606341.095249251, 45.395000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.117514086, 45.414000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.121442299, 45.414000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606341.162494732, 45.450000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.183733054, 45.478000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.200812506, 45.496000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.219079218, 45.505000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.258131068, 45.551000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.278357510, 45.569000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.300704386, 45.596000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.319961885, 45.606000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.356718712, 45.651000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.372287618, 45.661000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.402747465, 45.697000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.418382946, 45.706000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.456874640, 45.752000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.472450341, 45.761000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.504300091, 45.798000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.529514609, 45.816000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.547164179, 45.834000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606341.561867194, 45.853000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.583033438, 45.871000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.607136108, 45.898000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.622927167, 45.908000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.662365418, 45.953000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.677524827, 45.962000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.707736425, 45.999000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.726626491, 46.017000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.757868729, 46.045000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.776247872, 46.063000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.809136642, 46.100000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.826721972, 46.118000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.853878210, 46.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.874160096, 46.164000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.910481205, 46.200000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.929402828, 46.218000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.957482403, 46.246000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606341.973221810, 46.255000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606341.983783463, 46.273000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606342.001003235, 46.283000000]: Grid 26 is rediscovered[0m
+[33m[WARN] [1790606342.018131587, 46.301000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.036733508, 46.319000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.056878826, 46.347000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.075077046, 46.356000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.112883189, 46.401000000]: Drone 1, [26.176000,18.552752,0.708770,83.871918], [time, length, vel, energy][0m
+[33m[WARN] [1790606342.112979696, 46.401000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606342.113082164, 46.401000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.135543847, 46.420000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.160349285, 46.447000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.181236974, 46.465000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.215367573, 46.502000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.236018143, 46.520000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.261407915, 46.548000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.281276010, 46.566000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.316365088, 46.603000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.337174362, 46.612000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.365745933, 46.648000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.383449238, 46.667000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.402990212, 46.685000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606342.421810909, 46.703000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.444433673, 46.721000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.470290095, 46.749000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.494450253, 46.767000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.517258818, 46.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.542622785, 46.822000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.573305869, 46.850000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.591097010, 46.868000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.619159201, 46.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.639401109, 46.914000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.671639887, 46.950000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.690296710, 46.968000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.719165304, 46.996000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.746368524, 47.014000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.778646155, 47.051000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.798312816, 47.069000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.824788172, 47.097000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.842256194, 47.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.852407309, 47.124000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606342.887976876, 47.151000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.905492505, 47.170000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.923584338, 47.197000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606342.940105344, 47.206000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606342.985905524, 47.252000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.001673488, 47.261000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.033099651, 47.298000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.051985423, 47.316000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.089077084, 47.353000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.109612889, 47.371000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.134012749, 47.398000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606343.146998781, 47.408000000]: Drone 1, [27.173000,19.493771,0.717395,84.939749], [time, length, vel, energy][0m
+[33m[WARN] [1790606343.147909152, 47.408000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606343.151429453, 47.408000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.193959541, 47.453000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.211393670, 47.462000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.237480249, 47.499000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.259783645, 47.517000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.286551231, 47.545000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606343.306673245, 47.563000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.329048635, 47.581000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.351504149, 47.609000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.371184735, 47.627000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.389880161, 47.645000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.407786818, 47.664000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.442741245, 47.700000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.459913785, 47.709000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.489175367, 47.746000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.505836652, 47.755000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.544527404, 47.801000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.563856147, 47.819000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.592506382, 47.846000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.610079039, 47.856000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.647021334, 47.901000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.662895434, 47.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.693286747, 47.947000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.710479714, 47.965000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.729505139, 47.984000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606343.752200731, 48.002000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.774527680, 48.020000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.821049972, 48.066000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.901883243, 48.148000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606343.904914591, 48.148000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606343.995191291, 48.240000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.001311683, 48.240000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.076174220, 48.322000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.079729330, 48.322000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.161456090, 48.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.162544884, 48.404000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606344.173042547, 48.414000000]: Drone 1, [28.188000,20.394343,0.723512,101.932969], [time, length, vel, energy][0m
+[33m[WARN] [1790606344.174045631, 48.414000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[31m[ERROR] [1790606344.245792820, 48.487000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.246356811, 48.487000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606344.263115853, 48.496000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.345338568, 48.587000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.365566011, 48.606000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.384707118, 48.615000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.390387915, 48.615000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.407725830, 48.633000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.411359062, 48.642000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.426334546, 48.651000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.454763712, 48.688000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.467478066, 48.697000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.511680114, 48.743000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.525622415, 48.752000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.556345603, 48.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.573941188, 48.798000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.610707770, 48.843000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.621714521, 48.853000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.656885056, 48.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.667350994, 48.898000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.711554252, 48.944000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.722778069, 48.953000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.759378068, 48.990000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606344.770699976, 48.999000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.788321700, 49.017000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.816086325, 49.045000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.830945251, 49.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.860553631, 49.090000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.874880332, 49.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.915556702, 49.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.928620397, 49.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606344.961736114, 49.191000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606344.973958930, 49.200000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.008170152, 49.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.023377502, 49.246000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.063734671, 49.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.075991629, 49.301000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.108839837, 49.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.121977194, 49.347000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.162960592, 49.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.173866167, 49.401000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.194242809, 49.420000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606345.194495894, 49.420000000]: Drone 1, [29.195000,21.378571,0.732268,112.247689], [time, length, vel, energy][0m
+[33m[WARN] [1790606345.197784537, 49.420000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606345.218078012, 49.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.231838639, 49.456000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.266755881, 49.493000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.279601967, 49.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.312971143, 49.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.325037715, 49.548000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.367345317, 49.593000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.380203951, 49.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.414569584, 49.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.428297361, 49.648000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.471395399, 49.694000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.489852373, 49.712000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.516601700, 49.740000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.534188822, 49.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.574286986, 49.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.595172966, 49.813000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.617374144, 49.831000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606345.643810105, 49.850000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.661476351, 49.868000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.684259653, 49.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.701142299, 49.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.730743050, 49.941000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.755148872, 49.959000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.776250418, 49.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.790315572, 49.996000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.831760826, 50.042000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.848421152, 50.051000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.876035827, 50.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.896307833, 50.106000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.931939056, 50.142000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606345.947229781, 50.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606345.987595788, 50.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.004164735, 50.197000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.063729961, 50.243000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.080375738, 50.252000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.082793738, 50.261000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606346.108721195, 50.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.124897321, 50.298000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.165595243, 50.343000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.179410022, 50.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.210071887, 50.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.229183813, 50.408000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.248791654, 50.426000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606346.249803076, 50.426000000]: Drone 1, [30.201000,22.306142,0.738590,113.600960], [time, length, vel, energy][0m
+[33m[WARN] [1790606346.268406706, 50.444000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.285473819, 50.453000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.315034550, 50.490000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.330589074, 50.499000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.372082685, 50.545000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.388702157, 50.563000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.416919217, 50.590000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.432105140, 50.600000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.479158696, 50.645000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.494804432, 50.654000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.507713008, 50.673000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606346.545997516, 50.709000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.560988924, 50.718000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.572153879, 50.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.588435433, 50.746000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.628919581, 50.792000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.645064191, 50.801000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.673745066, 50.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.691347780, 50.846000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.730429561, 50.892000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.753048781, 50.911000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.776809156, 50.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.795058484, 50.956000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.831123383, 50.993000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.845245065, 51.002000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.878326806, 51.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.896712286, 51.057000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.932485455, 51.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.946952435, 51.103000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606346.947604386, 51.103000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606346.980309188, 51.139000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606346.996057559, 51.148000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.038001812, 51.194000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.060776985, 51.212000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.084950983, 51.240000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.100423549, 51.249000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.141279550, 51.295000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.154070817, 51.304000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.187626504, 51.340000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.206360824, 51.350000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.243932643, 51.395000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.264748337, 51.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.287245872, 51.432000000]: Drone 1, [31.207000,23.342106,0.747977,127.423355], [time, length, vel, energy][0m
+[33m[WARN] [1790606347.288008336, 51.432000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606347.295717105, 51.441000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.310528049, 51.450000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.343144432, 51.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.360860661, 51.496000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.362598654, 51.505000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606347.401720205, 51.542000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.419493463, 51.551000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.445883151, 51.587000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.462279512, 51.596000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.505481560, 51.642000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.520375128, 51.651000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.551082224, 51.688000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.561829303, 51.697000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.605849219, 51.743000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.616777722, 51.752000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.652006745, 51.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.662367089, 51.798000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.709526407, 51.843000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.722520567, 51.853000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.760181180, 51.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.775572413, 51.898000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.786959646, 51.917000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606347.816802893, 51.944000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.834692042, 51.953000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.861408893, 51.990000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.883834684, 52.008000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.918004761, 52.045000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.933996794, 52.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606347.964351172, 52.090000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606347.979111882, 52.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.020250775, 52.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.036530077, 52.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.069891124, 52.191000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.085079173, 52.200000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.116741246, 52.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.129047813, 52.246000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.173209341, 52.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.184117250, 52.301000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.219481215, 52.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.234402547, 52.347000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.275900036, 52.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.293683673, 52.401000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.321069192, 52.438000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606348.330358126, 52.447000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606348.331719973, 52.447000000]: Drone 1, [32.213000,23.948778,0.743451,130.880820], [time, length, vel, energy][0m
+[31m[ERROR] [1790606348.335978685, 52.447000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.377352987, 52.493000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.390034032, 52.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.422602017, 52.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.435061035, 52.548000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.476983861, 52.593000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.490132015, 52.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.502150229, 52.612000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606348.528000523, 52.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.542165435, 52.648000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.579492173, 52.694000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.589569542, 52.703000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.625538935, 52.740000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.636215520, 52.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.679247567, 52.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.691529872, 52.804000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.726245930, 52.840000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.740052705, 52.850000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.787748207, 52.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.802411160, 52.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.834199213, 52.941000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.846588488, 52.950000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.882413391, 52.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.895897880, 52.996000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.924271143, 53.023000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606348.955478947, 53.051000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.968925209, 53.069000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606348.985232233, 53.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606348.999029462, 53.097000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.042924648, 53.142000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.057515607, 53.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.090097556, 53.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.101437640, 53.197000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.145127057, 53.243000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.155732024, 53.252000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.191459796, 53.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.202225467, 53.298000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.245535778, 53.343000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.257631240, 53.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.292434841, 53.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.305822532, 53.398000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.342742858, 53.435000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606349.352324938, 53.444000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606349.360011696, 53.453000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606349.360725636, 53.453000000]: Drone 1, [33.228000,24.561402,0.739178,145.418246], [time, length, vel, energy][0m
+[31m[ERROR] [1790606349.367770657, 53.453000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.398660969, 53.490000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.413913675, 53.499000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.452801318, 53.545000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.465036599, 53.554000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.497393061, 53.590000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.507331069, 53.600000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.551612407, 53.645000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.562198322, 53.654000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.598824251, 53.691000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.608827375, 53.700000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.643884270, 53.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.653975021, 53.746000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.699224218, 53.792000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.710154805, 53.801000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.750082551, 53.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.764371442, 53.846000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.767174217, 53.856000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606349.804128394, 53.892000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.817717476, 53.901000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.848300510, 53.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.863139051, 53.947000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.903566380, 53.993000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.916421179, 54.002000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606349.949645908, 54.039000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606349.962679546, 54.048000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.006925283, 54.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.020146682, 54.103000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.053146757, 54.139000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.065004141, 54.148000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.109133529, 54.194000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.123442638, 54.203000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.154835827, 54.240000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.167621049, 54.249000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.181629300, 54.267000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606350.210132128, 54.295000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.227295955, 54.304000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.255112815, 54.340000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.269250756, 54.350000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.308893609, 54.395000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.323757078, 54.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.360741311, 54.441000000]: Pair opt 1 & 2[0m
+[33m[WARN] [1790606350.377079852, 54.459000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606350.377283495, 54.459000000]: Drone 1, [34.234000,25.342794,0.740281,153.237248], [time, length, vel, energy][0m
+[31m[ERROR] [1790606350.378275699, 54.459000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.405673475, 54.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.424539153, 54.505000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.460883566, 54.542000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.476069322, 54.551000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.504984564, 54.587000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.522304553, 54.596000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.565750973, 54.642000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.584457280, 54.661000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.602831296, 54.679000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606350.631242244, 54.706000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.648050478, 54.725000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.666681163, 54.743000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.681862792, 54.752000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.712074640, 54.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.727521610, 54.798000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.775380736, 54.843000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.876331394, 54.880000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.882764693, 54.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.897942069, 54.898000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.937972741, 54.944000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.952324247, 54.953000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606350.986710682, 54.990000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606350.998879430, 54.999000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.048227258, 55.045000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.065538784, 55.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.096963614, 55.090000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.115857473, 55.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.116222905, 55.100000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606351.162918492, 55.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.177437831, 55.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.215154180, 55.191000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.230888126, 55.200000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.263086509, 55.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.281048027, 55.246000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.319992156, 55.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.333590285, 55.301000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.366043462, 55.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.381511984, 55.347000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.422709781, 55.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.438348138, 55.401000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.474845127, 55.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.490051310, 55.447000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.503386349, 55.465000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606351.503431913, 55.465000000]: Drone 1, [35.240000,26.127523,0.741417,155.017426], [time, length, vel, energy][0m
+[33m[WARN] [1790606351.529975595, 55.493000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.543404306, 55.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.548784412, 55.511000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606351.557036952, 55.520000000]: Grid 26 is rediscovered[0m
+[33m[WARN] [1790606351.577186230, 55.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.595239711, 55.557000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.631046564, 55.593000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.646024799, 55.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.683883052, 55.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.698213672, 55.648000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.744571465, 55.694000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.764437101, 55.712000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.790311865, 55.740000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.802933506, 55.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.845836405, 55.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.858823896, 55.804000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.895780656, 55.840000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.913310000, 55.850000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.949311409, 55.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606351.963595547, 55.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606351.977654114, 55.923000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606352.006048846, 55.941000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.025961256, 55.968000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.041782663, 55.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.059721336, 55.996000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.098017308, 56.042000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.112138782, 56.051000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.144277301, 56.087000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.160341955, 56.097000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.200011905, 56.142000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.216679693, 56.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.247733212, 56.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.264266099, 56.197000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.309893443, 56.243000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.328224771, 56.255000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.358570394, 56.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.373654266, 56.301000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.404421975, 56.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.420557039, 56.347000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.420905088, 56.347000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606352.459425005, 56.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.478747495, 56.401000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.506937332, 56.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.521661566, 56.447000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.534358411, 56.465000000]: Drone 1, [36.240000,26.964348,0.744049,178.559323], [time, length, vel, energy][0m
+[33m[WARN] [1790606352.535162188, 56.465000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606352.562957787, 56.493000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.577936814, 56.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.608206650, 56.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.622366935, 56.548000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.664943254, 56.593000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.679216304, 56.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.715017988, 56.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.734041078, 56.658000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.771329004, 56.694000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.785597676, 56.703000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.816667745, 56.740000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.831932082, 56.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.837833990, 56.758000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606352.892567051, 56.813000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.932408212, 56.850000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.938551032, 56.850000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606352.976491076, 56.886000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606352.984558816, 56.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.030162481, 56.932000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.038983056, 56.941000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.086384036, 56.978000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.097643997, 56.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.144260627, 57.023000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.166544180, 57.042999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.199920568, 57.079000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.208894344, 57.088000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.240603608, 57.115000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.267014973, 57.142000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.295487286, 57.170000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.297759254, 57.170000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606353.320525590, 57.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.333708387, 57.197000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.375099239, 57.243000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.388650969, 57.252000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.423303203, 57.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.437614772, 57.298000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.477437549, 57.343000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.490443965, 57.353000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.524332818, 57.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.538734057, 57.398000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.579851355, 57.444000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.596205612, 57.453000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.607951357, 57.472000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606353.609209277, 57.472000000]: Drone 1, [37.246000,27.718019,0.744188,187.594525], [time, length, vel, energy][0m
+[33m[WARN] [1790606353.628253377, 57.490000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.642726444, 57.499000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.682848078, 57.545000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.699184200, 57.554000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.708998355, 57.572000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606353.750874324, 57.600000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.767305536, 57.618000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.786217528, 57.645000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.798590128, 57.654000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.836363214, 57.691000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.849184705, 57.700000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.879808259, 57.737000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.893272654, 57.746000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.938017224, 57.792000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606353.954725115, 57.801000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606353.984906532, 57.837000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.000555602, 57.846000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.041065222, 57.892000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.054460583, 57.901000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.085892958, 57.938000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.096590012, 57.947000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.141620058, 57.993000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.160615884, 58.011000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.161542472, 58.011000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606354.197086902, 58.048000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.210920065, 58.057000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.245587849, 58.093000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.256895709, 58.103000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.289033061, 58.139000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.300264549, 58.148000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.349752364, 58.194000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.363842947, 58.203000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.400267150, 58.240999999]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.421257015, 58.259000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.452414669, 58.295000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.465736077, 58.304000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.499506829, 58.340000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.513958843, 58.350000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.555173190, 58.395000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.568177272, 58.404000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.583719622, 58.423000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606354.609595345, 58.441000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.622648744, 58.450000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.643369266, 58.478000000]: Drone 1, [38.243000,28.443665,0.743761,195.523217], [time, length, vel, energy][0m
+[33m[WARN] [1790606354.644023676, 58.478000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606354.653785763, 58.487000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.669730106, 58.496000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.709985974, 58.542000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.723258357, 58.551000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.756239297, 58.587000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.767270644, 58.596000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.810907618, 58.642000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.823957598, 58.651000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.855329401, 58.688000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.869995022, 58.697000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.911862820, 58.743000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.930824130, 58.761000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606354.959798360, 58.789000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606354.975087083, 58.798000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.006231690, 58.834000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606355.016745486, 58.843000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.032913857, 58.853000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.067384084, 58.889000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.080825968, 58.898000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.123501837, 58.944000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.139199140, 58.953000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.171628597, 58.990000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.188580152, 59.008000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.231608113, 59.045000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.247819715, 59.054000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.274512722, 59.090000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.286590507, 59.100000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.331035010, 59.145000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.343714180, 59.154000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.379786332, 59.191000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.400804628, 59.209000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.425505180, 59.237000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.440241878, 59.246000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.444232206, 59.255000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606355.480712020, 59.292000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.496297892, 59.301000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.524195792, 59.337000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.538191495, 59.347000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.579337725, 59.392000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.594223372, 59.401000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.628700394, 59.438000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.646531555, 59.456000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.674295138, 59.484000000]: Drone 1, [39.259000,29.260848,0.745328,198.777280], [time, length, vel, energy][0m
+[33m[WARN] [1790606355.674295138, 59.484000000]: Drone 2, [5.954000,3.001394,0.504097,16.587268], [time, length, vel, energy][0m
+[33m[WARN] [1790606355.682869006, 59.493000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.695678158, 59.502000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.729820220, 59.539000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.744620867, 59.548000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.788539690, 59.593000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.800401285, 59.603000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.835723354, 59.639000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.847051181, 59.648000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.863341239, 59.667000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606355.891111492, 59.694000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.906335517, 59.703000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.937162673, 59.740000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606355.953421965, 59.749000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606355.991720522, 59.795000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.007563731, 59.804000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.040658854, 59.840000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.057767404, 59.850000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.095337096, 59.895000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.110078880, 59.904000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.142704518, 59.941000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.159259207, 59.950000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.188526626, 59.987000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.203892680, 59.996000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.260336096, 60.042000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.277884115, 60.060000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.296004504, 60.078000000]: Replan: cluster covered=====================================[0m
+[33m[WARN] [1790606356.321245910, 60.097000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.338500408, 60.115000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.360987605, 60.142000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.376912855, 60.151000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.410734382, 60.188000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.428075090, 60.197000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.469153702, 60.243000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.484947679, 60.252000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.515813437, 60.289000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.530263951, 60.298000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.571812214, 60.343000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.591094643, 60.362000000]: Larger cost after reallocation[0m
+[33m[WARN] [1790606356.615064038, 60.389000000]: Pair opt 1 & 2[0m
+[31m[ERROR] [1790606356.634886611, 60.389000000]: Larger cost after reallocation[0m
+
+[1mROS_MASTER_URI=http://localhost:11328[0m
+]2;/comparison/racer.launch http://localhost:11328
+[1mprocess[exploration_node_1-1]: started with pid [3214][0m
+[1mprocess[tsp_solver_1-2]: started with pid [3215][0m
+[1mprocess[acvrp_solver_1-3]: started with pid [3217][0m
+[1mprocess[traj_server_1-4]: started with pid [3227][0m
+[1mprocess[exploration_node_2-5]: started with pid [3228][0m
+[1mprocess[tsp_solver_2-6]: started with pid [3229][0m
+[1mprocess[acvrp_solver_2-7]: started with pid [3234][0m
+[1mprocess[traj_server_2-8]: started with pid [3245][0m
+[traj_server_2-8] killing on exit
+[tsp_solver_2-6] killing on exit
+[traj_server_1-4] killing on exit
+[exploration_node_2-5] killing on exit
+[acvrp_solver_2-7] killing on exit
+[acvrp_solver_1-3] killing on exit
+[tsp_solver_1-2] killing on exit
+[exploration_node_1-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

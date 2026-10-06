@@ -1,0 +1,4 @@
+{
+  "reason": "Build changed physical binary hashes; stopped during common startup before exploration. Original baseline binaries restored for final paired run.",
+  "included_in_analysis": false
+}

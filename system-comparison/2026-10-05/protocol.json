@@ -1,0 +1,74 @@
+{
+  "status": "frozen_for_single_paired_trial_20261005",
+  "systems": [
+    "Annual-Project",
+    "RACER",
+    "GVP-MREP"
+  ],
+  "trial_seed": 900,
+  "repetitions": 1,
+  "map_sha256": "72f14eabcb6cd9cdf5f9a1960f827341ab1ff355abdf479b1aa07dfb0df9669c",
+  "fleet_size": 2,
+  "max_velocity_mps": 0.6,
+  "max_acceleration_mps2": 0.8,
+  "max_yaw_rate_radps": 0.65,
+  "lidar": {
+    "range_m": [
+      0.1,
+      4.5
+    ],
+    "horizontal_fov_deg": 120,
+    "vertical_fov_deg": 120,
+    "samples": [
+      181,
+      31
+    ],
+    "hz": 5,
+    "noise_std_m": 0.005,
+    "body_offset_m": [
+      0,
+      0,
+      0.4
+    ]
+  },
+  "coverage": {
+    "target": 0.95,
+    "voxel_m": 0.3,
+    "definition": "observed free / geometrically fully free voxels, common external mapper; truth only for scoring",
+    "ego_space": "Each mapper may clear physically occupied hull from measured pose only. No ground-truth geometry sent to planners."
+  },
+  "limit_sim_seconds": 300,
+  "limit_wall_seconds": 2400,
+  "shared": "Gazebo Harmonic quadrotor physics + lidar + noisy localization/IMU estimator + PID motor controller",
+  "adapted": "Native mapping, allocation, planning and trajectory sampling retained; ROS1 transport adapter; GVP simulation clock and finite-FOV pointcloud ingress port",
+  "limitations": [
+    "One paired trial cannot establish statistical superiority",
+    "ROS1/ROS2 transport and runtimes differ; record adapter delay",
+    "Internal map representation and initialization remain system-specific",
+    "A smoke failure is an integration result, never an allocation quality result"
+  ],
+  "common_execution": "Native trajectory sample -> identical reference governor (Euclidean speed <=0.6, acceleration <=0.8, yaw rate <=0.65) -> identical PID -> Gazebo motors. Log raw and governed references; actual tracking overshoot is measured.",
+  "self_filter": "Discard returns within known physical body box [0.34,0.34,0.10] half-extents, offset [0,0,0.4]; do not raycast through discarded returns.",
+  "startup": "Same bounded ascent and yaw scan for first 20 simulated seconds; exploration commands accepted from t=20.",
+  "safety_stop": [
+    "physical OBB hull intersects an obstacle beyond 5mm numerical tolerance",
+    "executed reference tracking error >0.8m for >1 simulated second"
+  ],
+  "physical_body_m": [
+    0.64,
+    0.64,
+    0.16
+  ],
+  "mapper_adaptation": "Common self-return removal; Annual and GVP clear only physical hull swept by estimated robot poses. GVP pointcloud blind range set to physical sensor minimum 0.1m.",
+  "scored_runs": [
+    "trial-annual-900",
+    "trial-racer-900",
+    "trial-gvp-900"
+  ],
+  "execution_caveat": "Common governor may change trajectory tracking behavior; this is an adapted full exploration closed-loop comparison, not native autopilot or allocation-only comparison. Actual speed overshoot is reported, not hidden.",
+  "annual_source_archive_sha256": "8d19cc4e9cbb19fead3604c935b02fa64ba4bc2ce57a618228cb24b907114413",
+  "annual_source_files": 272,
+  "comparison_to_previous": "New Annual frozen flight policy; rerun all three systems. Same old map, native RACER/GVP adaptations and common reference constraints.",
+  "mapper_metadata_adaptation": "Only added native integrated-frame provenance required by new Annual executor. Identical ray integration and filtering for all three systems.",
+  "prior_test": "2026-09-28 remains immutable; no old score is substituted into this trial."
+}

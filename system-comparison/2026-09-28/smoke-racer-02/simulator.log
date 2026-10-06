@@ -1,0 +1,64 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-09-28-14-03-48-992744-colima-annual-fusion-261
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [gz-1]: process started with pid [266]
+[INFO] [parameter_bridge-2]: process started with pid [267]
+[INFO] [localization_measurement_node.py-3]: process started with pid [268]
+[INFO] [state_estimator_node.py-4]: process started with pid [269]
+[INFO] [pointcloud_mapping_node.py-5]: process started with pid [270]
+[INFO] [controller_node-6]: process started with pid [271]
+[INFO] [localization_measurement_node.py-7]: process started with pid [273]
+[INFO] [state_estimator_node.py-8]: process started with pid [274]
+[INFO] [pointcloud_mapping_node.py-9]: process started with pid [278]
+[INFO] [controller_node-10]: process started with pid [279]
+[controller_node-10] [INFO] [1790604229.129170618] [drone_1.controller]: Controller: pid
+[controller_node-6] [INFO] [1790604229.137387183] [drone_0.controller]: Controller: pid
+[parameter_bridge-2] [INFO] [1790604230.214225458] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.218560708] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/lidar/points (gz.msgs.PointCloudPacked) -> /drone_0/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.227048575] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/odometry (gz.msgs.Odometry) -> /drone_0/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.233021852] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/imu (gz.msgs.IMU) -> /drone_0/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.234487960] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_0/contacts (gz.msgs.Contacts) -> /drone_0/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.237757093] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_0/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_0/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.239665714] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/lidar/points (gz.msgs.PointCloudPacked) -> /drone_1/lidar/points (sensor_msgs/msg/PointCloud2)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.240660669] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/odometry (gz.msgs.Odometry) -> /drone_1/odometry (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.241461486] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/imu (gz.msgs.IMU) -> /drone_1/imu (sensor_msgs/msg/Imu)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.241966655] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/drone_1/contacts (gz.msgs.Contacts) -> /drone_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604230.242478161] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/drone_1/command/motor_speed (actuator_msgs/msg/Actuators) -> /drone_1/command/motor_speed (gz.msgs.Actuators)] (Lazy 0)
+[parameter_bridge-2] [INFO] [1790604231.434312156] [ros_gz_bridge]: Passing message from ROS actuator_msgs/msg/Actuators to Gazebo gz.msgs.Actuators (showing msg only once per type)
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[controller_node-6] [INFO] [1790604278.266171739] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [controller_node-10]: sending signal 'SIGINT' to process[controller_node-10]
+[INFO] [pointcloud_mapping_node.py-9]: sending signal 'SIGINT' to process[pointcloud_mapping_node.py-9]
+[INFO] [state_estimator_node.py-8]: sending signal 'SIGINT' to process[state_estimator_node.py-8]
+[INFO] [localization_measurement_node.py-7]: sending signal 'SIGINT' to process[localization_measurement_node.py-7]
+[INFO] [controller_node-6]: sending signal 'SIGINT' to process[controller_node-6]
+[INFO] [pointcloud_mapping_node.py-5]: sending signal 'SIGINT' to process[pointcloud_mapping_node.py-5]
+[ERROR] [state_estimator_node.py-8]: process has died [pid 274, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_gdnmphas --params-file /tmp/launch_params_za8el55w'].
+[INFO] [state_estimator_node.py-4]: sending signal 'SIGINT' to process[state_estimator_node.py-4]
+[ERROR] [controller_node-6]: process has died [pid 271, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/controller_node --ros-args -r __ns:=/drone_0 --params-file /workspace/ros2_ws/install/annual_swarm/share/annual_swarm/config/flight.yaml --params-file /tmp/launch_params_1qii5gr7 --params-file /tmp/launch_params_5grkodqw -r odometry:=estimated_odometry'].
+[ERROR] [localization_measurement_node.py-7]: process has died [pid 273, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_fvm4evnr --params-file /tmp/launch_params_h0cb2uek'].
+[INFO] [localization_measurement_node.py-3]: sending signal 'SIGINT' to process[localization_measurement_node.py-3]
+[ERROR] [state_estimator_node.py-4]: process has died [pid 269, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/state_estimator_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_x5k__zs3 --params-file /tmp/launch_params__zyeucgg'].
+[ERROR] [pointcloud_mapping_node.py-5]: process has died [pid 270, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/pointcloud_mapping_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_skhq46fl --params-file /tmp/launch_params_dxut_1pj'].
+[INFO] [parameter_bridge-2]: sending signal 'SIGINT' to process[parameter_bridge-2]
+[INFO] [gz-1]: sending signal 'SIGINT' to process[gz-1]
+[ERROR] [localization_measurement_node.py-3]: process has died [pid 268, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/localization_measurement_node.py --ros-args -r __ns:=/drone_0 --params-file /tmp/launch_params_2jzf2e1g --params-file /tmp/launch_params_cc452w1r'].
+[parameter_bridge-2] [INFO] [1790604278.266821147] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-10] [INFO] [1790604278.267466428] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[controller_node-10] [INFO] [1790604278.278794339] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[pointcloud_mapping_node.py-9] Traceback (most recent call last):
+[pointcloud_mapping_node.py-9]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/pointcloud_mapping_node.py", line 114, in <module>
+[pointcloud_mapping_node.py-9]     main()
+[pointcloud_mapping_node.py-9]   File "/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/pointcloud_mapping_node.py", line 110, in main
+[pointcloud_mapping_node.py-9]     node.destroy_node()
+[pointcloud_mapping_node.py-9]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1962, in destroy_node
+[pointcloud_mapping_node.py-9]     self.destroy_service(self._services[0])
+[pointcloud_mapping_node.py-9]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/node.py", line 1886, in destroy_service
+[pointcloud_mapping_node.py-9]     service.destroy()
+[pointcloud_mapping_node.py-9]   File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/service.py", line 123, in destroy
+[pointcloud_mapping_node.py-9]     self.__service.destroy_when_not_in_use()
+[pointcloud_mapping_node.py-9] KeyboardInterrupt
+[parameter_bridge-2] [INFO] [1790604278.306495016] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [gz-1]: process has finished cleanly [pid 266]
+[ERROR] [pointcloud_mapping_node.py-9]: process has died [pid 278, exit code -2, cmd '/workspace/ros2_ws/install/annual_swarm/lib/annual_swarm/pointcloud_mapping_node.py --ros-args -r __ns:=/drone_1 --params-file /tmp/launch_params_g8hqaopu --params-file /tmp/launch_params_y127rr5u'].
+[INFO] [parameter_bridge-2]: process has finished cleanly [pid 267]
+[INFO] [controller_node-10]: process has finished cleanly [pid 279]

@@ -1,0 +1,44 @@
+{
+  "mode": "racer",
+  "t": 1.056,
+  "wall_seconds": 3.7646298350000507,
+  "coverage": 0.2841747492331924,
+  "t90": null,
+  "t95": null,
+  "distance_m": {
+    "0": 0.14615812620460103,
+    "1": 0.14595537948212114
+  },
+  "contacts": 0,
+  "min_separation_m": 5.997756751042464,
+  "max_measured_speed_mps": 0.5677186127002426,
+  "max_command_speed_mps": 0.0,
+  "max_command_acc_mps2": 0.0,
+  "tracking_error_p95_m": 0.20746652562975484,
+  "counts": {
+    "odom_1": 106,
+    "odom_0": 106,
+    "cloud_0": 6,
+    "cloud_1": 6,
+    "estimated_0": 53,
+    "estimated_1": 53,
+    "observation_0": 3,
+    "observation_1": 3
+  },
+  "positions": {
+    "1": [
+      -3.9975471165595597,
+      2.9985241441523756,
+      0.20577088284270023
+    ],
+    "0": [
+      -4.001483559569482,
+      -2.999231312946905,
+      0.20593190356558755
+    ]
+  },
+  "native_seen": [],
+  "adapter_command_age_p95_s": null,
+  "truth_free_voxels": 12063,
+  "status": "RUNNING"
+}

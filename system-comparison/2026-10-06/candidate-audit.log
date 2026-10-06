@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "errors": [],
+  "handoffs": [
+    {
+      "token": "1:d9942f9a:400012",
+      "old_token": "1:d9942f9a:400011",
+      "authorized_at": 100.0,
+      "continuity": {
+        "position": 1.2560739669470201e-15,
+        "velocity": 1.117398936345585e-15,
+        "acceleration": 1.5959003436011568e-15,
+        "yaw": 0.0,
+        "yaw_rate": 6.938893903907228e-18,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 101.90100000000001
+    },
+    {
+      "token": "1:d9942f9a:400014",
+      "old_token": "1:d9942f9a:400013",
+      "authorized_at": 113.60000000000001,
+      "continuity": {
+        "position": 2.220446049250313e-16,
+        "velocity": 2.5589376332604516e-16,
+        "acceleration": 1.9455141050414164e-15,
+        "yaw": 0.0,
+        "yaw_rate": 0.0,
+        "yaw_acceleration": 0.0
+      },
+      "executed_at": 115.72000000000001
+    }
+  ],
+  "gate_errors": []
+}

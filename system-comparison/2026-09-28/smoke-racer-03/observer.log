@@ -1,0 +1,45 @@
+Traceback (most recent call last):
+  File "/comparison/bridge_ros2.py", line 118, in <module>
+    while rclpy.ok() and not b.done:rclpy.spin_once(b,timeout_sec=.1)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 226, in spin_once
+    executor.spin_once(timeout_sec=timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 926, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 916, in _spin_once_impl
+    handler()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/task.py", line 270, in __call__
+    self._execute_coroutine_step(self._handler)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/task.py", line 286, in _execute_coroutine_step
+    result = coro.send(None)
+             ^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 592, in handler
+    await call_coroutine()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 480, in _execute
+    await await_or_execute(sub.callback, *msg_tuple)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/executors.py", line 115, in await_or_execute
+    return callback(*args)
+           ^^^^^^^^^^^^^^^
+  File "/comparison/bridge_ros2.py", line 37, in <lambda>
+    self.subs.append(self.create_subscription(typ,f'/drone_{i}/{topic}',lambda m,i=i,cb=cb:cb(i,m),qos))
+                                                                                           ^^^^^^^
+  File "/comparison/bridge_ros2.py", line 66, in cloud
+    self.emit(dict(type='cloud',i=i,t=m.header.stamp.sec+m.header.stamp.nanosec*1e-9,height=m.height,width=m.width,point_step=m.point_step,row_step=m.row_step,fields=[[f.name,f.offset,f.datatype,f.count] for f in m.fields],data=base64.b64encode(m.data).decode()))
+  File "/comparison/bridge_ros2.py", line 52, in emit
+    if mode!='annual':print(json.dumps(m,separators=(',',':')),flush=True)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/comparison/bridge_ros2.py", line 119, in <module>
+    finally:b.destroy_node();rclpy.shutdown()
+                             ^^^^^^^^^^^^^^^^
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/__init__.py", line 134, in shutdown
+    _shutdown(context=context)
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/utilities.py", line 82, in shutdown
+    context.shutdown()
+  File "/opt/ros/jazzy/lib/python3.12/site-packages/rclpy/context.py", line 129, in shutdown
+    self.__context.shutdown()
+rclpy._rclpy_pybind11.RCLError: failed to shutdown: rcl_shutdown already called on the given context, at ./src/rcl/init.c:333

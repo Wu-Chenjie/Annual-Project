@@ -1,0 +1,16 @@
+{
+  "container": "annual-todo-1006",
+  "context": "colima",
+  "image": "annual-swarm:fused",
+  "image_id": "sha256:cee3f67c5e16bd6f498afd0b2e80236b530e88ee007e234321f0feca75588de6",
+  "ros": "jazzy",
+  "gazebo": "Harmonic",
+  "reported_nproc": 1,
+  "guest_memory_mib": 3905,
+  "concurrency": "serial native flights; no full regression during scored flights",
+  "network": "none",
+  "mount": "/study-root",
+  "planning_threads": 2,
+  "blas_threads": 1,
+  "container_cleanup": "Removed only annual-todo-1006 after all trial process-cleanup remaining lists were empty; evidence and physics binaries retained."
+}

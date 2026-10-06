@@ -10,6 +10,8 @@ from .voxel_mapping import VoxelRouter
 from .regions import ObservationPlanner, optimize_tour, visible_cells
 from .pairwise import solve_pair
 from .priority import ExplorationPriority
+from .service_selection import materialize_view_window
+from .service_cost import stopped_motion_time
 from .team_evidence import known_mask, regional_evidence, intent_records, expected_traffic_delay
 from core.planning.path_quality import Candidate, RankedPathPool, PathQualityEvaluator, resample
 from core.planning.continuous_trajectory import optimize_trajectory
@@ -18,7 +20,7 @@ from core.planning.continuous_trajectory import optimize_trajectory
 _WORKER_PLANNER = None
 
 
-def compute_worker(planner, *arguments, deadline_wall=None):
+def compute_worker(planner, *arguments, deadline_wall=None, own_state=None):
     """Keep private geometry caches inside one persistent planning process.
 
     The ROS process owns the transport replica and sends its latest source
@@ -33,7 +35,7 @@ def compute_worker(planner, *arguments, deadline_wall=None):
     else:
         _WORKER_PLANNER.graph.replica = planner.graph.replica
         _WORKER_PLANNER.priority.config = planner.priority.config
-    result = _WORKER_PLANNER.compute(*arguments, deadline_wall=deadline_wall)
+    result = _WORKER_PLANNER.compute(*arguments, deadline_wall=deadline_wall, own_state=own_state)
     public = copy.copy(_WORKER_PLANNER); graph = copy.copy(public.graph)
     graph.trees = {}; graph.handshake_cache = {}; graph.local_router = None; graph.runtime = None
     public.graph = graph
@@ -119,7 +121,7 @@ class FusionPlanner:
         self.priority = ExplorationPriority(priority_config); self.priority_layer = {}
 
     def compute(self, runtime, position, yaw, active, recent, cooldown, reservations, epoch, now, plan_view,
-                peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True, deadline_wall=None):
+                peers, overrides, last_success, service_feedback=None, anticipated_view=None, can_move=True, deadline_wall=None, own_state=None):
         plan_view = plan_view and can_move
         begin = time.monotonic(); stages = {}; mark = begin
         def stage(name):
@@ -194,7 +196,8 @@ class FusionPlanner:
         # Promises are arrival-dependent utility estimates, never actual receipts.
         priorities = self.priority.rank(runtime, tasks, local_tasks, costs, position, now,
                                         self.graph.services, excluded_cells, observed_mask,
-                                        preferred=[r for r, owner in owners.items() if owner == self.drone], team_only=True, peers=peers)
+                                        preferred=[r for r, owner in owners.items() if owner == self.drone], team_only=True,
+                                        peers=peers, motion_time=stopped_motion_time)
         for rid, row in priorities.items():
             row['deferred'] |= cooldown.get(rid, 0) > now
             row['committed_by_peer'] = rid in pinned and pinned[rid] != self.drone
@@ -224,18 +227,20 @@ class FusionPlanner:
         # endpoint. Do not pin a finished view or re-sort the optimized route.
         tour, workload = optimize_tour(position, owned, feasible, costs, rewards=rewards,
                                       latency_weight=self.priority.config.route_latency_weight,
-                                      traffic_delays={r:p.get('traffic_delay_s',0.) for r,p in priorities.items()})
+                                      traffic_delays={r:p.get('traffic_delay_s',0.) for r,p in priorities.items()},
+                                      motion_time=stopped_motion_time)
         bids = {}
         for rid, task in (feasible.items() if can_move else []):
             distance = costs.distance(position, task.entry)
             if np.isfinite(distance):
-                bids[rid] = float(distance/.6+priorities[rid].get('traffic_delay_s',0.)+(0 if owners.get(rid) == self.drone else 10000))
+                bids[rid] = float(stopped_motion_time(distance)+priorities[rid].get('traffic_delay_s',0.)+(0 if owners.get(rid) == self.drone else 10000))
         if active in bids:
             bids[active] = -1e6
         stage('tour')
         # Select a fair interaction partner and solve a bounded exact two-vehicle
         # subproblem. Already executing regional services stay pinned.
         offer = None
+        pair_traffic = {}
         partners = [i for i in available if can_move and i != self.drone and self.drone < i]
         partners.sort(key=lambda i: (last_success.get(i, -1), i))
         for other in partners:
@@ -248,13 +253,39 @@ class FusionPlanner:
             ids = ids[:10]
             if len(ids) < 2:
                 continue
-            starts = [[region_costs[r].get(i, np.inf)/.6 for r in ids] for i in (self.drone, other)]
-            between = [[costs.distance(tasks[a].entry, tasks[b].entry)/.6 for b in ids] for a in ids]
+            starts = [[stopped_motion_time(region_costs[r].get(i, np.inf)) for r in ids] for i in (self.drone, other)]
+            between = np.array([[stopped_motion_time(costs.distance(tasks[a].entry, tasks[b].entry)) for b in ids] for a in ids])
+            vehicle_between = np.repeat(between[None], 2, axis=0)
+            # Arrival/service costs must be vehicle specific: assigning a free
+            # branch to the waiting aircraft can beat sending both down the
+            # same corridor. These predictions never authorize either route.
+            paths = {(a,b): sparse.route(tasks[a].entry, tasks[b].entry) for a in ids for b in ids if a != b}
+            for vehicle, i in enumerate((self.drone, other)):
+                obstacles = {j:p for j,p in peers.items() if j != i}
+                if i != self.drone and own_state is not None:
+                    obstacles[self.drone] = own_state
+                if i != self.drone and 'position' not in peers[i]:
+                    pair_traffic[i] = {}; continue  # Legacy state: distance proxy only.
+                origin = position if i == self.drone else np.asarray(peers[i]['position'], float)
+                attachments = view_attachments if i == self.drone and view_attachments is not None else (
+                    self.graph.attachments if i == self.drone else self.graph.connect(origin))
+                waits = {}
+                for k, r in enumerate(ids):
+                    path = self.graph.route_to_region(r, attachments, planning_regions)
+                    if path is None: path = sparse.route(origin, tasks[r].entry)
+                    wait = expected_traffic_delay(path, obstacles, now) if path is not None else 0.
+                    starts[vehicle][k] += wait; waits[r] = wait
+                for a, ra in enumerate(ids):
+                    for b, rb in enumerate(ids):
+                        path = paths.get((ra,rb))
+                        if path is not None:
+                            vehicle_between[vehicle,a,b] += expected_traffic_delay(path, obstacles, now)
+                pair_traffic[i] = waits
             demands = [1+tasks[r].unknown*runtime.resolution**runtime.state.ndim for r in ids]
             fixed = [sum(1+tasks[r].unknown*runtime.resolution**runtime.state.ndim
                          for r, owner in owners.items() if owner == i and r in tasks and r not in ids)
                      for i in (self.drone, other)]
-            result = solve_pair(ids, starts, between, demands, owners, (self.drone, other), pinned, fixed_loads=fixed,
+            result = solve_pair(ids, starts, vehicle_between, demands, owners, (self.drone, other), pinned, fixed_loads=fixed,
                                 reward_weights=[rewards[r] for r in ids], latency_weight=self.priority.config.route_latency_weight)
             offer = dict(other=other, result=result, owners={r: owners[r] for r in ids})
             if (result['status'] == 'optimal_window' and
@@ -279,18 +310,29 @@ class FusionPlanner:
             choices = [r for _, r in sorted(fallback)]
             for r in choices:
                 bids[r] = costs.distance(position, tasks[r].entry)/.6+50
-        selection = None; selected = None; rejected = []
+        selection = None; selected = None; rejected = []; view_options = []
         if plan_view:
             planner = ObservationPlanner()
+            def materialize(rid, preview):
+                if 'view_preview' not in preview:
+                    return preview  # Safe remote corridor already constructed.
+                built = planner.materialize(local, position, yaw, feasible[rid], epoch+1,
+                                            preview['view_preview'], observed_mask, history_weight=0.)
+                if built is not None:
+                    built.update(purpose='explore', priority=preview['priority'],
+                                 traffic_delay_s=expected_traffic_delay(built['pool'].active.path, peers, now))
+                return built
             for k, rid in enumerate(choices):
                 if rid not in feasible:
                     continue
                 task = feasible[rid]
                 if rid in local_tasks:
                     next_goal = feasible[choices[k+1]].entry if k+1 < len(choices) and choices[k+1] in feasible else None
-                    selection = planner.plan(local, local_graph, position, yaw, task, epoch+1, recent,
-                                             next_goal=next_goal, excluded_cells=excluded_cells,
-                                             observed_mask=observed_mask, history_weight=0.)
+                    preview = planner.preview(local, local_graph, position, yaw, task, recent,
+                                              next_goal=next_goal, excluded_cells=excluded_cells,
+                                              observed_mask=observed_mask, history_weight=0.)
+                    selection = (dict(view_preview=preview, objective=preview['objective'], service_cost=preview['service_cost'],
+                                      yaw=preview['yaw']) if preview is not None else None)
                 else:
                     path = self.graph.route_to_region(rid, view_attachments,planning_regions)
                     if path is not None:
@@ -316,10 +358,24 @@ class FusionPlanner:
                                              navigation_target=rid, navigation_reason='private_map_corridor_prefix', team_gain=0.)
                 if selection:
                     selection.setdefault('purpose', 'explore')
-                    selection['traffic_delay_s'] = expected_traffic_delay(selection['pool'].active.path, peers, now)
+                    preview_path = selection['view_preview']['path'] if 'view_preview' in selection else selection['pool'].active.path
+                    selection['traffic_delay_s'] = expected_traffic_delay(preview_path, peers, now)
                     selection['priority'] = priorities[rid]
-                    selected = rid; break
-                rejected.append(rid)
+                    view_options.append((rid, selection))
+                else:
+                    rejected.append(rid)
+                # Compare a small tour prefix using actual view/yaw utility.
+                # A single leftover ray must not force a short stop before a
+                # useful next region. Fit curves only for the winning view.
+                selection = None
+                if k >= 2 or k == len(choices)-1:
+                    chosen, failed = materialize_view_window(view_options, materialize)
+                    rejected.extend(failed)
+                    view_options = [o for o in view_options if o[0] not in failed]
+                    if chosen is not None:
+                        selected, selection = chosen
+                        selection['view_window_regions'] = [r for r, _ in view_options]
+                        break
         stage('view')
         if selection:
             for candidate in [selection['pool'].active]+selection['pool'].backups:
@@ -364,10 +420,12 @@ class FusionPlanner:
             local_regions=sum(v == 'local' for v in tiers.values()), global_regions=sum(v == 'global' for v in tiers.values()),
             shared_deferred_regions=sum(v['defer_until'] > now for v in self.graph.services.values()),
             pair_status=offer['result']['status'] if offer else 'no_pair', compute_wall_s=time.monotonic()-begin,
+            pair_start_traffic_delay_s=pair_traffic,
             stage_wall_s=stages, anticipatory_view=anticipated_view is not None, can_move=can_move,
             unknown_components=len(self.priority.components), reserved_gain_cells=len(excluded_cells),
             team_observed_cells=int(observed_mask.sum()), priority_compute=self.priority.diagnostics,
             route_objective='travel_plus_information_latency',
+            view_window_regions=[r for r, _ in view_options],
             route_window_regions=len(owned), all_owned_regions=owned_count,
             observation_service_entries=len(self.graph.observation_services),
             selected_priority=priorities.get(selected))

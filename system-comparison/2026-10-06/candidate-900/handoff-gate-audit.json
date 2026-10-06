@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "errors": [],
+  "checked": 2,
+  "limitation": "Checks recorded actual-evidence gate; independent native audit separately checks grants, execution and C2/yaw boundaries."
+}

@@ -1,0 +1,8 @@
+{
+  "identical_generated_world": true,
+  "identical_truth_denominator": true,
+  "frozen_harness_unchanged": true,
+  "frozen_annual_source_unchanged": true,
+  "all_reference_limits": true,
+  "all_cleanup_empty": true
+}

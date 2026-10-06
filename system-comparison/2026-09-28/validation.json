@@ -1,0 +1,73 @@
+{
+  "annual": {
+    "reference_speed_cap_pass": true,
+    "reference_acceleration_cap_pass": true,
+    "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+    "sensor_stream_gzip_verified": true,
+    "recorded_counts": {
+      "clock": 11638,
+      "cloud_0": 538,
+      "cloud_1": 538,
+      "odom_0": 5372,
+      "odom_1": 5372
+    },
+    "recorded_sim_hz": {
+      "clock": 108.3075834853505,
+      "cloud_0": 5.000093111603568,
+      "cloud_1": 5.000093111603568,
+      "odom_0": 50.0,
+      "odom_1": 50.0
+    },
+    "native_commands_from_both_uavs": true,
+    "outside_center_bounds_after_startup": false,
+    "result_status": "COVERAGE_TARGET"
+  },
+  "racer": {
+    "reference_speed_cap_pass": true,
+    "reference_acceleration_cap_pass": true,
+    "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+    "sensor_stream_gzip_verified": true,
+    "recorded_counts": {
+      "clock": 5384,
+      "odom_0": 2508,
+      "odom_1": 2508,
+      "cloud_0": 251,
+      "cloud_1": 251
+    },
+    "recorded_sim_hz": {
+      "clock": 107.3251455458968,
+      "odom_0": 50.000997227706975,
+      "odom_1": 50.000997227706975,
+      "cloud_0": 5.00020000800032,
+      "cloud_1": 5.00020000800032
+    },
+    "native_commands_from_both_uavs": true,
+    "outside_center_bounds_after_startup": false,
+    "result_status": "COVERAGE_TARGET"
+  },
+  "gvp": {
+    "reference_speed_cap_pass": true,
+    "reference_acceleration_cap_pass": true,
+    "world_sha256": "6caac1f97ed22ecec10e2d2fa1b9180d4e79fe4f064fb8df0d2e7d01a2b4b5a6",
+    "sensor_stream_gzip_verified": true,
+    "recorded_counts": {
+      "clock": 4618,
+      "cloud_0": 215,
+      "cloud_1": 215,
+      "odom_0": 2150,
+      "odom_1": 2150
+    },
+    "recorded_sim_hz": {
+      "clock": 107.39457095671187,
+      "cloud_0": 5.000233655778308,
+      "cloud_1": 5.000233655778308,
+      "odom_0": 49.99999999999999,
+      "odom_1": 49.99999999999999
+    },
+    "native_commands_from_both_uavs": true,
+    "outside_center_bounds_after_startup": false,
+    "result_status": "COVERAGE_TARGET"
+  },
+  "identical_generated_world": true,
+  "frozen_files_unchanged": true
+}

@@ -1,0 +1,425 @@
+... logging to /root/.ros/log/550c09f6-bb45-11f1-b374-5255551de53e/roslaunch-colima-racer-gvp-2572.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/comparison/racer.launch
+[1mstarted roslaunch server http://localhost:35675/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /acvrp_solver_1/exploration/drone_id: 1
+ * /acvrp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_1/exploration/problem_id: 2
+ * /acvrp_solver_2/exploration/drone_id: 2
+ * /acvrp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /acvrp_solver_2/exploration/problem_id: 2
+ * /exploration_node_1/astar/allocate_num: 1000000
+ * /exploration_node_1/astar/lambda_heu: 10000.0
+ * /exploration_node_1/astar/max_search_time: 0.001
+ * /exploration_node_1/astar/resolution_astar: 0.3
+ * /exploration_node_1/bspline/limit_acc: 0.8
+ * /exploration_node_1/bspline/limit_ratio: 1.1
+ * /exploration_node_1/bspline/limit_vel: 0.6
+ * /exploration_node_1/exploration/am: 0.8
+ * /exploration_node_1/exploration/drone_id: 1
+ * /exploration_node_1/exploration/drone_num: 2.0
+ * /exploration_node_1/exploration/init_plan_num: 2
+ * /exploration_node_1/exploration/max_decay: 0.8
+ * /exploration_node_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/refine_local: True
+ * /exploration_node_1/exploration/refined_num: 7
+ * /exploration_node_1/exploration/refined_radius: 5.0
+ * /exploration_node_1/exploration/top_view_num: 15
+ * /exploration_node_1/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_1/exploration/vm: 0.6
+ * /exploration_node_1/exploration/w_dir: 1.5
+ * /exploration_node_1/exploration/yd: 0.65
+ * /exploration_node_1/exploration/ydd: 0.8
+ * /exploration_node_1/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_1/frontier/candidate_rmax: 1.5
+ * /exploration_node_1/frontier/candidate_rmin: 1.0
+ * /exploration_node_1/frontier/candidate_rnum: 3
+ * /exploration_node_1/frontier/cluster_min: 100
+ * /exploration_node_1/frontier/cluster_size_xy: 2.0
+ * /exploration_node_1/frontier/cluster_size_z: 10.0
+ * /exploration_node_1/frontier/down_sample: 3
+ * /exploration_node_1/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_1/frontier/min_candidate_dist: 0.5
+ * /exploration_node_1/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_1/frontier/min_visib_num: 30
+ * /exploration_node_1/fsm/attempt_interval: 0.1
+ * /exploration_node_1/fsm/gain_thresh: 10
+ * /exploration_node_1/fsm/pair_opt_interval: 0.5
+ * /exploration_node_1/fsm/replan_time: 0.2
+ * /exploration_node_1/fsm/sync_interval: 0.2
+ * /exploration_node_1/fsm/thresh_replan1: 0.2
+ * /exploration_node_1/fsm/thresh_replan2: 0.2
+ * /exploration_node_1/fsm/thresh_replan3: 1.5
+ * /exploration_node_1/fsm/wait_delete_duration: 0.05
+ * /exploration_node_1/heading_planner/half_vert_num: 5
+ * /exploration_node_1/heading_planner/lambda1: 2.0
+ * /exploration_node_1/heading_planner/lambda2: 1.0
+ * /exploration_node_1/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_1/heading_planner/w: 20000.0
+ * /exploration_node_1/heading_planner/weight_type: 1.0
+ * /exploration_node_1/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_1/manager/clearance_threshold: 0.2
+ * /exploration_node_1/manager/control_points_distance: 0.5
+ * /exploration_node_1/manager/dynamic_environment: 0
+ * /exploration_node_1/manager/local_segment_length: 6.0
+ * /exploration_node_1/manager/max_acc: 0.8
+ * /exploration_node_1/manager/max_jerk: 4.0
+ * /exploration_node_1/manager/max_vel: 0.6
+ * /exploration_node_1/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_1/manager/min_time: True
+ * /exploration_node_1/manager/relax_time1: 0.3
+ * /exploration_node_1/manager/relax_time2: 1.5
+ * /exploration_node_1/manager/use_active_perception: True
+ * /exploration_node_1/manager/use_geometric_path: True
+ * /exploration_node_1/manager/use_kinodynamic_path: True
+ * /exploration_node_1/manager/use_optimization: True
+ * /exploration_node_1/manager/use_topo_path: False
+ * /exploration_node_1/map_ros/cx: 324.0879821777344
+ * /exploration_node_1/map_ros/cy: 239.10362243652344
+ * /exploration_node_1/map_ros/depth_filter_margin: 2
+ * /exploration_node_1/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_1/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_1/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_1/map_ros/frame_id: world
+ * /exploration_node_1/map_ros/fx: 385.69793701171875
+ * /exploration_node_1/map_ros/fy: 385.69793701171875
+ * /exploration_node_1/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_1/map_ros/show_all_map: True
+ * /exploration_node_1/map_ros/show_esdf_time: False
+ * /exploration_node_1/map_ros/show_occ_time: False
+ * /exploration_node_1/map_ros/skip_pixel: 2
+ * /exploration_node_1/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_1/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_1/optimization/algorithm1: 15
+ * /exploration_node_1/optimization/algorithm2: 11
+ * /exploration_node_1/optimization/dist0: 0.7
+ * /exploration_node_1/optimization/ld_dist: 10.0
+ * /exploration_node_1/optimization/ld_end: 0.5
+ * /exploration_node_1/optimization/ld_feasi: 2.0
+ * /exploration_node_1/optimization/ld_guide: 1.5
+ * /exploration_node_1/optimization/ld_smooth: 5.0
+ * /exploration_node_1/optimization/ld_start: 100.0
+ * /exploration_node_1/optimization/ld_swarm: 5.0
+ * /exploration_node_1/optimization/ld_time: 1.5
+ * /exploration_node_1/optimization/ld_view: 0.0
+ * /exploration_node_1/optimization/ld_waypt: 7.0
+ * /exploration_node_1/optimization/max_acc: 0.8
+ * /exploration_node_1/optimization/max_iteration_num1: 2
+ * /exploration_node_1/optimization/max_iteration_num2: 2000
+ * /exploration_node_1/optimization/max_iteration_num3: 200
+ * /exploration_node_1/optimization/max_iteration_num4: 200
+ * /exploration_node_1/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_1/optimization/max_iteration_time2: 0.005
+ * /exploration_node_1/optimization/max_iteration_time3: 0.003
+ * /exploration_node_1/optimization/max_iteration_time4: 0.003
+ * /exploration_node_1/optimization/max_vel: 0.6
+ * /exploration_node_1/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_1/partitioning/consistent_cost2: 8.0
+ * /exploration_node_1/partitioning/consistent_cost: -5.0
+ * /exploration_node_1/partitioning/grid_size: 5.0
+ * /exploration_node_1/partitioning/min_free: 3000
+ * /exploration_node_1/partitioning/min_frontier: 100
+ * /exploration_node_1/partitioning/min_unknown: 4000
+ * /exploration_node_1/partitioning/use_swarm_tf: False
+ * /exploration_node_1/partitioning/w_unknown: 0.0
+ * /exploration_node_1/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/max_dist: 4.5
+ * /exploration_node_1/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_1/perception_utils/vis_dist: 1.0
+ * /exploration_node_1/sdf_map/box_max_x: 6.0
+ * /exploration_node_1/sdf_map/box_max_y: 6.0
+ * /exploration_node_1/sdf_map/box_max_z: 3.0
+ * /exploration_node_1/sdf_map/box_min_x: -6.0
+ * /exploration_node_1/sdf_map/box_min_y: -6.0
+ * /exploration_node_1/sdf_map/box_min_z: 0.0
+ * /exploration_node_1/sdf_map/default_dist: 0.5
+ * /exploration_node_1/sdf_map/ground_height: -0.1
+ * /exploration_node_1/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_1/sdf_map/local_map_margin: 50
+ * /exploration_node_1/sdf_map/map_size_x: 14
+ * /exploration_node_1/sdf_map/map_size_y: 14
+ * /exploration_node_1/sdf_map/map_size_z: 3.5
+ * /exploration_node_1/sdf_map/max_ray_length: 4.5
+ * /exploration_node_1/sdf_map/min_ray_length: 0.1
+ * /exploration_node_1/sdf_map/no_drone_1: False
+ * /exploration_node_1/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_1/sdf_map/optimistic: True
+ * /exploration_node_1/sdf_map/p_hit: 0.65
+ * /exploration_node_1/sdf_map/p_max: 0.9
+ * /exploration_node_1/sdf_map/p_min: 0.12
+ * /exploration_node_1/sdf_map/p_miss: 0.35
+ * /exploration_node_1/sdf_map/p_occ: 0.8
+ * /exploration_node_1/sdf_map/resolution: 0.1
+ * /exploration_node_1/sdf_map/signed_dist: False
+ * /exploration_node_1/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_1/search/allocate_num: 100000
+ * /exploration_node_1/search/check_num: 10
+ * /exploration_node_1/search/horizon: 5.0
+ * /exploration_node_1/search/init_max_tau: 1.0
+ * /exploration_node_1/search/lambda_heu: 10.0
+ * /exploration_node_1/search/margin: 0.2
+ * /exploration_node_1/search/max_acc: 0.8
+ * /exploration_node_1/search/max_tau: 0.8
+ * /exploration_node_1/search/max_vel: 0.6
+ * /exploration_node_1/search/optimistic: False
+ * /exploration_node_1/search/resolution_astar: 0.025
+ * /exploration_node_1/search/time_resolution: 0.8
+ * /exploration_node_1/search/vel_margin: 0.25
+ * /exploration_node_1/search/w_time: 10.0
+ * /exploration_node_2/astar/allocate_num: 1000000
+ * /exploration_node_2/astar/lambda_heu: 10000.0
+ * /exploration_node_2/astar/max_search_time: 0.001
+ * /exploration_node_2/astar/resolution_astar: 0.3
+ * /exploration_node_2/bspline/limit_acc: 0.8
+ * /exploration_node_2/bspline/limit_ratio: 1.1
+ * /exploration_node_2/bspline/limit_vel: 0.6
+ * /exploration_node_2/exploration/am: 0.8
+ * /exploration_node_2/exploration/drone_id: 2
+ * /exploration_node_2/exploration/drone_num: 2.0
+ * /exploration_node_2/exploration/init_plan_num: 2
+ * /exploration_node_2/exploration/max_decay: 0.8
+ * /exploration_node_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/refine_local: True
+ * /exploration_node_2/exploration/refined_num: 7
+ * /exploration_node_2/exploration/refined_radius: 5.0
+ * /exploration_node_2/exploration/top_view_num: 15
+ * /exploration_node_2/exploration/tsp_dir: /work/racer_ws/sr...
+ * /exploration_node_2/exploration/vm: 0.6
+ * /exploration_node_2/exploration/w_dir: 1.5
+ * /exploration_node_2/exploration/yd: 0.65
+ * /exploration_node_2/exploration/ydd: 0.8
+ * /exploration_node_2/frontier/candidate_dphi: 0.2617993833333333
+ * /exploration_node_2/frontier/candidate_rmax: 1.5
+ * /exploration_node_2/frontier/candidate_rmin: 1.0
+ * /exploration_node_2/frontier/candidate_rnum: 3
+ * /exploration_node_2/frontier/cluster_min: 100
+ * /exploration_node_2/frontier/cluster_size_xy: 2.0
+ * /exploration_node_2/frontier/cluster_size_z: 10.0
+ * /exploration_node_2/frontier/down_sample: 3
+ * /exploration_node_2/frontier/min_candidate_clearance: 0.21
+ * /exploration_node_2/frontier/min_candidate_dist: 0.5
+ * /exploration_node_2/frontier/min_view_finish_fraction: 0.2
+ * /exploration_node_2/frontier/min_visib_num: 30
+ * /exploration_node_2/fsm/attempt_interval: 0.1
+ * /exploration_node_2/fsm/gain_thresh: 10
+ * /exploration_node_2/fsm/pair_opt_interval: 0.5
+ * /exploration_node_2/fsm/replan_time: 0.2
+ * /exploration_node_2/fsm/sync_interval: 0.2
+ * /exploration_node_2/fsm/thresh_replan1: 0.2
+ * /exploration_node_2/fsm/thresh_replan2: 0.2
+ * /exploration_node_2/fsm/thresh_replan3: 1.5
+ * /exploration_node_2/fsm/wait_delete_duration: 0.05
+ * /exploration_node_2/heading_planner/half_vert_num: 5
+ * /exploration_node_2/heading_planner/lambda1: 2.0
+ * /exploration_node_2/heading_planner/lambda2: 1.0
+ * /exploration_node_2/heading_planner/max_yaw_rate: 0.17453292222222222
+ * /exploration_node_2/heading_planner/w: 20000.0
+ * /exploration_node_2/heading_planner/weight_type: 1.0
+ * /exploration_node_2/heading_planner/yaw_diff: 0.5235987666666666
+ * /exploration_node_2/manager/clearance_threshold: 0.2
+ * /exploration_node_2/manager/control_points_distance: 0.5
+ * /exploration_node_2/manager/dynamic_environment: 0
+ * /exploration_node_2/manager/local_segment_length: 6.0
+ * /exploration_node_2/manager/max_acc: 0.8
+ * /exploration_node_2/manager/max_jerk: 4.0
+ * /exploration_node_2/manager/max_vel: 0.6
+ * /exploration_node_2/manager/max_yawdot: 2.0943950666666664
+ * /exploration_node_2/manager/min_time: True
+ * /exploration_node_2/manager/relax_time1: 0.3
+ * /exploration_node_2/manager/relax_time2: 1.5
+ * /exploration_node_2/manager/use_active_perception: True
+ * /exploration_node_2/manager/use_geometric_path: True
+ * /exploration_node_2/manager/use_kinodynamic_path: True
+ * /exploration_node_2/manager/use_optimization: True
+ * /exploration_node_2/manager/use_topo_path: False
+ * /exploration_node_2/map_ros/cx: 324.0879821777344
+ * /exploration_node_2/map_ros/cy: 239.10362243652344
+ * /exploration_node_2/map_ros/depth_filter_margin: 2
+ * /exploration_node_2/map_ros/depth_filter_maxdist: 4.6
+ * /exploration_node_2/map_ros/depth_filter_mindist: 0.2
+ * /exploration_node_2/map_ros/esdf_slice_height: 0.5
+ * /exploration_node_2/map_ros/frame_id: world
+ * /exploration_node_2/map_ros/fx: 385.69793701171875
+ * /exploration_node_2/map_ros/fy: 385.69793701171875
+ * /exploration_node_2/map_ros/k_depth_scaling_factor: 1000.0
+ * /exploration_node_2/map_ros/show_all_map: True
+ * /exploration_node_2/map_ros/show_esdf_time: False
+ * /exploration_node_2/map_ros/show_occ_time: False
+ * /exploration_node_2/map_ros/skip_pixel: 2
+ * /exploration_node_2/map_ros/visualization_truncate_height: 10.09
+ * /exploration_node_2/map_ros/visualization_truncate_low: -2.0
+ * /exploration_node_2/optimization/algorithm1: 15
+ * /exploration_node_2/optimization/algorithm2: 11
+ * /exploration_node_2/optimization/dist0: 0.7
+ * /exploration_node_2/optimization/ld_dist: 10.0
+ * /exploration_node_2/optimization/ld_end: 0.5
+ * /exploration_node_2/optimization/ld_feasi: 2.0
+ * /exploration_node_2/optimization/ld_guide: 1.5
+ * /exploration_node_2/optimization/ld_smooth: 5.0
+ * /exploration_node_2/optimization/ld_start: 100.0
+ * /exploration_node_2/optimization/ld_swarm: 5.0
+ * /exploration_node_2/optimization/ld_time: 1.5
+ * /exploration_node_2/optimization/ld_view: 0.0
+ * /exploration_node_2/optimization/ld_waypt: 7.0
+ * /exploration_node_2/optimization/max_acc: 0.8
+ * /exploration_node_2/optimization/max_iteration_num1: 2
+ * /exploration_node_2/optimization/max_iteration_num2: 2000
+ * /exploration_node_2/optimization/max_iteration_num3: 200
+ * /exploration_node_2/optimization/max_iteration_num4: 200
+ * /exploration_node_2/optimization/max_iteration_time1: 0.0001
+ * /exploration_node_2/optimization/max_iteration_time2: 0.005
+ * /exploration_node_2/optimization/max_iteration_time3: 0.003
+ * /exploration_node_2/optimization/max_iteration_time4: 0.003
+ * /exploration_node_2/optimization/max_vel: 0.6
+ * /exploration_node_2/optimization/swarm_safe_dist: 1.0
+ * /exploration_node_2/partitioning/consistent_cost2: 8.0
+ * /exploration_node_2/partitioning/consistent_cost: -5.0
+ * /exploration_node_2/partitioning/grid_size: 5.0
+ * /exploration_node_2/partitioning/min_free: 3000
+ * /exploration_node_2/partitioning/min_frontier: 100
+ * /exploration_node_2/partitioning/min_unknown: 4000
+ * /exploration_node_2/partitioning/use_swarm_tf: False
+ * /exploration_node_2/partitioning/w_unknown: 0.0
+ * /exploration_node_2/perception_utils/left_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/max_dist: 4.5
+ * /exploration_node_2/perception_utils/right_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/top_angle: 1.0471975511965976
+ * /exploration_node_2/perception_utils/vis_dist: 1.0
+ * /exploration_node_2/sdf_map/box_max_x: 6.0
+ * /exploration_node_2/sdf_map/box_max_y: 6.0
+ * /exploration_node_2/sdf_map/box_max_z: 3.0
+ * /exploration_node_2/sdf_map/box_min_x: -6.0
+ * /exploration_node_2/sdf_map/box_min_y: -6.0
+ * /exploration_node_2/sdf_map/box_min_z: 0.0
+ * /exploration_node_2/sdf_map/default_dist: 0.5
+ * /exploration_node_2/sdf_map/ground_height: -0.1
+ * /exploration_node_2/sdf_map/local_bound_inflate: 0.5
+ * /exploration_node_2/sdf_map/local_map_margin: 50
+ * /exploration_node_2/sdf_map/map_size_x: 14
+ * /exploration_node_2/sdf_map/map_size_y: 14
+ * /exploration_node_2/sdf_map/map_size_z: 3.5
+ * /exploration_node_2/sdf_map/max_ray_length: 4.5
+ * /exploration_node_2/sdf_map/min_ray_length: 0.1
+ * /exploration_node_2/sdf_map/no_drone_1: False
+ * /exploration_node_2/sdf_map/obstacles_inflation: 0.199
+ * /exploration_node_2/sdf_map/optimistic: True
+ * /exploration_node_2/sdf_map/p_hit: 0.65
+ * /exploration_node_2/sdf_map/p_max: 0.9
+ * /exploration_node_2/sdf_map/p_min: 0.12
+ * /exploration_node_2/sdf_map/p_miss: 0.35
+ * /exploration_node_2/sdf_map/p_occ: 0.8
+ * /exploration_node_2/sdf_map/resolution: 0.1
+ * /exploration_node_2/sdf_map/signed_dist: False
+ * /exploration_node_2/sdf_map/virtual_ceil_height: -10
+ * /exploration_node_2/search/allocate_num: 100000
+ * /exploration_node_2/search/check_num: 10
+ * /exploration_node_2/search/horizon: 5.0
+ * /exploration_node_2/search/init_max_tau: 1.0
+ * /exploration_node_2/search/lambda_heu: 10.0
+ * /exploration_node_2/search/margin: 0.2
+ * /exploration_node_2/search/max_acc: 0.8
+ * /exploration_node_2/search/max_tau: 0.8
+ * /exploration_node_2/search/max_vel: 0.6
+ * /exploration_node_2/search/optimistic: False
+ * /exploration_node_2/search/resolution_astar: 0.025
+ * /exploration_node_2/search/time_resolution: 0.8
+ * /exploration_node_2/search/vel_margin: 0.25
+ * /exploration_node_2/search/w_time: 10.0
+ * /rosdistro: noetic
+ * /rosversion: 1.17.4
+ * /traj_server_1/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/max_dist: 4.5
+ * /traj_server_1/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_1/perception_utils/vis_dist: 1.0
+ * /traj_server_1/traj_server/drone_id: 1
+ * /traj_server_1/traj_server/drone_num: 2
+ * /traj_server_1/traj_server/pub_traj_id: 4
+ * /traj_server_1/traj_server/time_forward: 1.5
+ * /traj_server_2/perception_utils/left_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/max_dist: 4.5
+ * /traj_server_2/perception_utils/right_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/top_angle: 1.0471975511965976
+ * /traj_server_2/perception_utils/vis_dist: 1.0
+ * /traj_server_2/traj_server/drone_id: 2
+ * /traj_server_2/traj_server/drone_num: 2
+ * /traj_server_2/traj_server/pub_traj_id: 4
+ * /traj_server_2/traj_server/time_forward: 1.5
+ * /tsp_solver_1/exploration/drone_id: 1
+ * /tsp_solver_1/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_1/exploration/problem_id: 1
+ * /tsp_solver_2/exploration/drone_id: 2
+ * /tsp_solver_2/exploration/mtsp_dir: /work/racer_ws/sr...
+ * /tsp_solver_2/exploration/problem_id: 1
+ * /use_sim_time: True
+
+NODES
+  /
+    acvrp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    acvrp_solver_2 (lkh_mtsp_solver/mtsp_node)
+    exploration_node_1 (exploration_manager/exploration_node)
+    exploration_node_2 (exploration_manager/exploration_node)
+    traj_server_1 (plan_manage/traj_server)
+    traj_server_2 (plan_manage/traj_server)
+    tsp_solver_1 (lkh_mtsp_solver/mtsp_node)
+    tsp_solver_2 (lkh_mtsp_solver/mtsp_node)
+[33m[WARN] [1790604190.200968779]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790604190.213530015]: MTSP server 1 is ready.[0m
+[33m[WARN] [1790604190.242367009]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790604190.256739692]: MTSP server 2 is ready.[0m
+[33m[WARN] [1790604190.356631196]: [Traj server]: init...[0m
+[33m[WARN] [1790604190.357453732]: [Traj server]: init...[0m
+0
+0
+0
+0
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcClient::writeRequest: write error (Connection refused).
+Error in XmlRpcDispatch::work: couldn't find source iterator
+Error in XmlRpcDispatch::work: couldn't find source iterator
+
+[1mROS_MASTER_URI=http://localhost:11328[0m
+]2;/comparison/racer.launch http://localhost:11328
+[1mprocess[exploration_node_1-1]: started with pid [2586][0m
+[1mprocess[tsp_solver_1-2]: started with pid [2587][0m
+[1mprocess[acvrp_solver_1-3]: started with pid [2589][0m
+[1mprocess[traj_server_1-4]: started with pid [2598][0m
+[1mprocess[exploration_node_2-5]: started with pid [2600][0m
+[1mprocess[tsp_solver_2-6]: started with pid [2601][0m
+[1mprocess[acvrp_solver_2-7]: started with pid [2607][0m
+[1mprocess[traj_server_2-8]: started with pid [2612][0m
+[traj_server_2-8] killing on exit
+[acvrp_solver_2-7] killing on exit
+[tsp_solver_2-6] killing on exit
+[exploration_node_2-5] killing on exit
+[traj_server_1-4] killing on exit
+[acvrp_solver_1-3] killing on exit
+[tsp_solver_1-2] killing on exit
+[exploration_node_1-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

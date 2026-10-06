@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/comparison/bridge_ros1.py", line 4, in <module>
+    from scipy.spatial.transform import Rotation
+ModuleNotFoundError: No module named 'scipy'
